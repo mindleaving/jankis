@@ -1,1 +1,58 @@
-# jankis
+# JanKIS
+
+- Fast user switch => Save user state to database and reload on login
+- Role-based interface/menus
+-- Customizable menus/activatable modules
+- News-ticker
+-- Topics: All hospital, ward, patient changes
+-- Priority: Normal feet, higlighted, increased size, banner, pop-up
+- Meal-service:
+-- Patient-interface: Order meals
+-- Hospital-interface: List orders, create menu
+-- Ward-interface: See patient orders, add unnamed meals, add notes
+- Hospital-builder
+-- Draw hospital floors + rooms
+-- Create wards
+-- Assign beds to rooms
+- Bed-scheduling:
+-- Registration-interface: Manage beds on multiple wards
+-- Ward-interface: Manage beds for ward
+- Accounting:
+-- List discharged patients
+-- Create invoice for health insurance
+-- Register payments
+- Registration
+-- Create patient
+-- Order diagnostics (ECG, X-ray, blood analyses, etc.)
+- Round-interface:
+-- Patient overview
+-- Enter observations
+-- Enter treatment decisions
+-- Order consults
+-- Order diagnostics
+-- Record change of dressings/drains/etc.
+-- Record removal of drains/dressings/conules
+-- Record discharge-plans (see below)
+- Discharge-interface:
+-- Time, destination (home, nursing facility)
+-- Prescribe medications
+-- Write discharge-papers for patient and primary doctor
+- Patient-view:
+-- Basic information
+-- Insurance information
+-- Medication plans
+-- Observations
+-- Procedures + notes
+-- Tests and analyses + results
+- Lab-interface:
+-- Receive samples
+-- Submit results
+- Pharmacy-interface:
+-- Add drugs
+-- Receive orders from wards
+-- Storage-management? (External system?)
+- Service provider (Meal-service as well? Pharmacy? Lab?)
+-- Define services
+-- Ordering-interface which all or some employees can access and enter necessary details (e.g. patient)
+-- List orders of services
+-- Accept/decline orders
