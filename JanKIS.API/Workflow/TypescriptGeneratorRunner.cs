@@ -12,7 +12,7 @@ namespace JanKIS.API.Workflow
     {
         private static readonly Dictionary<string, string> RepositoryPaths = new Dictionary<string, string>
         {
-            {"stationary-win8", @"G:\Projects\DoctorsTodo"}
+            {"stationary-win8", @"G:\Projects\JanKIS"}
         };
 
         public static void Run()

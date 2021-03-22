@@ -1,4 +1,15 @@
 {
+    "ID": "ID",
+    "FirstName": "First name",
+    "LastName": "Last name",
+    "Birthday": "Birthday",
+    "NoEntries": "No entries",
+    "Loading...": "Loading...",
+    "Search...": "Search...",
+    "Save": "Save",
+    "Storing...": "Storing...",
+    "Add": "Add",
+
     "Menu_Nursing": "Nursing",
     "Menu_Services": "Services",
     "Menu_Ward": "Ward",
@@ -36,5 +47,17 @@
     "Patient_Treatments": "Treatments",
     "Patient_TestDiagnostics": "Tests/Diagnostics",
     "Patient_Observations": "Observations",
-    "Patient_Nursing": "Nursing"
+    "Patient_Nursing": "Nursing",
+
+    "UserManagement": "User management",
+    "UserManagement_CouldNotLoadUsers": "Could not load users",
+    "UserManagement_Roles": "Roles",
+
+    "Employee_CouldNotLoad": "Could not load employee",
+    "Employee_CouldNotStore": "Could not store employee",
+    "Employee_Stored": "Employee stored",
+    "Employee_IDTaken": "ID is taken",
+
+    "Role_Name": "Name",
+    "Role_Permissions": "Permissions"
 }

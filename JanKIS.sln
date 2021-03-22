@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JanKIS.API", "JanKIS.API\JanKIS.API.csproj", "{B7108AAD-ABD4-41B3-8387-A68843C44A29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JanKIS.API", "JanKIS.API\JanKIS.API.csproj", "{B7108AAD-ABD4-41B3-8387-A68843C44A29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JanKIS.Tools", "JanKIS.Tools\JanKIS.Tools.csproj", "{DD917884-9C8B-42E3-84F4-08E57994DA61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{B7108AAD-ABD4-41B3-8387-A68843C44A29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7108AAD-ABD4-41B3-8387-A68843C44A29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7108AAD-ABD4-41B3-8387-A68843C44A29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD917884-9C8B-42E3-84F4-08E57994DA61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD917884-9C8B-42E3-84F4-08E57994DA61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD917884-9C8B-42E3-84F4-08E57994DA61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD917884-9C8B-42E3-84F4-08E57994DA61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,5 +1,11 @@
 ﻿using System;
+using System.Linq.Expressions;
+using System.Net;
 using System.Threading.Tasks;
+using JanKIS.API.AccessManagement;
+using JanKIS.API.Models;
+using JanKIS.API.Storage;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JanKIS.API.Controllers
@@ -8,30 +14,172 @@ namespace JanKIS.API.Controllers
     [Route("api/[controller]")]
     public class EmployeesController : ControllerBase
     {
-        [HttpPut("{employeeId}")]
-        public async Task<IActionResult> CreateNew([FromRoute] string employeeId)
+        private readonly IEmployeesStore employeesStore;
+        private readonly IReadonlyStore<Role> rolesStore;
+        private readonly AuthenticationModule authenticationModule;
+
+        public EmployeesController(
+            IEmployeesStore employeesStore, 
+            IReadonlyStore<Role> rolesStore,
+            AuthenticationModule authenticationModule)
         {
-            throw new NotImplementedException();
+            this.employeesStore = employeesStore;
+            this.rolesStore = rolesStore;
+            this.authenticationModule = authenticationModule;
         }
 
-        [HttpPatch("{employeeId}/permissions/{permissionId}/add")]
-        public async Task<IActionResult> AddPermission([FromRoute] string employeeId, [FromRoute] string permissionId)
+        [HttpGet]
+        [Authorize(Policy = nameof(Permission.ListEmployees))]
+        public async Task<IActionResult> GetMany([FromQuery] int? count = null, [FromQuery] int? skip = null, [FromQuery] string orderBy = null)
         {
-            throw new NotImplementedException();
+            Expression<Func<Employee, object>> orderByExpression = orderBy?.ToLower() switch
+            {
+                "firstname" => x => x.FirstName,
+                "lastname" => x => x.LastName,
+                _ => x => x.Id
+            };
+            var items = await employeesStore.GetMany(count, skip, orderByExpression);
+            return Ok(items);
+        }
+
+
+        [HttpGet("{employeeId}/exists")]
+        [Authorize(Policy = nameof(Permission.ListEmployees))]
+        public async Task<IActionResult> Exists([FromRoute] string employeeId)
+        {
+            return await employeesStore.ExistsAsync(employeeId) ? Ok() : NotFound();
+        }
+
+
+        [HttpPut("{employeeId}")]
+        [Authorize(Policy = nameof(Permission.CreateEmployees))]
+        public async Task<IActionResult> CreateOrUpdate([FromRoute] string employeeId, [FromBody] EmployeeRegistrationInfo registrationInfo)
+        {
+            if (registrationInfo.Id != employeeId)
+                return BadRequest("Employee-ID in body doesn't match route");
+            var existingEmployee = await employeesStore.GetByIdAsync(employeeId);
+            if (existingEmployee != null)
+            {
+                if (registrationInfo.Password != null)
+                {
+                    return BadRequest("When updating an existing employee, no password must be specified. Use the ChangePassword-API-method for changing a password");
+                }
+
+                existingEmployee.FirstName = registrationInfo.FirstName;
+                existingEmployee.LastName = registrationInfo.LastName;
+                existingEmployee.InstitutionId = registrationInfo.InstitutionId;
+                existingEmployee.BirthDate = registrationInfo.BirthDate;
+                await employeesStore.StoreAsync(existingEmployee);
+            }
+            else
+            {
+                var employee = EmployeeFactory.Create(
+                    employeeId,
+                    registrationInfo.FirstName,
+                    registrationInfo.LastName,
+                    registrationInfo.BirthDate,
+                    registrationInfo.InstitutionId,
+                    registrationInfo.Password);
+                await employeesStore.StoreAsync(employee);
+            }
+            return Ok(employeeId);
+        }
+
+        [HttpPost("{employeeId}/login")]
+        public async Task<IActionResult> Login([FromRoute] string employeeId, [FromBody] string password)
+        {
+            var authenticationResult = await authenticationModule.AuthenticateAsync(employeeId, password);
+            if (!authenticationResult.IsAuthenticated)
+                return StatusCode((int) HttpStatusCode.Unauthorized, authenticationResult);
+            return Ok(authenticationResult);
+        }
+
+        [HttpPost("{employeeId}/resetpassword")]
+        [Authorize(Policy = nameof(Permission.ResetPasswords))]
+        public async Task<IActionResult> ResetPassword([FromRoute] string employeeId, [FromBody] string password)
+        {
+            await authenticationModule.ChangePasswordAsync(employeeId, password, true);
+            return Ok();
+        }
+
+        [HttpPost("{employeeId}/changepassword")]
+        [Authorize(Policy = SameUserRequirement.PolicyName)]
+        public async Task<IActionResult> ChangePassword([FromRoute] string employeeId, [FromBody] string password)
+        {
+            await authenticationModule.ChangePasswordAsync(employeeId, password);
+            return Ok();
+        }
+
+        [HttpPatch("{employeeId}/roles/{roleId}/add")]
+        [Authorize(Policy = nameof(Permission.ChangeEmployeePermissions))]
+        [Authorize(Policy = NotSameUserRequirement.PolicyName)]
+        public async Task<IActionResult> AddRole([FromRoute] string employeeId, [FromRoute] string roleId)
+        {
+            if (!await rolesStore.ExistsAsync(roleId))
+                return BadRequest("No such role exists");
+            var result = await employeesStore.AddRole(employeeId, roleId);
+            return HandleStorageResult(result);
+        }
+
+        [HttpPatch("{employeeId}/roles/{roleId}/remove")]
+        [Authorize(Policy = nameof(Permission.ChangeEmployeePermissions))]
+        [Authorize(Policy = NotSameUserRequirement.PolicyName)]
+        public async Task<IActionResult> RemoveRole([FromRoute] string employeeId, [FromRoute] string roleId)
+        {
+            if (!await rolesStore.ExistsAsync(roleId))
+                return BadRequest("No such role exists");
+            var result = await employeesStore.AddRole(employeeId, roleId);
+            return HandleStorageResult(result);
+        }
+
+        [HttpPatch("{employeeId}/permissions/{permissionId}/grant")]
+        [Authorize(Policy = nameof(Permission.ChangeEmployeePermissions))]
+        [Authorize(Policy = NotSameUserRequirement.PolicyName)]
+        public async Task<IActionResult> GrantPermission([FromRoute] string employeeId, [FromRoute] string permissionId)
+        {
+            if (!Enum.TryParse<Permission>(permissionId, true, out var permission))
+                return BadRequest("Unknown permission");
+            var result = await employeesStore.AddPermission(employeeId, new PermissionModifier(permission, PermissionModifierType.Grant));
+            return HandleStorageResult(result);
+        }
+
+        [HttpPatch("{employeeId}/permissions/{permissionId}/deny")]
+        [Authorize(Policy = nameof(Permission.ChangeEmployeePermissions))]
+        [Authorize(Policy = NotSameUserRequirement.PolicyName)]
+        public async Task<IActionResult> DenyPermission([FromRoute] string employeeId, [FromRoute] string permissionId)
+        {
+            if (!Enum.TryParse<Permission>(permissionId, true, out var permission))
+                return BadRequest("Unknown permission");
+            var result = await employeesStore.AddPermission(employeeId, new PermissionModifier(permission, PermissionModifierType.Deny));
+            return HandleStorageResult(result);
         }
 
         [HttpPatch("{employeeId}/permissions/{permissionId}/remove")]
+        [Authorize(Policy = nameof(Permission.ChangeEmployeePermissions))]
+        [Authorize(Policy = NotSameUserRequirement.PolicyName)]
         public async Task<IActionResult> RemovePermission([FromRoute] string employeeId, [FromRoute] string permissionId)
         {
-            throw new NotImplementedException();
+            if (!Enum.TryParse<Permission>(permissionId, true, out var permission))
+                return BadRequest("Unknown permission");
+            var result = await employeesStore.RemovePermission(employeeId, permission);
+            return HandleStorageResult(result);
         }
 
-
-        [HttpGet("{employeeId}/" + nameof(ViewState))]
-        public async Task<IActionResult> ViewState([FromRoute] string employeeId)
+        [HttpDelete("{employeeId}")]
+        [Authorize(Policy = nameof(Permission.DeleteEmployees))]
+        public async Task<IActionResult> DeleteEmployee([FromRoute] string employeeId)
         {
-            throw new NotImplementedException();
+            await employeesStore.DeleteAsync(employeeId);
+            return Ok();
         }
 
+        private IActionResult HandleStorageResult(StorageResult result)
+        {
+            if (result.IsSuccess)
+                return Ok();
+            if (result.ErrorType == StoreErrorType.NoMatch)
+                return NotFound();
+            return StatusCode((int) HttpStatusCode.InternalServerError);
+        }
     }
 }

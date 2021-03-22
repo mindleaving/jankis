@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using JanKIS.API.Models;
+using JanKIS.API.Storage;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JanKIS.API.Controllers
@@ -9,40 +10,101 @@ namespace JanKIS.API.Controllers
     [Route("api/[controller]")]
     public class PatientsController : ControllerBase
     {
+        private readonly IPatientStore patientsStore;
+
+        public PatientsController(IPatientStore patientsStore)
+        {
+            this.patientsStore = patientsStore;
+        }
+
         [HttpGet("{patientId}")]
         public async Task<IActionResult> GetPatient([FromRoute] string patientId)
         {
-            throw new NotImplementedException();
+            var patient = await patientsStore.GetByIdAsync(patientId);
+            if (patient == null)
+                return NotFound();
+            return Ok(patient);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreatePatient([FromBody] Patient patient)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(patient.Id))
+                return BadRequest("ID must be non-empty");
+            if (await patientsStore.ExistsAsync(patient.Id))
+                return Conflict();
+            await patientsStore.StoreAsync(patient);
+            return Ok(patient.Id);
         }
 
         [HttpPatch("{patientId}/" + nameof(Admit))]
         public async Task<IActionResult> Admit([FromRoute] string patientId, [FromBody] AdmissionInfo admissionInfo)
         {
-            throw new NotImplementedException();
+            var patient = await patientsStore.GetByIdAsync(patientId);
+            if (patient == null)
+                return NotFound();
+            await patientsStore.AdmitAsync(patientId, admissionInfo);
+            return Ok();
         }
 
         [HttpPatch("{patientId}/" + nameof(Move))]
         public async Task<IActionResult> Move([FromRoute] string patientId, [FromQuery] string wardId, [FromQuery] string roomId, [FromQuery] string bedIndex)
         {
-            throw new NotImplementedException();
+            var patient = await patientsStore.GetByIdAsync(patientId);
+            if (patient == null)
+                return NotFound();
+            if (patient.AdmissionInfo == null)
+                return BadRequest("Patient is not admitted. Cannot be moved");
+            patient.AdmissionInfo.Ward = wardId;
+            patient.AdmissionInfo.Room = roomId;
+            patient.AdmissionInfo.Bed = bedIndex;
+            await patientsStore.StoreAsync(patient);
+            return Ok();
         }
 
         [HttpPatch("{patientId}")]
         public async Task<IActionResult> Discharge([FromRoute] string patientId, [FromBody] DischargeInfo dischargeInfo)
         {
+            var patient = await patientsStore.GetByIdAsync(patientId);
+            if (patient == null)
+                return NotFound();
             throw new NotImplementedException();
         }
 
         [HttpDelete("{patientId}")]
         public async Task<IActionResult> DeletePatient([FromRoute] string patientId)
         {
-            throw new NotImplementedException();
+            await patientsStore.DeleteAsync(patientId);
+            return Ok();
         }
+
+        [HttpGet("{patientId}/equipment")]
+        public async Task<IActionResult> GetAttachedEquipment([FromRoute] string patientId)
+        {
+            var patient = await patientsStore.GetByIdAsync(patientId);
+            if (patient == null)
+                return NotFound();
+            return Ok(patient.AttachedEquipment);
+        }
+
+        [HttpPost("{patientId}/equipment")]
+        public async Task<IActionResult> AddEquipment([FromRoute] string patientId, [FromBody] MedicalEquipment medicalEquipment)
+        {
+            if (medicalEquipment == null)
+                return BadRequest("No medical equipment specified in body");
+            if(!await patientsStore.AttachEquipmentAsync(patientId, medicalEquipment))
+                return NotFound();
+            return Ok();
+        }
+
+        [HttpDelete("{patientId}/equipment/{equipmentId}")]
+        public async Task<IActionResult> RemoveEquipment([FromRoute] string patientId, [FromRoute] string equipmentId)
+        {
+            if (!await patientsStore.RemoveEquipmentAsync(patientId, equipmentId))
+                return NotFound();
+            return Ok();
+        }
+
+
     }
 }
