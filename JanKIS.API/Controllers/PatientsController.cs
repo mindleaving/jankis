@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using JanKIS.API.AccessManagement;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
 using Microsoft.AspNetCore.Mvc;
@@ -27,14 +28,21 @@ namespace JanKIS.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePatient([FromBody] Patient patient)
+        public async Task<IActionResult> CreatePatient([FromBody] PatientRegistrationInfo registrationInfo)
         {
-            if (string.IsNullOrWhiteSpace(patient.Id))
+            if (string.IsNullOrWhiteSpace(registrationInfo.Id))
                 return BadRequest("ID must be non-empty");
-            if (await patientsStore.ExistsAsync(patient.Id))
+            if (await patientsStore.ExistsAsync(registrationInfo.Id))
                 return Conflict();
+            var patient = PersonFactory.CreatePatient(
+                registrationInfo.Id,
+                registrationInfo.FirstName,
+                registrationInfo.LastName,
+                registrationInfo.BirthDate,
+                TemporaryPasswordGenerator.Generate(), // TODO: Store or return, such that it can be printed and given to patient. Or have it generated in frontend.
+                registrationInfo.HealthInsurance);
             await patientsStore.StoreAsync(patient);
-            return Ok(patient.Id);
+            return Ok(registrationInfo.Id);
         }
 
         [HttpPatch("{patientId}/" + nameof(Admit))]
@@ -74,6 +82,7 @@ namespace JanKIS.API.Controllers
         [HttpDelete("{patientId}")]
         public async Task<IActionResult> DeletePatient([FromRoute] string patientId)
         {
+            throw new NotImplementedException("Implement checks that only patients can be deleted that are not admitted, fully discharged, billed and invoices paid, etc.");
             await patientsStore.DeleteAsync(patientId);
             return Ok();
         }

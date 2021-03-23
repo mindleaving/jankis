@@ -3,15 +3,17 @@ using System.Collections.Generic;
 
 namespace JanKIS.API.Models
 {
-    public class Patient : Person
+    public class Patient : PersonWithLogin
     {
         public Patient(
             string id,
             string firstName,
             string lastName,
             DateTime birthDate,
-            HealthInsurance healthInsurance)
-            : base(id, firstName, lastName, birthDate)
+            HealthInsurance healthInsurance,
+            string salt,
+            string passwordHash)
+            : base(id, firstName, lastName, birthDate, salt, passwordHash)
         {
             HealthInsurance = healthInsurance;
             ContactPersons = new List<Employee>();

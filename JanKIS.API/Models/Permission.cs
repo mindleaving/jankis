@@ -14,7 +14,9 @@
         ViewAllBedStates,
         ViewWardBedStates,
 
+        // Service provider
+        ManageDepartmentServices,
 
-        
+        ManageDepartments
     }
 }

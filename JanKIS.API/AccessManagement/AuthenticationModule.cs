@@ -8,11 +8,16 @@ namespace JanKIS.API.AccessManagement
     public class AuthenticationModule
     {
         private readonly IEmployeesStore employeesStore;
+        private readonly IReadonlyStore<Patient> patientsStore;
         private readonly ISecurityTokenBuilder securityTokenBuilder;
 
-        public AuthenticationModule(IEmployeesStore employeesStore, ISecurityTokenBuilder securityTokenBuilder)
+        public AuthenticationModule(
+            IEmployeesStore employeesStore, 
+            IReadonlyStore<Patient> patientsStore,
+            ISecurityTokenBuilder securityTokenBuilder)
         {
             this.employeesStore = employeesStore;
+            this.patientsStore = patientsStore;
             this.securityTokenBuilder = securityTokenBuilder;
         }
 
@@ -29,7 +34,7 @@ namespace JanKIS.API.AccessManagement
             return result.IsSuccess;
         }
 
-        public async Task<AuthenticationResult> AuthenticateAsync(string employeeId, string password)
+        public async Task<AuthenticationResult> AuthenticateEmployeeAsync(string employeeId, string password)
         {
             var existingEmployee = await employeesStore.GetByIdAsync(employeeId);
             if(existingEmployee == null)
@@ -48,10 +53,29 @@ namespace JanKIS.API.AccessManagement
             return await BuildSecurityTokenForUser(existingEmployee);
         }
 
-        public async Task<AuthenticationResult> BuildSecurityTokenForUser(Employee employee)
+        public async Task<AuthenticationResult> AuthenticatePatientAsync(string patientId, string password)
         {
-            var token = await securityTokenBuilder.BuildForUser(employee);
-            return AuthenticationResult.Success(employee.Id, token);
+            var existingPatient = await patientsStore.GetByIdAsync(patientId);
+            if(existingPatient == null)
+                return AuthenticationResult.Failed(AuthenticationErrorType.UserNotFound);
+            if(string.IsNullOrEmpty(password))
+                return AuthenticationResult.Failed(AuthenticationErrorType.InvalidPassword);
+            var salt = Convert.FromBase64String(existingPatient.Salt);
+            var storedPasswordHash = Convert.FromBase64String(existingPatient.PasswordHash);
+            var providedPasswordHash = PasswordHasher.Hash(password, salt, 8 * storedPasswordHash.Length);
+            var isMatch = HashComparer.Compare(providedPasswordHash, storedPasswordHash);
+            if (!isMatch)
+            {
+                return AuthenticationResult.Failed(AuthenticationErrorType.InvalidPassword);
+            }
+
+            return await BuildSecurityTokenForUser(existingPatient);
+        }
+
+        public async Task<AuthenticationResult> BuildSecurityTokenForUser(PersonWithLogin person)
+        {
+            var token = await securityTokenBuilder.BuildForUser(person);
+            return AuthenticationResult.Success(person.Id, token);
         }
     }
 }

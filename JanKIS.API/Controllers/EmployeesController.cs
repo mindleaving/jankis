@@ -60,11 +60,6 @@ namespace JanKIS.API.Controllers
             var existingEmployee = await employeesStore.GetByIdAsync(employeeId);
             if (existingEmployee != null)
             {
-                if (registrationInfo.Password != null)
-                {
-                    return BadRequest("When updating an existing employee, no password must be specified. Use the ChangePassword-API-method for changing a password");
-                }
-
                 existingEmployee.FirstName = registrationInfo.FirstName;
                 existingEmployee.LastName = registrationInfo.LastName;
                 existingEmployee.InstitutionId = registrationInfo.InstitutionId;
@@ -73,13 +68,13 @@ namespace JanKIS.API.Controllers
             }
             else
             {
-                var employee = EmployeeFactory.Create(
+                var employee = PersonFactory.CreateEmployee(
                     employeeId,
                     registrationInfo.FirstName,
                     registrationInfo.LastName,
                     registrationInfo.BirthDate,
                     registrationInfo.InstitutionId,
-                    registrationInfo.Password);
+                    TemporaryPasswordGenerator.Generate()); // TODO: Store or return such that it can be printed and given to employee. Or generate in frontend.
                 await employeesStore.StoreAsync(employee);
             }
             return Ok(employeeId);
@@ -88,7 +83,7 @@ namespace JanKIS.API.Controllers
         [HttpPost("{employeeId}/login")]
         public async Task<IActionResult> Login([FromRoute] string employeeId, [FromBody] string password)
         {
-            var authenticationResult = await authenticationModule.AuthenticateAsync(employeeId, password);
+            var authenticationResult = await authenticationModule.AuthenticateEmployeeAsync(employeeId, password);
             if (!authenticationResult.IsAuthenticated)
                 return StatusCode((int) HttpStatusCode.Unauthorized, authenticationResult);
             return Ok(authenticationResult);

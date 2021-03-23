@@ -3,6 +3,11 @@ using JanKIS.API.Storage;
 
 namespace JanKIS.API.Models
 {
+    public static class SystemRoles
+    {
+        public static readonly Role Patient = new() {Name = "Patient", Permissions = new List<Permission>()};
+    }
+
     public class Role : IId
     {
         public string Id => Name;

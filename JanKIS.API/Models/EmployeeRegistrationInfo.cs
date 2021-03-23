@@ -9,15 +9,12 @@ namespace JanKIS.API.Models
             string firstName,
             string lastName,
             DateTime birthDate,
-            string institutionId,
-            string password)
+            string institutionId)
             : base(id, firstName, lastName, birthDate)
         {
             InstitutionId = institutionId;
-            Password = password;
         }
 
-        public string Password { get; set; }
         public string InstitutionId { get; set; }
     }
 }

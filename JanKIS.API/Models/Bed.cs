@@ -8,12 +8,4 @@
         public string UnavailabilityReason { get; set; }
         public string Note { get; set; }
     }
-
-    public enum BedState
-    {
-        Empty,
-        Occupied,
-        Reserved,
-        Unavailable
-    }
 }

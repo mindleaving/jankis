@@ -1,8 +1,7 @@
 ﻿namespace JanKIS.API.Models
 {
-    public class Meal : MealMenuItem
+    public class PatientServiceAudience : ServiceAudience
     {
         public string PatientId { get; set; }
-        public MealState State { get; set; }
     }
 }

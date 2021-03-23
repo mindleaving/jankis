@@ -26,23 +26,10 @@ namespace JanKIS.API.AccessManagement
             this.expirationTime = expirationTime;
         }
 
-        public async Task<string> BuildForUser(Employee employee)
+        public async Task<string> BuildForUser(PersonWithLogin person)
         {
-            IEnumerable<Claim> permissionClaims;
-            if (employee.IsPasswordChangeRequired)
-            {
-                // If password change is required, don't make any other claims than the user ID and name
-                permissionClaims = new List<Claim>();
-            }
-            else
-            {
-                var roles = await rolesStore.GetAllAsync();
-                var permissions = AggregatePermissions(
-                    employee.Roles,
-                    roles,
-                    employee.PermissionModifiers);
-                permissionClaims = permissions.Select(permission => new Claim(permission.ToString(), "true"));
-            }
+            var permissionClaims = await GetPermissionClaims(person);
+            var roleClaim = new Claim("roles", string.Join(",",person.Roles));
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -51,8 +38,9 @@ namespace JanKIS.API.AccessManagement
                 Issuer = "JanKIS",
                 Subject = new ClaimsIdentity(new[]
                 {
-                    new Claim("id", employee.Id),
-                    new Claim(ClaimTypes.Name, $"{employee.FirstName} {employee.LastName}")
+                    new Claim("id", person.Id),
+                    new Claim(ClaimTypes.Name, $"{person.FirstName} {person.LastName}"),
+                    roleClaim
                 }.Concat(permissionClaims)),
                 Expires = DateTime.UtcNow.Add(expirationTime),
                 SigningCredentials = new SigningCredentials(privateKey, SecurityAlgorithms.HmacSha256Signature)
@@ -61,6 +49,22 @@ namespace JanKIS.API.AccessManagement
             var serializedToken = tokenHandler.WriteToken(token);
 
             return serializedToken;
+        }
+
+        private async Task<IEnumerable<Claim>> GetPermissionClaims(PersonWithLogin person)
+        {
+            if (person.IsPasswordChangeRequired)
+            {
+                // If password change is required, don't make any other claims than the user ID and name
+                return new List<Claim>();
+            }
+
+            var roles = await rolesStore.GetAllAsync();
+            var permissions = AggregatePermissions(
+                person.Roles,
+                roles,
+                person.PermissionModifiers);
+            return permissions.Select(permission => new Claim(permission.ToString(), "true")).ToList();
         }
 
         private List<Permission> AggregatePermissions(
