@@ -4,6 +4,13 @@ export enum BedState {
     Reserved = "Reserved",
     Unavailable = "Unavailable"
 }
+export enum DietaryCharacteristic {
+    Vegetarian = "Vegetarian",
+    Vegan = "Vegan",
+    HighFiber = "HighFiber",
+    LowFiber = "LowFiber",
+    Soft = "Soft"
+}
 export enum MealState {
     Ordered = "Ordered",
     InPreparation = "InPreparation",
@@ -11,13 +18,6 @@ export enum MealState {
     DeliveredToPatient = "DeliveredToPatient",
     Cancelled = "Cancelled",
     Discarded = "Discarded"
-}
-export enum DietaryCharacteristic {
-    Vegetarian = "Vegetarian",
-    Vegan = "Vegan",
-    HighFiber = "HighFiber",
-    LowFiber = "LowFiber",
-    Soft = "Soft"
 }
 export enum MedicationDispensionState {
     Scheduled = "Scheduled",
@@ -32,9 +32,34 @@ export enum Permission {
     ChangeEmployeePermissions = "ChangeEmployeePermissions",
     ResetPasswords = "ResetPasswords",
     ViewAllBedStates = "ViewAllBedStates",
-    ViewWardBedStates = "ViewWardBedStates"
+    ViewWardBedStates = "ViewWardBedStates",
+    ManageDepartmentServices = "ManageDepartmentServices",
+    ManageDepartments = "ManageDepartments"
 }
 export enum PermissionModifierType {
     Grant = "Grant",
     Deny = "Deny"
+}
+export enum PersonType {
+    Employee = "Employee",
+    Patient = "Patient"
+}
+export enum ServiceAudienceType {
+    All = "All",
+    Role = "Role",
+    Employee = "Employee",
+    Patient = "Patient"
+}
+export enum ServiceParameterValueType {
+    Text = "Text",
+    Number = "Number"
+}
+export enum ServiceRequestState {
+    Requested = "Requested",
+    CancelledByRequester = "CancelledByRequester",
+    Declined = "Declined",
+    Accepted = "Accepted",
+    ReadyWhenYouAre = "ReadyWhenYouAre",
+    InProgress = "InProgress",
+    Fulfilled = "Fulfilled"
 }

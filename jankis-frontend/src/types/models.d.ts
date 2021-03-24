@@ -7,12 +7,34 @@ export namespace Models {
         bed: string;
     }
 
+    interface AllServiceAudience {
+        type: Enums.ServiceAudienceType;
+    }
+
+    interface AutocompleteCacheItem {
+        context: string;
+        value: string;
+    }
+
     interface Bed {
         state: Enums.BedState;
         roomId: string;
         patientId: string;
         unavailabilityReason: string;
         note: string;
+    }
+
+    interface BloodPressureObservation {
+        systolic: number;
+        diastolic: number;
+        id: string;
+        patientId: string;
+        type: string;
+    }
+
+    interface Department {
+        id: string;
+        name: string;
     }
 
     interface DischargeInfo {
@@ -29,9 +51,10 @@ export namespace Models {
 
     interface Employee {
         institutionId: string;
+        departmentIds: string[];
+        isPasswordChangeRequired: boolean;
         roles: string[];
         permissionModifiers: Models.PermissionModifier[];
-        isPasswordChangeRequired: boolean;
         id: string;
         firstName: string;
         lastName: string;
@@ -39,12 +62,16 @@ export namespace Models {
     }
 
     interface EmployeeRegistrationInfo {
-        password: string;
         institutionId: string;
         id: string;
         firstName: string;
         lastName: string;
         birthDate: Date;
+    }
+
+    interface EmployeeServiceAudience {
+        employeeId: string;
+        type: Enums.ServiceAudienceType;
     }
 
     interface HealthInsurance {
@@ -90,28 +117,20 @@ export namespace Models {
         dispensions: Models.MedicationDispension[];
     }
 
+    interface NumberServiceParameter {
+        value: number;
+        lowerLimit?: number | null;
+        upperLimit?: number | null;
+        name: string;
+        valueType: Enums.ServiceParameterValueType;
+    }
+
+    interface NumberServiceParameterResponse {
+        value: number;
+        valueType: Enums.ServiceParameterValueType;
+    }
+
     interface Observation {
-        id: string;
-        patientId: string;
-        type: string;
-    }
-
-    interface PulseObservation {
-        bpm: number;
-        location: string;
-        id: string;
-        patientId: string;
-        type: string;
-    }
-
-    interface AutocompleteCacheItem {
-        context: string;
-        value: string;
-    }
-
-    interface BloodPressureObservation {
-        systolic: number;
-        diastolic: number;
         id: string;
         patientId: string;
         type: string;
@@ -122,10 +141,26 @@ export namespace Models {
         admissionInfo: Models.AdmissionInfo;
         contactPersons: Models.Employee[];
         attachedEquipment: Models.MedicalEquipment[];
+        isPasswordChangeRequired: boolean;
+        roles: string[];
+        permissionModifiers: Models.PermissionModifier[];
         id: string;
         firstName: string;
         lastName: string;
         birthDate: Date;
+    }
+
+    interface PatientRegistrationInfo {
+        id: string;
+        firstName: string;
+        lastName: string;
+        birthDate: Date;
+        healthInsurance: Models.HealthInsurance;
+    }
+
+    interface PatientServiceAudience {
+        patientId: string;
+        type: Enums.ServiceAudienceType;
     }
 
     interface PermissionModifier {
@@ -140,10 +175,42 @@ export namespace Models {
         birthDate: Date;
     }
 
+    interface PersonReference {
+        type: Enums.PersonType;
+        id: string;
+    }
+
+    interface PersonWithLogin {
+        isPasswordChangeRequired: boolean;
+        roles: string[];
+        permissionModifiers: Models.PermissionModifier[];
+        id: string;
+        firstName: string;
+        lastName: string;
+        birthDate: Date;
+    }
+
+    interface PulseObservation {
+        bpm: number;
+        location: string;
+        id: string;
+        patientId: string;
+        type: string;
+    }
+
+    interface SystemRoles {
+        
+    }
+
     interface Role {
         id: string;
         name: string;
         permissions: Enums.Permission[];
+    }
+
+    interface RoleServiceAudience {
+        roleName: string;
+        type: Enums.ServiceAudienceType;
     }
 
     interface Room {
@@ -152,12 +219,46 @@ export namespace Models {
         beds: Models.Bed[];
     }
 
+    interface ServiceAudience {
+        type: Enums.ServiceAudienceType;
+    }
+
     interface ServiceDefinition {
-        
+        id: string;
+        name: string;
+        description: string;
+        parameters: Models.ServiceParameter[];
+        departmentId: string;
+        audience: Models.ServiceAudience[];
+    }
+
+    interface ServiceParameter {
+        name: string;
+        valueType: Enums.ServiceParameterValueType;
+    }
+
+    interface ServiceParameterResponse {
+        valueType: Enums.ServiceParameterValueType;
     }
 
     interface ServiceRequest {
-        
+        id: string;
+        serviceId: string;
+        requester: Models.PersonReference;
+        parameterResponses: { [key: string]: Models.ServiceParameterResponse };
+        state: Enums.ServiceRequestState;
+        timestamps: { [key: Enums.ServiceRequestState]: Date };
+    }
+
+    interface TextServiceParameter {
+        value: string;
+        name: string;
+        valueType: Enums.ServiceParameterValueType;
+    }
+
+    interface TextServiceParameterResponse {
+        value: string;
+        valueType: Enums.ServiceParameterValueType;
     }
 
     interface Ward {

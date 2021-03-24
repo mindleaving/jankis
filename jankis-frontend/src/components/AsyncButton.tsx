@@ -2,7 +2,7 @@ import React from "react"
 import Button from "react-bootstrap/esm/Button"
 
 interface AsyncButtonProps {
-    type: string;
+    type?: string;
     onClick?: () => void;
     variant?: string;
     isExecuting?: boolean;

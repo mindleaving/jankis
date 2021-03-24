@@ -1,6 +1,6 @@
 ﻿namespace JanKIS.API.Models
 {
-    public class NumberServiceParameter : SeriveParameter
+    public class NumberServiceParameter : ServiceParameter
     {
         public int Value { get; set; }
         public int? LowerLimit { get; set; }

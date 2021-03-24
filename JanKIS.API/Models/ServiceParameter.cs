@@ -2,8 +2,8 @@
 
 namespace JanKIS.API.Models
 {
-    [BsonKnownTypes(typeof(TextServiceParameter))]
-    public abstract class SeriveParameter
+    [BsonKnownTypes(typeof(TextServiceParameter), typeof(NumberServiceParameter))]
+    public abstract class ServiceParameter
     {
         public string Name { get; set; }
         public ServiceParameterValueType ValueType { get; set; }
