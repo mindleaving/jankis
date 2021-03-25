@@ -3,23 +3,28 @@ using System.Threading.Tasks;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JanKIS.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class RolesController : ControllerBase
     {
         private readonly IStore<Role> rolesStore;
-        private readonly IEmployeesStore employeesStore;
+        private readonly IPersonWithLoginStore<Employee> employeesStore;
+        private readonly IPersonWithLoginStore<Employee> patientsStore;
 
         public RolesController(
             IStore<Role> rolesStore,
-            IEmployeesStore employeesStore)
+            IPersonWithLoginStore<Employee> employeesStore,
+            IPersonWithLoginStore<Employee> patientsStore)
         {
             this.rolesStore = rolesStore;
             this.employeesStore = employeesStore;
+            this.patientsStore = patientsStore;
         }
 
         [HttpGet(nameof(Search))]
@@ -56,7 +61,13 @@ namespace JanKIS.API.Controllers
         [HttpDelete("{roleName}")]
         public async Task<IActionResult> DeleteRole([FromRoute] string roleName)
         {
+            var role = await rolesStore.GetByIdAsync(roleName);
+            if (role == null)
+                return Ok();
+            if (role.IsSystemRole)
+                return BadRequest("System-roles cannot be deleted");
             await employeesStore.RemoveRoleFromAllUsers(roleName);
+            await patientsStore.RemoveRoleFromAllUsers(roleName);
             await rolesStore.DeleteAsync(roleName);
             return Ok();
         }

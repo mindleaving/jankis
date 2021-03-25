@@ -1,21 +1,28 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using JanKIS.API.AccessManagement;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JanKIS.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class PatientsController : ControllerBase
     {
         private readonly IPatientStore patientsStore;
+        private readonly AuthenticationModule<Patient> authenticationModule;
 
-        public PatientsController(IPatientStore patientsStore)
+        public PatientsController(
+            IPatientStore patientsStore,
+            AuthenticationModule<Patient> authenticationModule)
         {
             this.patientsStore = patientsStore;
+            this.authenticationModule = authenticationModule;
         }
 
         [HttpGet("{patientId}")]
@@ -114,6 +121,30 @@ namespace JanKIS.API.Controllers
             return Ok();
         }
 
+        [HttpPost("{patientId}/login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login([FromRoute] string patientId, [FromBody] string password)
+        {
+            var authenticationResult = await authenticationModule.AuthenticateAsync(patientId, password);
+            if (!authenticationResult.IsAuthenticated)
+                return StatusCode((int) HttpStatusCode.Unauthorized, authenticationResult);
+            return Ok(authenticationResult);
+        }
 
+        [HttpPost("{patientId}/resetpassword")]
+        [Authorize(Policy = nameof(Permission.ResetPasswords))]
+        public async Task<IActionResult> ResetPassword([FromRoute] string patientId, [FromBody] string password)
+        {
+            await authenticationModule.ChangePasswordAsync(patientId, password, true);
+            return Ok();
+        }
+
+        [HttpPost("{patientId}/changepassword")]
+        [Authorize(Policy = SameUserRequirement.PolicyName)]
+        public async Task<IActionResult> ChangePassword([FromRoute] string patientId, [FromBody] string password)
+        {
+            await authenticationModule.ChangePasswordAsync(patientId, password);
+            return Ok();
+        }
     }
 }

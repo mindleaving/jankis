@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
 using JanKIS.API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JanKIS.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class MealServiceController : ControllerBase
     {
         [HttpGet("menu")]

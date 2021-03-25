@@ -50,6 +50,7 @@ export namespace Models {
     }
 
     interface Employee {
+        type: Enums.PersonType;
         institutionId: string;
         departmentIds: string[];
         isPasswordChangeRequired: boolean;
@@ -122,11 +123,13 @@ export namespace Models {
         lowerLimit?: number | null;
         upperLimit?: number | null;
         name: string;
+        description: string;
         valueType: Enums.ServiceParameterValueType;
     }
 
     interface NumberServiceParameterResponse {
         value: number;
+        parameterName: string;
         valueType: Enums.ServiceParameterValueType;
     }
 
@@ -137,6 +140,7 @@ export namespace Models {
     }
 
     interface Patient {
+        type: Enums.PersonType;
         healthInsurance: Models.HealthInsurance;
         admissionInfo: Models.AdmissionInfo;
         contactPersons: Models.Employee[];
@@ -181,6 +185,7 @@ export namespace Models {
     }
 
     interface PersonWithLogin {
+        type: Enums.PersonType;
         isPasswordChangeRequired: boolean;
         roles: string[];
         permissionModifiers: Models.PermissionModifier[];
@@ -234,10 +239,12 @@ export namespace Models {
 
     interface ServiceParameter {
         name: string;
+        description: string;
         valueType: Enums.ServiceParameterValueType;
     }
 
     interface ServiceParameterResponse {
+        parameterName: string;
         valueType: Enums.ServiceParameterValueType;
     }
 
@@ -253,11 +260,13 @@ export namespace Models {
     interface TextServiceParameter {
         value: string;
         name: string;
+        description: string;
         valueType: Enums.ServiceParameterValueType;
     }
 
     interface TextServiceParameterResponse {
         value: string;
+        parameterName: string;
         valueType: Enums.ServiceParameterValueType;
     }
 

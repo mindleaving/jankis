@@ -2,7 +2,7 @@ import { ServiceAudienceType } from "../types/enums.d";
 import { Models } from "../types/models";
 import { resolveText } from "./Globalizer";
 
-export const formatAudienceItem = (item: Models.ServiceAudience) => {
+export const formatServiceAudience = (item: Models.ServiceAudience) => {
     if(item.type === ServiceAudienceType.All) {
         return resolveText('ServiceAudienceType_All');
     }

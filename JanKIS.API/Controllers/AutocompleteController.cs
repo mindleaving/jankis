@@ -1,11 +1,13 @@
 ﻿using System.Threading.Tasks;
 using JanKIS.API.Storage;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JanKIS.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class AutocompleteController : ControllerBase
     {
         private readonly IAutocompleteCache autocompleteCache;

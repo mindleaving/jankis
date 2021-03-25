@@ -29,6 +29,7 @@ namespace JanKIS.API.AccessManagement
         public async Task<string> BuildForUser(PersonWithLogin person)
         {
             var permissionClaims = await GetPermissionClaims(person);
+            var personTypeClaim = new Claim("personType", person.Type.ToString());
             var roleClaim = new Claim("roles", string.Join(",",person.Roles));
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -40,6 +41,7 @@ namespace JanKIS.API.AccessManagement
                 {
                     new Claim("id", person.Id),
                     new Claim(ClaimTypes.Name, $"{person.FirstName} {person.LastName}"),
+                    personTypeClaim,
                     roleClaim
                 }.Concat(permissionClaims)),
                 Expires = DateTime.UtcNow.Add(expirationTime),

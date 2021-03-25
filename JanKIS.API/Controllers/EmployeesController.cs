@@ -12,16 +12,17 @@ namespace JanKIS.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class EmployeesController : ControllerBase
     {
-        private readonly IEmployeesStore employeesStore;
+        private readonly IPersonWithLoginStore<Employee> employeesStore;
         private readonly IReadonlyStore<Role> rolesStore;
-        private readonly AuthenticationModule authenticationModule;
+        private readonly AuthenticationModule<Employee> authenticationModule;
 
         public EmployeesController(
-            IEmployeesStore employeesStore, 
+            IPersonWithLoginStore<Employee> employeesStore, 
             IReadonlyStore<Role> rolesStore,
-            AuthenticationModule authenticationModule)
+            AuthenticationModule<Employee> authenticationModule)
         {
             this.employeesStore = employeesStore;
             this.rolesStore = rolesStore;
@@ -81,9 +82,10 @@ namespace JanKIS.API.Controllers
         }
 
         [HttpPost("{employeeId}/login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromRoute] string employeeId, [FromBody] string password)
         {
-            var authenticationResult = await authenticationModule.AuthenticateEmployeeAsync(employeeId, password);
+            var authenticationResult = await authenticationModule.AuthenticateAsync(employeeId, password);
             if (!authenticationResult.IsAuthenticated)
                 return StatusCode((int) HttpStatusCode.Unauthorized, authenticationResult);
             return Ok(authenticationResult);

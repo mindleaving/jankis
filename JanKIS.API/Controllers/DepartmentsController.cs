@@ -11,6 +11,7 @@ namespace JanKIS.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class DepartmentsController : ControllerBase
     {
         private readonly IStore<Department> departmentsStore;
@@ -91,25 +92,6 @@ namespace JanKIS.API.Controllers
         {
             var departmentServices = await servicesStore.SearchAsync(x => x.DepartmentId == departmentId, count, skip);
             return Ok(departmentServices);
-        }
-
-
-        [HttpPost("{departmentId}/services/{serviceId}/request")]
-        public async Task<IActionResult> RequestService([FromRoute] string departmentId, [FromRoute] string serviceId, [FromBody] ServiceRequest request)
-        {
-            // TODO: Move to ServiceController
-            if (serviceId != request.ServiceId)
-                return BadRequest("Service-ID of route doesn't match service-ID in request");
-            var service = await servicesStore.GetByIdAsync(serviceId);
-            if (service == null)
-                return NotFound();
-            if (departmentId != service.DepartmentId)
-                return NotFound(); // To be honest, this is an unnecessary restriction, because service-IDs must be globally unique and hence the department is of no relevance.
-            if (string.IsNullOrWhiteSpace(request.Id))
-                request.Id = Guid.NewGuid().ToString();
-            await serviceRequestsStore.StoreAsync(request);
-            // TODO: Distribute request through hub
-            return Ok(request.Id);
         }
     }
 }

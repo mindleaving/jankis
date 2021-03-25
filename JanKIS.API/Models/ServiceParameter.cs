@@ -6,6 +6,7 @@ namespace JanKIS.API.Models
     public abstract class ServiceParameter
     {
         public string Name { get; set; }
+        public string Description { get; set; }
         public ServiceParameterValueType ValueType { get; set; }
     }
 }

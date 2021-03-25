@@ -14,7 +14,6 @@ using Microsoft.Extensions.Hosting;
 using JanKIS.API.Workflow;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -45,7 +44,8 @@ namespace JanKIS.API
             services.AddScoped<IReadonlyStore<Role>, GenericReadonlyStore<Role>>();
             services.AddScoped<IStore<Role>, GenericStore<Role>>();
             services.AddScoped<IStore<Employee>, GenericStore<Employee>>();
-            services.AddScoped<IEmployeesStore, EmployeesStore>();
+            services.AddScoped<IPersonWithLoginStore<Employee>, UserStore<Employee>>();
+            services.AddScoped<IPersonWithLoginStore<Patient>, UserStore<Patient>>();
             services.AddScoped<IAutocompleteCache, AutocompleteCache>();
 
             services.AddHttpContextAccessor();
@@ -57,7 +57,8 @@ namespace JanKIS.API
                         options.SerializerSettings.Formatting = Formatting.None;
                     });
             SetupJwtTokenAuthentication(services);
-            services.AddScoped<AuthenticationModule>();
+            services.AddScoped<AuthenticationModule<Employee>>();
+            services.AddScoped<AuthenticationModule<Patient>>();
             services.AddScoped<IAuthorizationHandler, SameUserRequirementHandler>();
             services.AddAuthorization(
                 options =>

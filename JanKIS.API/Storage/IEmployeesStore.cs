@@ -4,55 +4,21 @@ using MongoDB.Driver;
 
 namespace JanKIS.API.Storage
 {
-    public interface IEmployeesStore : IStore<Employee>
+    public class UserStore<T> : GenericStore<T>, IPersonWithLoginStore<T> where T : PersonWithLogin
     {
-        Task<StorageResult> ChangePasswordAsync(string employeeId, string passwordBase64, bool changePasswordOnNextLogin);
-        Task<StorageResult> AddRole(string employeeId, string roleId);
-        Task<StorageResult> RemoveRole(string employeeId, string roleId);
-        Task<StorageResult> AddPermission(string employeeId, PermissionModifier permission);
-        Task<StorageResult> RemovePermission(string employeeId, Permission permission);
-        Task RemoveRoleFromAllUsers(string roleName);
-    }
-
-    public class StorageResult
-    {
-        private StorageResult(
-            bool isSuccess,
-            StoreErrorType? errorType)
-        {
-            IsSuccess = isSuccess;
-            ErrorType = errorType;
-        }
-
-        public static StorageResult Success()
-        {
-            return new StorageResult(true, null);
-        }
-
-        public static StorageResult Error(StoreErrorType errorType)
-        {
-            return new StorageResult(false, errorType);
-        }
-
-        public bool IsSuccess { get; }
-        public StoreErrorType? ErrorType { get; }
-    }
-
-    public class EmployeesStore : GenericStore<Employee>, IEmployeesStore
-    {
-        public EmployeesStore(IMongoDatabase mongoDatabase)
+        public UserStore(IMongoDatabase mongoDatabase)
             : base(mongoDatabase)
         {
         }
 
         public async Task<StorageResult> ChangePasswordAsync(
-            string employeeId,
+            string userId,
             string passwordBase64,
             bool changePasswordOnNextLogin)
         {
             var result = await collection.UpdateOneAsync(
-                x => x.Id == employeeId, 
-                Builders<Employee>.Update
+                x => x.Id == userId, 
+                Builders<T>.Update
                     .Set(x => x.PasswordHash, passwordBase64)
                     .Set(x => x.IsPasswordChangeRequired, changePasswordOnNextLogin));
             if(!result.IsAcknowledged)
@@ -63,14 +29,14 @@ namespace JanKIS.API.Storage
         }
 
         public async Task<StorageResult> AddRole(
-            string employeeId,
+            string userId,
             string roleId)
         {
-            if(await collection.Find(x => x.Id == employeeId && x.Roles.Contains(roleId)).AnyAsync())
+            if(await collection.Find(x => x.Id == userId && x.Roles.Contains(roleId)).AnyAsync())
                 return StorageResult.Success();
             var result = await collection.UpdateOneAsync(
-                x => x.Id == employeeId,
-                Builders<Employee>.Update
+                x => x.Id == userId,
+                Builders<T>.Update
                     .Push(x => x.Roles, roleId));
             if(!result.IsAcknowledged)
                 return StorageResult.Error(StoreErrorType.UnknownDatabaseError);
@@ -80,14 +46,14 @@ namespace JanKIS.API.Storage
         }
 
         public async Task<StorageResult> RemoveRole(
-            string employeeId,
+            string userId,
             string roleId)
         {
-            if(await collection.Find(x => x.Id == employeeId && !x.Roles.Contains(roleId)).AnyAsync())
+            if(await collection.Find(x => x.Id == userId && !x.Roles.Contains(roleId)).AnyAsync())
                 return StorageResult.Success();
             var result = await collection.UpdateOneAsync(
-                x => x.Id == employeeId,
-                Builders<Employee>.Update
+                x => x.Id == userId,
+                Builders<T>.Update
                     .Pull(x => x.Roles, roleId));
             if(!result.IsAcknowledged)
                 return StorageResult.Error(StoreErrorType.UnknownDatabaseError);
@@ -97,12 +63,12 @@ namespace JanKIS.API.Storage
         }
 
         public async Task<StorageResult> AddPermission(
-            string employeeId,
+            string userId,
             PermissionModifier permission)
         {
             var result = await collection.UpdateOneAsync(
-                x => x.Id == employeeId,
-                Builders<Employee>.Update
+                x => x.Id == userId,
+                Builders<T>.Update
                     .Push(x => x.PermissionModifiers, permission));
             if(!result.IsAcknowledged)
                 return StorageResult.Error(StoreErrorType.UnknownDatabaseError);
@@ -112,12 +78,12 @@ namespace JanKIS.API.Storage
         }
 
         public async Task<StorageResult> RemovePermission(
-            string employeeId,
+            string userId,
             Permission permission)
         {
             var result = await collection.UpdateOneAsync(
-                x => x.Id == employeeId,
-                Builders<Employee>.Update
+                x => x.Id == userId,
+                Builders<T>.Update
                     .PullFilter(x => x.PermissionModifiers, x => x.Permission == permission));
             if(!result.IsAcknowledged)
                 return StorageResult.Error(StoreErrorType.UnknownDatabaseError);
@@ -130,7 +96,7 @@ namespace JanKIS.API.Storage
         {
             await collection.UpdateManyAsync(
                 x => true,
-                Builders<Employee>.Update.Pull(x => x.Roles, roleName));
+                Builders<T>.Update.Pull(x => x.Roles, roleName));
         }
     }
 }

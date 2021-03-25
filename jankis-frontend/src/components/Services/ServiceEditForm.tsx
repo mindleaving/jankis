@@ -4,12 +4,11 @@ import { v4 as uuid } from 'uuid';
 import { resolveText } from '../../helpers/Globalizer';
 import { NotificationManager } from 'react-notifications';
 import { apiClient } from '../../communication/ApiClient';
-import { Button, Col, Form, FormControl, FormGroup, FormLabel, InputGroup, Row } from 'react-bootstrap';
+import { Col, Form, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { AsyncButton } from '../AsyncButton';
 import { RowFormGroup } from '../RowFormGroup';
 import { ListFormControl } from '../ListFormControl';
-import { ServiceAudienceType } from '../../types/enums.d';
-import { formatAudienceItem } from '../../helpers/Formatters';
+import { formatServiceAudience } from '../../helpers/Formatters';
 import { ServiceParameterEditForm } from './ServiceParameterEditForm';
 import { ServiceAudienceEditForm } from './ServiceAudienceEditForm';
 
@@ -21,7 +20,7 @@ export const ServiceEditForm = (props: ServiceEditFormProps) => {
     const [ name, setName ] = useState<string>();
     const [ description, setDescription ] = useState<string>();
     const [ selectedDepartment, setSelectedDepartment ] = useState<Models.Department>();
-    const [ parameters, setParameters ] = useState<Models.SeriveParameter[]>([]);
+    const [ parameters, setParameters ] = useState<Models.ServiceParameter[]>([]);
     const [ audience, setAudience ] = useState<Models.ServiceAudience[]>([]);
 
     const [ departments, setDepartments ] = useState<Models.Department[]>([]);
@@ -65,7 +64,7 @@ export const ServiceEditForm = (props: ServiceEditFormProps) => {
         }
     }
 
-    const addParameter = (parameter: Models.SeriveParameter) => {
+    const addParameter = (parameter: Models.ServiceParameter) => {
         if(parameters.some(x => x.name === parameter.name)) {
             return;
         }
@@ -125,8 +124,8 @@ export const ServiceEditForm = (props: ServiceEditFormProps) => {
             <Row>
                 <ListFormControl
                     items={audience}
-                    idFunc={formatAudienceItem}
-                    displayFunc={formatAudienceItem}
+                    idFunc={formatServiceAudience}
+                    displayFunc={formatServiceAudience}
                     removeItem={removeAudience}
                 />
             </Row>

@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace JanKIS.API.Models
 {
-    public class PersonWithLogin : Person
+    public abstract class PersonWithLogin : Person
     {
         public PersonWithLogin(
             string id,
@@ -21,6 +21,8 @@ namespace JanKIS.API.Models
             Roles = new List<string>();
             PermissionModifiers = new List<PermissionModifier>();
         }
+
+        public abstract PersonType Type { get; }
 
         #region Login-information
         [JsonIgnore]

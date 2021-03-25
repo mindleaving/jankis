@@ -5,6 +5,7 @@ namespace JanKIS.API.Models
     [BsonKnownTypes(typeof(TextServiceParameterResponse), typeof(NumberServiceParameterResponse))]
     public abstract class ServiceParameterResponse
     {
+        public string ParameterName { get; set; }
         public ServiceParameterValueType ValueType { get; set; }
     }
 }

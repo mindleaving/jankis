@@ -4,9 +4,12 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { resolveText } from '../helpers/Globalizer';
+import { OrderDirection } from '../types/frontendTypes';
 
 interface PagedTableProps {
-    onPageChanged: (pageIndex: number, entriesPerPage: number) => Promise<void>;
+    onPageChanged: (pageIndex: number, entriesPerPage: number, orderBy?: string, orderDirection?: OrderDirection) => Promise<void>;
+    orderBy?: string;
+    orderDirection?: OrderDirection;
     hasCreateNewButton?: boolean;
     onCreateNew?: () => void;
     bordered?: boolean;
@@ -20,6 +23,8 @@ export const PagedTable = (props: PropsWithChildren<PagedTableProps>) => {
     const [ pageIndex, setPageIndex ] = useState<number>(0);
 
     const onPageChanged = props.onPageChanged;
+    const orderBy = props.orderBy;
+    const orderDirection = props.orderDirection;
     useEffect(() => {
         setPageIndex(0);
     }, [ onPageChanged, entriesPerPage ]);
@@ -27,13 +32,13 @@ export const PagedTable = (props: PropsWithChildren<PagedTableProps>) => {
         const loadItems = async () => {
             //setIsLoading(true);
             try {
-                await onPageChanged(pageIndex, entriesPerPage);
+                await onPageChanged(pageIndex, entriesPerPage, orderBy, orderDirection);
             } finally {
                 setIsLoading(false);
             }
         }
         loadItems();
-    }, [ onPageChanged, pageIndex, entriesPerPage ]);
+    }, [ onPageChanged, pageIndex, entriesPerPage, orderBy, orderDirection ]);
 
     const gotoPreviousPage = () => {
         if(pageIndex === 0) return;
