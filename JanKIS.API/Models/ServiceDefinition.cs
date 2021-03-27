@@ -9,7 +9,7 @@ namespace JanKIS.API.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public List<ServiceParameter> Parameters { get; set; }
-        public string DepartmentId { get; set; }
         public List<ServiceAudience> Audience { get; set; }
+        public string DepartmentId { get; set; }
     }
 }

@@ -12,10 +12,13 @@ import { formatServiceAudience } from '../../helpers/Formatters';
 import { ServiceParameterEditForm } from './ServiceParameterEditForm';
 import { ServiceAudienceEditForm } from './ServiceAudienceEditForm';
 
-interface ServiceEditFormProps {}
+interface ServiceEditFormProps {
+    serviceId?: string;
+}
 
 export const ServiceEditForm = (props: ServiceEditFormProps) => {
 
+    const [ isLoading, setIsLoading ] = useState<boolean>(true);
     const [ isStoring, setIsStoring ] = useState<boolean>(false);
     const [ name, setName ] = useState<string>();
     const [ description, setDescription ] = useState<string>();
@@ -25,6 +28,28 @@ export const ServiceEditForm = (props: ServiceEditFormProps) => {
 
     const [ departments, setDepartments ] = useState<Models.Department[]>([]);
 
+    const serviceId = props.serviceId;
+    useEffect(() => {
+        if(!serviceId) return;
+        if(departments.length === 0) return;
+        const loadService = async () => {
+            try {
+                setIsLoading(true);
+                const response = await apiClient.get(`api/services/${serviceId}`, {});
+                const service = await response.json() as Models.ServiceDefinition;
+                setName(service.name);
+                setDescription(service.description);
+                setSelectedDepartment(departments.find(x => x.id === service.departmentId));
+                setParameters(service.parameters);
+                setAudience(service.audience);
+            } catch(error) {
+                NotificationManager.error(error.message, resolveText('Service_CouldNotLoad'));
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadService();
+    }, [ serviceId, departments ]);
     useEffect(() => {
         const loadDepartments = async () => {
             try {
@@ -81,6 +106,9 @@ export const ServiceEditForm = (props: ServiceEditFormProps) => {
         setAudience(audience.filter(x => x !== item));
     }
 
+    if(isLoading) {
+        return (<h1>{resolveText('Loading...')}</h1>);
+    }
     return (
         <Form className="needs-validation was-validated" onSubmit={store}>
             <RowFormGroup required

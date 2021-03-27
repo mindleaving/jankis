@@ -32,9 +32,26 @@ export namespace Models {
         type: string;
     }
 
+    interface Consumable {
+        id: string;
+        name: string;
+        stockStates: Models.StockState[];
+    }
+
+    interface ConsumableOrder {
+        consumableId: string;
+        requester: Models.PersonReference;
+        quantity: number;
+        preferredSources: Models.LocationReference[];
+        note: string;
+        state: Enums.OrderState;
+        timestamps: { [key: Enums.OrderState]: Date };
+    }
+
     interface Department {
         id: string;
         name: string;
+        parentDepartment: string;
     }
 
     interface DischargeInfo {
@@ -85,6 +102,16 @@ export namespace Models {
         wards: Models.Ward[];
     }
 
+    interface InstitutionPolicy {
+        id: string;
+        usersFromSameDepartmentCanChangeServiceRequests: boolean;
+    }
+
+    interface LocationReference {
+        type: Enums.LocationType;
+        id: string;
+    }
+
     interface Meal {
         patientId: string;
         state: Enums.MealState;
@@ -118,19 +145,27 @@ export namespace Models {
         dispensions: Models.MedicationDispension[];
     }
 
+    interface NewsItem {
+        id: string;
+        publishTimestamp: Date;
+        title: string;
+        summary: string;
+        content: string;
+    }
+
     interface NumberServiceParameter {
+        valueType: Enums.ServiceParameterValueType;
         value: number;
         lowerLimit?: number | null;
         upperLimit?: number | null;
         name: string;
         description: string;
-        valueType: Enums.ServiceParameterValueType;
     }
 
     interface NumberServiceParameterResponse {
+        valueType: Enums.ServiceParameterValueType;
         value: number;
         parameterName: string;
-        valueType: Enums.ServiceParameterValueType;
     }
 
     interface Observation {
@@ -143,7 +178,7 @@ export namespace Models {
         type: Enums.PersonType;
         healthInsurance: Models.HealthInsurance;
         admissionInfo: Models.AdmissionInfo;
-        contactPersons: Models.Employee[];
+        contactPersons: Models.PersonReference[];
         attachedEquipment: Models.MedicalEquipment[];
         isPasswordChangeRequired: boolean;
         roles: string[];
@@ -203,6 +238,19 @@ export namespace Models {
         type: string;
     }
 
+    interface Resource {
+        id: string;
+        name: string;
+        location: Models.LocationReference;
+        groupId?: string;
+    }
+
+    interface ResourceGroup {
+        id: string;
+        name: string;
+        parentGroup?: string;
+    }
+
     interface SystemRoles {
         
     }
@@ -211,6 +259,7 @@ export namespace Models {
         id: string;
         name: string;
         permissions: Enums.Permission[];
+        isSystemRole: boolean;
     }
 
     interface RoleServiceAudience {
@@ -233,19 +282,31 @@ export namespace Models {
         name: string;
         description: string;
         parameters: Models.ServiceParameter[];
-        departmentId: string;
         audience: Models.ServiceAudience[];
+        departmentId: string;
     }
 
     interface ServiceParameter {
+        valueType: Enums.ServiceParameterValueType;
         name: string;
         description: string;
+    }
+
+    interface PatientServiceParameter {
         valueType: Enums.ServiceParameterValueType;
+        name: string;
+        description: string;
     }
 
     interface ServiceParameterResponse {
-        parameterName: string;
         valueType: Enums.ServiceParameterValueType;
+        parameterName: string;
+    }
+
+    interface PatientServiceParameterResponse {
+        valueType: Enums.ServiceParameterValueType;
+        patientId: string;
+        parameterName: string;
     }
 
     interface ServiceRequest {
@@ -253,26 +314,52 @@ export namespace Models {
         serviceId: string;
         requester: Models.PersonReference;
         parameterResponses: { [key: string]: Models.ServiceParameterResponse };
+        note: string;
         state: Enums.ServiceRequestState;
         timestamps: { [key: Enums.ServiceRequestState]: Date };
     }
 
+    interface Stock {
+        id: string;
+        location: Models.LocationReference;
+        departmentId: string;
+    }
+
+    interface StockState {
+        stockId: string;
+        quantity: number;
+        isOrderable: boolean;
+        isUnlimitedOrderable: boolean;
+        orderableBy: Models.ServiceAudience[];
+    }
+
     interface TextServiceParameter {
+        valueType: Enums.ServiceParameterValueType;
         value: string;
         name: string;
         description: string;
-        valueType: Enums.ServiceParameterValueType;
     }
 
     interface TextServiceParameterResponse {
+        valueType: Enums.ServiceParameterValueType;
         value: string;
         parameterName: string;
-        valueType: Enums.ServiceParameterValueType;
     }
 
     interface Ward {
         id: string;
         institutionId: string;
         rooms: Models.Room[];
+    }
+
+    export namespace Subscriptions {
+        interface ServiceSubscription {
+            serviceId: string;
+            employeeId: string;
+        }
+    
+        interface SubscriptionBase {
+            employeeId: string;
+        }
     }
 }

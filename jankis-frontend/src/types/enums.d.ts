@@ -4,12 +4,25 @@ export enum BedState {
     Reserved = "Reserved",
     Unavailable = "Unavailable"
 }
+export enum OrderState {
+    Ordered = "Ordered",
+    Accepted = "Accepted",
+    Declined = "Declined",
+    Delivered = "Delivered",
+    CancelledByRequester = "CancelledByRequester"
+}
 export enum DietaryCharacteristic {
     Vegetarian = "Vegetarian",
     Vegan = "Vegan",
     HighFiber = "HighFiber",
     LowFiber = "LowFiber",
     Soft = "Soft"
+}
+export enum LocationType {
+    Room = "Room",
+    Ward = "Ward",
+    Department = "Department",
+    External = "External"
 }
 export enum MealState {
     Ordered = "Ordered",
@@ -34,7 +47,9 @@ export enum Permission {
     ViewAllBedStates = "ViewAllBedStates",
     ViewWardBedStates = "ViewWardBedStates",
     ManageDepartmentServices = "ManageDepartmentServices",
-    ManageDepartments = "ManageDepartments"
+    ManageDepartments = "ManageDepartments",
+    ViewResources = "ViewResources",
+    ModifyResources = "ModifyResources"
 }
 export enum PermissionModifierType {
     Grant = "Grant",
@@ -52,7 +67,8 @@ export enum ServiceAudienceType {
 }
 export enum ServiceParameterValueType {
     Text = "Text",
-    Number = "Number"
+    Number = "Number",
+    Patient = "Patient"
 }
 export enum ServiceRequestState {
     Requested = "Requested",

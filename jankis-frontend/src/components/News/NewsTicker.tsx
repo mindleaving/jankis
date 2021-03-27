@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import NewsItemFetcher from '../../helpers/NewsItemFetcher';
+import { Models } from '../../types/models';
 
 interface NewsTickerProps {
     scope: string;
@@ -9,7 +10,7 @@ interface NewsTickerProps {
 export const NewsTicker = (props: NewsTickerProps) => {
 
     const newsItemFetcher = new NewsItemFetcher(props.scope);
-    const [items, setItems] = useState<Models.NewsItem>([]);
+    const [items, setItems] = useState<Models.NewsItem[]>([]);
     const [hasMore, setHasMore] = useState<boolean>(true);
 
     const fetchMoreNewsItems = async () => {

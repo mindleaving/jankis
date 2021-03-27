@@ -23,6 +23,8 @@ namespace JanKIS.API.Models
         public string ServiceId { get; set; }
         public PersonReference Requester { get; set; }
         public Dictionary<string, ServiceParameterResponse> ParameterResponses { get; set; }
+        public string Note { get; set; }
+
         public ServiceRequestState State { get; set; }
         public Dictionary<ServiceRequestState, DateTime> Timestamps { get; set; }
 

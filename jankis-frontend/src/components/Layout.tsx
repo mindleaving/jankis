@@ -29,7 +29,7 @@ export const Layout = (props: LayoutProps) => {
         <>
             <NotificationContainer />
             <Navbar bg="light" expand="md" sticky="top">
-                <Navbar.Brand onClick={() => history.push('/')}>Doctor's To-Do</Navbar.Brand>
+                <Navbar.Brand onClick={() => history.push('/')}>JanKIS</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     {userMenu}

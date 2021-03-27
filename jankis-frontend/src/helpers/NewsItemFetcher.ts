@@ -1,3 +1,5 @@
+import { Models } from "../types/models";
+
 export default class NewsItemFetcher {
     scope: string;
 
@@ -5,7 +7,7 @@ export default class NewsItemFetcher {
         this.scope = scope;        
     }
     
-    fetch = async (skip: number) => {
-        
+    fetch = async (skip: number): Promise<Models.NewsItem[]> => {
+        return [];
     }
 }

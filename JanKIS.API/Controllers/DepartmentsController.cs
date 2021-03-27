@@ -34,6 +34,16 @@ namespace JanKIS.API.Controllers
             this.serviceRequestsStore = serviceRequestsStore;
         }
 
+        [HttpGet(nameof(Hierarchy))]
+        public async Task<IActionResult> Hierarchy()
+        {
+            var departments = await departmentsStore.GetAllAsync();
+            throw new NotImplementedException();
+            //var hierarchy = TODO;
+            //return Ok(hierarchy);
+        }
+
+
         [HttpGet]
         public async Task<IActionResult> GetMany(int? count = null, int? skip = null, string orderBy = null)
         {

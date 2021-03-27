@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormControl } from 'react-bootstrap';
-import { ServiceParameterValueType } from '../../types/enums';
+import { ServiceParameterValueType } from '../../types/enums.d';
 import { Models } from '../../types/models';
 
 interface ServiceParameterResponseFormControlProps {

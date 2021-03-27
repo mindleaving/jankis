@@ -3,6 +3,7 @@
     public enum ServiceParameterValueType
     {
         Text,
-        Number
+        Number,
+        Patient
     }
 }

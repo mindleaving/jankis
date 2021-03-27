@@ -17,6 +17,8 @@
         // Service provider
         ManageDepartmentServices,
 
-        ManageDepartments
+        ManageDepartments,
+        ViewResources,
+        ModifyResources
     }
 }

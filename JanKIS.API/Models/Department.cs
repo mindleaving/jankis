@@ -6,5 +6,6 @@ namespace JanKIS.API.Models
     {
         public string Id { get; }
         public string Name { get; set; }
+        public string ParentDepartment { get; set; }
     }
 }
