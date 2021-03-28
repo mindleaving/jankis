@@ -42,7 +42,7 @@ export namespace Models {
         consumableId: string;
         requester: Models.PersonReference;
         quantity: number;
-        preferredSources: Models.LocationReference[];
+        preferredSources: string[];
         note: string;
         state: Enums.OrderState;
         timestamps: { [key: Enums.OrderState]: Date };

@@ -6,6 +6,8 @@ interface RowFormGroupProps {
     as?: ElementType<any>;
     type?: string;
     value: any;
+    min?: number,
+    max?: number,
     onChange: (changedValue: any) => void;
     disabled?: boolean;
     required?: boolean;
@@ -22,6 +24,8 @@ export const RowFormGroup = (props: RowFormGroupProps) => {
                     as={props.as}
                     type={props.type}
                     value={props.value}
+                    min={props.min}
+                    max={props.max}
                     onChange={(e:any) => props.onChange(e.target.value)}
                     disabled={props.disabled}
                 />

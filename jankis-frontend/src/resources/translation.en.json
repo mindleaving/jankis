@@ -59,5 +59,13 @@
     "Employee_IDTaken": "ID is taken",
 
     "Role_Name": "Name",
-    "Role_Permissions": "Permissions"
+    "Role_Permissions": "Permissions",
+
+    "QRCodeModal_Title": "Scan QR Code",
+    "QRCodeModal_PleaseScanQRCodes": "Please scan QR codes",
+    "QRCodeModal_SelectQRCodeType": "Select the QR code type:",
+    "QRCodeModal_SelectedQRCodeType": "QR code type",
+    "QRCodeType_Patient": "Patient",
+    "QRCodeType_Medication": "Medication",
+    "QRCodeType_Resource": "Resource"
 }

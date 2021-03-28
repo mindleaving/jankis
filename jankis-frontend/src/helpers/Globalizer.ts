@@ -1,5 +1,5 @@
 import DE from '../resources/translation.de.json';
-import EN from '../resources/translation.de.json';
+import EN from '../resources/translation.en.json';
 import DK from '../resources/translation.dk.json';
 
 class Globalizer {

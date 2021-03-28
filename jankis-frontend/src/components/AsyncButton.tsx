@@ -3,6 +3,7 @@ import Button from "react-bootstrap/esm/Button"
 
 interface AsyncButtonProps {
     type?: string;
+    form?: string;
     onClick?: () => void;
     variant?: string;
     isExecuting?: boolean;
@@ -16,6 +17,7 @@ export const AsyncButton = (props: AsyncButtonProps) => {
     return (
         <Button
             type={props.type}
+            form={props.form}
             className={props.className}
             variant={props.variant}
             onClick={props.onClick}

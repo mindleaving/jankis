@@ -2,7 +2,7 @@ import React from 'react';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import { useHistory } from 'react-router-dom';
-import { resolveText } from '../helpers/Globalizer';
+import { resolveText } from '../../helpers/Globalizer';
 
 interface RegistrationMenuProps {}
 
