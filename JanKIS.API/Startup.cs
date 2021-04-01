@@ -47,6 +47,7 @@ namespace JanKIS.API
             services.AddScoped<IPersonWithLoginStore<Employee>, UserStore<Employee>>();
             services.AddScoped<IPersonWithLoginStore<Patient>, UserStore<Patient>>();
             services.AddScoped<IAutocompleteCache, AutocompleteCache>();
+            services.AddScoped<IStore<Contact>, GenericStore<Contact>>();
 
             services.AddHttpContextAccessor();
             services.AddControllers()

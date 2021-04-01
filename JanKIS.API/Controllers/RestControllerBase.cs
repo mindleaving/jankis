@@ -40,6 +40,8 @@ namespace JanKIS.API.Controllers
         [HttpGet(nameof(Search))]
         public virtual async Task<IActionResult> Search([FromQuery] string searchText, [FromQuery] int? count = null, [FromQuery] int? skip = null)
         {
+            if (searchText == null)
+                return BadRequest("No search text specified");
             var searchTerms = SearchTermSplitter.SplitAndToLower(searchText);
             var searchExpression = BuildSearchExpression(searchTerms);
             var items = await store.SearchAsync(searchExpression, count, skip);
@@ -65,6 +67,6 @@ namespace JanKIS.API.Controllers
 
         protected abstract Expression<Func<T, object>> BuildOrderByExpression(string orderBy);
         protected abstract Expression<Func<T,bool>> BuildSearchExpression(string[] searchTerms);
-        protected abstract IEnumerable<Resource> PrioritizeItems(List<T> items);
+        protected abstract IEnumerable<T> PrioritizeItems(List<T> items);
     }
 }

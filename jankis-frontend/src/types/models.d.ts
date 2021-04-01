@@ -48,6 +48,13 @@ export namespace Models {
         timestamps: { [key: Enums.OrderState]: Date };
     }
 
+    interface Contact {
+        id: string;
+        name: string;
+        phoneNumber: string;
+        email: string;
+    }
+
     interface Department {
         id: string;
         name: string;
@@ -321,6 +328,7 @@ export namespace Models {
 
     interface Stock {
         id: string;
+        name: string;
         location: Models.LocationReference;
         departmentId: string;
     }
