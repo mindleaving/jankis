@@ -6,7 +6,7 @@ import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { Models } from '../../types/models';
 import { NotificationManager } from 'react-notifications';
 import { v4 as uuid } from 'uuid';
-import { LocationType } from '../../types/enums';
+import { LocationType } from '../../types/enums.d';
 import { RowFormGroup } from '../../components/RowFormGroup';
 import Form from 'react-bootstrap/esm/Form';
 import { AsyncButton } from '../../components/AsyncButton';
@@ -35,6 +35,7 @@ export const ResourceEditPage = (props: ResourceEditPageProps) => {
         setIsLoading(true);
         const loadConsumable = buildLoadObjectFunc<Models.Resource>(
             `api/consumables/${matchedId}`,
+            {},
             resolveText('Consumable_CouldNotLoad'),
             consumable => {
                 setName(consumable.name);

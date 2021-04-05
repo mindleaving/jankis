@@ -30,10 +30,14 @@ namespace JanKIS.API.Controllers
         }
 
         [HttpGet]
-        public virtual async Task<IActionResult> GetMany([FromQuery] int? count = null, [FromQuery] int? skip = null, [FromQuery] string orderBy = null)
+        public virtual async Task<IActionResult> GetMany(
+            [FromQuery] int? count = null,
+            [FromQuery] int? skip = null,
+            [FromQuery] string orderBy = null,
+            [FromQuery] OrderDirection? orderDirection = null)
         {
             var orderByExpression = BuildOrderByExpression(orderBy);
-            var items = await store.GetMany(count, skip, orderByExpression);
+            var items = await store.GetMany(count, skip, orderByExpression, orderDirection ?? OrderDirection.Ascending);
             return Ok(items);
         }
 

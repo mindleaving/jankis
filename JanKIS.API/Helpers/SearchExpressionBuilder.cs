@@ -21,5 +21,12 @@ namespace JanKIS.API.Helpers
             var result = Expression.Lambda<Func<T,bool>>(expression, selector.Parameters[0]);
             return result;
         }
+
+        public static Expression<Func<T, bool>> And<T>(
+            Expression<Func<T, bool>> left,
+            Expression<Func<T, bool>> right)
+        {
+            return Expression.Lambda<Func<T,bool>>(Expression.AndAlso(left, right), left.Parameters[0]);
+        }
     }
 }

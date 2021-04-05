@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace JanKIS.API.Models
 {
@@ -16,14 +15,9 @@ namespace JanKIS.API.Models
             : base(id, firstName, lastName, birthDate, salt, passwordHash)
         {
             HealthInsurance = healthInsurance;
-            ContactPersons = new List<PersonReference>();
-            AttachedEquipment = new List<MedicalEquipment>();
         }
 
         public override PersonType Type => PersonType.Patient;
         public HealthInsurance HealthInsurance { get; set; }
-        public AdmissionInfo AdmissionInfo { get; set; }
-        public List<PersonReference> ContactPersons { get; }
-        public List<MedicalEquipment> AttachedEquipment { get; }
     }
 }

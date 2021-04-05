@@ -3,19 +3,21 @@ import { NoficationManager } from 'react-notifications';
 
 export const buildLoadObjectFunc = <T extends unknown>(
     apiPath: string,
+    params: { [key:string]: string } = {},
     errorText: string,
     onItemLoaded: (item: T) => void,
     onFinally?: () => void) => {
-    return async () => await loadObject(apiPath, errorText, onItemLoaded, onFinally);
+    return async () => await loadObject(apiPath, params, errorText, onItemLoaded, onFinally);
 }
 export const loadObject = async <T extends unknown>(
     apiPath: string,
+    params: { [key:string]: string } = {},
     errorText: string,
     onItemLoaded: (item: T) => void,
     onFinally?: () => void
 ) => {
     try {
-        const response = await apiClient.get(apiPath, {});
+        const response = await apiClient.get(apiPath, params);
         const item = await response.json() as T;
         onItemLoaded(item);
 

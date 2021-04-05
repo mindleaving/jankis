@@ -14,13 +14,4 @@ namespace JanKIS.API.Models
         public OrderState State { get; set; }
         public Dictionary<OrderState, DateTime> Timestamps { get; set; }
     }
-
-    public enum OrderState
-    {
-        Ordered,
-        Accepted,
-        Declined,
-        Delivered,
-        CancelledByRequester
-    }
 }

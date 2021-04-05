@@ -1,7 +1,23 @@
 import * as Enums from './enums.d';
 
 export namespace Models {
+    interface Admission {
+        id: string;
+        patientId: string;
+        healthInsurance: Models.HealthInsurance;
+        admissionInfo: Models.AdmissionInfo;
+        isReadmission: boolean;
+        medicationSchedule: Models.MedicationSchedule;
+        attachedEquipment: Models.AttachedEquipment[];
+        observations: Models.Observation[];
+        diagnosticTestResults: Models.DiagnosticTestResult[];
+        notes: Models.PatientNote[];
+        dischargeInfo: Models.DischargeInfo;
+        contactPersons: Models.PersonReference[];
+    }
+
     interface AdmissionInfo {
+        admissionTime: Date;
         ward: string;
         room: string;
         bed: string;
@@ -9,6 +25,19 @@ export namespace Models {
 
     interface AllServiceAudience {
         type: Enums.ServiceAudienceType;
+    }
+
+    interface AttachedEquipment {
+        equipment: Models.MedicalEquipment;
+        attachmentTime: Date;
+        detachmentTime?: Date | null;
+    }
+
+    interface AuthenticationResult {
+        isAuthenticated: boolean;
+        user?: Models.PersonWithLogin;
+        accessToken?: string;
+        error: Enums.AuthenticationErrorType;
     }
 
     interface AutocompleteCacheItem {
@@ -29,7 +58,21 @@ export namespace Models {
         diastolic: number;
         id: string;
         patientId: string;
+        createdBy: string;
+        timestamp: Date;
         type: string;
+    }
+
+    interface BooleanServiceParameter {
+        valueType: Enums.ServiceParameterValueType;
+        name: string;
+        description: string;
+    }
+
+    interface BooleanServiceParameterResponse {
+        valueType: Enums.ServiceParameterValueType;
+        isTrue: boolean;
+        parameterName: string;
     }
 
     interface Consumable {
@@ -58,15 +101,54 @@ export namespace Models {
     interface Department {
         id: string;
         name: string;
-        parentDepartment: string;
+        parentDepartment?: string;
+    }
+
+    interface DiagnosticTestDefinition {
+        testCodeLoinc: string;
+        testCodeLocal: string;
+        scaleType: Enums.DiagnosticTestScaleType;
+        id: string;
+        name: string;
+        description: string;
+        parameters: Models.ServiceParameter[];
+        audience: Models.ServiceAudience[];
+        departmentId: string;
+        autoAcceptRequests: boolean;
+        isAvailable: boolean;
+    }
+
+    interface DiagnosticTestResult {
+        createdBy: string;
+        timestamp: Date;
+        testCodeLoinc: string;
+        testCodeLocal: string;
+        testName: string;
+        scaleType: Enums.DiagnosticTestScaleType;
     }
 
     interface DischargeInfo {
-        
+        dischargeTime: Date;
+    }
+
+    interface DocumentDiagnosticTestResult {
+        scaleType: Enums.DiagnosticTestScaleType;
+        createdBy: string;
+        timestamp: Date;
+        testCodeLoinc: string;
+        testCodeLocal: string;
+        testName: string;
     }
 
     interface Drug {
-        
+        id: string;
+        brand: string;
+        productName: string;
+        activeIngredients: string[];
+        dispensionForm: string;
+        amountUnit: string;
+        amountValue: number;
+        applicationSite: string;
     }
 
     interface DrugOrder {
@@ -99,8 +181,24 @@ export namespace Models {
         type: Enums.ServiceAudienceType;
     }
 
+    interface FreetextDiagnosticTestResult {
+        scaleType: Enums.DiagnosticTestScaleType;
+        createdBy: string;
+        timestamp: Date;
+        testCodeLoinc: string;
+        testCodeLocal: string;
+        testName: string;
+    }
+
     interface HealthInsurance {
         
+    }
+
+    interface IDiagnosticTestResult {
+        testCodeLoinc: string;
+        testCodeLocal: string;
+        testName: string;
+        scaleType: Enums.DiagnosticTestScaleType;
     }
 
     interface Institution {
@@ -112,6 +210,11 @@ export namespace Models {
     interface InstitutionPolicy {
         id: string;
         usersFromSameDepartmentCanChangeServiceRequests: boolean;
+    }
+
+    interface IPatientEvent {
+        createdBy: string;
+        timestamp: Date;
     }
 
     interface LocationReference {
@@ -139,17 +242,27 @@ export namespace Models {
 
     interface MedicalEquipment {
         id: string;
+        type: string;
     }
 
     interface MedicationDispension {
         time: Date;
+        unit: string;
+        value: number;
         state: Enums.MedicationDispensionState;
+        note: string;
     }
 
-    interface MedicationPlan {
+    interface MedicationSchedule {
         patientId: string;
+        items: Models.MedicationScheduleItem[];
+        note: string;
+    }
+
+    interface MedicationScheduleItem {
         drug: Models.Drug;
         dispensions: Models.MedicationDispension[];
+        note: string;
     }
 
     interface NewsItem {
@@ -158,6 +271,15 @@ export namespace Models {
         title: string;
         summary: string;
         content: string;
+    }
+
+    interface NominalDiagnosticTestResult {
+        scaleType: Enums.DiagnosticTestScaleType;
+        createdBy: string;
+        timestamp: Date;
+        testCodeLoinc: string;
+        testCodeLocal: string;
+        testName: string;
     }
 
     interface NumberServiceParameter {
@@ -178,15 +300,45 @@ export namespace Models {
     interface Observation {
         id: string;
         patientId: string;
+        createdBy: string;
+        timestamp: Date;
         type: string;
+    }
+
+    interface OptionsServiceParameter {
+        valueType: Enums.ServiceParameterValueType;
+        options: string[];
+        name: string;
+        description: string;
+    }
+
+    interface OptionsServiceParameterResponse {
+        valueType: Enums.ServiceParameterValueType;
+        selectedOption: string;
+        parameterName: string;
+    }
+
+    interface OrdinalDiagnosticTestResult {
+        scaleType: Enums.DiagnosticTestScaleType;
+        createdBy: string;
+        timestamp: Date;
+        testCodeLoinc: string;
+        testCodeLocal: string;
+        testName: string;
+    }
+
+    interface OrdinalOrQuantitativeDiagnosticTestResult {
+        scaleType: Enums.DiagnosticTestScaleType;
+        createdBy: string;
+        timestamp: Date;
+        testCodeLoinc: string;
+        testCodeLocal: string;
+        testName: string;
     }
 
     interface Patient {
         type: Enums.PersonType;
         healthInsurance: Models.HealthInsurance;
-        admissionInfo: Models.AdmissionInfo;
-        contactPersons: Models.PersonReference[];
-        attachedEquipment: Models.MedicalEquipment[];
         isPasswordChangeRequired: boolean;
         roles: string[];
         permissionModifiers: Models.PermissionModifier[];
@@ -194,6 +346,12 @@ export namespace Models {
         firstName: string;
         lastName: string;
         birthDate: Date;
+    }
+
+    interface PatientNote {
+        createdBy: string;
+        timestamp: Date;
+        message: string;
     }
 
     interface PatientRegistrationInfo {
@@ -207,6 +365,18 @@ export namespace Models {
     interface PatientServiceAudience {
         patientId: string;
         type: Enums.ServiceAudienceType;
+    }
+
+    interface PatientServiceParameter {
+        valueType: Enums.ServiceParameterValueType;
+        name: string;
+        description: string;
+    }
+
+    interface PatientServiceParameterResponse {
+        valueType: Enums.ServiceParameterValueType;
+        patientId: string;
+        parameterName: string;
     }
 
     interface PermissionModifier {
@@ -242,7 +412,21 @@ export namespace Models {
         location: string;
         id: string;
         patientId: string;
+        createdBy: string;
+        timestamp: Date;
         type: string;
+    }
+
+    interface QuantitativeDiagnosticTestResult {
+        scaleType: Enums.DiagnosticTestScaleType;
+        unit: string;
+        referenceRangeStart: number;
+        referenceRangeEnd: number;
+        createdBy: string;
+        timestamp: Date;
+        testCodeLoinc: string;
+        testCodeLocal: string;
+        testName: string;
     }
 
     interface Resource {
@@ -256,10 +440,6 @@ export namespace Models {
         id: string;
         name: string;
         parentGroup?: string;
-    }
-
-    interface SystemRoles {
-        
     }
 
     interface Role {
@@ -276,12 +456,15 @@ export namespace Models {
 
     interface Room {
         id: string;
-        wardId: string;
-        beds: Models.Bed[];
     }
 
     interface ServiceAudience {
         type: Enums.ServiceAudienceType;
+    }
+
+    interface ServiceBatchOrder {
+        id: string;
+        requests: Models.ServiceRequest[];
     }
 
     interface ServiceDefinition {
@@ -291,6 +474,13 @@ export namespace Models {
         parameters: Models.ServiceParameter[];
         audience: Models.ServiceAudience[];
         departmentId: string;
+        autoAcceptRequests: boolean;
+        isAvailable: boolean;
+    }
+
+    interface ServicePackage {
+        name: string;
+        serviceIds: string[];
     }
 
     interface ServiceParameter {
@@ -299,20 +489,8 @@ export namespace Models {
         description: string;
     }
 
-    interface PatientServiceParameter {
-        valueType: Enums.ServiceParameterValueType;
-        name: string;
-        description: string;
-    }
-
     interface ServiceParameterResponse {
         valueType: Enums.ServiceParameterValueType;
-        parameterName: string;
-    }
-
-    interface PatientServiceParameterResponse {
-        valueType: Enums.ServiceParameterValueType;
-        patientId: string;
         parameterName: string;
     }
 
@@ -324,6 +502,15 @@ export namespace Models {
         note: string;
         state: Enums.ServiceRequestState;
         timestamps: { [key: Enums.ServiceRequestState]: Date };
+    }
+
+    interface SetDiagnosticTestResult {
+        scaleType: Enums.DiagnosticTestScaleType;
+        createdBy: string;
+        timestamp: Date;
+        testCodeLoinc: string;
+        testCodeLocal: string;
+        testName: string;
     }
 
     interface Stock {
@@ -339,6 +526,10 @@ export namespace Models {
         isOrderable: boolean;
         isUnlimitedOrderable: boolean;
         orderableBy: Models.ServiceAudience[];
+    }
+
+    interface SystemRoles {
+        
     }
 
     interface TextServiceParameter {

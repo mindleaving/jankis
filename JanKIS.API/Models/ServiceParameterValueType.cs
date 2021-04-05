@@ -4,6 +4,8 @@
     {
         Text,
         Number,
-        Patient
+        Patient,
+        Option,
+        Boolean
     }
 }

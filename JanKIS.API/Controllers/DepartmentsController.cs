@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
 using Microsoft.AspNetCore.Authorization;
@@ -12,7 +15,7 @@ namespace JanKIS.API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class DepartmentsController : ControllerBase
+    public class DepartmentsController : RestControllerBase<Department>
     {
         private readonly IStore<Department> departmentsStore;
         private readonly IReadonlyStore<Employee> employeesStore;
@@ -26,6 +29,7 @@ namespace JanKIS.API.Controllers
             IStore<ServiceRequest> serviceRequestsStore,
             IReadonlyStore<Employee> employeesStore,
             IHttpContextAccessor httpContextAccessor)
+            : base(departmentsStore)
         {
             this.departmentsStore = departmentsStore;
             this.servicesStore = servicesStore;
@@ -43,37 +47,6 @@ namespace JanKIS.API.Controllers
             //return Ok(hierarchy);
         }
 
-
-        [HttpGet]
-        public async Task<IActionResult> GetMany(int? count = null, int? skip = null, string orderBy = null)
-        {
-            Expression<Func<Department, object>> orderByExpression = orderBy?.ToLower() switch
-            {
-                "id" => x => x.Id,
-                "name" => x => x.Name,
-                _ => x => x.Id
-            };
-            var items = await departmentsStore.GetMany(count, skip, orderByExpression);
-            return Ok(items);
-        }
-
-        [HttpPut("{departmentId}")]
-        [Authorize(Policy = nameof(Permission.ManageDepartments))]
-        public async Task<IActionResult> CreateOrUpdate([FromRoute] string departmentId, [FromBody] Department department)
-        {
-            if (departmentId != department.Id)
-                return BadRequest("Department-ID from route doesn't match ID in body");
-            await departmentsStore.StoreAsync(department);
-            return Ok(departmentId);
-        }
-
-        [HttpDelete("{departmentId}")]
-        [Authorize(Policy = nameof(Permission.ManageDepartments))]
-        public async Task<IActionResult> Delete([FromRoute] string departmentId)
-        {
-            await departmentsStore.DeleteAsync(departmentId);
-            return Ok();
-        }
 
         [HttpPut("{departmentId}/services/{serviceId}")]
         [Authorize(Policy = nameof(Permission.ManageDepartmentServices))]
@@ -102,6 +75,36 @@ namespace JanKIS.API.Controllers
         {
             var departmentServices = await servicesStore.SearchAsync(x => x.DepartmentId == departmentId, count, skip);
             return Ok(departmentServices);
+        }
+
+        [HttpGet("{departmentId}/services/search")]
+        public async Task<IActionResult> SearchServices([FromRoute] string departmentId, [FromQuery] string searchText, int? count = null, int? skip = null)
+        {
+            var searchTerms = SearchTermSplitter.SplitAndToLower(searchText);
+            var searchExpression = SearchExpressionBuilder.And(x => x.DepartmentId == departmentId,
+                SearchExpressionBuilder.ContainsAll<ServiceDefinition>(x => x.Name.ToLower(), searchTerms));
+            var departmentServices = await servicesStore.SearchAsync(searchExpression, count, skip);
+            return Ok(departmentServices);
+        }
+
+        protected override Expression<Func<Department, object>> BuildOrderByExpression(string orderBy)
+        {
+            return orderBy?.ToLower() switch
+            {
+                "id" => x => x.Id,
+                "name" => x => x.Name,
+                _ => x => x.Id
+            };
+        }
+
+        protected override Expression<Func<Department, bool>> BuildSearchExpression(string[] searchTerms)
+        {
+            return SearchExpressionBuilder.ContainsAll<Department>(x => x.Name.ToLower(), searchTerms);
+        }
+
+        protected override IEnumerable<Department> PrioritizeItems(List<Department> items)
+        {
+            return items.OrderBy(x => x.Name.Length);
         }
     }
 }

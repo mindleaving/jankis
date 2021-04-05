@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using JanKIS.API.Models;
 using MongoDB.Driver;
 
 namespace JanKIS.API.Storage
@@ -25,9 +26,14 @@ namespace JanKIS.API.Storage
         public Task<List<T>> GetMany(
             int? count,
             int? skip,
-            Expression<Func<T, object>> orderBy)
+            Expression<Func<T, object>> orderBy,
+            OrderDirection orderDirection)
         {
-            return collection.Find(x => true).Skip(skip).Limit(count).SortBy(orderBy).ToListAsync();
+            var findExpression = collection.Find(x => true).Skip(skip).Limit(count);
+            findExpression = orderDirection == OrderDirection.Ascending 
+                ? findExpression.SortBy(orderBy) 
+                : findExpression.SortByDescending(orderBy);
+            return findExpression.ToListAsync();
         }
 
         public Task<bool> ExistsAsync(string id)

@@ -17,6 +17,7 @@ namespace JanKIS.API.Models
             InstitutionId = institutionId;
             Roles = new List<string>();
             PermissionModifiers = new List<PermissionModifier>();
+            DepartmentIds = new List<string>();
         }
 
         public override PersonType Type => PersonType.Employee;

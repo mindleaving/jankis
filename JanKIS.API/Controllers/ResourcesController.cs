@@ -28,12 +28,14 @@ namespace JanKIS.API.Controllers
         public override Task<IActionResult> GetMany(
             int? count = null,
             int? skip = null,
-            string orderBy = null)
+            string orderBy = null,
+            OrderDirection? orderDirection = null)
         {
             return base.GetMany(
                 count,
                 skip,
-                orderBy);
+                orderBy,
+                orderDirection);
         }
 
         [Authorize(Policy = nameof(Permission.ViewResources))]

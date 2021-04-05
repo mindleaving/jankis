@@ -70,7 +70,9 @@ export const ServiceEditForm = (props: ServiceEditFormProps) => {
             description: description!,
             departmentId: selectedDepartment!.id,
             audience: audience,
-            parameters: parameters
+            parameters: parameters,
+            isAvailable: true,
+            autoAcceptRequests: false
         };
         return service;
     }

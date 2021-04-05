@@ -15,7 +15,7 @@ import { AsyncButton } from '../../components/AsyncButton';
 import { PersonType } from '../../types/enums.d';
 
 interface EmployeeEditPageParams {
-    id?: string;
+    employeeId?: string;
 }
 interface EmployeeEditPageProps extends RouteComponentProps<EmployeeEditPageParams> {
 
@@ -25,12 +25,12 @@ export const EmployeeEditPage = (props: EmployeeEditPageProps) => {
 
     const roleAutoCompleteRunner = useMemo(() => new AutocompleteRunner<Models.Role>('api/roles/search', 'searchText', 10), []);
 
-    const isNewEmployee = props.match.path === "/employees/new";
-    const matchedId = props.match.params.id ?? '';
+    const isNewEmployee = props.match.path.toLowerCase().startsWith('/create');
+    const matchedId = props.match.params.employeeId ?? '';
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
     const [ isStoring, setIsStoring ] = useState<boolean>(false);
 
-    const [ id, setId ] = useState<string>('');
+    const [ id, setId ] = useState<string>(matchedId);
     const [ isIdTaken, setIsIdTaken ] = useState<boolean>(false);
     const [ firstName, setFirstName ] = useState<string>('');
     const [ lastName, setLastName ] = useState<string>('');
@@ -56,10 +56,10 @@ export const EmployeeEditPage = (props: EmployeeEditPageProps) => {
                 setLastName(employee.lastName);
                 setBirthday(employee.birthDate);
                 setRoles(employee.roles.map(roleId => roles.find(x => x.id === roleId)!));
-
-                setIsLoading(false);
             } catch(error) {
                 NotificationManager.error(error.message, resolveText('Employee_CouldNotLoad'));
+            } finally {
+                setIsLoading(false);
             }
         } 
         loadEmployee();

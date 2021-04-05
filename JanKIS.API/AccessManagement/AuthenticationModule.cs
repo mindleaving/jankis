@@ -53,7 +53,7 @@ namespace JanKIS.API.AccessManagement
         public async Task<AuthenticationResult> BuildSecurityTokenForUser(PersonWithLogin person)
         {
             var token = await securityTokenBuilder.BuildForUser(person);
-            return AuthenticationResult.Success(person.Id, token);
+            return AuthenticationResult.Success(person, token);
         }
     }
 }

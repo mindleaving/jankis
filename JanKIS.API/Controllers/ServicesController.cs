@@ -45,7 +45,11 @@ namespace JanKIS.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMany(int? count = null, int? skip = null, string orderBy = null)
+        public async Task<IActionResult> GetMany(
+            int? count = null, 
+            int? skip = null, 
+            string orderBy = null,
+            OrderDirection? orderDirection = null)
         {
             Expression<Func<ServiceDefinition, object>> orderByExpression = orderBy?.ToLower() switch
             {
@@ -54,7 +58,7 @@ namespace JanKIS.API.Controllers
                 "department" => x => x.DepartmentId,
                 _ => x => x.Name
             };
-            var items = await servicesStore.GetMany(count, skip, orderByExpression);
+            var items = await servicesStore.GetMany(count, skip, orderByExpression, orderDirection ?? OrderDirection.Ascending);
             return Ok(items);
         }
 

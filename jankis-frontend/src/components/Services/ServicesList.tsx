@@ -1,14 +1,17 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { PagedTable } from '../PagedTable';
 import { resolveText } from '../../helpers/Globalizer';
 import { Models } from '../../types/models';
-import { OrderDirection } from '../../types/frontendTypes.d';
-import PagedTableLoader from '../../helpers/PagedTableLoader';
+import { OrderDirection, ServicesFilter } from '../../types/frontendTypes.d';
 import { formatServiceAudience } from '../../helpers/Formatters';
 import { Button } from 'react-bootstrap';
 import { useHistory } from 'react-router';
+import { NotificationManager } from 'react-notifications';
+import { apiClient } from '../../communication/ApiClient';
 
-interface ServicesListProps {}
+interface ServicesListProps {
+    filter: ServicesFilter;
+}
 
 export const ServicesList = (props: ServicesListProps) => {
 
@@ -16,7 +19,6 @@ export const ServicesList = (props: ServicesListProps) => {
     const [ services, setServices ] = useState<Models.ServiceDefinition[]>([]);
     const [ orderBy, setOrderBy ] = useState<string>('id');
     const [ orderDirection, setOrderDirection ] = useState<OrderDirection>(OrderDirection.Ascending);
-    const servicesLoader = useMemo(() => new PagedTableLoader<Models.ServiceDefinition>('api/services', resolveText('Service_CouldNotLoad'), setServices), []);
 
     const setOrderByOrDirection = (newOrderBy: string) => {
         if(orderBy !== newOrderBy) {
@@ -25,12 +27,38 @@ export const ServicesList = (props: ServicesListProps) => {
         }
         setOrderDirection(orderDirection === OrderDirection.Ascending ? OrderDirection.Descending : OrderDirection.Ascending);
     }
+    const loadServices = async (pageIndex: number, entriesPerPage: number, orderBy?: string, orderDirection?: OrderDirection) => {
+        try {
+            let apiPath;
+            if(props.filter?.searchText) {
+                if(props.filter.departmentId) {
+                    apiPath = `api/departments/${props.filter.departmentId}/services/search`;
+                } else {
+                    apiPath = 'api/services/search';
+                }
+            } else if(props.filter?.departmentId) {
+                apiPath = `api/departments/${props.filter.departmentId}/services`;
+            } else {
+                apiPath = 'api/services';
+            }
+            const response = await apiClient.get(apiPath, {
+                count: entriesPerPage + '',
+                skip: (pageIndex * entriesPerPage) + ''
+            });
+            const items = await response.json() as Models.ServiceDefinition[];
+            setServices(items);
+        } catch(error) {
+            NotificationManager.error(error.message, resolveText('Services_CouldNotLoad'));
+        }
+    }
 
     return (
         <PagedTable
-            onPageChanged={servicesLoader.load}
+            onPageChanged={loadServices}
             orderBy={orderBy}
             orderDirection={orderDirection}
+            hasCreateNewButton
+            onCreateNew={() => history.push('/create/service')}
         >
             <thead>
                 <tr>

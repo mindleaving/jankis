@@ -4,10 +4,12 @@ import { ApiError } from './ApiError';
 export class ApiClient {
     serverAddress: string;
     port: number;
+    accessToken: string | undefined;
 
     constructor(serverAddress: string, port: number) {
         this.serverAddress = serverAddress;
         this.port = port;
+        this.accessToken = undefined;
     }
 
     get = async (path: string, params: { [key: string]: string }, handleError: boolean = true) => {
@@ -30,6 +32,10 @@ export class ApiClient {
         return await this._sendRequest("DELETE", path, params, undefined, handleError);
     }
 
+    setAccessToken = (accessToken: string) => {
+        this.accessToken = accessToken;
+    }
+
     _sendRequest = async (
         method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
         path: string, 
@@ -37,14 +43,18 @@ export class ApiClient {
         body?: any,
         handleError: boolean = true) => {
 
-        const requestUrl = buildUrl(`http://${this.serverAddress}:${this.port}`, path, params);
+        const requestUrl = buildUrl(`https://${this.serverAddress}:${this.port}`, path, params);
         const jsonBody = body ? this._convertToJson(body) : undefined;
+        const headers: HeadersInit = {
+            'Content-Type': 'application/json'
+        };
+        if(this.accessToken) {
+            headers['Authorization'] = `Bearer ${this.accessToken}`;
+        }
         const response = await fetch(requestUrl, {
             method: method,
             body: jsonBody,
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers: headers
         });
         if(handleError && !response.ok) {
             return await this._handleError(response);
@@ -68,5 +78,5 @@ export class ApiClient {
 }
 
 export const apiClient = window.location.hostname.toLowerCase() === "localhost"
-    ? new ApiClient(window.location.hostname, 50441)
+    ? new ApiClient(window.location.hostname, 44318)
     : new ApiClient(window.location.hostname, 80);

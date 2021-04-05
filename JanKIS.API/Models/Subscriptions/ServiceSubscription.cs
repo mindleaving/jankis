@@ -4,9 +4,4 @@
     {
         public string ServiceId { get; set; }
     }
-
-    public abstract class SubscriptionBase
-    {
-        public string EmployeeId { get; set; }
-    }
 }

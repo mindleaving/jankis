@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Table } from 'react-bootstrap';
+import { useSelector } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
 import { resolveText } from '../../helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { ConsumableOrderModal } from '../../modals/ConsumableOrderModal';
+import { getStocks } from '../../stores/selectors/stockSelectors';
 import { Models } from '../../types/models';
 
 interface ConsumableParams {
@@ -14,6 +16,7 @@ interface ConsumablePageProps extends RouteComponentProps<ConsumableParams> {}
 export const ConsumablePage = (props: ConsumablePageProps) => {
 
     const id = props.match.params.consumableId;
+    const stocks = useSelector(getStocks);
     
     const [ consumable, setConsumable ] = useState<Models.Consumable>();
     const [ showOrderModal, setShowOrderModal ] = useState<boolean>(false);
@@ -22,6 +25,7 @@ export const ConsumablePage = (props: ConsumablePageProps) => {
     useEffect(() => {
         const loadConsumable = buildLoadObjectFunc<Models.Consumable>(
             `api/consumables/${id}`,
+            {},
             resolveText('Consumable_CouldNotLoad'),
             setConsumable
         );
@@ -51,7 +55,7 @@ export const ConsumablePage = (props: ConsumablePageProps) => {
                 <tbody>
                     {consumable.stockStates.map(stockState => (
                         <tr>
-                            <td>{stockState.stockName}</td>
+                            <td>{stocks?.find(stock => stock.id === stockState.stockId)?.name ?? resolveText('Loading...')}</td>
                             <td>{stockState.quantity}</td>
                             <td>
                                 {stockState.isOrderable 

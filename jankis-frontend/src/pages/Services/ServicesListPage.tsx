@@ -1,19 +1,21 @@
-import React from 'react';
-import { Button } from 'react-bootstrap';
-import { useHistory } from 'react-router';
+import React, { useState } from 'react';
 import { ServicesList } from '../../components/Services/ServicesList';
 import { resolveText } from '../../helpers/Globalizer';
+import { ServicesFilter } from '../../types/frontendTypes';
+import { ServicesFilterView } from './ServicesFilterView';
 
-interface ServicesListPageProps {}
+interface ServicesListPageProps {
+    filter?: ServicesFilter
+}
 
 export const ServicesListPage = (props: ServicesListPageProps) => {
 
-    const history = useHistory();
+    const [ filter, setFilter ] = useState<ServicesFilter>(props.filter ?? {});
     return (
         <>
             <h1>{resolveText('Services')}</h1>
-            <Button onClick={() => history.push('/services/new')}>{resolveText('Service_CreateNew')}</Button>
-            <ServicesList />
+            <ServicesFilterView setFilter={setFilter} />
+            <ServicesList filter={filter} />
         </>
     );
 

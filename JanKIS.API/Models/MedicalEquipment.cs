@@ -1,4 +1,5 @@
-﻿using JanKIS.API.Storage;
+﻿using JanKIS.API.Attributes;
+using JanKIS.API.Storage;
 
 namespace JanKIS.API.Models
 {
@@ -8,5 +9,7 @@ namespace JanKIS.API.Models
     public class MedicalEquipment : IId
     {
         public string Id { get; }
+        [OfferAutocomplete(Context = "MedicalEquipmentType")]
+        public string Type { get; set; }
     }
 }

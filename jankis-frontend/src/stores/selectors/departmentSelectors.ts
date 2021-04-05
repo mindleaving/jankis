@@ -1,1 +1,3 @@
-export const getDepartments = (state) => state.departments;
+import { RootState } from "../main";
+
+export const getDepartments = (state: RootState) => state.departments;

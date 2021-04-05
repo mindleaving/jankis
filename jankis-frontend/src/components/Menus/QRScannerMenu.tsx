@@ -8,7 +8,7 @@ interface QRScannerMenuProps {
 export const QRScannerMenu = (props: QRScannerMenuProps) => {
 
     return (
-        <Nav className="mr-1">
+        <Nav className="ml-auto mr-1">
             <Nav.Link onClick={props.openQRScannerModal}><i className="fa fa-qrcode" title="Scan QR code" /></Nav.Link>
         </Nav>
     );

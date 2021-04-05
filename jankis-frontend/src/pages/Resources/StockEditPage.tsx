@@ -9,6 +9,8 @@ import { Models } from '../../types/models';
 import { NotificationManager } from 'react-notifications';
 import { v4 as uuid } from 'uuid';
 import { AsyncButton } from '../../components/AsyncButton';
+import { useSelector } from 'react-redux';
+import { getDepartments } from '../../stores/selectors/departmentSelectors';
 
 interface StockParams {
     stockId?: string;
@@ -19,6 +21,8 @@ export const StockEditPage = (props: StockEditPageProps) => {
 
     const isNew = props.match.path.toLowerCase().startsWith('/create');
     const matchedId = props.match.params.stockId;
+    const departments = useSelector(getDepartments);
+
     const [ name, setName ] = useState<string>('');
     const [ selectedDepartment, setSelectedDepartment ] = useState<Models.Department>();
     const [ selectedLocation, setSelectedLocation ] = useState<Models.LocationReference>();
@@ -30,16 +34,17 @@ export const StockEditPage = (props: StockEditPageProps) => {
         setIsLoading(true);
         const loadStock = buildLoadObjectFunc<Models.Stock>(
             `api/stocks/${matchedId}`,
+            {},
             resolveText('Stock_CouldNotLoad'),
             stock => {
                 setName(stock.name);
-                setSelectedDepartment();
+                setSelectedDepartment(departments.find(x => x.id === stock.departmentId));
                 setSelectedLocation(stock.location);
             },
             () => setIsLoading(false)
         );
         loadStock();
-    }, [ isNew, matchedId ]);
+    }, [ isNew, matchedId, departments ]);
 
     const store = async (e?: FormEvent) => {
         try {

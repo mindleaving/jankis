@@ -30,6 +30,7 @@ export const ConsumableEditPage = (props: ConsumableEditPageProps) => {
         setIsLoading(true);
         const loadConsumable = buildLoadObjectFunc<Models.Consumable>(
             `api/consumables/${matchedId}`,
+            {},
             resolveText('Consumable_CouldNotLoad'),
             consumable => {
                 setName(consumable.name);

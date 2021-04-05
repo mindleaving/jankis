@@ -1,25 +1,26 @@
-﻿using Newtonsoft.Json;
+﻿using JanKIS.API.AccessManagement;
+using Newtonsoft.Json;
 using TypescriptGenerator.Attributes;
 
-namespace JanKIS.API.AccessManagement
+namespace JanKIS.API.Models
 {
     public class AuthenticationResult
     {
         [JsonConstructor]
         private AuthenticationResult(bool isAuthenticated,
             AuthenticationErrorType error,
-            string employeeId,
+            PersonWithLogin user,
             string accessToken)
         {
             IsAuthenticated = isAuthenticated;
             Error = error;
+            User = user;
             AccessToken = accessToken;
-            EmployeeId = employeeId;
         }
 
-        public static AuthenticationResult Success(string username, string accessToken)
+        public static AuthenticationResult Success(PersonWithLogin user, string accessToken)
         {
-            return new AuthenticationResult(true, AuthenticationErrorType.Ok, username, accessToken);
+            return new AuthenticationResult(true, AuthenticationErrorType.Ok, user, accessToken);
         }
 
         public static AuthenticationResult Failed(AuthenticationErrorType errorType)
@@ -29,7 +30,7 @@ namespace JanKIS.API.AccessManagement
 
         public bool IsAuthenticated { get; }
         [TypescriptIsOptional]
-        public string EmployeeId { get; }
+        public PersonWithLogin User { get; }
         [TypescriptIsOptional]
         public string AccessToken { get; }
         public AuthenticationErrorType Error { get; }

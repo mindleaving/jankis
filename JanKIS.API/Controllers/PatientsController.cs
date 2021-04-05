@@ -68,11 +68,7 @@ namespace JanKIS.API.Controllers
             var patient = await patientsStore.GetByIdAsync(patientId);
             if (patient == null)
                 return NotFound();
-            if (patient.AdmissionInfo == null)
-                return BadRequest("Patient is not admitted. Cannot be moved");
-            patient.AdmissionInfo.Ward = wardId;
-            patient.AdmissionInfo.Room = roomId;
-            patient.AdmissionInfo.Bed = bedIndex;
+            throw new NotImplementedException();
             await patientsStore.StoreAsync(patient);
             return Ok();
         }
@@ -100,7 +96,7 @@ namespace JanKIS.API.Controllers
             var patient = await patientsStore.GetByIdAsync(patientId);
             if (patient == null)
                 return NotFound();
-            return Ok(patient.AttachedEquipment);
+            throw new NotImplementedException();
         }
 
         [HttpPost("{patientId}/equipment")]

@@ -48,6 +48,7 @@ namespace JanKIS.API
             services.AddScoped<IPersonWithLoginStore<Patient>, UserStore<Patient>>();
             services.AddScoped<IAutocompleteCache, AutocompleteCache>();
             services.AddScoped<IStore<Contact>, GenericStore<Contact>>();
+            services.AddScoped<IAdmissionsStore, AdmissionsStore>();
 
             services.AddHttpContextAccessor();
             services.AddControllers()
@@ -80,8 +81,7 @@ namespace JanKIS.API
                             builder
                                 .WithOrigins(Configuration["CORS:Origins"].Split(','))
                                 .AllowAnyMethod()
-                                .AllowAnyHeader()
-                                .AllowCredentials();
+                                .AllowAnyHeader();
                         });
                 });
             services.AddSwaggerGen(

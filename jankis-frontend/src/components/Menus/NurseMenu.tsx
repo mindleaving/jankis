@@ -10,18 +10,18 @@ export const NurseMenu = (props: NurseMenuProps) => {
 
     const history = useHistory();
     return (
-        <Nav className="mr-auto">
-            <NavDropdown title={resolveText('Menu_Nursing')} id="basic-nav-dropdown">
+        <Nav>
+            <NavDropdown title={resolveText('Menu_Nursing')} id="menu-nursing">
                 <NavDropdown.Item onClick={() => history.push('/nursing/rooms')}>{resolveText('Menu_Rooms')}</NavDropdown.Item>
                 <NavDropdown.Item onClick={() => history.push('/nursing/patients')}>{resolveText('Menu_Patients')}</NavDropdown.Item>
             </NavDropdown>
-            <NavDropdown title={resolveText('Menu_Services')} id="basic-nav-dropdown">
+            <NavDropdown title={resolveText('Menu_Services')} id="menu-services">
                 <NavDropdown.Item onClick={() => history.push('/services/pharmacy')}>{resolveText('Menu_Pharmacy')}</NavDropdown.Item>
                 <NavDropdown.Item onClick={() => history.push('/services/kitchen')}>{resolveText('Menu_Kitchen')}</NavDropdown.Item>
                 <NavDropdown.Item onClick={() => history.push('/services/physiotherapy')}>{resolveText('Menu_Physio')}</NavDropdown.Item>
                 <NavDropdown.Item onClick={() => history.push('/services/beds')}>{resolveText('Menu_Beds')}</NavDropdown.Item>
             </NavDropdown>
-            <NavDropdown title={resolveText('Menu_Ward')} id="basic-nav-dropdown">
+            <NavDropdown title={resolveText('Menu_Ward')} id="menu-ward">
                 <NavDropdown.Item onClick={() => history.push('/ward/rooms')}>{resolveText('Menu_Rooms')}</NavDropdown.Item>
                 <NavDropdown.Item onClick={() => history.push('/ward/drugstorage')}>{resolveText('Menu_DrugStorage')}</NavDropdown.Item>
                 <NavDropdown.Item onClick={() => history.push('/ward/calendar')}>{resolveText('Menu_Calendar')}</NavDropdown.Item>

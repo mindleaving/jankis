@@ -12,7 +12,6 @@ namespace JanKIS.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class EmployeesController : ControllerBase
     {
         private readonly IPersonWithLoginStore<Employee> employeesStore;
@@ -31,7 +30,11 @@ namespace JanKIS.API.Controllers
 
         [HttpGet]
         [Authorize(Policy = nameof(Permission.ListEmployees))]
-        public async Task<IActionResult> GetMany([FromQuery] int? count = null, [FromQuery] int? skip = null, [FromQuery] string orderBy = null)
+        public async Task<IActionResult> GetMany(
+            [FromQuery] int? count = null,
+            [FromQuery] int? skip = null,
+            [FromQuery] string orderBy = null,
+            [FromQuery] OrderDirection? orderDirection = null)
         {
             Expression<Func<Employee, object>> orderByExpression = orderBy?.ToLower() switch
             {
@@ -39,7 +42,7 @@ namespace JanKIS.API.Controllers
                 "lastname" => x => x.LastName,
                 _ => x => x.Id
             };
-            var items = await employeesStore.GetMany(count, skip, orderByExpression);
+            var items = await employeesStore.GetMany(count, skip, orderByExpression, orderDirection ?? OrderDirection.Ascending);
             return Ok(items);
         }
 

@@ -2,10 +2,10 @@
 
 namespace JanKIS.API.Models
 {
-    public class MedicationPlan
+    public class MedicationScheduleItem
     {
-        public string PatientId { get; set; }
         public Drug Drug { get; set; }
         public List<MedicationDispension> Dispensions { get; set; }
+        public string Note { get; set; }
     }
 }

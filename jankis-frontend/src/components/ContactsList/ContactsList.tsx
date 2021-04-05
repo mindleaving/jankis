@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useHistory } from 'react-router';
 import { apiClient } from '../../communication/ApiClient';
 import { resolveText } from '../../helpers/Globalizer';
@@ -15,14 +15,13 @@ interface ContactsListProps {
 export const ContactsList = (props: ContactsListProps) => {
 
     const history = useHistory();
-    const [ isLoading, setIsLoading ] = useState<boolean>();
     const [ contacts, setContacts] = useState<Models.Contact[]>([]);
-    const loadContacts = async (pageIndex: number, entriesPerPage: number, orderBy?: string, orderDirection?: OrderDirection) => {
+    const filter = props.filter;
+    const loadContacts = useCallback(async (pageIndex: number, entriesPerPage: number, orderBy?: string, orderDirection?: OrderDirection) => {
         try {
-            setIsLoading(true);
-            if(props.filter?.searchText) {
+            if(filter?.searchText) {
                 const response = await apiClient.get('api/contacts/search', {
-                    searchText: props.filter.searchText,
+                    searchText: filter.searchText,
                     count: entriesPerPage + '',
                     skip: (pageIndex * entriesPerPage) + ''
                 });
@@ -40,10 +39,8 @@ export const ContactsList = (props: ContactsListProps) => {
             }
         } catch(error) {
             NotificationManager.error(error.message, resolveText('Contacts_CouldNotLoad'));
-        } finally {
-            setIsLoading(false);
         }
-    }
+    }, [ filter]);
     return (
         <PagedTable
             onPageChanged={loadContacts}
@@ -59,18 +56,18 @@ export const ContactsList = (props: ContactsListProps) => {
                 </tr>
             </thead>
             <tbody>
-                {isLoading
-                ? <tr>
-                    <td colSpan={4} className="text-center">{resolveText('Loading...')}</td>
-                </tr>
-                : contacts.map(contact => (
+                {contacts.length > 0
+                ? contacts.map(contact => (
                     <tr>
                         <td>{contact.name}</td>
                         <td>{contact.phoneNumber}</td>
                         <td>{contact.email}</td>
                         <td><Button variant="link">{resolveText('Edit...')}</Button></td>
                     </tr>
-                ))}
+                ))
+                : <tr>
+                    <td className="text-center" colSpan={4}>{resolveText('NoEntries')}</td>
+                </tr>}
             </tbody>
         </PagedTable>
     );

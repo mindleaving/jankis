@@ -4,12 +4,15 @@ export enum BedState {
     Reserved = "Reserved",
     Unavailable = "Unavailable"
 }
-export enum OrderState {
-    Ordered = "Ordered",
-    Accepted = "Accepted",
-    Declined = "Declined",
-    Delivered = "Delivered",
-    CancelledByRequester = "CancelledByRequester"
+export enum DiagnosticTestScaleType {
+    Undefined = "Undefined",
+    Quantitative = "Quantitative",
+    Ordinal = "Ordinal",
+    OrdinalOrQuantitative = "OrdinalOrQuantitative",
+    Nominal = "Nominal",
+    Freetext = "Freetext",
+    Document = "Document",
+    Set = "Set"
 }
 export enum DietaryCharacteristic {
     Vegetarian = "Vegetarian",
@@ -36,6 +39,22 @@ export enum MedicationDispensionState {
     Scheduled = "Scheduled",
     Dispensed = "Dispensed",
     Missed = "Missed"
+}
+export enum OrderDirection {
+    Ascending = "Ascending",
+    Descending = "Descending"
+}
+export enum OrderState {
+    Ordered = "Ordered",
+    Accepted = "Accepted",
+    Declined = "Declined",
+    Delivered = "Delivered",
+    CancelledByRequester = "CancelledByRequester"
+}
+export enum PatientEventType {
+    Observation = "Observation",
+    Note = "Note",
+    Diagnostics = "Diagnostics"
 }
 export enum Permission {
     ListEmployees = "ListEmployees",
@@ -68,7 +87,9 @@ export enum ServiceAudienceType {
 export enum ServiceParameterValueType {
     Text = "Text",
     Number = "Number",
-    Patient = "Patient"
+    Patient = "Patient",
+    Option = "Option",
+    Boolean = "Boolean"
 }
 export enum ServiceRequestState {
     Requested = "Requested",
@@ -78,4 +99,10 @@ export enum ServiceRequestState {
     ReadyWhenYouAre = "ReadyWhenYouAre",
     InProgress = "InProgress",
     Fulfilled = "Fulfilled"
+}
+export enum AuthenticationErrorType {
+    Ok = "Ok",
+    UserNotFound = "UserNotFound",
+    InvalidPassword = "InvalidPassword",
+    AuthenticationMethodNotAvailable = "AuthenticationMethodNotAvailable"
 }

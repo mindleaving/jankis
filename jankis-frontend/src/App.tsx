@@ -49,251 +49,273 @@ import { EmployeesListPage } from './pages/UserManagement/EmployeesListPage';
 import { RoleEditPage } from './pages/UserManagement/RoleEditPage';
 import { RolePage } from './pages/UserManagement/RolePage';
 import { RolesListPage } from './pages/UserManagement/RolesListPage';
+import { DepartmentServices } from './pages/Services/DepartmentServices';
+import { LoginPage } from './pages/LoginPage';
+import { apiClient } from './communication/ApiClient';
 
 function App() {
 
-  const [ loggedInUser, setLoggedInUser ] = useState<Models.PersonWithLogin>();
+    const [loggedInUser, setLoggedInUser] = useState<Models.PersonWithLogin>();
+    const onLoggedIn = (authenticationResult: Models.AuthenticationResult) => {
+        if (authenticationResult.isAuthenticated) {
+            setLoggedInUser(authenticationResult.user);
+            apiClient.setAccessToken(authenticationResult.accessToken!);
+        }
+    }
 
-  return (
-    <UserContext.Provider value={loggedInUser}>
-      <Layout>
-        <Switch>
-          <Route exact path="/">
-            <NewsPage />
-          </Route>
+    if (!loggedInUser) {
+        return (<LoginPage onLoggedIn={onLoggedIn} />)
+    }
 
-          <Route 
-            exact path="/config/institution"
-            render={props => <InstitutionBuilderPage {...props} />}
-          />
+    return (
+        <UserContext.Provider value={loggedInUser}>
+            <Layout onLogOut={() => setLoggedInUser(undefined)}>
+                <Switch>
+                    <Route exact path="/">
+                        <NewsPage />
+                    </Route>
 
-          <Route 
-            exact path="/patients"
-            render={props => <PatientsListPage {...props} />}
-          />
-          <Route 
-            exact path="/create/patient"
-            render={props => <CreatePatientPage {...props} />}
-          />
-          <Route 
-            exact path="/mypatients"
-            render={props => <MyPatientsPage {...props} />}
-          />
-          <Route 
-            exact path="/patients/:patientId"
-            render={props => <PatientPage {...props} />}
-          />
-          <Route 
-            exact path="/patients/:patientId/medications"
-            render={props => <PatientMedicationsPage {...props} />}
-          />
-          <Route 
-            exact path="/patients/:patientId/diagnostics"
-            render={props => <PatientDiagnosticsPage {...props} />}
-          />
-          <Route 
-            exact path="/patients/:patientId/observations"
-            render={props => <PatientObservationsPage {...props} />}
-          />
-          <Route 
-            exact path="/patients/:patientId/equipment"
-            render={props => <PatientEquipmentPage {...props} />}
-          />
-          <Route 
-            exact path="/patients/:patientId/documents"
-            render={props => <PatientDocumentsPage {...props} />}
-          />
-          <Route 
-            exact path="/patients/:patientId/timeline"
-            render={props => <PatientTimelinePage {...props} />}
-          />
-          <Route 
-            exact path="/patients/:patientId/notes"
-            render={props => <PatientNotesPage {...props} />}
-          />
+                    <Route
+                        exact path="/config/institution"
+                        render={props => <InstitutionBuilderPage {...props} />}
+                    />
 
-          <Route 
-            exact path="/wards"
-            render={props => <WardsListPage {...props} />}
-          />
-          <Route 
-            exact path="/create/ward"
-            render={props => <WardEditPage {...props} />}
-          />
-          <Route 
-            exact path="/wards/:wardId"
-            render={props => <WardPage {...props} />}
-          />
-          <Route 
-            exact path="/wards/:wardId/edit"
-            render={props => <WardEditPage {...props} />}
-          />
-          <Route 
-            exact path="/wards/:wardId/beds"
-            render={props => <WardBedsPage {...props} />}
-          />
+                    <Route
+                        exact path="/patients"
+                        render={props => <PatientsListPage {...props} />}
+                    />
+                    <Route
+                        exact path="/create/patient"
+                        render={props => <CreatePatientPage {...props} />}
+                    />
+                    <Route
+                        exact path="/mypatients"
+                        render={props => <MyPatientsPage {...props} />}
+                    />
+                    <Route
+                        exact path="/patients/:patientId"
+                        render={props => <PatientPage {...props} />}
+                    />
+                    <Route
+                        exact path="/patients/:patientId/medications"
+                        render={props => <PatientMedicationsPage {...props} />}
+                    />
+                    <Route
+                        exact path="/patients/:patientId/diagnostics"
+                        render={props => <PatientDiagnosticsPage {...props} />}
+                    />
+                    <Route
+                        exact path="/patients/:patientId/observations"
+                        render={props => <PatientObservationsPage {...props} />}
+                    />
+                    <Route
+                        exact path="/patients/:patientId/equipment"
+                        render={props => <PatientEquipmentPage {...props} />}
+                    />
+                    <Route
+                        exact path="/patients/:patientId/documents"
+                        render={props => <PatientDocumentsPage {...props} />}
+                    />
+                    <Route
+                        exact path="/patients/:patientId/timeline"
+                        render={props => <PatientTimelinePage {...props} />}
+                    />
+                    <Route
+                        exact path="/patients/:patientId/notes"
+                        render={props => <PatientNotesPage {...props} />}
+                    />
 
-          <Route 
-            exact path="/services"
-            render={props => <ServicesListPage {...props} />}
-          />
-          <Route 
-            exact path="/create/service"
-            render={props => <ServiceEditPage {...props} />}
-          />
-          <Route 
-            exact path="/services/:serviceId"
-            render={props => <ServicePage {...props} />}
-          />
-          <Route 
-            exact path="/services/:serviceId/edit"
-            render={props => <ServiceEditPage {...props} />}
-          />
-          <Route 
-            exact path="/services/:serviceId/request"
-            render={props => <RequestServicePage {...props} />}
-          />
-          <Route 
-            exact path="/services/:serviceId/requests"
-            render={props => <ServiceRequestsListPage {...props} />}
-          />
-          <Route 
-            exact path="/servicerequests/:requestId"
-            render={props => <ServiceRequestPage {...props} />}
-          />
+                    <Route
+                        exact path="/wards"
+                        render={props => <WardsListPage {...props} />}
+                    />
+                    <Route
+                        exact path="/create/ward"
+                        render={props => <WardEditPage {...props} />}
+                    />
+                    <Route
+                        exact path="/wards/:wardId"
+                        render={props => <WardPage {...props} />}
+                    />
+                    <Route
+                        exact path="/wards/:wardId/edit"
+                        render={props => <WardEditPage {...props} />}
+                    />
+                    <Route
+                        exact path="/wards/:wardId/beds"
+                        render={props => <WardBedsPage {...props} />}
+                    />
 
-          <Route 
-            exact path="/departments"
-            render={props => <DepartmentsListPage {...props} />}
-          />
-          <Route 
-            exact path="/create/department"
-            render={props => <DepartmentEditPage {...props} />}
-          />
-          <Route 
-            exact path="/departments/:departmentId"
-            render={props => <DepartmentPage {...props} />}
-          />
-          <Route 
-            exact path="/departments/:departmentId/edit"
-            render={props => <DepartmentEditPage {...props} />}
-          />
-          <Route 
-            exact path="/departments/:departmentId/services"
-            render={props => <ServicesListPage {...props} />}
-          />
-          <Route 
-            exact path="/departments/:departmentId/resources"
-            render={props => <ResourcesListPage {...props} />}
-          />
-          <Route 
-            exact path="/departments/:departmentId/stocks"
-            render={props => <StocksListPage {...props} />}
-          />
-          
-          <Route 
-            exact path="/resources"
-            render={props => <ResourcesListPage {...props} />}
-          />
-          <Route 
-            exact path="/create/resource"
-            render={props => <ResourceEditPage {...props} />}
-          />
-          <Route 
-            exact path="/resources/:resourceId"
-            render={props => <ResourcePage {...props} />}
-          />
-          <Route 
-            exact path="/resources/:resourceId/edit"
-            render={props => <ResourceEditPage {...props} />}
-          />
-          <Route 
-            exact path="/consumables"
-            render={props => <ConsumablesListPage {...props} />}
-          />
-          <Route 
-            exact path="/create/consumable"
-            render={props => <ConsumableEditPage {...props} />}
-          />
-          <Route 
-            exact path="/consumables/:consumableId"
-            render={props => <ConsumablePage {...props} />}
-          />
-          <Route 
-            exact path="/consumables/:consumableId/edit"
-            render={props => <ConsumableEditPage {...props} />}
-          />
-          <Route 
-            exact path="/stocks"
-            render={props => <StocksListPage {...props} />}
-          />
-          <Route 
-            exact path="/create/stock"
-            render={props => <ConsumableEditPage {...props} />}
-          />
-          <Route 
-            exact path="/stocks/:stockId"
-            render={props => <StockPage {...props} />}
-          />
-          <Route 
-            exact path="/stocks/:stockId/edit"
-            render={props => <StockEditPage {...props} />}
-          />
-          
-          <Route 
-            exact path="/employees"
-            render={props => <EmployeesListPage {...props} />}
-          />
-          <Route 
-            exact path="/create/employee"
-            render={props => <EmployeeEditPage {...props} />}
-          />
-          <Route 
-            exact path="/employees/:employeeId"
-            render={props => <EmployeePage {...props} />}
-          />
-          <Route 
-            exact path="/employees/:employeeId/edit"
-            render={props => <EmployeeEditPage {...props} />}
-          />
-          
-          <Route 
-            exact path="/roles"
-            render={props => <RolesListPage {...props} />}
-          />
-          <Route 
-            exact path="/create/role"
-            render={props => <RoleEditPage {...props} />}
-          />
-          <Route 
-            exact path="/roles/:roleId"
-            render={props => <RolePage {...props} />}
-          />
-          <Route 
-            exact path="/roles/:roleId/edit"
-            render={props => <RoleEditPage {...props} />}
-          />
-          
-          <Route 
-            exact path="/contacts"
-            render={props => <ContactsListPage {...props} />}
-          />
-          <Route 
-            exact path="/create/contact"
-            render={props => <ContactEditPage {...props} />}
-          />
-          <Route 
-            exact path="/contacts/:contactId"
-            render={props => <ContactPage {...props} />}
-          />
-          <Route 
-            exact path="/contacts/:contactId/edit"
-            render={props => <ContactEditPage {...props} />}
-          />
-        </Switch>
-      </Layout>
-    </UserContext.Provider>
-  );
+                    <Route
+                        exact path="/services"
+                        render={props => <ServicesListPage />}
+                    />
+                    <Route
+                        exact path="/create/service"
+                        render={props => <ServiceEditPage {...props} />}
+                    />
+                    <Route
+                        exact path="/services/:serviceId"
+                        render={props => <ServicePage {...props} />}
+                    />
+                    <Route
+                        exact path="/services/:serviceId/edit"
+                        render={props => <ServiceEditPage {...props} />}
+                    />
+                    <Route
+                        exact path="/services/:serviceId/request"
+                        render={props => <RequestServicePage {...props} />}
+                    />
+                    <Route
+                        exact path="/services/:serviceId/requests"
+                        render={props => <ServiceRequestsListPage {...props} />}
+                    />
+                    <Route
+                        exact path="/servicerequests/:requestId"
+                        render={props => <ServiceRequestPage {...props} />}
+                    />
+
+                    <Route
+                        exact path="/departments"
+                        render={props => <DepartmentsListPage {...props} />}
+                    />
+                    <Route
+                        exact path="/create/department"
+                        render={props => <DepartmentEditPage {...props} />}
+                    />
+                    <Route
+                        exact path="/departments/:departmentId"
+                        render={props => <DepartmentPage {...props} />}
+                    />
+                    <Route
+                        exact path="/departments/:departmentId/edit"
+                        render={props => <DepartmentEditPage {...props} />}
+                    />
+                    <Route
+                        exact path="/departments/:departmentId/services"
+                        render={props => <ServicesListPage filter={{ departmentId: props.match.params.departmentId }} />}
+                    />
+                    <Route
+                        exact path="/departments/:departmentId/resources"
+                        render={props => <ResourcesListPage {...props} />}
+                    />
+                    <Route
+                        exact path="/departments/:departmentId/stocks"
+                        render={props => <StocksListPage {...props} />}
+                    />
+                    <Route
+                        exact path="/departments/services"
+                        render={props => <DepartmentServices {...props} />}
+                    />
+
+                    <Route
+                        exact path="/resources"
+                        render={props => <ResourcesListPage {...props} />}
+                    />
+                    <Route
+                        exact path="/create/resource"
+                        render={props => <ResourceEditPage {...props} />}
+                    />
+                    <Route
+                        exact path="/resources/:resourceId"
+                        render={props => <ResourcePage {...props} />}
+                    />
+                    <Route
+                        exact path="/resources/:resourceId/edit"
+                        render={props => <ResourceEditPage {...props} />}
+                    />
+                    <Route
+                        exact path="/consumables"
+                        render={props => <ConsumablesListPage {...props} />}
+                    />
+                    <Route
+                        exact path="/create/consumable"
+                        render={props => <ConsumableEditPage {...props} />}
+                    />
+                    <Route
+                        exact path="/consumables/:consumableId"
+                        render={props => <ConsumablePage {...props} />}
+                    />
+                    <Route
+                        exact path="/consumables/:consumableId/edit"
+                        render={props => <ConsumableEditPage {...props} />}
+                    />
+                    <Route
+                        exact path="/stocks"
+                        render={props => <StocksListPage {...props} />}
+                    />
+                    <Route
+                        exact path="/create/stock"
+                        render={props => <ConsumableEditPage {...props} />}
+                    />
+                    <Route
+                        exact path="/stocks/:stockId"
+                        render={props => <StockPage {...props} />}
+                    />
+                    <Route
+                        exact path="/stocks/:stockId/edit"
+                        render={props => <StockEditPage {...props} />}
+                    />
+
+                    <Route
+                        exact path="/employees"
+                        render={props => <EmployeesListPage {...props} />}
+                    />
+                    <Route
+                        exact path="/create/employee"
+                        render={props => <EmployeeEditPage {...props} />}
+                    />
+                    <Route
+                        exact path="/employees/:employeeId"
+                        render={props => <EmployeePage {...props} />}
+                    />
+                    <Route
+                        exact path="/employees/:employeeId/edit"
+                        render={props => <EmployeeEditPage {...props} />}
+                    />
+
+                    <Route
+                        exact path="/roles"
+                        render={props => <RolesListPage {...props} />}
+                    />
+                    <Route
+                        exact path="/create/role"
+                        render={props => <RoleEditPage {...props} />}
+                    />
+                    <Route
+                        exact path="/roles/:roleId"
+                        render={props => <RolePage {...props} />}
+                    />
+                    <Route
+                        exact path="/roles/:roleId/edit"
+                        render={props => <RoleEditPage {...props} />}
+                    />
+
+                    <Route
+                        exact path="/contacts"
+                        render={props => <ContactsListPage {...props} />}
+                    />
+                    <Route
+                        exact path="/create/contact"
+                        render={props => <ContactEditPage {...props} />}
+                    />
+                    <Route
+                        exact path="/contacts/:contactId"
+                        render={props => <ContactPage {...props} />}
+                    />
+                    <Route
+                        exact path="/contacts/:contactId/edit"
+                        render={props => <ContactEditPage {...props} />}
+                    />
+
+                    <Route
+                        exact path="/institution"
+                        render={props => <InstitutionBuilderPage {...props} />}
+                    />
+                </Switch>
+            </Layout>
+        </UserContext.Provider>
+    );
 }
 
 export default App;

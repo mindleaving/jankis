@@ -1,0 +1,7 @@
+﻿namespace JanKIS.API.Models
+{
+    public class OrdinalDiagnosticTestResult : DiagnosticTestResult
+    {
+        public override DiagnosticTestScaleType ScaleType => DiagnosticTestScaleType.Quantitative;
+    }
+}

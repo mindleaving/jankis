@@ -30,7 +30,7 @@ export const PagedTable = (props: PropsWithChildren<PagedTableProps>) => {
     }, [ onPageChanged, entriesPerPage ]);
     useEffect(() => {
         const loadItems = async () => {
-            //setIsLoading(true);
+            setIsLoading(true);
             try {
                 await onPageChanged(pageIndex, entriesPerPage, orderBy, orderDirection);
             } finally {

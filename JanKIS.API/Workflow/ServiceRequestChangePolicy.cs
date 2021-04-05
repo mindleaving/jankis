@@ -12,15 +12,18 @@ namespace JanKIS.API.Workflow
     {
         private readonly IReadonlyStore<ServiceDefinition> servicesStore;
         private readonly IReadonlyStore<Patient> patientsStore;
+        private readonly IAdmissionsStore admissionsStore;
         private readonly IReadonlyStore<Employee> employeesStore;
 
         public ServiceRequestChangePolicy(
             IReadonlyStore<ServiceDefinition> servicesStore,
             IReadonlyStore<Patient> patientsStore,
+            IAdmissionsStore admissionsStore,
             IReadonlyStore<Employee> employeesStore)
         {
             this.servicesStore = servicesStore;
             this.patientsStore = patientsStore;
+            this.admissionsStore = admissionsStore;
             this.employeesStore = employeesStore;
         }
 
@@ -52,14 +55,18 @@ namespace JanKIS.API.Workflow
                 var patient = await patientsStore.GetByIdAsync(personReference.Id);
                 if (patient == null)
                     throw new Exception($"Patient with ID '{personReference.Id}' doesn't exist");
-                foreach (var contactPerson in patient.ContactPersons)
+                var currentAdmission = await admissionsStore.GetCurrentAdmissionAsync(patient.Id);
+                if (currentAdmission != null)
                 {
-                    if(contactPerson.Type != PersonType.Employee)
-                        continue;
-                    var employee = await employeesStore.GetByIdAsync(contactPerson.Id);
-                    if(employee == null)
-                        continue;
-                    departmentIds.AddRange(employee.DepartmentIds);
+                    foreach (var contactPerson in currentAdmission.ContactPersons)
+                    {
+                        if(contactPerson.Type != PersonType.Employee)
+                            continue;
+                        var employee = await employeesStore.GetByIdAsync(contactPerson.Id);
+                        if(employee == null)
+                            continue;
+                        departmentIds.AddRange(employee.DepartmentIds);
+                    }
                 }
                 return departmentIds.Distinct().ToList();
             }
