@@ -7,7 +7,7 @@ import { DepartmentEditPage } from './pages/Departments/DepartmentEditPage';
 import { DepartmentPage } from './pages/Departments/DepartmentPage';
 import { DepartmentsListPage } from './pages/Departments/DepartmentsListPage';
 import { NewsPage } from './pages/NewsPage';
-import { CreatePatientPage } from './pages/Patients/CreatePatientPage';
+import { CreateEditPatientPage } from './pages/Patients/CreateEditPatientPage';
 import { MyPatientsPage } from './pages/Patients/MyPatientsPage';
 import { PatientDiagnosticsPage } from './pages/Patients/PatientDiagnosticsPage';
 import { PatientDocumentsPage } from './pages/Patients/PatientDocumentsPage';
@@ -37,7 +37,6 @@ import { WardBedsPage } from './pages/Ward/WardBedsPage';
 import { WardEditPage } from './pages/Ward/WardEditPage';
 import { WardPage } from './pages/Ward/WardPage';
 import { WardsListPage } from './pages/Ward/WardsListPage';
-import './styles/App.css';
 import { Models } from './types/models';
 import { ContactsListPage } from './pages/ContactList/ContactsListPage';
 import { ContactEditPage } from './pages/ContactList/ContactEditPage';
@@ -86,7 +85,7 @@ function App() {
                     />
                     <Route
                         exact path="/create/patient"
-                        render={props => <CreatePatientPage {...props} />}
+                        render={props => <CreateEditPatientPage {...props} />}
                     />
                     <Route
                         exact path="/mypatients"
@@ -95,6 +94,10 @@ function App() {
                     <Route
                         exact path="/patients/:patientId"
                         render={props => <PatientPage {...props} />}
+                    />
+                    <Route
+                        exact path="/patients/:patientId/edit"
+                        render={props => <CreateEditPatientPage {...props} />}
                     />
                     <Route
                         exact path="/patients/:patientId/medications"

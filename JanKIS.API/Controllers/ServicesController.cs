@@ -16,7 +16,7 @@ namespace JanKIS.API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class ServicesController : ControllerBase
+    public class ServicesController : RestControllerBase<ServiceDefinition>
     {
         private readonly IStore<ServiceDefinition> servicesStore;
         private readonly IStore<ServiceRequest> serviceRequestsStore;
@@ -34,6 +34,7 @@ namespace JanKIS.API.Controllers
             IReadonlyStore<Employee> employeesStore,
             IReadonlyStore<Patient> patientsStore,
             ServiceRequestChangePolicy serviceRequestChangePolicy)
+            : base(servicesStore)
         {
             this.servicesStore = servicesStore;
             this.serviceRequestsStore = serviceRequestsStore;
@@ -42,34 +43,6 @@ namespace JanKIS.API.Controllers
             this.employeesStore = employeesStore;
             this.patientsStore = patientsStore;
             this.serviceRequestChangePolicy = serviceRequestChangePolicy;
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetMany(
-            int? count = null, 
-            int? skip = null, 
-            string orderBy = null,
-            OrderDirection? orderDirection = null)
-        {
-            Expression<Func<ServiceDefinition, object>> orderByExpression = orderBy?.ToLower() switch
-            {
-                "id" => x => x.Id,
-                "name" => x => x.Name,
-                "department" => x => x.DepartmentId,
-                _ => x => x.Name
-            };
-            var items = await servicesStore.GetMany(count, skip, orderByExpression, orderDirection ?? OrderDirection.Ascending);
-            return Ok(items);
-        }
-
-        [HttpGet(nameof(Search))]
-        public async Task<IActionResult> Search([FromQuery] string searchText, [FromQuery] int? count = null, [FromQuery] int? skip = null)
-        {
-            var searchTerms = SearchTermSplitter.SplitAndToLower(searchText);
-            var searchExpression = SearchExpressionBuilder.ContainsAll<ServiceDefinition>(x => x.Name.ToLower(), searchTerms);
-            var items = await servicesStore.SearchAsync(searchExpression, count, skip);
-            var prioritizedItems = items.OrderBy(x => x.Name.Length);
-            return Ok(prioritizedItems);
         }
 
         [HttpPost("{serviceId}/request")]
@@ -115,6 +88,29 @@ namespace JanKIS.API.Controllers
             existingRequest.ParameterResponses = request.ParameterResponses;
             await serviceRequestsStore.StoreAsync(existingRequest);
             return Ok();
+        }
+
+        protected override Expression<Func<ServiceDefinition, object>> BuildOrderByExpression(string orderBy)
+        {
+            return orderBy?.ToLower() switch
+            {
+                "id" => x => x.Id,
+                "name" => x => x.Name,
+                "department" => x => x.DepartmentId,
+                _ => x => x.Name
+            };
+        }
+
+        protected override Expression<Func<ServiceDefinition, bool>> BuildSearchExpression(string[] searchTerms)
+        {
+            return SearchExpressionBuilder.ContainsAll<ServiceDefinition>(x => x.Name.ToLower(), searchTerms);
+        }
+
+        protected override IEnumerable<ServiceDefinition> PrioritizeItems(
+            List<ServiceDefinition> items,
+            string searchText)
+        {
+            return items.OrderBy(x => x.Name.Length);
         }
 
     }

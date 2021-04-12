@@ -7,6 +7,8 @@ import { Models } from '../../types/models';
 import { PagedTable } from '../PagedTable';
 import { NotificationManager } from 'react-notifications';
 import { Button } from 'react-bootstrap';
+import { confirmAlert } from 'react-confirm-alert';
+import { deleteObject } from '../../helpers/DeleteHelpers';
 
 interface ContactsListProps {
     filter?: ContactsListFilter
@@ -41,6 +43,37 @@ export const ContactsList = (props: ContactsListProps) => {
             NotificationManager.error(error.message, resolveText('Contacts_CouldNotLoad'));
         }
     }, [ filter]);
+
+    const confirmDeleteContact = (id: string, name: string) => {
+        confirmAlert({
+            title: resolveText('Contact_ConfirmDelete_Title'),
+            message: resolveText('Contact_ConfirmDelete_Message').replace('{0}', name),
+            closeOnClickOutside: true,
+            buttons: [
+                {
+                    label: resolveText('Delete_No'),
+                    onClick: () => {}
+                },
+                {
+                    label: resolveText('Delete_Yes'),
+                    onClick: () => deleteContact(id, name, true)
+                }
+            ]
+        })
+    }
+    const deleteContact = async (id: string, name: string, force: boolean = false) => {
+        if(!force) {
+            confirmDeleteContact(id, name);
+            return;
+        }
+        await deleteObject(
+            `api/contacts/${id}`,
+            {},
+            resolveText('Contact_SuccessfullyDeleted'),
+            resolveText('Contact_CouldNotDelete'),
+            () => setContacts(contacts.filter(x => x.id !== id))
+        )
+    }
     return (
         <PagedTable
             onPageChanged={loadContacts}
@@ -49,6 +82,7 @@ export const ContactsList = (props: ContactsListProps) => {
         >
             <thead>
                 <tr>
+                    <th></th>
                     <th>{resolveText('Contacts_Name')}</th>
                     <th>{resolveText('Contacts_PhoneNumber')}</th>
                     <th>{resolveText('Contacts_Email')}</th>
@@ -58,11 +92,12 @@ export const ContactsList = (props: ContactsListProps) => {
             <tbody>
                 {contacts.length > 0
                 ? contacts.map(contact => (
-                    <tr>
+                    <tr key={contact.id}>
+                        <td><i className="fa fa-trash red clickable" onClick={() => deleteContact(contact.id, contact.name)}/></td>
                         <td>{contact.name}</td>
                         <td>{contact.phoneNumber}</td>
                         <td>{contact.email}</td>
-                        <td><Button variant="link">{resolveText('Edit...')}</Button></td>
+                        <td><Button variant="link" onClick={() => history.push(`/contacts/${contact.id}/edit`)}>{resolveText('Edit...')}</Button></td>
                     </tr>
                 ))
                 : <tr>

@@ -43,12 +43,28 @@ namespace JanKIS.API
 
             services.AddScoped<IReadonlyStore<Role>, GenericReadonlyStore<Role>>();
             services.AddScoped<IStore<Role>, GenericStore<Role>>();
+            services.AddScoped<IReadonlyStore<Employee>, GenericReadonlyStore<Employee>>();
             services.AddScoped<IStore<Employee>, GenericStore<Employee>>();
             services.AddScoped<IPersonWithLoginStore<Employee>, UserStore<Employee>>();
+            services.AddScoped<IReadonlyStore<Patient>, GenericReadonlyStore<Patient>>();
+            services.AddScoped<IStore<Patient>, GenericStore<Patient>>();
             services.AddScoped<IPersonWithLoginStore<Patient>, UserStore<Patient>>();
             services.AddScoped<IAutocompleteCache, AutocompleteCache>();
+            services.AddScoped<IReadonlyStore<Contact>, GenericReadonlyStore<Contact>>();
             services.AddScoped<IStore<Contact>, GenericStore<Contact>>();
             services.AddScoped<IAdmissionsStore, AdmissionsStore>();
+            services.AddScoped<IReadonlyStore<Department>, GenericReadonlyStore<Department>>();
+            services.AddScoped<IStore<Department>, GenericStore<Department>>();
+            services.AddScoped<IReadonlyStore<ServiceDefinition>, GenericReadonlyStore<ServiceDefinition>>();
+            services.AddScoped<IStore<ServiceDefinition>, GenericStore<ServiceDefinition>>();
+            services.AddScoped<IReadonlyStore<ServiceRequest>, GenericReadonlyStore<ServiceRequest>>();
+            services.AddScoped<IStore<ServiceRequest>, GenericStore<ServiceRequest>>();
+            services.AddScoped<IReadonlyStore<ConsumableOrder>, GenericReadonlyStore<ConsumableOrder>>();
+            services.AddScoped<IStore<ConsumableOrder>, GenericStore<ConsumableOrder>>();
+            services.AddScoped<IReadonlyStore<Consumable>, GenericReadonlyStore<Consumable>>();
+            services.AddScoped<IStore<Consumable>, GenericStore<Consumable>>();
+            services.AddScoped<IReadonlyStore<InstitutionPolicy>, GenericReadonlyStore<InstitutionPolicy>>();
+            services.AddScoped<IStore<InstitutionPolicy>, GenericStore<InstitutionPolicy>>();
 
             services.AddHttpContextAccessor();
             services.AddControllers()

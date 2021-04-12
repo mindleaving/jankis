@@ -51,11 +51,11 @@ namespace JanKIS.API.Controllers
         }
 
         [Authorize(Policy = nameof(Permission.ModifyResources))]
-        public override Task<IActionResult> CreateOrUpdate(
+        public override Task<IActionResult> CreateOrReplace(
             string id,
             Resource item)
         {
-            return base.CreateOrUpdate(id, item);
+            return base.CreateOrReplace(id, item);
         }
 
         [Authorize(Policy = nameof(Permission.ModifyResources))]
@@ -79,7 +79,9 @@ namespace JanKIS.API.Controllers
             return SearchExpressionBuilder.ContainsAll<Resource>(x => x.Name.ToLower(), searchTerms);
         }
 
-        protected override IEnumerable<Resource> PrioritizeItems(List<Resource> items)
+        protected override IEnumerable<Resource> PrioritizeItems(
+            List<Resource> items,
+            string searchText)
         {
             return items.OrderBy(x => x.Name.Length);
         }

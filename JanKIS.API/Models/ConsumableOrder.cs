@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using JanKIS.API.Storage;
 
 namespace JanKIS.API.Models
 {
-    public class ConsumableOrder
+    public class ConsumableOrder : IId
     {
+        public string Id { get; set; }
         public string ConsumableId { get; set; }
         public PersonReference Requester { get; set; }
         public int Quantity { get; set; }

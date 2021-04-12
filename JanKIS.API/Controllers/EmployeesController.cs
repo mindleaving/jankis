@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 using JanKIS.API.AccessManagement;
+using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
 using Microsoft.AspNetCore.Authorization;
@@ -12,7 +15,7 @@ namespace JanKIS.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class EmployeesController : ControllerBase
+    public class EmployeesController : RestControllerBase<Employee>
     {
         private readonly IPersonWithLoginStore<Employee> employeesStore;
         private readonly IReadonlyStore<Role> rolesStore;
@@ -22,30 +25,37 @@ namespace JanKIS.API.Controllers
             IPersonWithLoginStore<Employee> employeesStore, 
             IReadonlyStore<Role> rolesStore,
             AuthenticationModule<Employee> authenticationModule)
+            : base(employeesStore)
         {
             this.employeesStore = employeesStore;
             this.rolesStore = rolesStore;
             this.authenticationModule = authenticationModule;
         }
 
-        [HttpGet]
-        [Authorize(Policy = nameof(Permission.ListEmployees))]
-        public async Task<IActionResult> GetMany(
-            [FromQuery] int? count = null,
-            [FromQuery] int? skip = null,
-            [FromQuery] string orderBy = null,
-            [FromQuery] OrderDirection? orderDirection = null)
+        protected override Expression<Func<Employee, object>> BuildOrderByExpression(string orderBy)
         {
-            Expression<Func<Employee, object>> orderByExpression = orderBy?.ToLower() switch
+            return orderBy?.ToLower() switch
             {
                 "firstname" => x => x.FirstName,
                 "lastname" => x => x.LastName,
                 _ => x => x.Id
             };
-            var items = await employeesStore.GetMany(count, skip, orderByExpression, orderDirection ?? OrderDirection.Ascending);
-            return Ok(items);
         }
 
+        protected override Expression<Func<Employee, bool>> BuildSearchExpression(string[] searchTerms)
+        {
+            return SearchExpressionBuilder.Or(
+                SearchExpressionBuilder.ContainsAny<Employee>(x => x.Id.ToLower(), searchTerms),
+                SearchExpressionBuilder.ContainsAny<Employee>(x => x.FirstName.ToLower(), searchTerms),
+                SearchExpressionBuilder.ContainsAny<Employee>(x => x.LastName.ToLower(), searchTerms));
+        }
+
+        protected override IEnumerable<Employee> PrioritizeItems(
+            List<Employee> items,
+            string searchText)
+        {
+            return items.OrderBy(x => x.Id);
+        }
 
         [HttpGet("{employeeId}/exists")]
         [Authorize(Policy = nameof(Permission.ListEmployees))]
@@ -54,34 +64,10 @@ namespace JanKIS.API.Controllers
             return await employeesStore.ExistsAsync(employeeId) ? Ok() : NotFound();
         }
 
-
-        [HttpPut("{employeeId}")]
         [Authorize(Policy = nameof(Permission.CreateEmployees))]
-        public async Task<IActionResult> CreateOrUpdate([FromRoute] string employeeId, [FromBody] EmployeeRegistrationInfo registrationInfo)
+        public override async Task<IActionResult> CreateOrReplace(string id, Employee item)
         {
-            if (registrationInfo.Id != employeeId)
-                return BadRequest("Employee-ID in body doesn't match route");
-            var existingEmployee = await employeesStore.GetByIdAsync(employeeId);
-            if (existingEmployee != null)
-            {
-                existingEmployee.FirstName = registrationInfo.FirstName;
-                existingEmployee.LastName = registrationInfo.LastName;
-                existingEmployee.InstitutionId = registrationInfo.InstitutionId;
-                existingEmployee.BirthDate = registrationInfo.BirthDate;
-                await employeesStore.StoreAsync(existingEmployee);
-            }
-            else
-            {
-                var employee = PersonFactory.CreateEmployee(
-                    employeeId,
-                    registrationInfo.FirstName,
-                    registrationInfo.LastName,
-                    registrationInfo.BirthDate,
-                    registrationInfo.InstitutionId,
-                    TemporaryPasswordGenerator.Generate()); // TODO: Store or return such that it can be printed and given to employee. Or generate in frontend.
-                await employeesStore.StoreAsync(employee);
-            }
-            return Ok(employeeId);
+            return await base.CreateOrReplace(id, item);
         }
 
         [HttpPost("{employeeId}/login")]
@@ -165,12 +151,10 @@ namespace JanKIS.API.Controllers
             return HandleStorageResult(result);
         }
 
-        [HttpDelete("{employeeId}")]
         [Authorize(Policy = nameof(Permission.DeleteEmployees))]
-        public async Task<IActionResult> DeleteEmployee([FromRoute] string employeeId)
+        public override async Task<IActionResult> Delete(string id)
         {
-            await employeesStore.DeleteAsync(employeeId);
-            return Ok();
+            return await base.Delete(id);
         }
 
         private IActionResult HandleStorageResult(StorageResult result)

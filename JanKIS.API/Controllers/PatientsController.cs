@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 using JanKIS.API.AccessManagement;
+using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
 using Microsoft.AspNetCore.Authorization;
@@ -12,7 +16,7 @@ namespace JanKIS.API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class PatientsController : ControllerBase
+    public class PatientsController : RestControllerBase<Patient>
     {
         private readonly IPatientStore patientsStore;
         private readonly AuthenticationModule<Patient> authenticationModule;
@@ -20,36 +24,10 @@ namespace JanKIS.API.Controllers
         public PatientsController(
             IPatientStore patientsStore,
             AuthenticationModule<Patient> authenticationModule)
+            : base(patientsStore)
         {
             this.patientsStore = patientsStore;
             this.authenticationModule = authenticationModule;
-        }
-
-        [HttpGet("{patientId}")]
-        public async Task<IActionResult> GetPatient([FromRoute] string patientId)
-        {
-            var patient = await patientsStore.GetByIdAsync(patientId);
-            if (patient == null)
-                return NotFound();
-            return Ok(patient);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CreatePatient([FromBody] PatientRegistrationInfo registrationInfo)
-        {
-            if (string.IsNullOrWhiteSpace(registrationInfo.Id))
-                return BadRequest("ID must be non-empty");
-            if (await patientsStore.ExistsAsync(registrationInfo.Id))
-                return Conflict();
-            var patient = PersonFactory.CreatePatient(
-                registrationInfo.Id,
-                registrationInfo.FirstName,
-                registrationInfo.LastName,
-                registrationInfo.BirthDate,
-                TemporaryPasswordGenerator.Generate(), // TODO: Store or return, such that it can be printed and given to patient. Or have it generated in frontend.
-                registrationInfo.HealthInsurance);
-            await patientsStore.StoreAsync(patient);
-            return Ok(registrationInfo.Id);
         }
 
         [HttpPatch("{patientId}/" + nameof(Admit))]
@@ -82,12 +60,10 @@ namespace JanKIS.API.Controllers
             throw new NotImplementedException();
         }
 
-        [HttpDelete("{patientId}")]
-        public async Task<IActionResult> DeletePatient([FromRoute] string patientId)
+        public override async Task<IActionResult> Delete(string id)
         {
             throw new NotImplementedException("Implement checks that only patients can be deleted that are not admitted, fully discharged, billed and invoices paid, etc.");
-            await patientsStore.DeleteAsync(patientId);
-            return Ok();
+            return await base.Delete(id);
         }
 
         [HttpGet("{patientId}/equipment")]
@@ -141,6 +117,34 @@ namespace JanKIS.API.Controllers
         {
             await authenticationModule.ChangePasswordAsync(patientId, password);
             return Ok();
+        }
+
+        protected override Expression<Func<Patient, object>> BuildOrderByExpression(string orderBy)
+        {
+            return orderBy?.ToLower() switch
+            {
+                "id" => x => x.Id,
+                "name" => x => x.LastName,
+                "lastname" => x => x.LastName,
+                "firstname" => x => x.FirstName,
+                "birthday" => x => x.BirthDate,
+                _ => x => x.LastName
+            };
+        }
+
+        protected override Expression<Func<Patient, bool>> BuildSearchExpression(string[] searchTerms)
+        {
+            return SearchExpressionBuilder.Or(
+                SearchExpressionBuilder.ContainsAny<Patient>(x => x.Id.ToLower(), searchTerms),
+                SearchExpressionBuilder.ContainsAny<Patient>(x => x.LastName.ToLower(), searchTerms),
+                SearchExpressionBuilder.ContainsAny<Patient>(x => x.FirstName.ToLower(), searchTerms));
+        }
+
+        protected override IEnumerable<Patient> PrioritizeItems(
+            List<Patient> items,
+            string searchText)
+        {
+            return items.OrderBy(x => x.LastName);
         }
     }
 }

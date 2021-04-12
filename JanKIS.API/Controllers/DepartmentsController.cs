@@ -102,7 +102,9 @@ namespace JanKIS.API.Controllers
             return SearchExpressionBuilder.ContainsAll<Department>(x => x.Name.ToLower(), searchTerms);
         }
 
-        protected override IEnumerable<Department> PrioritizeItems(List<Department> items)
+        protected override IEnumerable<Department> PrioritizeItems(
+            List<Department> items,
+            string searchText)
         {
             return items.OrderBy(x => x.Name.Length);
         }

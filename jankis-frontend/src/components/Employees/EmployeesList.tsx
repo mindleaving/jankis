@@ -1,5 +1,8 @@
 import React, { useMemo, useState } from 'react';
+import { Button } from 'react-bootstrap';
+import { confirmAlert } from 'react-confirm-alert';
 import { useHistory } from 'react-router-dom';
+import { deleteObject } from '../../helpers/DeleteHelpers';
 import { resolveText } from '../../helpers/Globalizer';
 import PagedTableLoader from '../../helpers/PagedTableLoader';
 import { EmployeesFilter } from '../../types/frontendTypes';
@@ -18,9 +21,40 @@ export const EmployeesList = (props: EmployeesListProps) => {
         'api/employees', 
         resolveText('Employees_CouldNotLoad'),
         setUsers,
-        filter), 
+        filter),
     [ filter ]);
     const history = useHistory();
+
+    const confirmDeleteEmployee = (id: string, name: string) => {
+        confirmAlert({
+            title: resolveText('Employee_ConfirmDelete_Title'),
+            message: resolveText('Employee_ConfirmDelete_Message').replace('{0}', name),
+            closeOnClickOutside: true,
+            buttons: [
+                {
+                    label: resolveText('Delete_No'),
+                    onClick: () => {}
+                }, 
+                {
+                    label: resolveText('Delete_Yes'),
+                    onClick: () => deleteEmployee(id, name, true)
+                }
+            ]
+        });
+    }
+    const deleteEmployee = async (id: string, name: string, force: boolean = false) => {
+        if(!force) {
+            confirmDeleteEmployee(id, name);
+            return;
+        }
+        await deleteObject(
+            `api/employees/${id}`,
+            {},
+            resolveText('Employee_SuccessfullyDeleted'),
+            resolveText('Employee_CouldNotDelete'),
+            () => setUsers(users.filter(x => x.id !== id))
+        )
+    }
     
     return (
         <PagedTable
@@ -30,6 +64,7 @@ export const EmployeesList = (props: EmployeesListProps) => {
         >
             <thead>
                 <tr>
+                    <th></th>
                     <th>{resolveText('ID')}</th>
                     <th>{resolveText('FirstName')}</th>
                     <th>{resolveText('LastName')}</th>
@@ -41,11 +76,12 @@ export const EmployeesList = (props: EmployeesListProps) => {
                 {users.length > 0
                 ? users.map(user => (
                     <tr key={user.id}>
+                        <td><i className="fa fa-trash red clickable" onClick={() => deleteEmployee(user.id, `${user.firstName} ${user.lastName}`)} /></td>
                         <td>{user.id}</td>
                         <td>{user.firstName}</td>
                         <td>{user.lastName}</td>
                         <td>{user.roles.join(', ')}</td>
-                        <td><a href={`/employees/${user.id}/edit`} target="_blank" rel="noreferrer">Edit...</a></td>
+                        <td><Button className="p-0" variant="link" onClick={() => history.push(`/employees/${user.id}/edit`)}>{resolveText('Edit...')}</Button></td>
                     </tr>
                 ))
                 : <tr>

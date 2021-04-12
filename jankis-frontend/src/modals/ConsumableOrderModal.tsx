@@ -8,6 +8,7 @@ import { NotificationManager } from 'react-notifications';
 import { apiClient } from '../communication/ApiClient';
 import { OrderState } from '../types/enums.d';
 import UserContext from '../contexts/UserContext';
+import { v4 as uuid } from 'uuid';
 
 interface ConsumableOrderModalProps {
     show: boolean;
@@ -43,6 +44,7 @@ export const ConsumableOrderModal = (props: ConsumableOrderModalProps) => {
     }
     const buildOrder = (): Models.ConsumableOrder => {
         return {
+            id: uuid(),
             consumableId: props.consumableId,
             note: note,
             preferredSources: [ props.orderInfo.stockId ],

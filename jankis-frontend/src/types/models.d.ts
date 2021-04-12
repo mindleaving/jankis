@@ -57,10 +57,10 @@ export namespace Models {
         systolic: number;
         diastolic: number;
         id: string;
+        type: Enums.PatientEventType;
         patientId: string;
         createdBy: string;
         timestamp: Date;
-        type: string;
     }
 
     interface BooleanServiceParameter {
@@ -82,6 +82,7 @@ export namespace Models {
     }
 
     interface ConsumableOrder {
+        id: string;
         consumableId: string;
         requester: Models.PersonReference;
         quantity: number;
@@ -94,8 +95,9 @@ export namespace Models {
     interface Contact {
         id: string;
         name: string;
-        phoneNumber: string;
-        email: string;
+        phoneNumber?: string;
+        email?: string;
+        note?: string;
     }
 
     interface Department {
@@ -119,6 +121,8 @@ export namespace Models {
     }
 
     interface DiagnosticTestResult {
+        type: Enums.PatientEventType;
+        patientId: string;
         createdBy: string;
         timestamp: Date;
         testCodeLoinc: string;
@@ -133,6 +137,9 @@ export namespace Models {
 
     interface DocumentDiagnosticTestResult {
         scaleType: Enums.DiagnosticTestScaleType;
+        documentId: string;
+        type: Enums.PatientEventType;
+        patientId: string;
         createdBy: string;
         timestamp: Date;
         testCodeLoinc: string;
@@ -168,14 +175,6 @@ export namespace Models {
         birthDate: Date;
     }
 
-    interface EmployeeRegistrationInfo {
-        institutionId: string;
-        id: string;
-        firstName: string;
-        lastName: string;
-        birthDate: Date;
-    }
-
     interface EmployeeServiceAudience {
         employeeId: string;
         type: Enums.ServiceAudienceType;
@@ -183,6 +182,9 @@ export namespace Models {
 
     interface FreetextDiagnosticTestResult {
         scaleType: Enums.DiagnosticTestScaleType;
+        text: string;
+        type: Enums.PatientEventType;
+        patientId: string;
         createdBy: string;
         timestamp: Date;
         testCodeLoinc: string;
@@ -213,6 +215,8 @@ export namespace Models {
     }
 
     interface IPatientEvent {
+        type: Enums.PatientEventType;
+        patientId: string;
         createdBy: string;
         timestamp: Date;
     }
@@ -275,6 +279,9 @@ export namespace Models {
 
     interface NominalDiagnosticTestResult {
         scaleType: Enums.DiagnosticTestScaleType;
+        value: string;
+        type: Enums.PatientEventType;
+        patientId: string;
         createdBy: string;
         timestamp: Date;
         testCodeLoinc: string;
@@ -299,10 +306,10 @@ export namespace Models {
 
     interface Observation {
         id: string;
+        type: Enums.PatientEventType;
         patientId: string;
         createdBy: string;
         timestamp: Date;
-        type: string;
     }
 
     interface OptionsServiceParameter {
@@ -320,15 +327,10 @@ export namespace Models {
 
     interface OrdinalDiagnosticTestResult {
         scaleType: Enums.DiagnosticTestScaleType;
-        createdBy: string;
-        timestamp: Date;
-        testCodeLoinc: string;
-        testCodeLocal: string;
-        testName: string;
-    }
-
-    interface OrdinalOrQuantitativeDiagnosticTestResult {
-        scaleType: Enums.DiagnosticTestScaleType;
+        value: string;
+        numericalValue: number;
+        type: Enums.PatientEventType;
+        patientId: string;
         createdBy: string;
         timestamp: Date;
         testCodeLoinc: string;
@@ -348,18 +350,18 @@ export namespace Models {
         birthDate: Date;
     }
 
+    interface PatientDocument {
+        id: string;
+        createdTimestamp: Date;
+        note: string;
+    }
+
     interface PatientNote {
+        type: Enums.PatientEventType;
+        patientId: string;
         createdBy: string;
         timestamp: Date;
         message: string;
-    }
-
-    interface PatientRegistrationInfo {
-        id: string;
-        firstName: string;
-        lastName: string;
-        birthDate: Date;
-        healthInsurance: Models.HealthInsurance;
     }
 
     interface PatientServiceAudience {
@@ -411,17 +413,20 @@ export namespace Models {
         bpm: number;
         location: string;
         id: string;
+        type: Enums.PatientEventType;
         patientId: string;
         createdBy: string;
         timestamp: Date;
-        type: string;
     }
 
     interface QuantitativeDiagnosticTestResult {
         scaleType: Enums.DiagnosticTestScaleType;
+        value: number;
         unit: string;
         referenceRangeStart: number;
         referenceRangeEnd: number;
+        type: Enums.PatientEventType;
+        patientId: string;
         createdBy: string;
         timestamp: Date;
         testCodeLoinc: string;
@@ -506,6 +511,8 @@ export namespace Models {
 
     interface SetDiagnosticTestResult {
         scaleType: Enums.DiagnosticTestScaleType;
+        type: Enums.PatientEventType;
+        patientId: string;
         createdBy: string;
         timestamp: Date;
         testCodeLoinc: string;
@@ -547,6 +554,7 @@ export namespace Models {
 
     interface Ward {
         id: string;
+        name: string;
         institutionId: string;
         rooms: Models.Room[];
     }

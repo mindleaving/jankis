@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import { resolveText } from '../../helpers/Globalizer';
 import { EmployeesFilter } from '../../types/frontendTypes';
@@ -12,6 +12,13 @@ export const EmployeesFilterView = (props: EmployeesFilterViewProps) => {
 
     const [ searchText, setSearchText ] = useState<string>('');
 
+    const setFilter = props.setFilter;
+    useEffect(() => {
+        setFilter({
+            searchText: searchText
+        });
+    }, [ setFilter, searchText ]);
+    
     return (
         <Form>
             <RowFormGroup

@@ -1,5 +1,5 @@
 import { apiClient } from "../communication/ApiClient";
-import { NoficationManager } from 'react-notifications';
+import { NotificationManager } from 'react-notifications';
 
 export const buildLoadObjectFunc = <T extends unknown>(
     apiPath: string,
@@ -22,7 +22,7 @@ export const loadObject = async <T extends unknown>(
         onItemLoaded(item);
 
     } catch (error) {
-        NoficationManager.error(error.message, errorText);
+        NotificationManager.error(error.message, errorText);
     } finally {
         if(onFinally) {
             onFinally();

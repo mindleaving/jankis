@@ -3,7 +3,7 @@ import { OrderDirection } from "../types/frontendTypes.d";
 import { NotificationManager } from 'react-notifications';
 
 export default class PagedTableLoader<T> {
-    apiPath: string;
+    apiControllerPath: string;
     errorMessage: string;
     callback: (items: T[]) => void;
     filter?: any;
@@ -13,7 +13,7 @@ export default class PagedTableLoader<T> {
         errorMessage: string,
         callback: (items: T[]) => void,
         filter?: any) {
-        this.apiPath = apiPath;
+        this.apiControllerPath = apiPath;
         this.errorMessage = errorMessage;
         this.callback = callback;
         this.filter = filter;
@@ -33,10 +33,17 @@ export default class PagedTableLoader<T> {
                 params["orderBy"] = orderBy;
                 params["orderDirection"] = orderDirection ?? OrderDirection.Ascending;
             }
+            let apiMethodPath = this.apiControllerPath;
             if(this.filter) {
                 params = Object.assign(params, this.filter);
+                if(this.filter.searchText) {
+                    if(!apiMethodPath.endsWith('/')) {
+                        apiMethodPath += '/';
+                    }
+                    apiMethodPath += 'search';
+                }
             }
-            const response = await apiClient.get(this.apiPath, params);
+            const response = await apiClient.get(apiMethodPath, params);
             const items = await response.json() as T[];
             this.callback(items);
         } catch(error) {

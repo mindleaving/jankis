@@ -31,7 +31,9 @@ namespace JanKIS.API.Controllers
             return SearchExpressionBuilder.ContainsAll<Contact>(x => x.Name.ToLower(), searchTerms);
         }
 
-        protected override IEnumerable<Contact> PrioritizeItems(List<Contact> items)
+        protected override IEnumerable<Contact> PrioritizeItems(
+            List<Contact> items,
+            string searchText)
         {
             return items.OrderBy(x => x.Name);
         }

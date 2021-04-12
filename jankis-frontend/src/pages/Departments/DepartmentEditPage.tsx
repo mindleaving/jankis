@@ -1,4 +1,4 @@
-import React, { FormEvent, useMemo, useState } from 'react';
+import React, { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Col, Form, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { AsyncButton } from '../../components/AsyncButton';
 import { RowFormGroup } from '../../components/RowFormGroup';
@@ -6,10 +6,12 @@ import { resolveText } from '../../helpers/Globalizer';
 import { NotificationManager } from 'react-notifications';
 import { apiClient } from '../../communication/ApiClient';
 import { Models } from '../../types/models';
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps, useHistory } from 'react-router';
 import { v4 as uuid } from 'uuid';
 import { Autocomplete } from '../../components/Autocomplete';
 import { AutocompleteRunner } from '../../helpers/AutocompleteRunner';
+import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
+import { ListFormControl } from '../../components/ListFormControl';
 
 interface DepartmentParams {
     departmentId?: string;
@@ -24,15 +26,34 @@ export const DepartmentEditPage = (props: DepartmentEditPageProps) => {
     const departmentAutocompleteRunner = useMemo(() => new AutocompleteRunner<Models.Department>('api/departments/search', 'searchText', 10), []);
     const [ name, setName ] = useState<string>('');
     const [ parentDepartmentId, setParentDepartmentId ] = useState<string>();
+    const [ isLoading, setIsLoading ] = useState<boolean>(!isNew);
     const [ isStoring, setIsStoring ] = useState<boolean>(false);
+    const history = useHistory();
+
+    useEffect(() => {
+        if(isNew) return;
+        setIsLoading(true);
+        const loadDepartment = buildLoadObjectFunc<Models.Department>(
+            `api/departments/${id}`,
+            {},
+            resolveText('Department_CouldNotLoad'),
+            (department) => {
+                setName(department.name);
+                setParentDepartmentId(department.parentDepartment);
+            },
+            () => setIsLoading(false)
+        );
+        loadDepartment();
+    }, [ isNew, id ])
 
     const store = async (e?: FormEvent) => {
         e?.preventDefault();
         try {
             setIsStoring(true);
             const department = buildDepartment();
-            await apiClient.put(`api/departments/${id}`, {}, department);
+            await apiClient.put(`api/departments/${department.id}`, {}, department);
             NotificationManager.success(resolveText('Department_SuccessfullyStored'));
+            history.push('/departments');
         } catch(error) {
             NotificationManager.error(error.message, resolveText('Department_CouldNotStore'));
         } finally {
@@ -48,7 +69,7 @@ export const DepartmentEditPage = (props: DepartmentEditPageProps) => {
         }
     }
 
-    if(isNew) {
+    if(isLoading) {
         return (<h1>{resolveText('Loading...')}</h1>);
     }
     

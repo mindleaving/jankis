@@ -6,7 +6,6 @@ namespace JanKIS.API.Models
     [BsonKnownTypes(
         typeof(QuantitativeDiagnosticTestResult),
         typeof(OrdinalDiagnosticTestResult),
-        typeof(OrdinalOrQuantitativeDiagnosticTestResult),
         typeof(NominalDiagnosticTestResult),
         typeof(FreetextDiagnosticTestResult),
         typeof(DocumentDiagnosticTestResult),
@@ -14,6 +13,8 @@ namespace JanKIS.API.Models
     )]
     public abstract class DiagnosticTestResult : IDiagnosticTestResult
     {
+        public PatientEventType Type => PatientEventType.Diagnostics;
+        public string PatientId { get; set; }
         public string CreatedBy { get; set; }
         public DateTime Timestamp { get; set; }
         public string TestCodeLoinc { get; set; }

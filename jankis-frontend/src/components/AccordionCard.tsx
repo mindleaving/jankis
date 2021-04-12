@@ -10,14 +10,14 @@ export const AccordionCard = (props: AccordionCardProps) => {
 
     return (
         <Card>
-        <Accordion.Toggle as={Card.Header} eventKey={props.eventKey}>
-            {props.title}
-        </Accordion.Toggle>
-        <Accordion.Collapse eventKey={props.eventKey}>
-            <Card.Body>
-                {props.children}
-            </Card.Body>
-        </Accordion.Collapse>
+            <Accordion.Toggle as={Card.Header} eventKey={props.eventKey}>
+                {props.title}
+            </Accordion.Toggle>
+            <Accordion.Collapse eventKey={props.eventKey}>
+                <Card.Body>
+                    {props.children}
+                </Card.Body>
+            </Accordion.Collapse>
         </Card>
     );
 

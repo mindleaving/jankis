@@ -45,7 +45,7 @@ export const Layout = (props: LayoutProps) => {
         <>
             <NotificationContainer />
             <Navbar bg="light" expand="md" sticky="top">
-                <Navbar.Brand onClick={() => history.push('/')}>JanKIS</Navbar.Brand>
+                <Navbar.Brand className="clickable" onClick={() => history.push('/')}>JanKIS</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     {userMenu}
