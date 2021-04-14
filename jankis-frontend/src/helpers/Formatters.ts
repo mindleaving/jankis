@@ -8,15 +8,11 @@ export const formatServiceAudience = (item: Models.ServiceAudience) => {
     }
     if(item.type === ServiceAudienceType.Role) {
         const roleAudience = item as Models.RoleServiceAudience;
-        return `${resolveText('ServiceAudienceType_Role')}: ${roleAudience.roleName}`;
+        return `${resolveText('ServiceAudienceType_Role')}: ${roleAudience.roleId}`;
     }
-    if(item.type === ServiceAudienceType.Employee) {
-        const employeeAudience = item as Models.EmployeeServiceAudience;
-        return `${resolveText('ServiceAudienceType_Employee')}: ${employeeAudience.employeeId}`;
-    }
-    if(item.type === ServiceAudienceType.Patient) {
-        const patientAudience = item as Models.PatientServiceAudience;
-        return `${resolveText('ServiceAudienceType_Patient')}: ${patientAudience.patientId}`;
+    if(item.type === ServiceAudienceType.Person) {
+        const patientAudience = item as Models.PersonServiceAudience;
+        return `${resolveText('ServiceAudienceType_Person')}: ${patientAudience.personId}`;
     }
     throw new Error(`Formatting of service audience type '${item.type}' not implemented`);
 }

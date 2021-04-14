@@ -1,34 +1,91 @@
-import React, { useState } from 'react';
+import React, { FormEvent, useEffect, useState } from 'react';
 import { Button, Col, Form, FormControl, FormGroup, FormLabel, InputGroup, Row } from 'react-bootstrap';
+import { RouteComponentProps, useHistory } from 'react-router';
 import { ListFormControl } from '../../components/ListFormControl';
 import { RowFormGroup } from '../../components/RowFormGroup';
-//import { Autocomplete } from '../../components/Autocomplete';
-//import { AutocompleteRunner } from '../../helpers/AutocompleteRunner';
 import { resolveText } from '../../helpers/Globalizer';
+import { buidlAndStoreObject } from '../../helpers/StoringHelpers';
 import { Permission } from '../../types/enums.d';
+import { v4 as uuid } from 'uuid';
+import { Models } from '../../types/models';
+import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
+import { AsyncButton } from '../../components/AsyncButton';
 
-interface RoleEditPageProps {}
+interface RoleParams {
+    roleId?: string;
+}
+interface RoleEditPageProps extends RouteComponentProps<RoleParams> {}
 
 export const RoleEditPage = (props: RoleEditPageProps) => {
 
-    //const permissionAutocompleteRunner = useMemo(() => new AutocompleteRunner<string>('api/autocomplete/permissions', 'searchText', 10), []);
-    const [ name, setName ] = useState<string>('');
-    const [ selectedPermission, setSelectedPermission ] = useState<string>('');
-    const [ permissions, setPermissions ] = useState<string[]>([]);
+    const isNew = props.match.path.toLowerCase().startsWith('/create');
+    const id = props.match.params.roleId ?? uuid();
 
-    const addPermission = (permission: string) => {
+    const [ name, setName ] = useState<string>('');
+    const [ isSystemRole, setIsSystemRole ] = useState<boolean>(false);
+    const [ selectedPermission, setSelectedPermission ] = useState<Permission>();
+    const [ permissions, setPermissions ] = useState<Permission[]>([]);
+    const history = useHistory();
+    const [ isLoading, setIsLoading ] = useState<boolean>(!isNew);
+    const [ isStoring, setIsStoring ] = useState<boolean>(false);
+
+    useEffect(() => {
+        if(isNew) return;
+        setIsLoading(true);
+        const loadRole = buildLoadObjectFunc<Models.Role>(
+            `api/roles/${id}`,
+            {},
+            resolveText('Role_CouldNotLoad'),
+            role => {
+                setName(role.name);
+                setIsSystemRole(role.isSystemRole);
+                setPermissions(role.permissions);
+            },
+            () => setIsLoading(false)
+        );
+        loadRole();
+    }, [ isNew, id ]);
+    const store = async (e?: FormEvent) => {
+        e?.preventDefault();
+        await buidlAndStoreObject(
+            `api/roles/${id}`,
+            resolveText('Role_SuccessfullyStored'),
+            resolveText('Role_CouldNotStore'),
+            buildRole,
+            () => {
+                history.push('/roles');
+            },
+            () => setIsStoring(false)
+        );
+    }
+
+    const buildRole = (): Models.Role => {
+        return {
+            id: id,
+            name: name,
+            isSystemRole: isSystemRole,
+            permissions: permissions
+        };
+    }
+
+    const addPermission = (permission: Permission) => {
         if(permissions.some(x => x === permission)) {
             return;
         }
         setPermissions(permissions.concat(permission));
     }
-    const removePermission = (permission: string) => {
+    const removePermission = (permission: Permission) => {
         setPermissions(permissions.filter(x => x !== permission));
     }
+
+    if(isLoading) {
+        return (<h1>{resolveText('Loading...')}</h1>);
+    }
+
     return (
         <>
-            <h1>Role {name}</h1>
-            <Form>
+            <h1>{resolveText('Role')} - '{name}'</h1>
+            <Form onSubmit={store}>
                 <RowFormGroup required
                     label={resolveText('Role_Name')}
                     value={name}
@@ -37,12 +94,6 @@ export const RoleEditPage = (props: RoleEditPageProps) => {
                 <FormGroup as={Row}>
                     <FormLabel column>{resolveText('Role_Permissions')}</FormLabel>
                     <Col>
-                        {/* <Autocomplete
-                            search={permissionAutocompleteRunner.search}
-                            displayNameSelector={x => x}
-                            onItemSelected={addPermission}
-                            resetOnSelect
-                        /> */}
                         <InputGroup>
                             <FormControl
                                 as="select"
@@ -55,7 +106,7 @@ export const RoleEditPage = (props: RoleEditPageProps) => {
                                 ))}
                             </FormControl>
                             <Button
-                                onClick={() => addPermission(selectedPermission)}
+                                onClick={() => addPermission(selectedPermission!)}
                                 disabled={!selectedPermission}
                             >
                                 {resolveText('Add')}
@@ -66,7 +117,7 @@ export const RoleEditPage = (props: RoleEditPageProps) => {
                 <Row>
                     <Col></Col>
                     <Col>
-                        <ListFormControl<string>
+                        <ListFormControl<Permission>
                             items={permissions}
                             idFunc={x => x}
                             displayFunc={x => x}
@@ -74,6 +125,12 @@ export const RoleEditPage = (props: RoleEditPageProps) => {
                         />
                     </Col>
                 </Row>
+                <AsyncButton
+                    type="submit"
+                    activeText={resolveText('Store')}
+                    executingText={resolveText('Storing...')}
+                    isExecuting={isStoring}
+                />
             </Form>
         </>
     );

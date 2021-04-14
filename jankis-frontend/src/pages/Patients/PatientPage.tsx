@@ -1,23 +1,46 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Accordion, Col, Row } from 'react-bootstrap';
+import { RouteComponentProps } from 'react-router';
 import { AccordionCard } from '../../components/AccordionCard';
 import { resolveText } from '../../helpers/Globalizer';
+import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
+import { Sex } from '../../types/enums.d';
 import { Models } from '../../types/models';
 
-interface PatientPageProps { }
+interface PatientParams {
+    patientId?: string;
+}
+interface PatientPageProps extends RouteComponentProps<PatientParams> { }
 
 export const PatientPage = (props: PatientPageProps) => {
 
-    const [data, setData] = useState<Models.Patient>();
+    const id = props.match.params.patientId;
 
-    if(!data) {
+    const [person, setPerson] = useState<Models.Person>();
+    const [ isLoading, setIsLoading ] = useState<boolean>(true);
+
+    useEffect(() => {
+        const loadPerson = buildLoadObjectFunc<Models.Person>(
+            `api/persons/${id}`,
+            {},
+            resolveText('Person_CouldNotLoad'),
+            setPerson,
+            () => setIsLoading(false)
+        );
+        loadPerson();
+    }, [ id ]);
+
+    if(isLoading) {
         return (<h1>{resolveText('Loading...')}</h1>);
+    }
+    if(!person) {
+        return (<h1>{resolveText('NotFound')}</h1>);
     }
 
     return (
         <>
-            <h1>{resolveText('Patient_PatientMale')} {data.firstName} {data.lastName}</h1>
-            <h2>{resolveText('Patient_Birthday')}: {data.birthDate.toString()}</h2>
+            <h1>{resolveText(person.sex === Sex.Male ? 'Patient_PatientMale' : 'Patient_PatientFemale')} {person.firstName} {person.lastName}</h1>
+            <h2>{resolveText('Patient_Birthday')}: {person.birthDate.toString()}</h2>
             <Row>
                 <Col>
                     <Accordion>

@@ -10,7 +10,7 @@ export default class FrequencyMeasurer {
 
     update = () => {
         const now = new Date();
-        this.timestamps.filter(x => x > now - maxAge);
+        this.timestamps.filter(x => now.getTime() - x.getTime() > this.maxAge);
         this.timestamps.push(now);
     }
 
@@ -22,7 +22,7 @@ export default class FrequencyMeasurer {
         if(this.timestamps.length < 2) {
             throw new Error('Not enough data for measuring frequency');
         }
-        const deltaT = (this.timestamps[this.timestamps.length-1] - this.timestamps[0]) / (this.timestamps.length - 1);
+        const deltaT = Math.abs(this.timestamps[this.timestamps.length-1].getTime() - this.timestamps[0].getTime()) / (this.timestamps.length - 1);
         const frequency = 60 / deltaT;
         return frequency;
     }

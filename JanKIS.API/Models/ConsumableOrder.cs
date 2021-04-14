@@ -8,7 +8,7 @@ namespace JanKIS.API.Models
     {
         public string Id { get; set; }
         public string ConsumableId { get; set; }
-        public PersonReference Requester { get; set; }
+        public string Requester { get; set; }
         public int Quantity { get; set; }
         public List<string> PreferredSources { get; set; }
         public string Note { get; set; }

@@ -41,14 +41,16 @@ namespace JanKIS.API
         {
             SetupMongoDB(services);
 
+            services.AddScoped<IAccountStore, AccountStore>();
+            services.AddScoped<IStore<Account>, GenericStore<Account>>();
+            services.AddScoped<IReadonlyStore<Account>, GenericReadonlyStore<Account>>();
             services.AddScoped<IReadonlyStore<Role>, GenericReadonlyStore<Role>>();
             services.AddScoped<IStore<Role>, GenericStore<Role>>();
-            services.AddScoped<IReadonlyStore<Employee>, GenericReadonlyStore<Employee>>();
-            services.AddScoped<IStore<Employee>, GenericStore<Employee>>();
-            services.AddScoped<IPersonWithLoginStore<Employee>, UserStore<Employee>>();
-            services.AddScoped<IReadonlyStore<Patient>, GenericReadonlyStore<Patient>>();
-            services.AddScoped<IStore<Patient>, GenericStore<Patient>>();
-            services.AddScoped<IPersonWithLoginStore<Patient>, UserStore<Patient>>();
+            services.AddScoped<IReadonlyStore<Person>, GenericReadonlyStore<Person>>();
+            services.AddScoped<IStore<Person>, GenericStore<Person>>();
+            services.AddScoped<IAccountStore, AccountStore>();
+            services.AddScoped<IReadonlyStore<Person>, GenericReadonlyStore<Person>>();
+            services.AddScoped<IStore<Person>, GenericStore<Person>>();
             services.AddScoped<IAutocompleteCache, AutocompleteCache>();
             services.AddScoped<IReadonlyStore<Contact>, GenericReadonlyStore<Contact>>();
             services.AddScoped<IStore<Contact>, GenericStore<Contact>>();
@@ -75,9 +77,9 @@ namespace JanKIS.API
                         options.SerializerSettings.Formatting = Formatting.None;
                     });
             SetupJwtTokenAuthentication(services);
-            services.AddScoped<AuthenticationModule<Employee>>();
-            services.AddScoped<AuthenticationModule<Patient>>();
+            services.AddScoped<AuthenticationModule>();
             services.AddScoped<IAuthorizationHandler, SameUserRequirementHandler>();
+            services.AddScoped<IAuthorizationHandler, NotSameUserRequirementHandler>();
             services.AddAuthorization(
                 options =>
                 {
@@ -85,8 +87,8 @@ namespace JanKIS.API
                     {
                         options.AddPolicy(permission.ToString(), policy => policy.RequireClaim(permission.ToString()));
                     }
-                    options.AddPolicy(SameUserRequirement.PolicyName, builder => builder.AddRequirements(new SameUserRequirement("employeeId")));
-                    options.AddPolicy(NotSameUserRequirement.PolicyName, builder => builder.AddRequirements(new NotSameUserRequirement("employeeId")));
+                    options.AddPolicy(SameUserRequirement.PolicyName, builder => builder.AddRequirements(new SameUserRequirement("username")));
+                    options.AddPolicy(NotSameUserRequirement.PolicyName, builder => builder.AddRequirements(new NotSameUserRequirement("username")));
                 });
             services.AddCors(
                 options =>

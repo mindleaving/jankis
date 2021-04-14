@@ -1,5 +1,4 @@
 import React, { useContext, useState } from 'react';
-import { Nav } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import { NotificationContainer } from 'react-notifications';
@@ -22,20 +21,17 @@ export const Layout = (props: LayoutProps) => {
 
     const history = useHistory();
     const user = useContext(UserContext)!;
-    const userRoles = user.roles;
-    // TODO: Handle multiple roles
-    let userMenu;
-    switch(userRoles[0]) {
-        case "registration":
-            userMenu = <RegistrationMenu />;
-            break;
-        case "nurse":
-            userMenu = <NurseMenu />;
-            break;
-        default:
-            userMenu = null;
-            break;
-    }
+    let userMenus = user.roles.map(role => {
+        switch(role.name.toLowerCase()) {
+            case "registration":
+                return (<RegistrationMenu />);
+            case "nurse":
+                return (<NurseMenu />);
+            default:
+                return null;
+        }
+    }).filter(x => x !== null);
+    
     const [ showQRScannerModal, setShowQRScannerModal ] = useState<boolean>(false);
     const openQRScannerModal = () => {
         setShowQRScannerModal(true);
@@ -48,10 +44,10 @@ export const Layout = (props: LayoutProps) => {
                 <Navbar.Brand className="clickable" onClick={() => history.push('/')}>JanKIS</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
-                    {userMenu}
-                    <DepartmentMenu />
+                    {userMenus}
+                    {!user.roles.some(role => role.name === "Patient") ? <DepartmentMenu /> : null}
                     <ConfigMenu />
-                    {!userRoles.some(roleName => roleName === "Patient") ? <QRScannerMenu openQRScannerModal={openQRScannerModal}  /> : null}
+                    {!user.roles.some(role => role.name === "Patient") ? <QRScannerMenu openQRScannerModal={openQRScannerModal}  /> : null}
                     <CommonMenu />
                     <LoggedInUser user={user} onLogOut={props.onLogOut} />
                 </Navbar.Collapse>

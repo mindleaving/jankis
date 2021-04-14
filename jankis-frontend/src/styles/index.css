@@ -5,3 +5,24 @@
 .clickable {
   cursor: pointer;
 }
+
+.listFormControl {
+  margin-top: -1rem;
+}
+
+.itemListBadge {
+  padding: 5px 10px;
+  margin: 2px 5px;
+}
+.itemListBadge a {
+  color: white;
+  text-decoration: underline;
+}
+.itemListBadge .badge {
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.treeview {
+  list-style-type: none;
+}

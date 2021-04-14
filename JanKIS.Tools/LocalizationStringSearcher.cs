@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
+using JanKIS.API.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -19,7 +21,9 @@ namespace JanKIS.Tools
             var localizationOutputFile = Path.Combine(FrontendDirectory, "src/resources", "translation.en.json");
             var tsFiles = Directory.GetFiles(Path.Combine(FrontendDirectory, "src"), "*.ts?", SearchOption.AllDirectories);
             var existingLocalizations = JObject.Parse(File.ReadAllText(localizationOutputFile));
-            var resourceIds = new List<string>(existingLocalizations.Properties().Select(x => x.Name));
+            var existingResourceIds = existingLocalizations.Properties().Select(x => x.Name);
+            var enumResourceIds = GetEnumResourceIds();
+            var resourceIds = new List<string>(existingResourceIds.Concat(enumResourceIds));
             foreach (var tsFile in tsFiles)
             {
                 var fileContent = File.ReadAllLines(tsFile);
@@ -36,7 +40,6 @@ namespace JanKIS.Tools
                 }
             }
 
-            
             var resourceDictionary = new JObject();
             foreach (var resourceId in resourceIds.Distinct().OrderBy(x => x))
             {
@@ -73,6 +76,15 @@ namespace JanKIS.Tools
             File.WriteAllText(secondaryDictionaryFile, JsonConvert.SerializeObject(secondaryJObject, Formatting.Indented));
 
 
+        }
+
+        private static IEnumerable<string> GetEnumResourceIds()
+        {
+            var enumResourceIds = Assembly.GetAssembly(typeof(Permission))
+                .GetExportedTypes()
+                .Where(t => t.Namespace.StartsWith(typeof(Permission).Namespace) && t.IsEnum)
+                .SelectMany(t => Enum.GetNames(t).Select(x => $"{t.Name}_{x}"));
+            return enumResourceIds;
         }
     }
 }

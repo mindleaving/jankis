@@ -1,14 +1,11 @@
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { Form, FormControl, FormGroup } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { ServicesList } from '../../components/Services/ServicesList';
 import UserContext from '../../contexts/UserContext';
 import { resolveText } from '../../helpers/Globalizer';
-import { useAppDispatch } from '../../stores/main';
 import { getDepartments } from '../../stores/selectors/departmentSelectors';
-import { DepartmentActions } from '../../stores/slices/departmentsSlice';
-import { PersonType } from '../../types/enums.d';
-import { Models } from '../../types/models';
+import { AccountType } from '../../types/enums.d';
 
 interface DepartmentServicesProps {}
 
@@ -18,11 +15,10 @@ export const DepartmentServices = (props: DepartmentServicesProps) => {
     const departments = useSelector(getDepartments);
 
     const user = useContext(UserContext);
-    if(user?.type !== PersonType.Employee) {
+    if(user?.accountType !== AccountType.Employee) {
         return (<h1>{resolveText('NotPermitted')}</h1>);
     }
-    const employee = user as Models.Employee;
-    const departmentIds = employee.departmentIds;
+    const departmentIds = user.departmentIds;
     
     return (
         <>

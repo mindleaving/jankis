@@ -25,6 +25,7 @@ namespace JanKIS.Tools
             const string AdminFirstName = "Jan";
             const string AdminLastName = "Scholtyssek";
             var AdminBirthday = new DateTime(1989, 11, 17, 0, 0, 0, DateTimeKind.Utc);
+            const Sex AdminSex = Sex.Male;
             var AdminPassword = "abc123";//TemporaryPasswordGenerator.Generate();
             // ######## EDIT END ############
 
@@ -52,7 +53,7 @@ namespace JanKIS.Tools
                 AdminFirstName,
                 AdminLastName,
                 AdminBirthday,
-                InstitutionId,
+                AdminSex,
                 AdminPassword);
         }
 
@@ -82,20 +83,18 @@ namespace JanKIS.Tools
             string adminFirstName,
             string adminLastName,
             DateTime adminBirthday,
-            string institutionId,
+            Sex adminSex,
             string adminPassword)
         {
-            var employeesCollection = database.GetCollection<Employee>(nameof(Employee));
-            var adminEmployee = PersonFactory.CreateEmployee(
-                adminUsername,
-                adminFirstName,
-                adminLastName,
-                adminBirthday,
-                institutionId,
-                adminPassword);
-            adminEmployee.Roles.Add(SystemRoles.Admin.Id);
-            adminEmployee.IsPasswordChangeRequired = false;
-            employeesCollection.InsertOne(adminEmployee);
+            var personsCollection = database.GetCollection<Person>(nameof(Person));
+            var adminEmployee = new Person(Guid.NewGuid().ToString(), adminFirstName, adminLastName, adminBirthday, adminSex);
+            personsCollection.InsertOne(adminEmployee);
+
+            var accountsCollection = database.GetCollection<Account>(nameof(Account));
+            var adminAccount = AccountFactory.CreateEmployeeAccount(adminEmployee.Id, adminUsername, adminPassword);
+            adminAccount.Roles.Add(SystemRoles.Admin.Id);
+            adminAccount.IsPasswordChangeRequired = false;
+            accountsCollection.InsertOne(adminAccount);
         }
     }
 }

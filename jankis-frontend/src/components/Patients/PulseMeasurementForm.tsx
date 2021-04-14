@@ -26,7 +26,7 @@ export const PulseMeasurementForm = (props: PulseMeasurementFormProps) => {
         const observation: Models.PulseObservation = {
             id: uuid(),
             type: PatientEventType.Observation,
-            createdBy: user!.id,
+            createdBy: user!.username,
             location: pulseLocation,
             patientId: props.patientId,
             timestamp: new Date(),

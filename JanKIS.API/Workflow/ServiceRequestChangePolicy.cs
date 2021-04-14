@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JanKIS.API.Extensions;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
 
@@ -11,77 +10,75 @@ namespace JanKIS.API.Workflow
     public class ServiceRequestChangePolicy
     {
         private readonly IReadonlyStore<ServiceDefinition> servicesStore;
-        private readonly IReadonlyStore<Patient> patientsStore;
+        private readonly IReadonlyStore<Person> personsStore;
+        private readonly IReadonlyStore<Account> accountsStore;
         private readonly IAdmissionsStore admissionsStore;
-        private readonly IReadonlyStore<Employee> employeesStore;
 
         public ServiceRequestChangePolicy(
             IReadonlyStore<ServiceDefinition> servicesStore,
-            IReadonlyStore<Patient> patientsStore,
-            IAdmissionsStore admissionsStore,
-            IReadonlyStore<Employee> employeesStore)
+            IReadonlyStore<Person> personsStore,
+            IReadonlyStore<Account> accountsStore,
+            IAdmissionsStore admissionsStore)
         {
             this.servicesStore = servicesStore;
-            this.patientsStore = patientsStore;
+            this.personsStore = personsStore;
+            this.accountsStore = accountsStore;
             this.admissionsStore = admissionsStore;
-            this.employeesStore = employeesStore;
         }
 
         public async Task<bool> CanChange(
             ServiceRequest request,
-            PersonWithLogin user,
+            Account account,
             InstitutionPolicy institutionPolicy)
         {
             if (request.State != ServiceRequestState.Requested)
                 return false;
-            if(request.Requester == user.ToPersonReference())
+            if(request.Requester == account.Id)
                 return true;
-            if (request.Requester.Type == PersonType.Employee && !institutionPolicy.UsersFromSameDepartmentCanChangeServiceRequests)
-                return false;
-            if (user is Employee employee)
+            if (account.AccountType == AccountType.Employee)
             {
+                if (!institutionPolicy.UsersFromSameDepartmentCanChangeServiceRequests)
+                    return false;
                 var requesterDepartmentIds = await GetDepartmentIds(request.Requester);
-                if (employee.DepartmentIds.Intersect(requesterDepartmentIds).Any())
+                var employeeAccount = (EmployeeAccount) account;
+                if (employeeAccount.DepartmentIds.Intersect(requesterDepartmentIds).Any())
                     return true;
             }
             return false;
         }
 
-        private async Task<List<string>> GetDepartmentIds(PersonReference personReference)
+        private async Task<List<string>> GetDepartmentIds(string personId)
         {
             var departmentIds = new List<string>();
-            if (personReference.Type == PersonType.Patient)
+            var account = await accountsStore.GetByIdAsync(personId);
+            if (account == null)
+                return new List<string>();
+            if (account.AccountType == AccountType.Patient)
             {
-                var patient = await patientsStore.GetByIdAsync(personReference.Id);
-                if (patient == null)
-                    throw new Exception($"Patient with ID '{personReference.Id}' doesn't exist");
-                var currentAdmission = await admissionsStore.GetCurrentAdmissionAsync(patient.Id);
+                var currentAdmission = await admissionsStore.GetCurrentAdmissionAsync(personId);
                 if (currentAdmission != null)
                 {
                     foreach (var contactPerson in currentAdmission.ContactPersons)
                     {
-                        if(contactPerson.Type != PersonType.Employee)
+                        var contactPersonAccount = await accountsStore.GetByIdAsync(contactPerson);
+                        if(contactPersonAccount == null || contactPersonAccount.AccountType != AccountType.Employee)
                             continue;
-                        var employee = await employeesStore.GetByIdAsync(contactPerson.Id);
-                        if(employee == null)
-                            continue;
-                        departmentIds.AddRange(employee.DepartmentIds);
+                        var contactPersonDepartments = ((EmployeeAccount)contactPersonAccount).DepartmentIds;
+                        departmentIds.AddRange(contactPersonDepartments);
                     }
                 }
                 return departmentIds.Distinct().ToList();
             }
 
-            if (personReference.Type == PersonType.Employee)
+            if (account.AccountType == AccountType.Employee)
             {
-                var employee = await employeesStore.GetByIdAsync(personReference.Id);
-                if(employee == null)
-                    throw new Exception($"Employee with ID '{personReference.Id}' doesn't exist");
-                return employee.DepartmentIds;
+                var employeeAccount = (EmployeeAccount) account;
+                return employeeAccount.DepartmentIds;
             }
 
             throw new ArgumentOutOfRangeException(
-                nameof(personReference.Type),
-                $"Getting department ID for person of type '{personReference.Type}' is not implemented");
+                nameof(account.AccountType),
+                $"Getting department IDs for person with account of type '{account.AccountType}' is not implemented");
         }
     }
 }

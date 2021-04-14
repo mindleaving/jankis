@@ -5,8 +5,7 @@ namespace JanKIS.API.Models
     [BsonKnownTypes(
         typeof(AllServiceAudience),
         typeof(RoleServiceAudience),
-        typeof(EmployeeServiceAudience),
-        typeof(PatientServiceAudience))]
+        typeof(PersonServiceAudience))]
     public abstract class ServiceAudience
     {
         public ServiceAudienceType Type { get; set; }

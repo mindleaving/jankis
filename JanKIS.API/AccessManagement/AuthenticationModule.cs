@@ -5,41 +5,41 @@ using JanKIS.API.Storage;
 
 namespace JanKIS.API.AccessManagement
 {
-    public class AuthenticationModule<T> where T: PersonWithLogin
+    public class AuthenticationModule
     {
-        private readonly IPersonWithLoginStore<T> userStore;
+        private readonly IReadonlyStore<Person> personStore;
+        private readonly IAccountStore accountStore;
         private readonly ISecurityTokenBuilder securityTokenBuilder;
 
         public AuthenticationModule(
-            IPersonWithLoginStore<T> userStore,
+            IReadonlyStore<Person> personStore,
+            IAccountStore accountStore,
             ISecurityTokenBuilder securityTokenBuilder)
         {
-            this.userStore = userStore;
+            this.personStore = personStore;
+            this.accountStore = accountStore;
             this.securityTokenBuilder = securityTokenBuilder;
         }
 
         public async Task<bool> ChangePasswordAsync(string userId, string password, bool changePasswordOnNextLogin = false)
         {
-            var matchingEmployee = await userStore.GetByIdAsync(userId);
-            if (matchingEmployee == null)
+            var matchingAccount = await accountStore.GetByIdAsync(userId);
+            if (matchingAccount == null)
                 return false;
-            var saltBytes = Convert.FromBase64String(matchingEmployee.Salt);
+            var saltBytes = Convert.FromBase64String(matchingAccount.Salt);
             var passwordHash = PasswordHasher.Hash(password, saltBytes, PasswordHasher.RecommendedHashLength);
             var passwordBase64 = Convert.ToBase64String(passwordHash);
 
-            var result = await userStore.ChangePasswordAsync(userId, passwordBase64, changePasswordOnNextLogin);
+            var result = await accountStore.ChangePasswordAsync(userId, passwordBase64, changePasswordOnNextLogin);
             return result.IsSuccess;
         }
 
-        public async Task<AuthenticationResult> AuthenticateAsync(string userId, string password)
+        public async Task<AuthenticationResult> AuthenticateAsync(Person person, Account account, string password)
         {
-            var existingEmployee = await userStore.GetByIdAsync(userId);
-            if(existingEmployee == null)
-                return AuthenticationResult.Failed(AuthenticationErrorType.UserNotFound);
             if(string.IsNullOrEmpty(password))
                 return AuthenticationResult.Failed(AuthenticationErrorType.InvalidPassword);
-            var salt = Convert.FromBase64String(existingEmployee.Salt);
-            var storedPasswordHash = Convert.FromBase64String(existingEmployee.PasswordHash);
+            var salt = Convert.FromBase64String(account.Salt);
+            var storedPasswordHash = Convert.FromBase64String(account.PasswordHash);
             var providedPasswordHash = PasswordHasher.Hash(password, salt, 8 * storedPasswordHash.Length);
             var isMatch = HashComparer.Compare(providedPasswordHash, storedPasswordHash);
             if (!isMatch)
@@ -47,13 +47,13 @@ namespace JanKIS.API.AccessManagement
                 return AuthenticationResult.Failed(AuthenticationErrorType.InvalidPassword);
             }
 
-            return await BuildSecurityTokenForUser(existingEmployee);
+            return await BuildSecurityTokenForUser(person, account);
         }
 
-        public async Task<AuthenticationResult> BuildSecurityTokenForUser(PersonWithLogin person)
+        public async Task<AuthenticationResult> BuildSecurityTokenForUser(Person person, Account account)
         {
-            var token = await securityTokenBuilder.BuildForUser(person);
-            return AuthenticationResult.Success(person, token);
+            var token = await securityTokenBuilder.BuildForUser(person, account);
+            return AuthenticationResult.Success(token);
         }
     }
 }

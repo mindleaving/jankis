@@ -3,11 +3,11 @@ import { Col, Container, Form, FormControl, FormGroup, FormLabel, Row } from 're
 import { AsyncButton } from '../components/AsyncButton';
 import { resolveText } from '../helpers/Globalizer';
 import { NotificationManager, NotificationContainer } from 'react-notifications';
-import { Models } from '../types/models';
 import { apiClient } from '../communication/ApiClient';
+import { ViewModels } from '../types/viewModels';
 
 interface LoginPageProps {
-    onLoggedIn: (authenticationResult: Models.AuthenticationResult) => void;
+    onLoggedIn: (userViewModel: ViewModels.LoggedInUserViewModel) => void;
 }
 
 export const LoginPage = (props: LoginPageProps) => {
@@ -20,9 +20,9 @@ export const LoginPage = (props: LoginPageProps) => {
         e?.preventDefault();
         try {
             setIsLoggingIn(true);
-            const response = await apiClient.post(`api/employees/${username}/login`, {}, `"${password}"`);
-            const authenticationResult = await response.json() as Models.AuthenticationResult;
-            props.onLoggedIn(authenticationResult);
+            const response = await apiClient.post(`api/accounts/${username}/login`, {}, `"${password}"`);
+            const userViewModel = await response.json() as ViewModels.LoggedInUserViewModel;
+            props.onLoggedIn(userViewModel);
         } catch(error) {
             NotificationManager.error(error.message, resolveText('Login_CouldNotLogIn'));
         } finally {

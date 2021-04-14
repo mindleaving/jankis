@@ -2,6 +2,6 @@
 {
     public class RoleServiceAudience : ServiceAudience
     {
-        public string RoleName { get; set; }
+        public string RoleId { get; set; }
     }
 }

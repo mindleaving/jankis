@@ -7,7 +7,7 @@ namespace JanKIS.API.Models
 {
     public class Role : IId
     {
-        public string Id => Name;
+        public string Id { get; set; }
         public string Name { get; set; }
         [BsonRepresentation(BsonType.String)] 
         public List<Permission> Permissions { get; set; }

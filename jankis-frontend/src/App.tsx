@@ -37,28 +37,27 @@ import { WardBedsPage } from './pages/Ward/WardBedsPage';
 import { WardEditPage } from './pages/Ward/WardEditPage';
 import { WardPage } from './pages/Ward/WardPage';
 import { WardsListPage } from './pages/Ward/WardsListPage';
-import { Models } from './types/models';
 import { ContactsListPage } from './pages/ContactList/ContactsListPage';
 import { ContactEditPage } from './pages/ContactList/ContactEditPage';
 import { ContactPage } from './pages/ContactList/ContactPage';
 import { InstitutionBuilderPage } from './pages/Config/InstitutionBuilderPage';
-import { EmployeeEditPage } from './pages/UserManagement/EmployeeEditPage';
-import { EmployeePage } from './pages/UserManagement/EmployeePage';
-import { EmployeesListPage } from './pages/UserManagement/EmployeesListPage';
+import { AccountEditPage } from './pages/UserManagement/AccountEditPage';
+import { AccountsListPage } from './pages/UserManagement/AccountsListPage';
 import { RoleEditPage } from './pages/UserManagement/RoleEditPage';
 import { RolePage } from './pages/UserManagement/RolePage';
 import { RolesListPage } from './pages/UserManagement/RolesListPage';
 import { DepartmentServices } from './pages/Services/DepartmentServices';
 import { LoginPage } from './pages/LoginPage';
 import { apiClient } from './communication/ApiClient';
+import { ViewModels } from './types/viewModels';
 
 function App() {
 
-    const [loggedInUser, setLoggedInUser] = useState<Models.PersonWithLogin>();
-    const onLoggedIn = (authenticationResult: Models.AuthenticationResult) => {
-        if (authenticationResult.isAuthenticated) {
-            setLoggedInUser(authenticationResult.user);
-            apiClient.setAccessToken(authenticationResult.accessToken!);
+    const [loggedInUser, setLoggedInUser] = useState<ViewModels.LoggedInUserViewModel>();
+    const onLoggedIn = (userViewModel: ViewModels.LoggedInUserViewModel) => {
+        if (userViewModel.authenticationResult.isAuthenticated) {
+            setLoggedInUser(userViewModel);
+            apiClient.setAccessToken(userViewModel.authenticationResult.accessToken!);
         }
     }
 
@@ -261,20 +260,16 @@ function App() {
                     />
 
                     <Route
-                        exact path="/employees"
-                        render={props => <EmployeesListPage {...props} />}
+                        exact path="/accounts"
+                        render={props => <AccountsListPage {...props} />}
                     />
                     <Route
-                        exact path="/create/employee"
-                        render={props => <EmployeeEditPage {...props} />}
+                        exact path="/create/account"
+                        render={props => <AccountEditPage {...props} />}
                     />
                     <Route
-                        exact path="/employees/:employeeId"
-                        render={props => <EmployeePage {...props} />}
-                    />
-                    <Route
-                        exact path="/employees/:employeeId/edit"
-                        render={props => <EmployeeEditPage {...props} />}
+                        exact path="/accounts/:username/edit"
+                        render={props => <AccountEditPage {...props} />}
                     />
 
                     <Route

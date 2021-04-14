@@ -11,10 +11,10 @@ namespace JanKIS.API.AccessManagement
             SameUserRequirement requirement)
         {
             var httpContext = context.Resource as HttpContext;
-            var employeeId = httpContext.Request.RouteValues[requirement.RouteParameterName] as string;
-            if (employeeId != null)
+            var username = httpContext.Request.RouteValues[requirement.RouteParameterName] as string;
+            if (username != null)
             {
-                if (context.User.HasClaim("id", employeeId))
+                if (context.User.HasClaim("id", username))
                 {
                     context.Succeed(requirement);
                 }

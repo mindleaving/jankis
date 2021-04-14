@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import { resolveText } from '../../helpers/Globalizer';
-import { EmployeesFilter } from '../../types/frontendTypes';
+import { AccountsFilter } from '../../types/frontendTypes';
 import { RowFormGroup } from '../RowFormGroup';
 
-interface EmployeesFilterViewProps {
-    setFilter: (filter: EmployeesFilter) => void;
+interface AccountsFilterViewProps {
+    setFilter: (filter: AccountsFilter) => void;
 }
 
-export const EmployeesFilterView = (props: EmployeesFilterViewProps) => {
+export const AccountsFilterView = (props: AccountsFilterViewProps) => {
 
     const [ searchText, setSearchText ] = useState<string>('');
 

@@ -48,10 +48,7 @@ export const RequestServiceForm = (props: RequestServiceFormProps) => {
         const serviceRequest: Models.ServiceRequest = {
             id: uuid(),
             serviceId: props.service.id,
-            requester: {
-                type: loggedInUser!.type,
-                id: loggedInUser!.id
-            },
+            requester: loggedInUser!.username,
             parameterResponses: toDictionary(parameterResponses, x => x.parameterName),
             state: ServiceRequestState.Requested,
             timestamps: {},

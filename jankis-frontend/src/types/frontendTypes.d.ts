@@ -14,6 +14,6 @@ export interface ServicesFilter {
 export interface DepartmentsFilter {
     searchText?: string;
 }
-export interface EmployeesFilter {
+export interface AccountsFilter {
     searchText?: string;
 }

@@ -136,7 +136,7 @@ export const ServiceEditForm = (props: ServiceEditFormProps) => {
                         value={selectedDepartment?.id ?? ''}
                         onChange={(e:any) => setSelectedDepartment(e.target.value)}
                     >
-                        <option value="" disabled>{resolveText('Please select...')}</option>
+                        <option value="" disabled>{resolveText('PleaseSelect...')}</option>
                         {departments.map(department => (
                             <option value={department.id} key={department.id}>{department.name}</option>
                         ))}

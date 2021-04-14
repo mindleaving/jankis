@@ -13,7 +13,7 @@ export namespace Models {
         diagnosticTestResults: Models.DiagnosticTestResult[];
         notes: Models.PatientNote[];
         dischargeInfo: Models.DischargeInfo;
-        contactPersons: Models.PersonReference[];
+        contactPersons: string[];
     }
 
     interface AdmissionInfo {
@@ -35,7 +35,6 @@ export namespace Models {
 
     interface AuthenticationResult {
         isAuthenticated: boolean;
-        user?: Models.PersonWithLogin;
         accessToken?: string;
         error: Enums.AuthenticationErrorType;
     }
@@ -84,7 +83,7 @@ export namespace Models {
     interface ConsumableOrder {
         id: string;
         consumableId: string;
-        requester: Models.PersonReference;
+        requester: string;
         quantity: number;
         preferredSources: string[];
         note: string;
@@ -162,22 +161,15 @@ export namespace Models {
         
     }
 
-    interface Employee {
-        type: Enums.PersonType;
-        institutionId: string;
-        departmentIds: string[];
-        isPasswordChangeRequired: boolean;
+    interface EmployeeAccount {
+        accountType: Enums.AccountType;
         roles: string[];
         permissionModifiers: Models.PermissionModifier[];
+        departmentIds: string[];
         id: string;
-        firstName: string;
-        lastName: string;
-        birthDate: Date;
-    }
-
-    interface EmployeeServiceAudience {
-        employeeId: string;
-        type: Enums.ServiceAudienceType;
+        personId: string;
+        username: string;
+        isPasswordChangeRequired: boolean;
     }
 
     interface FreetextDiagnosticTestResult {
@@ -193,7 +185,9 @@ export namespace Models {
     }
 
     interface HealthInsurance {
-        
+        insurerName: string;
+        insurerNumber: string;
+        insuranceNumber: string;
     }
 
     interface IDiagnosticTestResult {
@@ -338,16 +332,12 @@ export namespace Models {
         testName: string;
     }
 
-    interface Patient {
-        type: Enums.PersonType;
-        healthInsurance: Models.HealthInsurance;
-        isPasswordChangeRequired: boolean;
-        roles: string[];
-        permissionModifiers: Models.PermissionModifier[];
+    interface PatientAccount {
+        accountType: Enums.AccountType;
         id: string;
-        firstName: string;
-        lastName: string;
-        birthDate: Date;
+        personId: string;
+        username: string;
+        isPasswordChangeRequired: boolean;
     }
 
     interface PatientDocument {
@@ -362,11 +352,6 @@ export namespace Models {
         createdBy: string;
         timestamp: Date;
         message: string;
-    }
-
-    interface PatientServiceAudience {
-        patientId: string;
-        type: Enums.ServiceAudienceType;
     }
 
     interface PatientServiceParameter {
@@ -391,22 +376,13 @@ export namespace Models {
         firstName: string;
         lastName: string;
         birthDate: Date;
+        sex: Enums.Sex;
+        healthInsurance?: Models.HealthInsurance;
     }
 
-    interface PersonReference {
-        type: Enums.PersonType;
-        id: string;
-    }
-
-    interface PersonWithLogin {
-        type: Enums.PersonType;
-        isPasswordChangeRequired: boolean;
-        roles: string[];
-        permissionModifiers: Models.PermissionModifier[];
-        id: string;
-        firstName: string;
-        lastName: string;
-        birthDate: Date;
+    interface PersonServiceAudience {
+        personId: string;
+        type: Enums.ServiceAudienceType;
     }
 
     interface PulseObservation {
@@ -455,7 +431,7 @@ export namespace Models {
     }
 
     interface RoleServiceAudience {
-        roleName: string;
+        roleId: string;
         type: Enums.ServiceAudienceType;
     }
 
@@ -502,7 +478,7 @@ export namespace Models {
     interface ServiceRequest {
         id: string;
         serviceId: string;
-        requester: Models.PersonReference;
+        requester: string;
         parameterResponses: { [key: string]: Models.ServiceParameterResponse };
         note: string;
         state: Enums.ServiceRequestState;

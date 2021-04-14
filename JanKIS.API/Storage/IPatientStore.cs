@@ -3,7 +3,7 @@ using JanKIS.API.Models;
 
 namespace JanKIS.API.Storage
 {
-    public interface IPatientStore : IStore<Patient>
+    public interface IPatientStore : IStore<Person>
     {
         Task<bool> AdmitAsync(string patientId, AdmissionInfo admissionInfo);
 

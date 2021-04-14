@@ -49,10 +49,7 @@ export const ConsumableOrderModal = (props: ConsumableOrderModalProps) => {
             note: note,
             preferredSources: [ props.orderInfo.stockId ],
             quantity: quantity,
-            requester: {
-                type: user!.type,
-                id: user!.id
-            },
+            requester: user!.username,
             state: OrderState.Ordered,
             timestamps: {}
         };

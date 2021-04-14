@@ -5,6 +5,6 @@ namespace JanKIS.API.AccessManagement
 {
     public interface ISecurityTokenBuilder
     {
-        Task<string> BuildForUser(PersonWithLogin person);
+        Task<string> BuildForUser(Person person, Account account);
     }
 }

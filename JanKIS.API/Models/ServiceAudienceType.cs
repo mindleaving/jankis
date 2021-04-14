@@ -4,7 +4,6 @@
     {
         All,
         Role,
-        Employee,
-        Patient
+        Person
     }
 }

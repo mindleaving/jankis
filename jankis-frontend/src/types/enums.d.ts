@@ -1,3 +1,7 @@
+export enum AccountType {
+    Patient = "Patient",
+    Employee = "Employee"
+}
 export enum BedState {
     Empty = "Empty",
     Occupied = "Occupied",
@@ -74,15 +78,10 @@ export enum PermissionModifierType {
     Grant = "Grant",
     Deny = "Deny"
 }
-export enum PersonType {
-    Employee = "Employee",
-    Patient = "Patient"
-}
 export enum ServiceAudienceType {
     All = "All",
     Role = "Role",
-    Employee = "Employee",
-    Patient = "Patient"
+    Person = "Person"
 }
 export enum ServiceParameterValueType {
     Text = "Text",
@@ -99,6 +98,11 @@ export enum ServiceRequestState {
     ReadyWhenYouAre = "ReadyWhenYouAre",
     InProgress = "InProgress",
     Fulfilled = "Fulfilled"
+}
+export enum Sex {
+    Male = "Male",
+    Female = "Female",
+    Other = "Other"
 }
 export enum AuthenticationErrorType {
     Ok = "Ok",

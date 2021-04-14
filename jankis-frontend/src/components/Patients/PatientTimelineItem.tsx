@@ -3,7 +3,7 @@ import { Button } from 'react-bootstrap';
 import { Alert } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import { resolveText } from '../../helpers/Globalizer';
-import { DiagnosticTestScaleType, PatientEventType } from '../../types/enums';
+import { DiagnosticTestScaleType, PatientEventType } from '../../types/enums.d';
 import { Models } from '../../types/models';
 
 interface PatientTimelineItemProps {

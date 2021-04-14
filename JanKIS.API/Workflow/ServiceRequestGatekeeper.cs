@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using JanKIS.API.Models;
+using JanKIS.API.ViewModels;
 
 namespace JanKIS.API.Workflow
 {
@@ -9,15 +10,15 @@ namespace JanKIS.API.Workflow
         public bool CanAcceptServiceRequest(
             ServiceDefinition service,
             ServiceRequest request,
-            Person person)
+            LoggedInUserViewModel user)
         {
             if (request.ServiceId != service.Id)
                 throw new Exception("Service-ID doesn't match that of the request");
-            return service.Audience.Any(audience => RequesterMatchesAudience(person, audience));
+            return service.Audience.Any(audience => RequesterMatchesAudience(user, audience));
         }
 
         private bool RequesterMatchesAudience(
-            Person person,
+            LoggedInUserViewModel user,
             ServiceAudience audience)
         {
             if (audience.Type == ServiceAudienceType.All)
@@ -26,24 +27,13 @@ namespace JanKIS.API.Workflow
             }
             if (audience.Type == ServiceAudienceType.Role)
             {
-                if (!(person is Employee employee))
-                    return false;
                 var roleServiceAudience = (RoleServiceAudience) audience;
-                return employee.Roles.Contains(roleServiceAudience.RoleName);
+                return user.Roles.Any(x => x.Id == roleServiceAudience.RoleId);
             }
-            if (audience.Type == ServiceAudienceType.Employee)
+            if (audience.Type == ServiceAudienceType.Person)
             {
-                if (!(person is Employee employee))
-                    return false;
-                var employeeServiceAudience = (EmployeeServiceAudience) audience;
-                return employee.Id == employeeServiceAudience.EmployeeId;
-            }
-            if (audience.Type == ServiceAudienceType.Patient)
-            {
-                if (!(person is Patient patient))
-                    return false;
-                var patientServiceAudience = (PatientServiceAudience) audience;
-                return patient.Id == patientServiceAudience.PatientId;
+                var personServiceAudience = (PersonServiceAudience) audience;
+                return user.ProfileData.Id == personServiceAudience.PersonId;
             }
             return false;
         }

@@ -1,43 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 using JanKIS.API.Models;
 
 namespace JanKIS.API.AccessManagement
 {
-    public static class PersonFactory
+    public static class AccountFactory
     {
-        public static Employee CreateEmployee(
-            string id,
-            string firstName,
-            string lastName,
-            DateTime birthday,
-            string institutionId,
+        public static EmployeeAccount CreateEmployeeAccount(
+            string personId,
+            string username,
             string password)
         {
             var salt = CreateSalt();
             var saltBase64 = Convert.ToBase64String(salt);
             var passwordHash = PasswordHasher.Hash(password, salt, PasswordHasher.RecommendedHashLength);
             var passwordHashBase64 = Convert.ToBase64String(passwordHash);
-            return new Employee(id, firstName, lastName, birthday, institutionId, saltBase64, passwordHashBase64);
+            return new EmployeeAccount(personId, username, saltBase64, passwordHashBase64);
         }
 
-        public static Patient CreatePatient(
-            string id,
-            string firstName,
-            string lastName,
-            DateTime birthday,
-            string password,
-            HealthInsurance healthInsurance)
+        public static PatientAccount CreatePatientAccount(
+            string personId,
+            string username,
+            string password)
         {
             var salt = CreateSalt();
             var saltBase64 = Convert.ToBase64String(salt);
             var passwordHash = PasswordHasher.Hash(password, salt, PasswordHasher.RecommendedHashLength);
             var passwordHashBase64 = Convert.ToBase64String(passwordHash);
-            return new Patient(id, firstName, lastName, birthday, healthInsurance, saltBase64, passwordHashBase64)
-            {
-                Roles = new List<string> { SystemRoles.Patient.Name }
-            };
+            return new PatientAccount(personId, username, saltBase64, passwordHashBase64);
         }
 
         private static byte[] CreateSalt()

@@ -17,18 +17,15 @@ namespace JanKIS.API.Controllers
     public class RolesController : RestControllerBase<Role>
     {
         private readonly IStore<Role> rolesStore;
-        private readonly IPersonWithLoginStore<Employee> employeesStore;
-        private readonly IPersonWithLoginStore<Employee> patientsStore;
+        private readonly IAccountStore accountsStore;
 
         public RolesController(
             IStore<Role> rolesStore,
-            IPersonWithLoginStore<Employee> employeesStore,
-            IPersonWithLoginStore<Employee> patientsStore)
+            IAccountStore accountsStore)
             : base(rolesStore)
         {
             this.rolesStore = rolesStore;
-            this.employeesStore = employeesStore;
-            this.patientsStore = patientsStore;
+            this.accountsStore = accountsStore;
         }
 
         public override async Task<IActionResult> Delete(string id)
@@ -37,9 +34,8 @@ namespace JanKIS.API.Controllers
             if (role == null)
                 return Ok();
             if (role.IsSystemRole)
-                return BadRequest("System-roles cannot be deleted");
-            await employeesStore.RemoveRoleFromAllUsers(id);
-            await patientsStore.RemoveRoleFromAllUsers(id);
+                return Forbid("System-roles cannot be deleted");
+            await accountsStore.RemoveRoleFromAllUsers(id);
             return await base.Delete(id);
         }
 

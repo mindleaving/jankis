@@ -1,6 +1,6 @@
 import React, { createContext } from "react";
-import { Models } from "../types/models";
+import { ViewModels } from "../types/viewModels";
 
-const UserContext = createContext<Models.PersonWithLogin | undefined>(undefined);
+const UserContext = createContext<ViewModels.LoggedInUserViewModel | undefined>(undefined);
 export const UserProvider = UserContext.Provider;
 export default UserContext;

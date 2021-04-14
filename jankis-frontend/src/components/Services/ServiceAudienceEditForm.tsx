@@ -13,13 +13,11 @@ interface ServiceAudienceEditFormProps {
 export const ServiceAudienceEditForm = (props: ServiceAudienceEditFormProps) => {
 
     const roleAutoCompleteRunner = useMemo(() => new AutocompleteRunner<Models.Role>('api/roles/search', 'searchText', 10), []);
-    const employeeAutoCompleteRunner = useMemo(() => new AutocompleteRunner<Models.Employee>('api/employees/search', 'searchText', 10), []);
-    const patientAutoCompleteRunner = useMemo(() => new AutocompleteRunner<Models.Patient>('api/patients/search', 'searchText', 10), []);
+    const personsAutoCompleteRunner = useMemo(() => new AutocompleteRunner<Models.Person>('api/persons/search', 'searchText', 10), []);
 
     const [ type, setType ] = useState<ServiceAudienceType>(ServiceAudienceType.Role);
     const [ selectedRole, setSelectedRole ] = useState<Models.Role>();
-    const [ selectedEmployee, setSelectedEmployee ] = useState<Models.Employee>();
-    const [ selectedPatient, setSelectedPatient ] = useState<Models.Patient>();
+    const [ selectedPerson, setSelectedPerson ] = useState<Models.Person>();
 
     const createAudience = () => {
         let audience: Models.ServiceAudience;
@@ -31,19 +29,13 @@ export const ServiceAudienceEditForm = (props: ServiceAudienceEditFormProps) => 
         } else if(type === ServiceAudienceType.Role) {
             const roleAudience: Models.RoleServiceAudience = {
                 type: type,
-                roleName: selectedRole!.id
+                roleId: selectedRole!.id
             }
             audience = roleAudience;
-        } else if(type === ServiceAudienceType.Employee) {
-            const employeeAudience: Models.EmployeeServiceAudience = {
+        }else if(type === ServiceAudienceType.Person) {
+            const patientAudience: Models.PersonServiceAudience = {
                 type: type,
-                employeeId: selectedEmployee!.id
-            };
-            audience = employeeAudience;
-        } else if(type === ServiceAudienceType.Patient) {
-            const patientAudience: Models.PatientServiceAudience = {
-                type: type,
-                patientId: selectedPatient!.id
+                personId: selectedPerson!.id
             };
             audience = patientAudience;
         } else {
@@ -56,7 +48,7 @@ export const ServiceAudienceEditForm = (props: ServiceAudienceEditFormProps) => 
     if(type === ServiceAudienceType.Role) {
         typeSpecificFormElements = (
             <FormGroup>
-                <FormLabel>{resolveText('Service_Audience_RoleName')}</FormLabel>
+                <FormLabel>{resolveText('ServiceAudienceType_Role')}</FormLabel>
                 <Autocomplete
                     search={roleAutoCompleteRunner.search}
                     displayNameSelector={x => x.name}
@@ -64,25 +56,14 @@ export const ServiceAudienceEditForm = (props: ServiceAudienceEditFormProps) => 
                 />
             </FormGroup>
         );
-    } else if(type === ServiceAudienceType.Employee) {
+    }else if(type === ServiceAudienceType.Person) {
         typeSpecificFormElements = (
             <FormGroup>
-                <FormLabel>{resolveText('Service_Audience_Employee')}</FormLabel>
+                <FormLabel>{resolveText('ServiceAudienceType_Person')}</FormLabel>
                 <Autocomplete
-                    search={employeeAutoCompleteRunner.search}
+                    search={personsAutoCompleteRunner.search}
                     displayNameSelector={x => `${x.firstName} ${x.lastName} (${x.id})`}
-                    onItemSelected={setSelectedEmployee}
-                />
-            </FormGroup>
-        );
-    } else if(type === ServiceAudienceType.Patient) {
-        typeSpecificFormElements = (
-            <FormGroup>
-                <FormLabel>{resolveText('Service_Audience_Patient')}</FormLabel>
-                <Autocomplete
-                    search={patientAutoCompleteRunner.search}
-                    displayNameSelector={x => `${x.firstName} ${x.lastName} (${x.id})`}
-                    onItemSelected={setSelectedPatient}
+                    onItemSelected={setSelectedPerson}
                 />
             </FormGroup>
         );

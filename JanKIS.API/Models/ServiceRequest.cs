@@ -9,7 +9,7 @@ namespace JanKIS.API.Models
     {
         public ServiceRequest(
             string serviceId,
-            PersonReference requester,
+            string requester,
             Dictionary<string, ServiceParameterResponse> parameterResponses)
         {
             Id = Guid.NewGuid().ToString();
@@ -21,7 +21,10 @@ namespace JanKIS.API.Models
 
         public string Id { get; set; }
         public string ServiceId { get; set; }
-        public PersonReference Requester { get; set; }
+        /// <summary>
+        /// ID of person requesting the service
+        /// </summary>
+        public string Requester { get; set; }
         public Dictionary<string, ServiceParameterResponse> ParameterResponses { get; set; }
         public string Note { get; set; }
 

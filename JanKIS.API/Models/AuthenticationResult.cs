@@ -9,28 +9,24 @@ namespace JanKIS.API.Models
         [JsonConstructor]
         private AuthenticationResult(bool isAuthenticated,
             AuthenticationErrorType error,
-            PersonWithLogin user,
             string accessToken)
         {
             IsAuthenticated = isAuthenticated;
             Error = error;
-            User = user;
             AccessToken = accessToken;
         }
 
-        public static AuthenticationResult Success(PersonWithLogin user, string accessToken)
+        public static AuthenticationResult Success(string accessToken)
         {
-            return new AuthenticationResult(true, AuthenticationErrorType.Ok, user, accessToken);
+            return new AuthenticationResult(true, AuthenticationErrorType.Ok, accessToken);
         }
 
         public static AuthenticationResult Failed(AuthenticationErrorType errorType)
         {
-            return new AuthenticationResult(false, errorType, null, null);
+            return new AuthenticationResult(false, errorType, null);
         }
 
         public bool IsAuthenticated { get; }
-        [TypescriptIsOptional]
-        public PersonWithLogin User { get; }
         [TypescriptIsOptional]
         public string AccessToken { get; }
         public AuthenticationErrorType Error { get; }

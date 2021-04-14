@@ -18,7 +18,7 @@ namespace JanKIS.API.Controllers
     public class DepartmentsController : RestControllerBase<Department>
     {
         private readonly IStore<Department> departmentsStore;
-        private readonly IReadonlyStore<Employee> employeesStore;
+        private readonly IReadonlyStore<Account> accountsStore;
         private readonly IStore<ServiceDefinition> servicesStore;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IStore<ServiceRequest> serviceRequestsStore;
@@ -26,16 +26,16 @@ namespace JanKIS.API.Controllers
         public DepartmentsController(
             IStore<Department> departmentsStore,
             IStore<ServiceDefinition> servicesStore,
+            IReadonlyStore<Account> accountsStore,
             IStore<ServiceRequest> serviceRequestsStore,
-            IReadonlyStore<Employee> employeesStore,
             IHttpContextAccessor httpContextAccessor)
             : base(departmentsStore)
         {
             this.departmentsStore = departmentsStore;
             this.servicesStore = servicesStore;
-            this.employeesStore = employeesStore;
-            this.httpContextAccessor = httpContextAccessor;
+            this.accountsStore = accountsStore;
             this.serviceRequestsStore = serviceRequestsStore;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet(nameof(Hierarchy))]
@@ -58,12 +58,15 @@ namespace JanKIS.API.Controllers
                 return BadRequest("Service-ID from route doesn't match ID in body");
             if (departmentId != serviceDefinition.DepartmentId)
                 return BadRequest("Department-ID of route doesn't match department-ID in body");
+            var personId = httpContextAccessor.HttpContext?.User.FindFirst("id")?.Value;
+            var account = await accountsStore.GetByIdAsync(personId);
+            if (account.AccountType != AccountType.Employee)
+                return Forbid("Only employees can create and update services");
+            var employeeAccount = (EmployeeAccount) account;
             var existingService = await servicesStore.GetByIdAsync(serviceId);
             if (existingService != null)
             {
-                var employeeId = httpContextAccessor.HttpContext?.User.FindFirst("id")?.Value;
-                var employee = await employeesStore.GetByIdAsync(employeeId);
-                if (!employee.DepartmentIds.Contains(existingService.DepartmentId))
+                if (!employeeAccount.DepartmentIds.Contains(existingService.DepartmentId))
                     return Forbid("You cannot change a service of a department that you don't belong to");
             }
             await servicesStore.StoreAsync(serviceDefinition);

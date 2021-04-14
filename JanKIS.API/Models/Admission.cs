@@ -16,6 +16,6 @@ namespace JanKIS.API.Models
         public List<DiagnosticTestResult> DiagnosticTestResults { get; set; }
         public List<PatientNote> Notes { get; set; }
         public DischargeInfo DischargeInfo { get; set; }
-        public List<PersonReference> ContactPersons { get; }
+        public List<string> ContactPersons { get; }
     }
 }

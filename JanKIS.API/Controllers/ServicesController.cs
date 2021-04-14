@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using JanKIS.API.AccessManagement;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
@@ -23,16 +24,14 @@ namespace JanKIS.API.Controllers
         private readonly IReadonlyStore<InstitutionPolicy> institutionPolicyStore;
         private readonly ServiceRequestChangePolicy serviceRequestChangePolicy;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IReadonlyStore<Employee> employeesStore;
-        private readonly IReadonlyStore<Patient> patientsStore;
+        private readonly IReadonlyStore<Account> accountsStore;
 
         public ServicesController(
             IStore<ServiceDefinition> servicesStore,
             IStore<ServiceRequest> serviceRequestsStore,
             IHttpContextAccessor httpContextAccessor,
             IReadonlyStore<InstitutionPolicy> institutionPolicyStore,
-            IReadonlyStore<Employee> employeesStore,
-            IReadonlyStore<Patient> patientsStore,
+            IReadonlyStore<Account> accountsStore,
             ServiceRequestChangePolicy serviceRequestChangePolicy)
             : base(servicesStore)
         {
@@ -40,9 +39,8 @@ namespace JanKIS.API.Controllers
             this.serviceRequestsStore = serviceRequestsStore;
             this.httpContextAccessor = httpContextAccessor;
             this.institutionPolicyStore = institutionPolicyStore;
-            this.employeesStore = employeesStore;
-            this.patientsStore = patientsStore;
             this.serviceRequestChangePolicy = serviceRequestChangePolicy;
+            this.accountsStore = accountsStore;
         }
 
         [HttpPost("{serviceId}/request")]
@@ -59,9 +57,8 @@ namespace JanKIS.API.Controllers
                 return Conflict("A request with that ID already exists");
             var claimsPrincipal = httpContextAccessor.HttpContext.User;
             var userId = claimsPrincipal.Claims.Single(x => x.Type == "id").Value;
-            var personType = Enum.Parse<PersonType>(claimsPrincipal.Claims.Single(x => x.Type == "personType").Value);
             request.Timestamps = new Dictionary<ServiceRequestState, DateTime> {{ServiceRequestState.Requested, DateTime.UtcNow}};
-            request.Requester = new PersonReference(personType, userId);
+            request.Requester = userId;
             await serviceRequestsStore.StoreAsync(request);
             // TODO: Distribute request through hub
             return Ok(request.Id);
@@ -75,15 +72,9 @@ namespace JanKIS.API.Controllers
                 return NotFound();
             var claimsPrincipal = httpContextAccessor.HttpContext.User;
             var userId = claimsPrincipal.Claims.Single(x => x.Type == "id").Value;
-            var personType = Enum.Parse<PersonType>(claimsPrincipal.Claims.Single(x => x.Type == "personType").Value);
-            PersonWithLogin user = personType switch
-            {
-                PersonType.Employee => await employeesStore.GetByIdAsync(userId),
-                PersonType.Patient => await patientsStore.GetByIdAsync(userId),
-                _ => throw new NotSupportedException($"Cannot load user for person-type '{personType}'")
-            };
+            var account = await accountsStore.GetByIdAsync(userId);
             var institutionPolicy = await institutionPolicyStore.GetByIdAsync(InstitutionPolicy.DefaultId);
-            if (!await serviceRequestChangePolicy.CanChange(existingRequest, user, institutionPolicy))
+            if (!await serviceRequestChangePolicy.CanChange(existingRequest, account, institutionPolicy))
                 return Forbid();
             existingRequest.ParameterResponses = request.ParameterResponses;
             await serviceRequestsStore.StoreAsync(existingRequest);
