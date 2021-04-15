@@ -4,7 +4,7 @@ export namespace Models {
     interface Admission {
         id: string;
         patientId: string;
-        healthInsurance: Models.HealthInsurance;
+        profileData: Models.Person;
         admissionInfo: Models.AdmissionInfo;
         isReadmission: boolean;
         medicationSchedule: Models.MedicationSchedule;
@@ -102,6 +102,7 @@ export namespace Models {
     interface Department {
         id: string;
         name: string;
+        institutionId: string;
         parentDepartment?: string;
     }
 
@@ -201,6 +202,8 @@ export namespace Models {
         id: string;
         name: string;
         wards: Models.Ward[];
+        rooms: Models.Room[];
+        departments: Models.Department[];
     }
 
     interface InstitutionPolicy {
@@ -437,6 +440,7 @@ export namespace Models {
 
     interface Room {
         id: string;
+        name: string;
     }
 
     interface ServiceAudience {

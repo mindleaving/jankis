@@ -15,8 +15,6 @@ import { PatientEquipmentPage } from './pages/Patients/PatientEquipmentPage';
 import { PatientMedicationsPage } from './pages/Patients/PatientMedicationsPage';
 import { PatientNotesPage } from './pages/Patients/PatientNotesPage';
 import { PatientObservationsPage } from './pages/Patients/PatientObservationsPage';
-import { PatientPage } from './pages/Patients/PatientPage';
-import { PatientsListPage } from './pages/Patients/PatientsListPage';
 import { PatientTimelinePage } from './pages/Patients/PatientTimelinePage';
 import { ConsumableEditPage } from './pages/Resources/ConsumableEditPage';
 import { ConsumablePage } from './pages/Resources/ConsumablePage';
@@ -40,7 +38,7 @@ import { WardsListPage } from './pages/Ward/WardsListPage';
 import { ContactsListPage } from './pages/ContactList/ContactsListPage';
 import { ContactEditPage } from './pages/ContactList/ContactEditPage';
 import { ContactPage } from './pages/ContactList/ContactPage';
-import { InstitutionBuilderPage } from './pages/Config/InstitutionBuilderPage';
+import { InstitutionEditPage } from './pages/Config/InstitutionEditPage';
 import { AccountEditPage } from './pages/UserManagement/AccountEditPage';
 import { AccountsListPage } from './pages/UserManagement/AccountsListPage';
 import { RoleEditPage } from './pages/UserManagement/RoleEditPage';
@@ -50,6 +48,9 @@ import { DepartmentServices } from './pages/Services/DepartmentServices';
 import { LoginPage } from './pages/LoginPage';
 import { apiClient } from './communication/ApiClient';
 import { ViewModels } from './types/viewModels';
+import { AdmissionsListPage } from './pages/Patients/AdmissionsListPage';
+import { AdmissionPage } from './pages/Patients/AdmissionPage';
+import { InstitutionsListPage } from './pages/Config/InstitutionsListPage';
 
 function App() {
 
@@ -74,13 +75,8 @@ function App() {
                     </Route>
 
                     <Route
-                        exact path="/config/institution"
-                        render={props => <InstitutionBuilderPage {...props} />}
-                    />
-
-                    <Route
-                        exact path="/patients"
-                        render={props => <PatientsListPage {...props} />}
+                        exact path="/admissions"
+                        render={props => <AdmissionsListPage {...props} />}
                     />
                     <Route
                         exact path="/create/patient"
@@ -92,7 +88,7 @@ function App() {
                     />
                     <Route
                         exact path="/patients/:patientId"
-                        render={props => <PatientPage {...props} />}
+                        render={props => <AdmissionPage {...props} />}
                     />
                     <Route
                         exact path="/patients/:patientId/edit"
@@ -307,8 +303,16 @@ function App() {
                     />
 
                     <Route
-                        exact path="/institution"
-                        render={props => <InstitutionBuilderPage {...props} />}
+                        exact path="/institutions"
+                        render={props => <InstitutionsListPage {...props} />}
+                    />
+                    <Route
+                        exact path="/institutions/:institutionId/edit"
+                        render={props => <InstitutionEditPage {...props} />}
+                    />
+                    <Route
+                        exact path="/create/institution"
+                        render={props => <InstitutionEditPage {...props} />}
                     />
                 </Switch>
             </Layout>

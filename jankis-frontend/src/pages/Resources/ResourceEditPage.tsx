@@ -23,7 +23,11 @@ export const ResourceEditPage = (props: ResourceEditPageProps) => {
 
     const resourceGroupAutocompleteRunner = useMemo(() => new AutocompleteRunner<Models.ResourceGroup>('api/resourcegroups/search', 'searchText', 10), []);
     const isNew = props.match.path.toLowerCase().startsWith('/create');
-    const matchedId = props.match.params.resourceId;
+    if(!isNew && !props.match.params.resourceId) {
+        throw new Error('Invalid link');
+    }
+    const id = props.match.params.resourceId ?? uuid();
+
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
     const [ isStoring, setIsStoring ] = useState<boolean>(false);
     const [ name, setName ] = useState<string>('');
@@ -34,7 +38,7 @@ export const ResourceEditPage = (props: ResourceEditPageProps) => {
         if(isNew) return;
         setIsLoading(true);
         const loadConsumable = buildLoadObjectFunc<Models.Resource>(
-            `api/consumables/${matchedId}`,
+            `api/consumables/${id}`,
             {},
             resolveText('Consumable_CouldNotLoad'),
             consumable => {
@@ -43,7 +47,7 @@ export const ResourceEditPage = (props: ResourceEditPageProps) => {
             () => setIsLoading(false)
         );
         loadConsumable();
-    }, [ isNew, matchedId ]);
+    }, [ isNew, id ]);
 
     const store = async (e?: FormEvent) => {
         e?.preventDefault();
@@ -60,7 +64,7 @@ export const ResourceEditPage = (props: ResourceEditPageProps) => {
 
     const buildResource = (): Models.Resource => {
         return {
-            id: matchedId ?? uuid(),
+            id: id,
             name: name,
             groupId: resourceGroup?.id,
             location: {

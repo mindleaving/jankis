@@ -19,6 +19,9 @@ interface RoleEditPageProps extends RouteComponentProps<RoleParams> {}
 export const RoleEditPage = (props: RoleEditPageProps) => {
 
     const isNew = props.match.path.toLowerCase().startsWith('/create');
+    if(!isNew && !props.match.params.roleId) {
+        throw new Error('Invalid link');
+    }
     const id = props.match.params.roleId ?? uuid();
 
     const [ name, setName ] = useState<string>('');

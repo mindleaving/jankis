@@ -7,6 +7,7 @@ namespace JanKIS.API.Models
     {
         public string Id { get; set; }
         public string Name { get; set; }
+        public string InstitutionId { get; set; }
         [TypescriptIsOptional]
         public string ParentDepartment { get; set; }
     }

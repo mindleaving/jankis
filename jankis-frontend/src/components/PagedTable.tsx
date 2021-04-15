@@ -72,7 +72,7 @@ export const PagedTable = (props: PropsWithChildren<PagedTableProps>) => {
             </Col>
             <Col></Col>
             <Col xs="auto">
-                {props.hasCreateNewButton ? <Button className="m-1 float-right" onClick={props.onCreateNew}>Create new</Button> : null}
+                {props.hasCreateNewButton ? <Button className="m-1 float-right" onClick={props.onCreateNew}>{resolveText('CreateNew')}</Button> : null}
             </Col>
         </Form.Row>
         <Table bordered={props.bordered} className={props.className}>

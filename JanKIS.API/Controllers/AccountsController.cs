@@ -54,17 +54,50 @@ namespace JanKIS.API.Controllers
                 _ => x => x.Username
             };
             var items = await accountsStore.GetMany(count, skip, orderByExpression, orderDirection);
+            var viewModels = await BuildAccountViewModels(items);
+            return Ok(viewModels);
+        }
+
+        [HttpGet(nameof(Search))]
+        public async Task<IActionResult> Search([FromQuery] string searchText, int? count = null, int? skip = null)
+        {
+            var searchTerms = SearchTermSplitter.SplitAndToLower(searchText);
+            var searchExpression = SearchExpressionBuilder.ContainsAll<Account>(x => x.Username.ToLower(), searchTerms);
+            var items = await accountsStore.SearchAsync(searchExpression, count, skip);
+            if (!items.Any())
+            {
+                var personSearchExpression = SearchExpressionBuilder.Or(
+                    SearchExpressionBuilder.ContainsAny<Person>(x => x.FirstName.ToLower(), searchTerms),
+                    SearchExpressionBuilder.ContainsAny<Person>(x => x.LastName.ToLower(), searchTerms));
+                var matchingPersons = await personsStore.SearchAsync(
+                    personSearchExpression,
+                    count,
+                    skip);
+                var personIds = matchingPersons.Select(person => person.Id).ToList();
+                items = await accountsStore.SearchAsync(x => personIds.Contains(x.PersonId));
+            }
+            var viewModels = await BuildAccountViewModels(items);
+            return Ok(viewModels);
+        }
+
+        private async Task<List<AccountViewModel>> BuildAccountViewModels(List<Account> items)
+        {
             var viewModels = new List<AccountViewModel>();
             var allRoles = (await rolesStore.GetAllAsync()).ToDictionary(x => x.Id, x => x);
             var allDepartments = (await departmentsStore.GetAllAsync()).ToDictionary(x => x.Id, x => x);
-            var viewModelFactory = new AccountViewModelFactory(allRoles, allDepartments, personsStore);
+            var viewModelFactory = new AccountViewModelFactory(
+                allRoles,
+                allDepartments,
+                personsStore);
             foreach (var account in items)
             {
                 var viewModel = await viewModelFactory.Create(account);
                 viewModels.Add(viewModel);
             }
-            return Ok(viewModels);
+
+            return viewModels;
         }
+
 
         [HttpGet("{username}")]
         public async Task<IActionResult> GetByUsername([FromRoute] string username)

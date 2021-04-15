@@ -17,6 +17,9 @@ interface ContactEditPageProps extends RouteComponentProps<ContactParams> {}
 export const ContactEditPage = (props: ContactEditPageProps) => {
 
     const isNew = props.match.path.toLowerCase().startsWith('/create');
+    if(!isNew && !props.match.params.contactId) {
+        throw new Error('Invalid link');
+    }
     const id = props.match.params.contactId ?? uuid();
 
     const [ isLoading, setIsLoading ] = useState<boolean>(!isNew);

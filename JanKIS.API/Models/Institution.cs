@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using JanKIS.API.Storage;
 
 namespace JanKIS.API.Models
 {
-    public class Institution
+    public class Institution : IId
     {
         public Institution(
             string id,
@@ -17,10 +18,14 @@ namespace JanKIS.API.Models
             Id = id;
             Name = name;
             Wards = new List<Ward>();
+            Rooms = new List<Room>();
+            Departments = new List<Department>();
         }
 
         public string Id { get; set; }
         public string Name { get; set; }
         public List<Ward> Wards { get; set; }
+        public List<Room> Rooms { get; set; }
+        public List<Department> Departments { get; set; }
     }
 }

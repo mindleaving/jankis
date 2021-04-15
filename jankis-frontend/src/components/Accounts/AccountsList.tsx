@@ -17,7 +17,7 @@ export const AccountsList = (props: AccountsListProps) => {
 
     const [ users, setUsers ] = useState<ViewModels.AccountViewModel[]>([]);
     const filter = props.filter;
-    const employeesLoader = useMemo(() => new PagedTableLoader<ViewModels.AccountViewModel>(
+    const accountLoader = useMemo(() => new PagedTableLoader<ViewModels.AccountViewModel>(
         'api/accounts', 
         resolveText('Accounts_CouldNotLoad'),
         setUsers,
@@ -58,7 +58,7 @@ export const AccountsList = (props: AccountsListProps) => {
     
     return (
         <PagedTable
-            onPageChanged={employeesLoader.load}
+            onPageChanged={accountLoader.load}
             hasCreateNewButton
             onCreateNew={() => history.push('/create/account')}
         >

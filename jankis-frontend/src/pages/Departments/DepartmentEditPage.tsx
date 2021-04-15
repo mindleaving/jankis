@@ -11,7 +11,6 @@ import { v4 as uuid } from 'uuid';
 import { Autocomplete } from '../../components/Autocomplete';
 import { AutocompleteRunner } from '../../helpers/AutocompleteRunner';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
-import { ListFormControl } from '../../components/ListFormControl';
 
 interface DepartmentParams {
     departmentId?: string;
@@ -21,10 +20,15 @@ interface DepartmentEditPageProps extends RouteComponentProps<DepartmentParams> 
 export const DepartmentEditPage = (props: DepartmentEditPageProps) => {
 
     const isNew = props.match.path.toLowerCase().startsWith('/create');
+    if(!isNew && !props.match.params.departmentId) {
+        throw new Error('Invalid link');
+    }
     const id = props.match.params.departmentId ?? uuid();
 
+    const institutionAutocompleteRunner = useMemo(() => new AutocompleteRunner<Models.Institution>('api/institutions/search', 'searchText', 10), []);
     const departmentAutocompleteRunner = useMemo(() => new AutocompleteRunner<Models.Department>('api/departments/search', 'searchText', 10), []);
     const [ name, setName ] = useState<string>('');
+    const [ institutionId, setInstitutionId] = useState<string>();
     const [ parentDepartmentId, setParentDepartmentId ] = useState<string>();
     const [ isLoading, setIsLoading ] = useState<boolean>(!isNew);
     const [ isStoring, setIsStoring ] = useState<boolean>(false);
@@ -39,6 +43,7 @@ export const DepartmentEditPage = (props: DepartmentEditPageProps) => {
             resolveText('Department_CouldNotLoad'),
             (department) => {
                 setName(department.name);
+                setInstitutionId(department.institutionId);
                 setParentDepartmentId(department.parentDepartment);
             },
             () => setIsLoading(false)
@@ -65,6 +70,7 @@ export const DepartmentEditPage = (props: DepartmentEditPageProps) => {
         return {
             id: id,
             name: name,
+            institutionId: institutionId!,
             parentDepartment: parentDepartmentId
         }
     }
@@ -82,6 +88,16 @@ export const DepartmentEditPage = (props: DepartmentEditPageProps) => {
                     value={name}
                     onChange={setName}
                 />
+                <FormGroup as={Row}>
+                    <FormLabel column>{resolveText('Department_Institution')}</FormLabel>
+                    <Col>
+                        <Autocomplete
+                            search={institutionAutocompleteRunner.search}
+                            displayNameSelector={x => x.name}
+                            onItemSelected={x => setInstitutionId(x.id)}
+                        />
+                    </Col>
+                </FormGroup>
                 <FormGroup as={Row}>
                     <FormLabel column>{resolveText('Department_ParentDepartment')}</FormLabel>
                     <Col>

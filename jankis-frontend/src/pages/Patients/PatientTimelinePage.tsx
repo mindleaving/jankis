@@ -13,6 +13,9 @@ interface PatientTimelinePageProps extends RouteComponentProps<PatientParams> {}
 
 export const PatientTimelinePage = (props: PatientTimelinePageProps) => {
 
+    // TODO: Group events by admission
+
+
     const id = props.match.params.patientId;
 
     const [ events, setEvents ] = useState<Models.IPatientEvent[]>([]);

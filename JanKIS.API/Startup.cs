@@ -55,6 +55,8 @@ namespace JanKIS.API
             services.AddScoped<IReadonlyStore<Contact>, GenericReadonlyStore<Contact>>();
             services.AddScoped<IStore<Contact>, GenericStore<Contact>>();
             services.AddScoped<IAdmissionsStore, AdmissionsStore>();
+            services.AddScoped<IReadonlyStore<Institution>, GenericReadonlyStore<Institution>>();
+            services.AddScoped<IStore<Institution>, GenericStore<Institution>>();
             services.AddScoped<IReadonlyStore<Department>, GenericReadonlyStore<Department>>();
             services.AddScoped<IStore<Department>, GenericStore<Department>>();
             services.AddScoped<IReadonlyStore<ServiceDefinition>, GenericReadonlyStore<ServiceDefinition>>();

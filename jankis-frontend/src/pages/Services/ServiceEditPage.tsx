@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { RouteComponentProps } from 'react-router';
 import { ServiceEditForm } from '../../components/Services/ServiceEditForm';
 import { resolveText } from '../../helpers/Globalizer';
+import { v4 as uuid } from 'uuid';
 
 interface CreateEditServiceParams {
     serviceId?: string;
@@ -11,8 +12,11 @@ interface ServiceEditPageProps extends RouteComponentProps<CreateEditServicePara
 
 export const ServiceEditPage = (props: ServiceEditPageProps) => {
 
-    const isNewService = props.match.path === "/services/new";
-    const matchedServiceId = props.match.params.serviceId;
+    const isNew = props.match.path.toLowerCase().startsWith('/create');
+    if(!isNew && !props.match.params.serviceId) {
+        throw new Error('Invalid link');
+    }
+    const id = props.match.params.serviceId ?? uuid();
 
     useEffect(() => {
 
@@ -20,8 +24,8 @@ export const ServiceEditPage = (props: ServiceEditPageProps) => {
 
     return (
         <>
-            <h1>{resolveText(isNewService ? 'Service_Create' : 'Service_Edit')}</h1>
-            <ServiceEditForm serviceId={matchedServiceId} />
+            <h1>{resolveText(isNew ? 'Service_Create' : 'Service_Edit')}</h1>
+            <ServiceEditForm serviceId={id} />
         </>
     );
 

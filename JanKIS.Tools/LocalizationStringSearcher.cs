@@ -29,7 +29,7 @@ namespace JanKIS.Tools
                 var fileContent = File.ReadAllLines(tsFile);
                 foreach (var line in fileContent)
                 {
-                    var matches = Regex.Matches(line, "resolveText\\([\"'](?<ResourceID>[^\"]+)[\"']\\)");
+                    var matches = Regex.Matches(line, "resolveText\\([\"'](?<ResourceID>[^\"']+)[\"']\\)");
                     foreach (Match match in matches)
                     {
                         if(!match.Groups["ResourceID"].Success)

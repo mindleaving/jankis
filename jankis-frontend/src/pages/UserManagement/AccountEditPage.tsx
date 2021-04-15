@@ -14,7 +14,6 @@ import Flatpickr from 'react-flatpickr';
 import { AsyncButton } from '../../components/AsyncButton';
 import { AccountType, Sex } from '../../types/enums.d';
 import { ViewModels } from '../../types/viewModels';
-import { v4 as uuid } from 'uuid';
 import UserContext from '../../contexts/UserContext';
 
 interface AccountEditPageParams {
@@ -31,12 +30,15 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
     const currentUser = useContext(UserContext);
 
     const isNew = props.match.path.toLowerCase().startsWith('/create');
-    const matchedUsername = props.match.params.username ?? uuid();
+    if(!isNew && !props.match.params.username) {
+        throw new Error('Invalid link');
+    }
+    const matchedUsername = props.match.params.username;
     const [ isLoading, setIsLoading ] = useState<boolean>(!isNew);
     const [ isStoring, setIsStoring ] = useState<boolean>(false);
     const history = useHistory();
 
-    const [ username, setUsername ] = useState<string>(matchedUsername);
+    const [ username, setUsername ] = useState<string>(matchedUsername ?? '');
     const [ isUsernameTaken, setIsUsernameTaken ] = useState<boolean>(false);
     const [ accountType, setAccountType ] = useState<AccountType>();
     const [ personId, setPersonId ] = useState<string>();

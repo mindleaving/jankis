@@ -7,7 +7,7 @@ namespace JanKIS.API.Models
     {
         public string Id { get; set; }
         public string PatientId { get; set; }
-        public HealthInsurance HealthInsurance { get; set; }
+        public Person ProfileData { get; set; }
         public AdmissionInfo AdmissionInfo { get; set; }
         public bool IsReadmission { get; set; }
         public MedicationSchedule MedicationSchedule { get; set; }

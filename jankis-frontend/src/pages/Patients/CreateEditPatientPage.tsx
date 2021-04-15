@@ -19,7 +19,11 @@ interface CreateEditPatientPageProps extends RouteComponentProps<PatientParams> 
 export const CreateEditPatientPage = (props: CreateEditPatientPageProps) => {
 
     const isNew = props.match.path.toLowerCase().startsWith('/create');
+    if(!isNew && !props.match.params.patientId) {
+        throw new Error('Invalid link');
+    }
     const id = props.match.params.patientId ?? uuid();
+
     const [ firstName, setFirstName ] = useState<string>('');
     const [ lastName, setLastName ] = useState<string>('');
     const [ birthday, setBirthday ] = useState<Date>();

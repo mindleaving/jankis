@@ -20,7 +20,10 @@ interface StockEditPageProps extends RouteComponentProps<StockParams> {}
 export const StockEditPage = (props: StockEditPageProps) => {
 
     const isNew = props.match.path.toLowerCase().startsWith('/create');
-    const matchedId = props.match.params.stockId;
+    if(!isNew && !props.match.params.stockId) {
+        throw new Error('Invalid link');
+    }
+    const id = props.match.params.stockId ?? uuid();
     const departments = useSelector(getDepartments);
 
     const [ name, setName ] = useState<string>('');
@@ -33,7 +36,7 @@ export const StockEditPage = (props: StockEditPageProps) => {
         if(isNew) return;
         setIsLoading(true);
         const loadStock = buildLoadObjectFunc<Models.Stock>(
-            `api/stocks/${matchedId}`,
+            `api/stocks/${id}`,
             {},
             resolveText('Stock_CouldNotLoad'),
             stock => {
@@ -44,7 +47,7 @@ export const StockEditPage = (props: StockEditPageProps) => {
             () => setIsLoading(false)
         );
         loadStock();
-    }, [ isNew, matchedId, departments ]);
+    }, [ isNew, id, departments ]);
 
     const store = async (e?: FormEvent) => {
         try {
@@ -61,7 +64,7 @@ export const StockEditPage = (props: StockEditPageProps) => {
 
     const buildStock = (): Models.Stock => {
         return {
-            id: matchedId ?? uuid(),
+            id: id,
             name: name,
             location: selectedLocation!,
             departmentId: selectedDepartment!.id

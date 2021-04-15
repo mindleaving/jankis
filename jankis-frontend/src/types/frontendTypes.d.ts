@@ -17,3 +17,6 @@ export interface DepartmentsFilter {
 export interface AccountsFilter {
     searchText?: string;
 }
+export interface AdmissionsFilter {
+    searchText?: string;
+}

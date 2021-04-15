@@ -19,7 +19,10 @@ interface ConsumableEditPageProps extends RouteComponentProps<ConsumableParams> 
 export const ConsumableEditPage = (props: ConsumableEditPageProps) => {
 
     const isNew = props.match.path.toLowerCase().startsWith('/create');
-    const matchedId = props.match.params.consumableId;
+    if(!isNew && !props.match.params.consumableId) {
+        throw new Error('Invalid link');
+    }
+    const id = props.match.params.consumableId ?? uuid();
 
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
     const [ isStoring, setIsStoring ] = useState<boolean>(false);
@@ -29,7 +32,7 @@ export const ConsumableEditPage = (props: ConsumableEditPageProps) => {
         if(isNew) return;
         setIsLoading(true);
         const loadConsumable = buildLoadObjectFunc<Models.Consumable>(
-            `api/consumables/${matchedId}`,
+            `api/consumables/${id}`,
             {},
             resolveText('Consumable_CouldNotLoad'),
             consumable => {
@@ -38,7 +41,7 @@ export const ConsumableEditPage = (props: ConsumableEditPageProps) => {
             () => setIsLoading(false)
         );
         loadConsumable();
-    }, [ isNew, matchedId ]);
+    }, [ isNew, id ]);
 
     const store = async (e?: FormEvent) => {
         e?.preventDefault();
@@ -55,7 +58,7 @@ export const ConsumableEditPage = (props: ConsumableEditPageProps) => {
 
     const buildConsumable = (): Models.Consumable => {
         return {
-            id: matchedId ?? uuid(),
+            id: id,
             name: name,
             stockStates: []
         }
