@@ -58,14 +58,7 @@ namespace JanKIS.API.Workflow
                 var currentAdmission = await admissionsStore.GetCurrentAdmissionAsync(personId);
                 if (currentAdmission != null)
                 {
-                    foreach (var contactPerson in currentAdmission.ContactPersons)
-                    {
-                        var contactPersonAccount = await accountsStore.GetByIdAsync(contactPerson);
-                        if(contactPersonAccount == null || contactPersonAccount.AccountType != AccountType.Employee)
-                            continue;
-                        var contactPersonDepartments = ((EmployeeAccount)contactPersonAccount).DepartmentIds;
-                        departmentIds.AddRange(contactPersonDepartments);
-                    }
+                    departmentIds.AddRange(currentAdmission.BedOccupancies.Select(bedOccupancy => bedOccupancy.DepartmentId));
                 }
                 return departmentIds.Distinct().ToList();
             }

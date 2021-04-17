@@ -4,6 +4,7 @@
     {
         Observation,
         Note,
-        Diagnostics,
+        TestResult,
+        Document
     }
 }

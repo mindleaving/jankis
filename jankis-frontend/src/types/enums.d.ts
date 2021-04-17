@@ -2,6 +2,10 @@ export enum AccountType {
     Patient = "Patient",
     Employee = "Employee"
 }
+export enum AutoCompleteContext {
+    MeasurementType = "MeasurementType",
+    Unit = "Unit"
+}
 export enum BedState {
     Empty = "Empty",
     Occupied = "Occupied",
@@ -27,7 +31,6 @@ export enum DietaryCharacteristic {
 }
 export enum LocationType {
     Room = "Room",
-    Ward = "Ward",
     Department = "Department",
     External = "External"
 }
@@ -38,6 +41,14 @@ export enum MealState {
     DeliveredToPatient = "DeliveredToPatient",
     Cancelled = "Cancelled",
     Discarded = "Discarded"
+}
+export enum MeasurementType {
+    Pulse = "Pulse",
+    BloodPressure = "BloodPressure",
+    Temperature = "Temperature",
+    OxygenSaturation = "OxygenSaturation",
+    Height = "Height",
+    Weight = "Weight"
 }
 export enum MedicationDispensionState {
     Scheduled = "Scheduled",
@@ -58,7 +69,8 @@ export enum OrderState {
 export enum PatientEventType {
     Observation = "Observation",
     Note = "Note",
-    Diagnostics = "Diagnostics"
+    TestResult = "TestResult",
+    Document = "Document"
 }
 export enum Permission {
     ListEmployees = "ListEmployees",

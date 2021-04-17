@@ -4,11 +4,10 @@ import { RouteComponentProps } from 'react-router';
 import { PatientTimelineItem } from '../../components/Patients/PatientTimelineItem';
 import { resolveText } from '../../helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
+import { PatientParams } from '../../types/frontendTypes';
 import { Models } from '../../types/models';
+import { ViewModels } from '../../types/viewModels';
 
-interface PatientParams {
-    patientId?: string;
-}
 interface PatientTimelinePageProps extends RouteComponentProps<PatientParams> {}
 
 export const PatientTimelinePage = (props: PatientTimelinePageProps) => {
@@ -23,12 +22,15 @@ export const PatientTimelinePage = (props: PatientTimelinePageProps) => {
 
     useEffect(() => {
         setIsLoading(true);
-        const loadPatientEvents = buildLoadObjectFunc<Models.IPatientEvent[]>(
-            `api/patients/${id}/events`,
+        const loadPatientEvents = buildLoadObjectFunc<ViewModels.PatientOverviewViewModel>(
+            `api/patients/${id}/overviewviewmodel`,
             {},
             resolveText('Patient_CouldNotLoad'),
             data => {
-                setEvents(data);
+                setEvents(
+                    (data.notes as Models.IPatientEvent[])
+                    .concat(data.observations)
+                    .concat(data.testResults));
             },
             () => setIsLoading(false)
         );

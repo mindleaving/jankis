@@ -9,12 +9,12 @@ import { DepartmentsListPage } from './pages/Departments/DepartmentsListPage';
 import { NewsPage } from './pages/NewsPage';
 import { CreateEditPatientPage } from './pages/Patients/CreateEditPatientPage';
 import { MyPatientsPage } from './pages/Patients/MyPatientsPage';
-import { PatientDiagnosticsPage } from './pages/Patients/PatientDiagnosticsPage';
-import { PatientDocumentsPage } from './pages/Patients/PatientDocumentsPage';
+import { CreatePatientTestResultPage } from './pages/Patients/CreatePatientTestResultPage';
+import { CreatePatientDocumentPage } from './pages/Patients/CreatePatientDocumentPage';
 import { PatientEquipmentPage } from './pages/Patients/PatientEquipmentPage';
 import { PatientMedicationsPage } from './pages/Patients/PatientMedicationsPage';
-import { PatientNotesPage } from './pages/Patients/PatientNotesPage';
-import { PatientObservationsPage } from './pages/Patients/PatientObservationsPage';
+import { CreatePatientNotePage } from './pages/Patients/CreatePatientNotePage';
+import { CreatePatientObservationPage } from './pages/Patients/CreatePatientObservationPage';
 import { PatientTimelinePage } from './pages/Patients/PatientTimelinePage';
 import { ConsumableEditPage } from './pages/Resources/ConsumableEditPage';
 import { ConsumablePage } from './pages/Resources/ConsumablePage';
@@ -31,10 +31,6 @@ import { ServicePage } from './pages/Services/ServicePage';
 import { ServiceRequestPage } from './pages/Services/ServiceRequestPage';
 import { ServiceRequestsListPage } from './pages/Services/ServiceRequestsListPage';
 import { ServicesListPage } from './pages/Services/ServicesListPage';
-import { WardBedsPage } from './pages/Ward/WardBedsPage';
-import { WardEditPage } from './pages/Ward/WardEditPage';
-import { WardPage } from './pages/Ward/WardPage';
-import { WardsListPage } from './pages/Ward/WardsListPage';
 import { ContactsListPage } from './pages/ContactList/ContactsListPage';
 import { ContactEditPage } from './pages/ContactList/ContactEditPage';
 import { ContactPage } from './pages/ContactList/ContactPage';
@@ -49,16 +45,16 @@ import { LoginPage } from './pages/LoginPage';
 import { apiClient } from './communication/ApiClient';
 import { ViewModels } from './types/viewModels';
 import { AdmissionsListPage } from './pages/Patients/AdmissionsListPage';
-import { AdmissionPage } from './pages/Patients/AdmissionPage';
 import { InstitutionsListPage } from './pages/Config/InstitutionsListPage';
+import { PatientPage } from './pages/Patients/PatientPage';
 
 function App() {
 
     const [loggedInUser, setLoggedInUser] = useState<ViewModels.LoggedInUserViewModel>();
     const onLoggedIn = (userViewModel: ViewModels.LoggedInUserViewModel) => {
         if (userViewModel.authenticationResult.isAuthenticated) {
-            setLoggedInUser(userViewModel);
             apiClient.setAccessToken(userViewModel.authenticationResult.accessToken!);
+            setLoggedInUser(userViewModel);
         }
     }
 
@@ -83,65 +79,44 @@ function App() {
                         render={props => <CreateEditPatientPage {...props} />}
                     />
                     <Route
+                        exact path="/patients/:patientId/edit"
+                        render={props => <CreateEditPatientPage {...props} />}
+                    />
+                    <Route
                         exact path="/mypatients"
                         render={props => <MyPatientsPage {...props} />}
                     />
                     <Route
                         exact path="/patients/:patientId"
-                        render={props => <AdmissionPage {...props} />}
-                    />
-                    <Route
-                        exact path="/patients/:patientId/edit"
-                        render={props => <CreateEditPatientPage {...props} />}
-                    />
-                    <Route
-                        exact path="/patients/:patientId/medications"
-                        render={props => <PatientMedicationsPage {...props} />}
-                    />
-                    <Route
-                        exact path="/patients/:patientId/diagnostics"
-                        render={props => <PatientDiagnosticsPage {...props} />}
-                    />
-                    <Route
-                        exact path="/patients/:patientId/observations"
-                        render={props => <PatientObservationsPage {...props} />}
-                    />
-                    <Route
-                        exact path="/patients/:patientId/equipment"
-                        render={props => <PatientEquipmentPage {...props} />}
-                    />
-                    <Route
-                        exact path="/patients/:patientId/documents"
-                        render={props => <PatientDocumentsPage {...props} />}
+                        render={props => <PatientPage {...props} />}
                     />
                     <Route
                         exact path="/patients/:patientId/timeline"
                         render={props => <PatientTimelinePage {...props} />}
                     />
                     <Route
-                        exact path="/patients/:patientId/notes"
-                        render={props => <PatientNotesPage {...props} />}
-                    />
-
-                    <Route
-                        exact path="/wards"
-                        render={props => <WardsListPage {...props} />}
+                        exact path="/patients/:patientId/medications"
+                        render={props => <PatientMedicationsPage {...props} />}
                     />
                     <Route
-                        exact path="/create/ward"
-                        render={props => <WardEditPage {...props} />}
+                        exact path="/patients/:patientId/create/testresult"
+                        render={props => <CreatePatientTestResultPage {...props} />}
                     />
                     <Route
-                        exact path="/wards/:wardId"
-                        render={props => <WardPage {...props} />}
+                        exact path="/patients/:patientId/create/observation"
+                        render={props => <CreatePatientObservationPage {...props} />}
                     />
                     <Route
-                        exact path="/wards/:wardId/edit"
-                        render={props => <WardEditPage {...props} />}
+                        exact path="/patients/:patientId/create/document"
+                        render={props => <CreatePatientDocumentPage {...props} />}
                     />
                     <Route
-                        exact path="/wards/:wardId/beds"
-                        render={props => <WardBedsPage {...props} />}
+                        exact path="/patients/:patientId/create/note"
+                        render={props => <CreatePatientNotePage {...props} />}
+                    />
+                    <Route
+                        exact path="/patients/:patientId/equipment"
+                        render={props => <PatientEquipmentPage {...props} />}
                     />
 
                     <Route

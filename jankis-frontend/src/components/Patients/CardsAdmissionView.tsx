@@ -2,10 +2,11 @@ import React from 'react';
 import { Accordion } from 'react-bootstrap';
 import { resolveText } from '../../helpers/Globalizer';
 import { Models } from '../../types/models';
+import { ViewModels } from '../../types/viewModels';
 import { AccordionCard } from '../AccordionCard';
 
 interface CardsAdmissionViewProps {
-    admission: Models.Admission;
+    admission: ViewModels.PatientOverviewViewModel;
 }
 
 export const CardsAdmissionView = (props: CardsAdmissionViewProps) => {
@@ -19,7 +20,7 @@ export const CardsAdmissionView = (props: CardsAdmissionViewProps) => {
 
             </AccordionCard>
             <AccordionCard
-                title={resolveText('Patient_Medication')}
+                title={resolveText('Patient_Medications')}
                 eventKey="medication"
             >
 

@@ -6,7 +6,7 @@ import { PatientProfileJumbotron } from '../../components/Patients/PatientProfil
 import { TimelineAdmissionView } from '../../components/Patients/TimelineAdmissionView';
 import { resolveText } from '../../helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
-import { Models } from '../../types/models';
+import { ViewModels } from '../../types/viewModels';
 
 interface AdmissionParams {
     admissionId?: string;
@@ -21,13 +21,13 @@ export const AdmissionPage = (props: AdmissionPageProps) => {
     const id = props.match.params.admissionId;
 
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
-    const [ admission, setAdmission ] = useState<Models.Admission>();
+    const [ admission, setAdmission ] = useState<ViewModels.PatientOverviewViewModel>();
     const [ viewType, setViewType ] = useState<AdmissionViewType>(AdmissionViewType.Cards);
 
     useEffect(() => {
         if(!id) return;
-        const loadAdmission = buildLoadObjectFunc<Models.Admission>(
-            `api/admissions/${id}`,
+        const loadAdmission = buildLoadObjectFunc<ViewModels.PatientOverviewViewModel>(
+            `api/patients/${id}/overviewviewmodel`,
             {},
             resolveText('Admission_CouldNotLoad'),
             setAdmission,

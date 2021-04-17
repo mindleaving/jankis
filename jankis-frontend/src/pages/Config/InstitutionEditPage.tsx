@@ -26,7 +26,6 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
     const id = props.match.params.institutionId ?? uuid();
 
     const [name, setName] = useState<string>('');
-    const [wards, setWards] = useState<Models.Ward[]>([]);
     const [rooms, setRooms] = useState<Models.Room[]>([]);
     const [departments, setDepartments] = useState<Models.Department[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(!isNew);
@@ -43,7 +42,6 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
             resolveText('Institution_CouldNotLoad'),
             item => {
                 setName(item.name);
-                setWards(item.wards);
                 setRooms(item.rooms);
                 setDepartments(item.departments);
             },
@@ -52,14 +50,6 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
         loadInstitution();
     }, [isNew, id]);
 
-    const addWard = () => {
-        setWards(wards.concat({
-            id: uuid(),
-            institutionId: id,
-            name: '',
-            rooms: []
-        }));
-    }
     const addRoom = () => {
         setRooms(rooms.concat({
             id: uuid(),
@@ -70,18 +60,8 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
         setDepartments(departments.concat({
             id: uuid(),
             institutionId: id,
-            name: ''
-        }));
-    }
-    const setWardProperty = (wardId: string, propertyName: string, propertyValue: string) => {
-        setWards(wards.map(ward => {
-            if (ward.id === wardId) {
-                return {
-                    ...ward,
-                    [propertyName]: propertyValue
-                };
-            }
-            return ward;
+            name: '',
+            rooms: []
         }));
     }
     const setRoomProperty = (roomId: string, propertyName: string, propertyValue: string) => {
@@ -106,51 +86,44 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
             return department;
         }));
     }
-    const addRoomToWard = (wardId: string, roomId: string) => {
-        if(wards.find(x => x.id === wardId)?.rooms.find(x => x.id === roomId)) {
+    const addRoomToDepartment = (departmentId: string, roomId: string) => {
+        if(departments.find(x => x.id === departmentId)?.rooms.find(x => x.id === roomId)) {
             return;
         }
         const room = rooms.find(x => x.id === roomId);
         if(!room) {
             return;
         }
-        setWards(wards.map(ward => {
-            if(ward.id === wardId) {
+        setDepartments(departments.map(department => {
+            if(department.id === departmentId) {
                 return {
-                    ...ward,
-                    rooms: ward.rooms.concat(room)
+                    ...department,
+                    rooms: department.rooms.concat(room)
                 }
             }
-            return ward;
+            return department;
         }));
     }
-    const removeRoomFromWard = (wardId: string, roomId: string) => {
-        setWards(wards.map(ward => {
-            if(ward.id === wardId) {
+    const removeRoomFromDepartment = (departmentId: string, roomId: string) => {
+        setDepartments(departments.map(department => {
+            if(department.id === departmentId) {
                 return {
-                    ...ward,
-                    rooms: ward.rooms.filter(room => room.id !== roomId)
+                    ...department,
+                    rooms: department.rooms.filter(room => room.id !== roomId)
                 }
             }
-            return ward;
+            return department;
         }));
-    }
-    const deleteWard = (id: string, name: string, force: boolean = false) => {
-        if (!force) {
-            openConfirmAlert(id, name, resolveText('Ward_ConfirmDelete_Title'), resolveText('Ward_ConfirmDelete_Message'), () => deleteWard(id, name, true));
-            return;
-        }
-        setWards(wards.filter(x => x.id !== id));
     }
     const deleteRoom = (id: string, name: string, force: boolean = false) => {
         if (!force) {
             openConfirmAlert(id, name, resolveText('Room_ConfirmDelete_Title'), resolveText('Room_ConfirmDelete_Message'), () => deleteRoom(id, name, true));
         }
         setRooms(rooms.filter(x => x.id !== id));
-        setWards(wards.map(ward => {
+        setDepartments(departments.map(department => {
             return {
-                ...ward,
-                rooms: ward.rooms.filter(x => x.id !== id)
+                ...department,
+                rooms: department.rooms.filter(x => x.id !== id)
             };
         }));
     }
@@ -177,7 +150,6 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
         return {
             id: id,
             name: name,
-            wards: wards,
             rooms: rooms,
             departments: departments
         };
@@ -195,63 +167,6 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
                     value={name}
                     onChange={setName}
                 />
-                <hr />
-                <h3>{resolveText('Wards')}</h3>
-                <Row>
-                    <Col></Col>
-                    <Col xs="auto">
-                        <Button className="m-2" onClick={addWard}>{resolveText('CreateNew')}</Button>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <Table>
-                            <colgroup>
-                                <col width="100px" />
-                                <col width="300px" />
-                                <col width="*" />
-                            </colgroup>
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>{resolveText('Ward_Name')}</th>
-                                    <th>{resolveText('Ward_Rooms')}</th>
-                                </tr>
-                            </thead>
-                            {wards.map(ward => (
-                                <tr key={ward.id}>
-                                    <td><i className="fa fa-trash red clickable" onClick={() => deleteWard(ward.id, ward.name)} /></td>
-                                    <td>
-                                        <FormControl
-                                            value={ward.name}
-                                            onChange={(e: any) => setWardProperty(ward.id, 'name', e.target.value)}
-                                        />
-                                    </td>
-                                    <td>
-                                        <Row>
-                                            <Col>
-                                                <RoomSelector
-                                                    rooms={rooms}
-                                                    onAdd={roomId => addRoomToWard(ward.id, roomId)}
-                                                />
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col>
-                                                <ListFormControl<Models.Room>
-                                                    items={ward.rooms}
-                                                    idFunc={room => room.id}
-                                                    displayFunc={room => room.name}
-                                                    removeItem={room => removeRoomFromWard(ward.id, room.id)}
-                                                />
-                                            </Col>
-                                        </Row>
-                                    </td>
-                                </tr>
-                            ))}
-                        </Table>
-                    </Col>
-                </Row>
                 <hr />
                 <h3>{resolveText('Rooms')}</h3>
                 <Row>
@@ -307,6 +222,7 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
                                 <tr>
                                     <th></th>
                                     <th>{resolveText('Department_Name')}</th>
+                                    <th>{resolveText('Department_Rooms')}</th>
                                 </tr>
                             </thead>
                             {departments.map(department => (
@@ -317,6 +233,26 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
                                             value={department.name}
                                             onChange={(e: any) => setDepartmentProperty(department.id, 'name', e.target.value)}
                                         />
+                                    </td>
+                                    <td>
+                                        <Row>
+                                            <Col>
+                                                <RoomSelector
+                                                    rooms={rooms}
+                                                    onAdd={roomId => addRoomToDepartment(department.id, roomId)}
+                                                />
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col>
+                                                <ListFormControl<Models.Room>
+                                                    items={department.rooms}
+                                                    idFunc={room => room.id}
+                                                    displayFunc={room => room.name}
+                                                    removeItem={room => removeRoomFromDepartment(department.id, room.id)}
+                                                />
+                                            </Col>
+                                        </Row>
                                     </td>
                                 </tr>
                             ))}

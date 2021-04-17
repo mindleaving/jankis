@@ -17,14 +17,12 @@ namespace JanKIS.API.Models
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
             Id = id;
             Name = name;
-            Wards = new List<Ward>();
             Rooms = new List<Room>();
             Departments = new List<Department>();
         }
 
         public string Id { get; set; }
         public string Name { get; set; }
-        public List<Ward> Wards { get; set; }
         public List<Room> Rooms { get; set; }
         public List<Department> Departments { get; set; }
     }

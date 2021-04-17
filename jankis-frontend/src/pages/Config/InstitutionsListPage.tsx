@@ -62,7 +62,6 @@ export const InstitutionsListPage = (props: InstitutionsListPageProps) => {
                             <tr>
                                 <th></th>
                                 <th>{resolveText('Institution_Name')}</th>
-                                <th>{resolveText('Institution_WardCount')}</th>
                                 <th>{resolveText('Institution_RoomCount')}</th>
                                 <th>{resolveText('Institution_DepartmentCount')}</th>
                                 <th></th>
@@ -75,7 +74,6 @@ export const InstitutionsListPage = (props: InstitutionsListPageProps) => {
                                     <tr key={institution.id}>
                                         <td><i className="fa fa-trash red clickable" onClick={() => deleteInstitution(institution.id, institution.name)} /></td>
                                         <td>{institution.name}</td>
-                                        <td>{institution.wards.length}</td>
                                         <td>{institution.rooms.length}</td>
                                         <td>{institution.departments.length}</td>
                                         <td><Button variant="link" onClick={() => history.push(`/institutions/${institution.id}/edit`)}>{resolveText('Edit...')}</Button></td>

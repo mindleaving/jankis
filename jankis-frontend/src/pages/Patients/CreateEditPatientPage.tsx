@@ -10,10 +10,8 @@ import { buidlAndStoreObject } from '../../helpers/StoringHelpers';
 import { Sex } from '../../types/enums.d';
 import { Models } from '../../types/models';
 import Flatpickr from 'react-flatpickr';
+import { PatientParams } from '../../types/frontendTypes';
 
-interface PatientParams {
-    patientId?: string;
-}
 interface CreateEditPatientPageProps extends RouteComponentProps<PatientParams> {}
 
 export const CreateEditPatientPage = (props: CreateEditPatientPageProps) => {

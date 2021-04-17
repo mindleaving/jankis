@@ -27,4 +27,13 @@ export namespace ViewModels {
         permissions: Enums.Permission[];
         departmentIds: string[];
     }
+
+    interface PatientOverviewViewModel {
+        profileData: Models.Person;
+        admissions: Models.Admission[];
+        notes: Models.PatientNote[];
+        testResults: Models.DiagnosticTestResult[];
+        observations: Models.Observation[];
+        documents: Models.PatientDocument[];
+    }
 }

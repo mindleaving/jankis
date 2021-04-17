@@ -20,3 +20,7 @@ export interface AccountsFilter {
 export interface AdmissionsFilter {
     searchText?: string;
 }
+
+interface PatientParams {
+    patientId?: string;
+}

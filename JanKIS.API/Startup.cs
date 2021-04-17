@@ -69,6 +69,14 @@ namespace JanKIS.API
             services.AddScoped<IStore<Consumable>, GenericStore<Consumable>>();
             services.AddScoped<IReadonlyStore<InstitutionPolicy>, GenericReadonlyStore<InstitutionPolicy>>();
             services.AddScoped<IStore<InstitutionPolicy>, GenericStore<InstitutionPolicy>>();
+            services.AddScoped<IReadonlyStore<PatientNote>, GenericReadonlyStore<PatientNote>>();
+            services.AddScoped<IStore<PatientNote>, GenericStore<PatientNote>>();
+            services.AddScoped<IReadonlyStore<Observation>, GenericReadonlyStore<Observation>>();
+            services.AddScoped<IStore<Observation>, GenericStore<Observation>>();
+            services.AddScoped<IReadonlyStore<PatientDocument>, GenericReadonlyStore<PatientDocument>>();
+            services.AddScoped<IStore<PatientDocument>, GenericStore<PatientDocument>>();
+            services.AddScoped<IReadonlyStore<DiagnosticTestResult>, GenericReadonlyStore<DiagnosticTestResult>>();
+            services.AddScoped<IStore<DiagnosticTestResult>, GenericStore<DiagnosticTestResult>>();
 
             services.AddHttpContextAccessor();
             services.AddControllers()

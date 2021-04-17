@@ -1,12 +1,17 @@
 ﻿using System;
-using JanKIS.API.Storage;
+using TypescriptGenerator.Attributes;
 
 namespace JanKIS.API.Models
 {
-    public class PatientDocument : IId
+    public class PatientDocument : IPatientEvent
     {
         public string Id { get; set; }
-        public DateTime CreatedTimestamp { get; set; }
+        public PatientEventType Type => PatientEventType.Document;
+        public string PatientId { get; set; }
+        [TypescriptIsOptional]
+        public string AdmissionId { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime Timestamp { get; set; }
         public string Note { get; set; }
     }
 }

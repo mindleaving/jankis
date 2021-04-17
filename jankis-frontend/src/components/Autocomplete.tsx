@@ -6,11 +6,13 @@ interface AutocompleteProps<T> {
     displayNameSelector: (item: T) => string;
     search: (searchText: string) => Promise<T[]>;
     onItemSelected: (item: T) => void;
+    onChange?: (value: string) => void;
     resetOnSelect?: boolean;
     searchDelayInMilliseconds?: number;
     minSearchTextLength?: number;
     placeholder?: string;
     disabled?: boolean;
+    required?: boolean;
 }
 interface AutocompleteState<T> {
     searchText: string;
@@ -70,10 +72,16 @@ export class Autocomplete<T> extends Component<AutocompleteProps<T>, Autocomplet
                 suggestions={this.state.suggestions}
                 inputProps={{
                     value: this.state.searchText,
-                    onChange: (_e, { newValue }) => this.setState({ searchText: newValue }),
+                    onChange: (_e, { newValue }) => {
+                        this.setState({ searchText: newValue });
+                        if(this.props.onChange) {
+                            this.props.onChange(newValue);
+                        }
+                    },
                     placeholder: this.props.placeholder ?? 'Enter search text',
                     className: 'form-control',
-                    disabled: this.props.disabled
+                    disabled: this.props.disabled,
+                    required: this.props.required
                 }}
                 renderSuggestion={item => (
                     <div>{this.props.displayNameSelector(item)}</div>

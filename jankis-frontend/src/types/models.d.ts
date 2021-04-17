@@ -5,22 +5,11 @@ export namespace Models {
         id: string;
         patientId: string;
         profileData: Models.Person;
-        admissionInfo: Models.AdmissionInfo;
         isReadmission: boolean;
-        medicationSchedule: Models.MedicationSchedule;
-        attachedEquipment: Models.AttachedEquipment[];
-        observations: Models.Observation[];
-        diagnosticTestResults: Models.DiagnosticTestResult[];
-        notes: Models.PatientNote[];
-        dischargeInfo: Models.DischargeInfo;
-        contactPersons: string[];
-    }
-
-    interface AdmissionInfo {
         admissionTime: Date;
-        ward: string;
-        room: string;
-        bed: string;
+        dischargeTime?: Date | null;
+        contactPersons: Models.Contact[];
+        bedOccupancies: Models.BedOccupancy[];
     }
 
     interface AllServiceAudience {
@@ -52,12 +41,22 @@ export namespace Models {
         note: string;
     }
 
+    interface BedOccupancy {
+        departmentId: string;
+        roomId: string;
+        bedIndex: string;
+        startTime: Date;
+        endTime: Date;
+    }
+
     interface BloodPressureObservation {
+        measurementType: string;
         systolic: number;
         diastolic: number;
         id: string;
         type: Enums.PatientEventType;
         patientId: string;
+        admissionId?: string;
         createdBy: string;
         timestamp: Date;
     }
@@ -104,6 +103,7 @@ export namespace Models {
         name: string;
         institutionId: string;
         parentDepartment?: string;
+        rooms: Models.Room[];
     }
 
     interface DiagnosticTestDefinition {
@@ -121,8 +121,10 @@ export namespace Models {
     }
 
     interface DiagnosticTestResult {
+        id: string;
         type: Enums.PatientEventType;
         patientId: string;
+        admissionId?: string;
         createdBy: string;
         timestamp: Date;
         testCodeLoinc: string;
@@ -131,15 +133,13 @@ export namespace Models {
         scaleType: Enums.DiagnosticTestScaleType;
     }
 
-    interface DischargeInfo {
-        dischargeTime: Date;
-    }
-
     interface DocumentDiagnosticTestResult {
         scaleType: Enums.DiagnosticTestScaleType;
         documentId: string;
+        id: string;
         type: Enums.PatientEventType;
         patientId: string;
+        admissionId?: string;
         createdBy: string;
         timestamp: Date;
         testCodeLoinc: string;
@@ -176,8 +176,10 @@ export namespace Models {
     interface FreetextDiagnosticTestResult {
         scaleType: Enums.DiagnosticTestScaleType;
         text: string;
+        id: string;
         type: Enums.PatientEventType;
         patientId: string;
+        admissionId?: string;
         createdBy: string;
         timestamp: Date;
         testCodeLoinc: string;
@@ -185,10 +187,31 @@ export namespace Models {
         testName: string;
     }
 
+    interface GenericObservation {
+        measurementType: string;
+        value: string;
+        unit: string;
+        id: string;
+        type: Enums.PatientEventType;
+        patientId: string;
+        admissionId?: string;
+        createdBy: string;
+        timestamp: Date;
+    }
+
     interface HealthInsurance {
         insurerName: string;
         insurerNumber: string;
         insuranceNumber: string;
+    }
+
+    interface HealthRecord {
+        personId: string;
+        admissions: Models.Admission[];
+        observations: Models.Observation[];
+        testResults: Models.DiagnosticTestResult[];
+        notes: Models.PatientNote[];
+        documents: Models.PatientDocument[];
     }
 
     interface IDiagnosticTestResult {
@@ -201,7 +224,6 @@ export namespace Models {
     interface Institution {
         id: string;
         name: string;
-        wards: Models.Ward[];
         rooms: Models.Room[];
         departments: Models.Department[];
     }
@@ -214,6 +236,7 @@ export namespace Models {
     interface IPatientEvent {
         type: Enums.PatientEventType;
         patientId: string;
+        admissionId?: string;
         createdBy: string;
         timestamp: Date;
     }
@@ -277,8 +300,10 @@ export namespace Models {
     interface NominalDiagnosticTestResult {
         scaleType: Enums.DiagnosticTestScaleType;
         value: string;
+        id: string;
         type: Enums.PatientEventType;
         patientId: string;
+        admissionId?: string;
         createdBy: string;
         timestamp: Date;
         testCodeLoinc: string;
@@ -302,9 +327,11 @@ export namespace Models {
     }
 
     interface Observation {
+        measurementType: string;
         id: string;
         type: Enums.PatientEventType;
         patientId: string;
+        admissionId?: string;
         createdBy: string;
         timestamp: Date;
     }
@@ -326,8 +353,10 @@ export namespace Models {
         scaleType: Enums.DiagnosticTestScaleType;
         value: string;
         numericalValue: number;
+        id: string;
         type: Enums.PatientEventType;
         patientId: string;
+        admissionId?: string;
         createdBy: string;
         timestamp: Date;
         testCodeLoinc: string;
@@ -345,13 +374,19 @@ export namespace Models {
 
     interface PatientDocument {
         id: string;
-        createdTimestamp: Date;
+        type: Enums.PatientEventType;
+        patientId: string;
+        admissionId?: string;
+        createdBy: string;
+        timestamp: Date;
         note: string;
     }
 
     interface PatientNote {
         type: Enums.PatientEventType;
+        id: string;
         patientId: string;
+        admissionId?: string;
         createdBy: string;
         timestamp: Date;
         message: string;
@@ -389,11 +424,13 @@ export namespace Models {
     }
 
     interface PulseObservation {
+        measurementType: string;
         bpm: number;
         location: string;
         id: string;
         type: Enums.PatientEventType;
         patientId: string;
+        admissionId?: string;
         createdBy: string;
         timestamp: Date;
     }
@@ -404,8 +441,10 @@ export namespace Models {
         unit: string;
         referenceRangeStart: number;
         referenceRangeEnd: number;
+        id: string;
         type: Enums.PatientEventType;
         patientId: string;
+        admissionId?: string;
         createdBy: string;
         timestamp: Date;
         testCodeLoinc: string;
@@ -491,8 +530,10 @@ export namespace Models {
 
     interface SetDiagnosticTestResult {
         scaleType: Enums.DiagnosticTestScaleType;
+        id: string;
         type: Enums.PatientEventType;
         patientId: string;
+        admissionId?: string;
         createdBy: string;
         timestamp: Date;
         testCodeLoinc: string;
@@ -519,6 +560,19 @@ export namespace Models {
         
     }
 
+    interface TemperatureObservation {
+        measurementType: string;
+        value: number;
+        unit: string;
+        bodyPart: string;
+        id: string;
+        type: Enums.PatientEventType;
+        patientId: string;
+        admissionId?: string;
+        createdBy: string;
+        timestamp: Date;
+    }
+
     interface TextServiceParameter {
         valueType: Enums.ServiceParameterValueType;
         value: string;
@@ -530,13 +584,6 @@ export namespace Models {
         valueType: Enums.ServiceParameterValueType;
         value: string;
         parameterName: string;
-    }
-
-    interface Ward {
-        id: string;
-        name: string;
-        institutionId: string;
-        rooms: Models.Room[];
     }
 
     export namespace Subscriptions {

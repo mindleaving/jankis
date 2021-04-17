@@ -3,7 +3,6 @@
     public enum LocationType
     {
         Room,
-        Ward,
         Department,
         External
     }

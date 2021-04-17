@@ -22,8 +22,8 @@ export default class FrequencyMeasurer {
         if(this.timestamps.length < 2) {
             throw new Error('Not enough data for measuring frequency');
         }
-        const deltaT = Math.abs(this.timestamps[this.timestamps.length-1].getTime() - this.timestamps[0].getTime()) / (this.timestamps.length - 1);
-        const frequency = 60 / deltaT;
+        const deltaTinMilliseconds = Math.abs(this.timestamps[this.timestamps.length-1].getTime() - this.timestamps[0].getTime()) / (this.timestamps.length - 1);
+        const frequency = 60*1000 / deltaTinMilliseconds;
         return frequency;
     }
 }

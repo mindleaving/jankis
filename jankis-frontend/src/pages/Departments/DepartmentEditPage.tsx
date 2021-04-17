@@ -30,6 +30,7 @@ export const DepartmentEditPage = (props: DepartmentEditPageProps) => {
     const [ name, setName ] = useState<string>('');
     const [ institutionId, setInstitutionId] = useState<string>();
     const [ parentDepartmentId, setParentDepartmentId ] = useState<string>();
+    const [ rooms, setRooms ] = useState<Models.Room[]>([]);
     const [ isLoading, setIsLoading ] = useState<boolean>(!isNew);
     const [ isStoring, setIsStoring ] = useState<boolean>(false);
     const history = useHistory();
@@ -71,7 +72,8 @@ export const DepartmentEditPage = (props: DepartmentEditPageProps) => {
             id: id,
             name: name,
             institutionId: institutionId!,
-            parentDepartment: parentDepartmentId
+            parentDepartment: parentDepartmentId,
+            rooms: rooms
         }
     }
 

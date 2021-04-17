@@ -2,79 +2,105 @@
 using System.Threading.Tasks;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
+using JanKIS.API.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JanKIS.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class PatientsController : ControllerBase
     {
-        private readonly IPatientStore patientsStore;
+        private readonly IStore<Person> personsStore;
+        private readonly IAdmissionsStore admissionsStore;
+        private readonly IReadonlyStore<PatientNote> patientNotesStore;
+        private readonly IReadonlyStore<DiagnosticTestResult> testResultsStore;
+        private readonly IReadonlyStore<Observation> observationsStore;
+        private readonly IReadonlyStore<PatientDocument> documentsStore;
 
-        public PatientsController(IPatientStore patientsStore)
+        public PatientsController(
+            IStore<Person> personsStore,
+            IAdmissionsStore admissionsStore,
+            IReadonlyStore<PatientNote> patientNotesStore,
+            IReadonlyStore<DiagnosticTestResult> testResultsStore,
+            IReadonlyStore<Observation> observationsStore,
+            IReadonlyStore<PatientDocument> documentsStore)
         {
-            this.patientsStore = patientsStore;
+            this.personsStore = personsStore;
+            this.admissionsStore = admissionsStore;
+            this.patientNotesStore = patientNotesStore;
+            this.testResultsStore = testResultsStore;
+            this.observationsStore = observationsStore;
+            this.documentsStore = documentsStore;
         }
 
-
-        [HttpPatch("{patientId}/" + nameof(Admit))]
-        public async Task<IActionResult> Admit([FromRoute] string patientId, [FromBody] AdmissionInfo admissionInfo)
+        [HttpGet("{patientId}/" + nameof(OverviewViewModel))]
+        public async Task<IActionResult> OverviewViewModel([FromRoute] string patientId)
         {
-            var patient = await patientsStore.GetByIdAsync(patientId);
-            if (patient == null)
+            var profileData = await personsStore.GetByIdAsync(patientId);
+            if (profileData == null)
                 return NotFound();
-            await patientsStore.AdmitAsync(patientId, admissionInfo);
-            return Ok();
+            var admissions = await admissionsStore.SearchAsync(x => x.PatientId == patientId);
+            var notes = await patientNotesStore.SearchAsync(x => x.PatientId == patientId);
+            var testResults = await testResultsStore.SearchAsync(x => x.PatientId == patientId);
+            var observations = await observationsStore.SearchAsync(x => x.PatientId == patientId);
+            var documents = await documentsStore.SearchAsync(x => x.PatientId == patientId);
+            var viewModel = new PatientOverviewViewModel(
+                profileData,
+                admissions,
+                notes,
+                testResults,
+                observations,
+                documents);
+            return Ok(viewModel);
         }
 
-        [HttpPatch("{patientId}/" + nameof(Move))]
-        public async Task<IActionResult> Move([FromRoute] string patientId, [FromQuery] string wardId, [FromQuery] string roomId, [FromQuery] string bedIndex)
+        [HttpGet("{patientId}/admissions")]
+        public async Task<IActionResult> GetAdmissions([FromRoute] string patientId)
         {
-            var patient = await patientsStore.GetByIdAsync(patientId);
-            if (patient == null)
+            if (!await personsStore.ExistsAsync(patientId))
                 return NotFound();
-            throw new NotImplementedException();
-            await patientsStore.StoreAsync(patient);
-            return Ok();
+            var notes = await admissionsStore.SearchAsync(x => x.PatientId == patientId);
+            return Ok(notes);
         }
 
-        [HttpPatch("{patientId}")]
-        public async Task<IActionResult> Discharge([FromRoute] string patientId, [FromBody] DischargeInfo dischargeInfo)
+        [HttpGet("{patientId}/notes")]
+        public async Task<IActionResult> GetPatientNotes([FromRoute] string patientId)
         {
-            var patient = await patientsStore.GetByIdAsync(patientId);
-            if (patient == null)
+            if (!await personsStore.ExistsAsync(patientId))
                 return NotFound();
-            throw new NotImplementedException();
+            var notes = await patientNotesStore.SearchAsync(x => x.PatientId == patientId);
+            return Ok(notes);
         }
 
-        [HttpGet("{patientId}/equipment")]
-        public async Task<IActionResult> GetAttachedEquipment([FromRoute] string patientId)
+        [HttpGet("{patientId}/observations")]
+        public async Task<IActionResult> GetObservations([FromRoute] string patientId)
         {
-            var patient = await patientsStore.GetByIdAsync(patientId);
-            if (patient == null)
+            if (!await personsStore.ExistsAsync(patientId))
                 return NotFound();
-            throw new NotImplementedException();
+            var observations = await observationsStore.SearchAsync(x => x.PatientId == patientId);
+            return Ok(observations);
         }
 
-        [HttpPost("{patientId}/equipment")]
-        public async Task<IActionResult> AddEquipment([FromRoute] string patientId, [FromBody] MedicalEquipment medicalEquipment)
+        [HttpGet("{patientId}/testresults")]
+        public async Task<IActionResult> GetTestResults([FromRoute] string patientId)
         {
-            if (medicalEquipment == null)
-                return BadRequest("No medical equipment specified in body");
-            if(!await patientsStore.AttachEquipmentAsync(patientId, medicalEquipment))
+            if (!await personsStore.ExistsAsync(patientId))
                 return NotFound();
-            return Ok();
+            var testResults = await testResultsStore.SearchAsync(x => x.PatientId == patientId);
+            return Ok(testResults);
         }
 
-        [HttpDelete("{patientId}/equipment/{equipmentId}")]
-        public async Task<IActionResult> RemoveEquipment([FromRoute] string patientId, [FromRoute] string equipmentId)
+        [HttpGet("{patientId}/documents")]
+        public async Task<IActionResult> GetDocuments([FromRoute] string patientId)
         {
-            if (!await patientsStore.RemoveEquipmentAsync(patientId, equipmentId))
+            if (!await personsStore.ExistsAsync(patientId))
                 return NotFound();
-            return Ok();
+            var documents = await documentsStore.SearchAsync(x => x.PatientId == patientId);
+            return Ok(documents);
         }
+
     }
 }

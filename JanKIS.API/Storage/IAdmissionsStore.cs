@@ -21,8 +21,7 @@ namespace JanKIS.API.Storage
         {
             var utcNow = DateTime.UtcNow;
             return await collection
-                .Find(x => x.AdmissionInfo != null && x.AdmissionInfo.AdmissionTime <= utcNow
-                    && (x.DischargeInfo == null || x.DischargeInfo.DischargeTime > utcNow))
+                .Find(x => x.AdmissionTime <= utcNow && (x.DischargeTime == null || x.DischargeTime > utcNow))
                 .FirstOrDefaultAsync();
         }
     }

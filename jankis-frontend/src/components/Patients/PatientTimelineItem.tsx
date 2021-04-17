@@ -24,7 +24,7 @@ export const PatientTimelineItem = (props: PatientTimelineItemProps) => {
         const observation = props.event as Models.Observation;
         colorVariant = "warning";
     }
-    else if(props.event.type === PatientEventType.Diagnostics) {
+    else if(props.event.type === PatientEventType.TestResult) {
         const testResult = props.event as Models.DiagnosticTestResult;
         colorVariant = "info";
         if(testResult.scaleType === DiagnosticTestScaleType.Freetext) {
@@ -62,7 +62,7 @@ export const PatientTimelineItem = (props: PatientTimelineItemProps) => {
 
     return (
         <Alert variant={colorVariant}>
-            <small>{props.event.timestamp.toString()}</small>
+            <div><small>{new Date(props.event.timestamp).toLocaleString()} {resolveText('by')} {props.event.createdBy}</small></div>
             {body}
         </Alert>
     );

@@ -206,10 +206,11 @@ namespace JanKIS.API.Controllers
 
         [HttpPost("{username}/resetpassword")]
         [Authorize(Policy = nameof(Permission.ResetPasswords))]
-        public async Task<IActionResult> ResetPassword([FromRoute] string username, [FromBody] string password)
+        public async Task<IActionResult> ResetPassword([FromRoute] string username)
         {
+            var password = TemporaryPasswordGenerator.Generate();
             await authenticationModule.ChangePasswordAsync(username, password, true);
-            return Ok();
+            return Ok(password);
         }
 
         [HttpPost("{username}/changepassword")]

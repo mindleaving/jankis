@@ -90,6 +90,30 @@ namespace JanKIS.API.Controllers
             return Ok(departmentServices);
         }
 
+        [HttpGet("{departmentId}/rooms")]
+        public async Task<IActionResult> ListRooms([FromRoute] string departmentId)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpGet("{departmentId}/rooms/{roomId}/beds")]
+        public async Task<IActionResult> ListBeds([FromRoute] string departmentId, [FromRoute] string roomId)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpGet("{departmentId}/rooms/{roomId}/beds/{bedIndex}")]
+        public async Task<IActionResult> GetBed([FromRoute] string departmentId, [FromRoute] string roomId, [FromRoute] int bedIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpPatch("{departmentId}/rooms/{roomId}/beds/{bedIndex}/clear")]
+        public async Task<IActionResult> ClearBed([FromRoute] string departmentId, [FromRoute] string roomId, [FromRoute] int bedIndex)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override Expression<Func<Department, object>> BuildOrderByExpression(string orderBy)
         {
             return orderBy?.ToLower() switch

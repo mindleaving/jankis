@@ -16,9 +16,17 @@ namespace JanKIS.API.Storage
             cacheItems = mongoDatabase.GetCollection<AutocompleteCacheItem>(nameof(AutocompleteCacheItem));
         }
 
-        public Task AddIfNotExists(AutocompleteCacheItem cacheItem)
+        public async Task AddIfNotExists(AutocompleteCacheItem cacheItem)
         {
-            return cacheItems.InsertOneAsync(cacheItem);
+            if(string.IsNullOrWhiteSpace(cacheItem.Value))
+                return;
+            var exists = await cacheItems.Find(
+                x => x.Context.ToLower() == cacheItem.Context.ToLower() 
+                    && x.Value == cacheItem.Value)
+                .AnyAsync();
+            if (exists)
+                return;
+            await cacheItems.InsertOneAsync(cacheItem);
         }
 
         public Task<List<string>> GetSuggestions(
@@ -27,7 +35,7 @@ namespace JanKIS.API.Storage
             int? count)
         {
             return cacheItems
-                .Find(x => x.Context == context && x.Value.ToLower().Contains(searchText.ToLower()))
+                .Find(x => x.Context.ToLower() == context.ToLower() && x.Value.ToLower().Contains(searchText.ToLower()))
                 .Limit(count)
                 .Project(x => x.Value)
                 .ToListAsync();

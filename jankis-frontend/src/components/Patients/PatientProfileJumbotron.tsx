@@ -21,19 +21,19 @@ export const PatientProfileJumbotron = (props: PatientProfileJumbotronProps) => 
     const weight = "68 kg";
 
     return (
-        <Jumbotron>
+        <Jumbotron className="p-3" style={{ borderRadius: '10px' }}>
             <Container>
                 <Row>
-                    <Col><b>{firstName} {lastName}</b></Col>
+                    <Col><h2>{firstName} {lastName}</h2></Col>
                 </Row>
-                <Row>
+                <Row className="mb-2">
                     <Col>
-                        <small>{resolveText('Patient_BirthDate')}: {birthDate.toLocaleDateString()}</small>
+                        {resolveText('Patient_BirthDate')}: {new Date(birthDate).toLocaleDateString()}
                     </Col>
                 </Row>
                 <Row>
                     <Col>
-                        <div style={{ border: '2px solid black', width: '200px', height: '400px' }} className="text-center">
+                        <div style={{ border: '2px solid black', width: '150px', height: '200px' }} className="text-center">
                             Image
                         </div>
                     </Col>

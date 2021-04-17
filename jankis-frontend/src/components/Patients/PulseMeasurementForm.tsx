@@ -1,16 +1,19 @@
 import React, { FormEvent, useContext, useMemo, useState } from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, FormText } from 'react-bootstrap';
 import { Col, Form, FormControl, FormGroup, FormLabel, InputGroup, Row } from 'react-bootstrap';
 import UserContext from '../../contexts/UserContext';
 import { resolveText } from '../../helpers/Globalizer';
 import { Models } from '../../types/models';
 import { v4 as uuid } from 'uuid';
-import { PatientEventType } from '../../types/enums';
+import { MeasurementType, PatientEventType } from '../../types/enums.d';
 import FrequencyMeasurer from '../../helpers/FrequencyMeasurer';
 
 interface PulseMeasurementFormProps {
     patientId: string;
+    admissionId?: string;
     onSubmit: (observation: Models.PulseObservation) => void;
+    hasSubmitButton?: boolean;
+    submitButtonText?: string;
     id?: string;
 }
 
@@ -26,11 +29,13 @@ export const PulseMeasurementForm = (props: PulseMeasurementFormProps) => {
         const observation: Models.PulseObservation = {
             id: uuid(),
             type: PatientEventType.Observation,
+            measurementType: MeasurementType.Pulse,
             createdBy: user!.username,
-            location: pulseLocation,
             patientId: props.patientId,
+            admissionId: props.admissionId,
             timestamp: new Date(),
-            bpm: bpm
+            bpm: bpm,
+            location: pulseLocation
         };
         props.onSubmit(observation);
     }
@@ -38,7 +43,7 @@ export const PulseMeasurementForm = (props: PulseMeasurementFormProps) => {
     const addTap = () => {
         frequencyMeasurer.update();
         if(frequencyMeasurer.isFrequencyAvailable()) {
-            setBpm(frequencyMeasurer.getFrequency());
+            setBpm(Math.round(frequencyMeasurer.getFrequency()));
         }
     }
 
@@ -55,7 +60,7 @@ export const PulseMeasurementForm = (props: PulseMeasurementFormProps) => {
                             onChange={(e:any) => setBpm(e.target.value)}
                         />
                         <InputGroup.Append>
-                            {resolveText('BPM')}
+                            <InputGroup.Text>{resolveText('BPM')}</InputGroup.Text>
                         </InputGroup.Append>
                     </InputGroup>
                 </Col>
@@ -76,12 +81,15 @@ export const PulseMeasurementForm = (props: PulseMeasurementFormProps) => {
             </FormGroup>
             <hr />
             <Row>
-                <Col>
-                    <Button onClick={addTap}>
+                <Col className="text-center">
+                    <Button onClick={addTap} style={{ width: '200px', height: '80px' }}>
                         {resolveText('Tap')}
                     </Button>
                 </Col>
             </Row>
+            {props.hasSubmitButton
+            ? <Button type="submit">{props.submitButtonText ?? resolveText('Submit')}</Button>
+            : null}
         </Form>
     );
 
