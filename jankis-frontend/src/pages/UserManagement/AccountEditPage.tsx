@@ -79,7 +79,7 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
             return;
         }
         const checkForExistingAccount = async () => {
-            const response = await apiClient.get(`api/accounts/${username}/exists`, {}, false);
+            const response = await apiClient.get(`api/accounts/${username}/exists`, {}, { handleError: false });
             setIsUsernameTaken(response.ok);
         }
         if(isUsernameTakenTimer.current) {

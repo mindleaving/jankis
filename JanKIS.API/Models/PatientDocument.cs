@@ -13,5 +13,6 @@ namespace JanKIS.API.Models
         public string CreatedBy { get; set; }
         public DateTime Timestamp { get; set; }
         public string Note { get; set; }
+        public string FileName { get; set; }
     }
 }

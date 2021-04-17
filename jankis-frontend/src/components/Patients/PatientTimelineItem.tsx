@@ -2,6 +2,7 @@ import React, { ReactNode } from 'react';
 import { Button } from 'react-bootstrap';
 import { Alert } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
+import { apiClient } from '../../communication/ApiClient';
 import { resolveText } from '../../helpers/Globalizer';
 import { DiagnosticTestScaleType, PatientEventType } from '../../types/enums.d';
 import { Models } from '../../types/models';
@@ -23,6 +24,13 @@ export const PatientTimelineItem = (props: PatientTimelineItemProps) => {
     else if(props.event.type === PatientEventType.Observation) {
         const observation = props.event as Models.Observation;
         colorVariant = "warning";
+    }
+    else if(props.event.type === PatientEventType.Document) {
+        const document = props.event as Models.PatientDocument;
+        colorVariant = "secondary";
+        body = (<>
+           {resolveText('PatientEventType_Document')}: <a href={apiClient.buildUrl(`api/documents/${document.id}/download`, {})} target="_blank" rel="noreferrer">{document.fileName}</a>
+        </>)
     }
     else if(props.event.type === PatientEventType.TestResult) {
         const testResult = props.event as Models.DiagnosticTestResult;

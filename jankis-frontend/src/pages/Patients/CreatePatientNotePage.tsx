@@ -30,7 +30,7 @@ export const CreatePatientNotePage = (props: CreatePatientNotePageProps) => {
     const [ message, setMessage ] = useState<string>('');
     const [ isStoring, setIsStoring ] = useState<boolean>(false);
     const history = useHistory();
-    const id = uuid();
+    const id = useMemo(() => uuid(), []);
 
     useEffect(() => {
         if(!patientId) return;
@@ -112,7 +112,7 @@ export const CreatePatientNotePage = (props: CreatePatientNotePageProps) => {
                 : null}
                 <FormGroup>
                     <FormLabel>{resolveText('Patient_Note_Message')}</FormLabel>
-                    <FormControl
+                    <FormControl required
                         as="textarea"
                         value={message}
                         onChange={(e:any) => setMessage(e.target.value)}

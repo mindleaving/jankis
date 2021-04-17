@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert } from 'react-bootstrap';
+import { Alert, Col, Row } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router';
 import { PatientTimelineItem } from '../../components/Patients/PatientTimelineItem';
 import { resolveText } from '../../helpers/Globalizer';
@@ -30,7 +30,9 @@ export const PatientTimelinePage = (props: PatientTimelinePageProps) => {
                 setEvents(
                     (data.notes as Models.IPatientEvent[])
                     .concat(data.observations)
-                    .concat(data.testResults));
+                    .concat(data.testResults)
+                    .concat(data.documents)
+                    .sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()));
             },
             () => setIsLoading(false)
         );
@@ -47,6 +49,9 @@ export const PatientTimelinePage = (props: PatientTimelinePageProps) => {
     return (
         <>
             <h1>{resolveText('Patient_Timeline')}</h1>
+            <div className="timelineSeparator">
+                <span className="text-secondary">{resolveText('Now')}</span>
+            </div>
             {events.map(event => (
                 <PatientTimelineItem event={event} />
             ))}

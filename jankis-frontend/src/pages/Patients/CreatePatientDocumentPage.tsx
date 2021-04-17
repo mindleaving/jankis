@@ -1,5 +1,5 @@
 import React, { FormEvent, useContext, useEffect, useMemo, useState } from 'react';
-import { Col, Form, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
+import { Alert, Col, Form, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { RouteComponentProps, useHistory } from 'react-router';
 import { resolveText } from '../../helpers/Globalizer';
 import { buidlAndStoreObject } from '../../helpers/StoringHelpers';
@@ -15,6 +15,9 @@ import { Autocomplete } from '../../components/Autocomplete';
 import { formatPerson, formatAdmission } from '../../helpers/Formatters';
 import { AutocompleteRunner } from '../../helpers/AutocompleteRunner';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
+import { NotificationManager } from 'react-notifications';
+import { apiClient } from '../../communication/ApiClient';
+import { buildUrl } from '../../helpers/UrlBuilder';
 
 interface CreatePatientDocumentPageProps extends RouteComponentProps<PatientParams> {}
 
@@ -25,15 +28,24 @@ export const CreatePatientDocumentPage = (props: CreatePatientDocumentPageProps)
     const user = useContext(UserContext);
 
     const [ patientId, setPatientId ] = useState<string | undefined>(matchedPatientId);
+    const [ profileData, setProfileData ] = useState<Models.Person>();
     const [ admissions, setAdmissions ] = useState<Models.Admission[]>([]);
     const [ admissionId, setAdmissionId ] = useState<string>();
     const [ note, setNote ] = useState<string>('');
     const [ file, setFile ] = useState<File>();
     const [ isStoring, setIsStoring ] = useState<boolean>(false);
     const history = useHistory();
+    const id = useMemo(() => uuid(), []);
 
     useEffect(() => {
         if(!patientId) return;
+        const loadProfileData = buildLoadObjectFunc<Models.Person>(
+            `api/persons/${patientId}`,
+            {},
+            resolveText('Patient_CouldNotLoad'),
+            setProfileData
+        );
+        loadProfileData();
         const loadAdmissions = buildLoadObjectFunc<Models.Admission[]>(
             `api/patients/${patientId}/admissions`,
             {},
@@ -45,25 +57,33 @@ export const CreatePatientDocumentPage = (props: CreatePatientDocumentPageProps)
 
     const store = async (e: FormEvent) => {
         e.preventDefault();
+        if(!file) {
+            NotificationManager.error(resolveText('Document_NoFileSelected'));
+            return;
+        }
         setIsStoring(true);
-        await buidlAndStoreObject<Models.PatientDocument>(
-            `api/patients/${patientId}/documents`,
-            resolveText('Patient_Document_SuccessfullyStored'),
-            resolveText('Patient_Document_CouldNotStore'),
-            buildDocument,
-            () => history.goBack(),
-            () => setIsStoring(false)
-        );
+        try {
+            const document = buildDocument();
+            await apiClient.put(`api/documents/${id}`, {}, document);
+            await apiClient.put(`api/documents/${id}/upload`, {}, file, { stringifyBody: false });
+            NotificationManager.success(resolveText('Patient_Document_SuccessfullyStored'));
+            history.goBack();
+        } catch(error) {
+            NotificationManager.error(error.message, resolveText('Patient_Document_CouldNotStore'));
+        } finally {
+            setIsStoring(false);
+        }
     }
     const buildDocument = (): Models.PatientDocument => {
         return {
-            id: uuid(),
+            id: id,
             type: PatientEventType.Document,
             patientId: patientId!,
             admissionId: admissionId,
             createdBy: user!.username,
             timestamp: new Date(),
-            note: note
+            note: note,
+            fileName: file!.name
         };
     }
 
@@ -74,11 +94,13 @@ export const CreatePatientDocumentPage = (props: CreatePatientDocumentPageProps)
             <FormGroup as={Row}>
                     <FormLabel column>{resolveText('Patient')}</FormLabel>
                     <Col>
-                        <Autocomplete
+                        {matchedPatientId
+                        ? <Alert variant="info">{profileData ? formatPerson(profileData) : resolveText('Loading...')}</Alert>
+                        : <Autocomplete
                             search={patientAutocompleteRunner.search}
                             displayNameSelector={formatPerson}
                             onItemSelected={person => setPatientId(person.id)}
-                        />
+                        />}
                     </Col>
                 </FormGroup>
                 {admissions.length > 0
@@ -104,6 +126,7 @@ export const CreatePatientDocumentPage = (props: CreatePatientDocumentPageProps)
                 />
                 <FormGroup>
                     <FormLabel>{resolveText('Patient_Document_Upload')}</FormLabel>
+                    {file ? <Alert variant="success" dismissible onClose={() => setFile(undefined)}>{resolveText('SelectedFile')}: <b>{file.name}</b></Alert> : null}
                     <FileUpload
                         onDrop={files => setFile(files[0])}
                     />

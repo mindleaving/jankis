@@ -380,6 +380,7 @@ export namespace Models {
         createdBy: string;
         timestamp: Date;
         note: string;
+        fileName: string;
     }
 
     interface PatientNote {

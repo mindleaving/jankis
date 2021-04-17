@@ -39,6 +39,7 @@ namespace JanKIS.API
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<FileStoreOptions>(Configuration.GetSection(FileStoreOptions.AppSettingsSectionName));
             SetupMongoDB(services);
 
             services.AddScoped<IAccountStore, AccountStore>();
@@ -77,6 +78,7 @@ namespace JanKIS.API
             services.AddScoped<IStore<PatientDocument>, GenericStore<PatientDocument>>();
             services.AddScoped<IReadonlyStore<DiagnosticTestResult>, GenericReadonlyStore<DiagnosticTestResult>>();
             services.AddScoped<IStore<DiagnosticTestResult>, GenericStore<DiagnosticTestResult>>();
+            services.AddScoped<IFilesStore, FilesStore>();
 
             services.AddHttpContextAccessor();
             services.AddControllers()
