@@ -70,7 +70,8 @@ export const ResourceEditPage = (props: ResourceEditPageProps) => {
             location: {
                 type: LocationType.Room,
                 id: roomId
-            }
+            },
+            note: ''
         };
     }
 

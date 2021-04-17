@@ -47,6 +47,7 @@ import { ViewModels } from './types/viewModels';
 import { AdmissionsListPage } from './pages/Patients/AdmissionsListPage';
 import { InstitutionsListPage } from './pages/Config/InstitutionsListPage';
 import { PatientPage } from './pages/Patients/PatientPage';
+import { RoomsPage } from './pages/Departments/RoomsPage';
 
 function App() {
 
@@ -288,6 +289,11 @@ function App() {
                     <Route
                         exact path="/create/institution"
                         render={props => <InstitutionEditPage {...props} />}
+                    />
+
+                    <Route
+                        exact path="/rooms"
+                        render={props => <RoomsPage {...props} />}
                     />
                 </Switch>
             </Layout>

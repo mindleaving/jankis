@@ -1,16 +1,21 @@
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, ReactNode } from 'react';
 import { Accordion, Card } from 'react-bootstrap';
 
 interface AccordionCardProps extends PropsWithChildren<{}> {
     eventKey: string;
-    title: string;
+    title: ReactNode;
+    className?: string;
+    bg?: string;
 }
 
 export const AccordionCard = (props: AccordionCardProps) => {
 
     return (
-        <Card>
-            <Accordion.Toggle as={Card.Header} eventKey={props.eventKey}>
+        <Card
+            className={props.className}
+            bg={props.bg}
+        >
+            <Accordion.Toggle className="px-3 py-2 clickable" as={Card.Header} eventKey={props.eventKey}>
                 {props.title}
             </Accordion.Toggle>
             <Accordion.Collapse eventKey={props.eventKey}>

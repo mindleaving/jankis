@@ -102,14 +102,14 @@ namespace JanKIS.API.Controllers
             throw new NotImplementedException();
         }
 
-        [HttpGet("{departmentId}/rooms/{roomId}/beds/{bedIndex}")]
-        public async Task<IActionResult> GetBed([FromRoute] string departmentId, [FromRoute] string roomId, [FromRoute] int bedIndex)
+        [HttpGet("{departmentId}/rooms/{roomId}/beds/{bedPosition}")]
+        public async Task<IActionResult> GetBed([FromRoute] string departmentId, [FromRoute] string roomId, [FromRoute] int bedPosition)
         {
             throw new NotImplementedException();
         }
 
-        [HttpPatch("{departmentId}/rooms/{roomId}/beds/{bedIndex}/clear")]
-        public async Task<IActionResult> ClearBed([FromRoute] string departmentId, [FromRoute] string roomId, [FromRoute] int bedIndex)
+        [HttpPatch("{departmentId}/rooms/{roomId}/beds/{bedPosition}/clear")]
+        public async Task<IActionResult> ClearBed([FromRoute] string departmentId, [FromRoute] string roomId, [FromRoute] int bedPosition)
         {
             throw new NotImplementedException();
         }

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Col, Row } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router';
 import { PatientTimelineItem } from '../../components/Patients/PatientTimelineItem';
 import { resolveText } from '../../helpers/Globalizer';

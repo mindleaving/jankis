@@ -13,5 +13,6 @@ namespace JanKIS.API.Models
         public LocationReference Location { get; set; }
         [TypescriptIsOptional]
         public string GroupId { get; set; }
+        public string Note { get; set; }
     }
 }

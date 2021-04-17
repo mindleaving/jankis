@@ -1,9 +1,10 @@
 import React, { FormEvent, useState } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
+import { Button, Col, Form, FormControl, FormGroup, FormLabel, InputGroup, Modal, Row } from 'react-bootstrap';
 import { resolveText } from '../../helpers/Globalizer';
 import { Models } from '../../types/models';
 import { RowFormGroup } from '../RowFormGroup';
 import { v4 as uuid } from 'uuid';
+import { ListFormControl } from '../ListFormControl';
 
 interface RoomGeneratorModalProps {
     show: boolean;
@@ -17,6 +18,8 @@ export const RoomGeneratorModal = (props: RoomGeneratorModalProps) => {
     const [ suffix, setSuffix ] = useState<string>('');
     const [ from, setFrom ] = useState<number>(0);
     const [ to, setTo ] = useState<number>(0);
+    const [ bedPosition, setBedPosition ] = useState<string>('');
+    const [ bedPositions, setBedPositions ] = useState<string[]>([]);
 
     const generate = (e: FormEvent) => {
         e.preventDefault();
@@ -24,10 +27,21 @@ export const RoomGeneratorModal = (props: RoomGeneratorModalProps) => {
         for (let index = from; index <= to; index++) {
             const id = uuid();
             const name = `${prefix}${index}${suffix}`;
-            rooms.push({ id, name });
+            rooms.push({ id, name, bedPositions: bedPositions });
         }
         props.onGenerate(rooms);
         //props.onClose();
+    }
+
+    const addBedPosition = () => {
+        if(!bedPosition) {
+            return;
+        }
+        setBedPositions(bedPositions.concat(bedPosition));
+        setBedPosition('');
+    }
+    const removeBedPosition = (position: string) => {
+        setBedPositions(bedPositions.filter(x => x !== position));
     }
     return (
         <Modal show={props.show} onHide={props.onClose}>
@@ -58,6 +72,31 @@ export const RoomGeneratorModal = (props: RoomGeneratorModalProps) => {
                         value={suffix}
                         onChange={setSuffix}
                     />
+                    <FormGroup as={Row}>
+                        <FormLabel column>{resolveText('Room_BedPositions')}</FormLabel>
+                        <Col>
+                            <InputGroup>
+                                <FormControl
+                                    value={bedPosition}
+                                    onChange={(e:any) => setBedPosition(e.target.value)}
+                                    isInvalid={bedPositions.some(x => x === bedPosition)}
+                                />
+                                <Button className="m-1" onClick={addBedPosition}>{resolveText('Add')}</Button>
+                            </InputGroup>
+                            <FormControl.Feedback type="invalid">{resolveText('AlreadyExists')}</FormControl.Feedback>
+                        </Col>
+                    </FormGroup>
+                    <Row>
+                        <Col></Col>
+                        <Col>
+                            <ListFormControl
+                                items={bedPositions}
+                                idFunc={x => x}
+                                displayFunc={x => x}
+                                removeItem={removeBedPosition}
+                            />
+                        </Col>
+                    </Row>
                 </Form>
             </Modal.Body>
             <Modal.Footer>

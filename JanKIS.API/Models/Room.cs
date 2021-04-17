@@ -1,4 +1,5 @@
-﻿using JanKIS.API.Storage;
+﻿using System.Collections.Generic;
+using JanKIS.API.Storage;
 
 namespace JanKIS.API.Models
 {
@@ -6,5 +7,6 @@ namespace JanKIS.API.Models
     {
         public string Id { get; set; }
         public string Name { get; set; }
+        public List<string> BedPositions { get; set; }
     }
 }

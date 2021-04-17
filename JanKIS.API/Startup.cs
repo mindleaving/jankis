@@ -78,6 +78,8 @@ namespace JanKIS.API
             services.AddScoped<IStore<PatientDocument>, GenericStore<PatientDocument>>();
             services.AddScoped<IReadonlyStore<DiagnosticTestResult>, GenericReadonlyStore<DiagnosticTestResult>>();
             services.AddScoped<IStore<DiagnosticTestResult>, GenericStore<DiagnosticTestResult>>();
+            services.AddScoped<IReadonlyStore<BedOccupancy>, GenericReadonlyStore<BedOccupancy>>();
+            services.AddScoped<IStore<BedOccupancy>, GenericStore<BedOccupancy>>();
             services.AddScoped<IFilesStore, FilesStore>();
 
             services.AddHttpContextAccessor();

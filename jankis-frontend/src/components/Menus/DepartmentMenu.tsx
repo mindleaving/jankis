@@ -11,6 +11,7 @@ export const DepartmentMenu = (props: DepartmentMenuProps) => {
     return (
         <Nav>
             <NavDropdown title={resolveText('Menu_Department')} id="menu-department">
+                <NavDropdown.Item onClick={() => history.push('/rooms')}>{resolveText('Rooms')}</NavDropdown.Item>
                 <NavDropdown.Item onClick={() => history.push('/departments/services')}>{resolveText('Services')}</NavDropdown.Item>
                 <NavDropdown.Item onClick={() => history.push('/departments/requests')}>{resolveText('ServiceRequests')}</NavDropdown.Item>
             </NavDropdown>

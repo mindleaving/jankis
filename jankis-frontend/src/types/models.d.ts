@@ -33,20 +33,16 @@ export namespace Models {
         value: string;
     }
 
-    interface Bed {
-        state: Enums.BedState;
-        roomId: string;
-        patientId: string;
-        unavailabilityReason: string;
-        note: string;
-    }
-
     interface BedOccupancy {
+        id: string;
+        state: Enums.BedState;
         departmentId: string;
         roomId: string;
-        bedIndex: string;
+        bedPosition: string;
+        patient?: Models.Person;
         startTime: Date;
-        endTime: Date;
+        endTime?: Date | null;
+        unavailabilityReason?: string;
     }
 
     interface BloodPressureObservation {
@@ -458,6 +454,7 @@ export namespace Models {
         name: string;
         location: Models.LocationReference;
         groupId?: string;
+        note: string;
     }
 
     interface ResourceGroup {
@@ -481,6 +478,7 @@ export namespace Models {
     interface Room {
         id: string;
         name: string;
+        bedPositions: string[];
     }
 
     interface ServiceAudience {

@@ -12,6 +12,7 @@ import { buidlAndStoreObject } from '../../helpers/StoringHelpers';
 import { ListFormControl } from '../../components/ListFormControl';
 import { RoomSelector } from '../../components/Config/RoomSelector';
 import { RoomGeneratorModal } from '../../components/Config/RoomGeneratorModal';
+import { BedPositionCreator } from '../../components/Config/BedPositionCreator';
 
 interface InstitutionParams {
     institutionId?: string;
@@ -53,7 +54,8 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
     const addRoom = () => {
         setRooms(rooms.concat({
             id: uuid(),
-            name: ''
+            name: '',
+            bedPositions: []
         }));
     }
     const addDepartment = () => {
@@ -71,6 +73,28 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
                     ...room,
                     [propertyName]: propertyValue
                 };
+            }
+            return room;
+        }));
+    }
+    const addBedPositionToRoom = (roomId: string, bedPosition: string) => {
+        setRooms(rooms.map(room => {
+            if(room.id === roomId) {
+                return {
+                    ...room,
+                    bedPositions: room.bedPositions.concat(bedPosition)
+                }
+            }
+            return room;
+        }));
+    }
+    const removeBedPositionFromRoom = (roomId: string, bedPosition: string) => {
+        setRooms(rooms.map(room => {
+            if(room.id === roomId) {
+                return {
+                    ...room,
+                    bedPositions: room.bedPositions.filter(x => x !== bedPosition)
+                }
             }
             return room;
         }));
@@ -187,6 +211,7 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
                                 <tr>
                                     <th></th>
                                     <th>{resolveText('Room_Name')}</th>
+                                    <th>{resolveText('Room_BedPositions')}</th>
                                 </tr>
                             </thead>
                             {rooms.map(room => (
@@ -197,6 +222,25 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
                                             value={room.name}
                                             onChange={(e: any) => setRoomProperty(room.id, 'name', e.target.value)}
                                         />
+                                    </td>
+                                    <td>
+                                        <Row>
+                                            <Col>
+                                                <BedPositionCreator
+                                                    onAdd={bedPosition => addBedPositionToRoom(room.id, bedPosition)}
+                                                />
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col>
+                                                <ListFormControl<string>
+                                                    items={room.bedPositions}
+                                                    idFunc={x => x}
+                                                    displayFunc={x => x}
+                                                    removeItem={bedPosition => removeBedPositionFromRoom(room.id, bedPosition)}
+                                                />
+                                            </Col>
+                                        </Row>
                                     </td>
                                 </tr>
                             ))}

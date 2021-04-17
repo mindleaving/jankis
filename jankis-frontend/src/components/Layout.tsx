@@ -52,7 +52,7 @@ export const Layout = (props: LayoutProps) => {
                     <LoggedInUser user={user} onLogOut={props.onLogOut} />
                 </Navbar.Collapse>
             </Navbar>
-            <Container className="mt-3">
+            <Container className="mt-3" style={{ maxWidth: '90%' }}>
                 {props.children}
             </Container>
             <QRScannerModal show={showQRScannerModal} onHide={() => setShowQRScannerModal(false)} />
