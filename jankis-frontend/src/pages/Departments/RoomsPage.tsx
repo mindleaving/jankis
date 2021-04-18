@@ -85,14 +85,15 @@ export const RoomsPage = (props: RoomsPageProps) => {
                         <UniformGrid
                             columnCount={3}
                             size="lg"
-                            items={department.rooms.map(room => (
-                                <RoomCard
+                            items={department.roomIds.map(roomId => {
+                                const room = selectedInstitution.rooms.find(x => x.id === roomId)!;
+                                return (<RoomCard
                                     room={room}
                                     department={department}
                                     bedOccupancies={bedOccupancies}
                                     now={now}
-                                />
-                            ))}
+                                />);
+                            })}
                         />
                         
                     </>

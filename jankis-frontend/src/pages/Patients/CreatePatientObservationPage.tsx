@@ -1,16 +1,14 @@
-import React, { Fragment, FormEvent, useEffect, useMemo, useState } from 'react';
+import { Fragment, FormEvent, useEffect, useState } from 'react';
 import { Alert, Button, Col, Form, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router';
 import { useHistory } from 'react-router-dom';
-import { AutocompleteRunner } from '../../helpers/AutocompleteRunner';
 import { resolveText } from '../../helpers/Globalizer';
 import { MeasurementType } from '../../types/enums.d';
 import { PatientParams } from '../../types/frontendTypes';
 import { Models } from '../../types/models';
 import { NotificationManager } from 'react-notifications';
-import { Autocomplete } from '../../components/Autocomplete';
 import { StoreButton } from '../../components/StoreButton';
-import { formatPerson, formatAdmission, formatObservation } from '../../helpers/Formatters';
+import { formatAdmission, formatObservation } from '../../helpers/Formatters';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { ListFormControl } from '../../components/ListFormControl';
 import { apiClient } from '../../communication/ApiClient';
@@ -19,6 +17,7 @@ import { BloodPressureMeasurementForm } from '../../components/Patients/BloodPre
 import { TemperatureMeasurementForm } from '../../components/Patients/TemperatureMeasurementForm';
 import { GenericMeasurementForm } from '../../components/Patients/GenericMeasurementForm';
 import { v4 as uuid } from 'uuid';
+import { PatientAutocomplete } from '../../components/PatientAutocomplete';
 
 interface CreatePatientObservationPageProps extends RouteComponentProps<PatientParams> { }
 interface MeasurementForm {
@@ -29,9 +28,7 @@ interface MeasurementForm {
 export const CreatePatientObservationPage = (props: CreatePatientObservationPageProps) => {
 
     const matchedPatientId = props.match.params.patientId;
-    const patientAutocompleteRunner = useMemo(() => new AutocompleteRunner<Models.Person>('api/persons/search', 'searchText', 10), []);
 
-    const [patientId, setPatientId] = useState<string | undefined>(matchedPatientId);
     const [ profileData, setProfileData ] = useState<Models.Person>();
     const [admissions, setAdmissions] = useState<Models.Admission[]>([]);
     const [admissionId, setAdmissionId] = useState<string>();
@@ -41,26 +38,32 @@ export const CreatePatientObservationPage = (props: CreatePatientObservationPage
     const history = useHistory();
 
     useEffect(() => {
-        if(!patientId) return;
+        if(!matchedPatientId) return;
         const loadProfileData = buildLoadObjectFunc<Models.Person>(
-            `api/persons/${patientId}`,
+            `api/persons/${matchedPatientId}`,
             {},
             resolveText('Patient_CouldNotLoad'),
             setProfileData
         );
         loadProfileData();
+    }, [ matchedPatientId ]);
+    useEffect(() => {
+        if(!profileData) {
+            setAdmissions([]);
+            return;
+        }
         const loadAdmissions = buildLoadObjectFunc<Models.Admission[]>(
-            `api/patients/${patientId}/admissions`,
+            `api/patients/${profileData.id}/admissions`,
             {},
             resolveText('Admissions_CouldNotLoad'),
             setAdmissions
         );
         loadAdmissions();
-    }, [ patientId ]);
+    }, [ profileData]);
 
     const store = async (e: FormEvent) => {
         e.preventDefault();
-        if (!patientId) {
+        if (!profileData) {
             NotificationManager.error(resolveText('PleaseSelect_Patient'));
             return;
         }
@@ -101,13 +104,10 @@ export const CreatePatientObservationPage = (props: CreatePatientObservationPage
                 <FormGroup as={Row}>
                     <FormLabel column>{resolveText('Patient')}</FormLabel>
                     <Col>
-                        {matchedPatientId
-                        ? <Alert variant="info">{profileData ? formatPerson(profileData) : resolveText('Loading...')}</Alert>
-                        : <Autocomplete
-                            search={patientAutocompleteRunner.search}
-                            displayNameSelector={formatPerson}
-                            onItemSelected={person => setPatientId(person.id)}
-                        />}
+                        <PatientAutocomplete
+                            value={profileData}
+                            onChange={setProfileData}
+                        />
                     </Col>
                 </FormGroup>
                 {admissions.length > 0
@@ -127,7 +127,7 @@ export const CreatePatientObservationPage = (props: CreatePatientObservationPage
                 </FormGroup>
                 : null}
             </Form>
-            {patientId
+            {profileData
             ? <>
             <Row>
                 <Col>{resolveText('Observation_MeasurementType')}</Col>
@@ -152,7 +152,7 @@ export const CreatePatientObservationPage = (props: CreatePatientObservationPage
                 if(measurementForm.measurementType === MeasurementType.Pulse) {
                     headingText = resolveText('MeasurementType_Pulse');
                     formControl =(<PulseMeasurementForm
-                            patientId={patientId}
+                            patientId={profileData.id}
                             admissionId={admissionId}
                             onSubmit={addObservation}
                             hasSubmitButton
@@ -162,7 +162,7 @@ export const CreatePatientObservationPage = (props: CreatePatientObservationPage
                 if(measurementForm.measurementType === MeasurementType.BloodPressure) {
                     headingText = resolveText('MeasurementType_BloodPressure');
                     formControl = (<BloodPressureMeasurementForm
-                            patientId={patientId}
+                            patientId={profileData.id}
                             admissionId={admissionId}
                             onSubmit={addObservation}
                             hasSubmitButton
@@ -172,7 +172,7 @@ export const CreatePatientObservationPage = (props: CreatePatientObservationPage
                 if(measurementForm.measurementType === MeasurementType.Temperature) {
                     headingText = resolveText('MeasurementType_Temperature');
                     formControl = (<TemperatureMeasurementForm
-                            patientId={patientId}
+                            patientId={profileData.id}
                             admissionId={admissionId}
                             onSubmit={addObservation}
                             hasSubmitButton
@@ -180,7 +180,7 @@ export const CreatePatientObservationPage = (props: CreatePatientObservationPage
                         />);
                 } else {
                     formControl = (<GenericMeasurementForm
-                        patientId={patientId}
+                        patientId={profileData.id}
                         admissionId={admissionId}
                         onSubmit={addObservation}
                         hasSubmitButton

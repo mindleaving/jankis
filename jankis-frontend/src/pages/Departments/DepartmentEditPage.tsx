@@ -45,7 +45,7 @@ export const DepartmentEditPage = (props: DepartmentEditPageProps) => {
             (department) => {
                 setName(department.name);
                 setInstitutionId(department.institutionId);
-                setParentDepartmentId(department.parentDepartment);
+                setParentDepartmentId(department.parentDepartmentId);
             },
             () => setIsLoading(false)
         );
@@ -72,8 +72,8 @@ export const DepartmentEditPage = (props: DepartmentEditPageProps) => {
             id: id,
             name: name,
             institutionId: institutionId!,
-            parentDepartment: parentDepartmentId,
-            rooms: rooms
+            parentDepartmentId: parentDepartmentId,
+            roomIds: rooms.map(x => x.id)
         }
     }
 

@@ -23,7 +23,7 @@ export const RoomSelector = (props: RoomSelectorProps) => {
                     <option value={room.id} key={room.id}>{room.name}</option>
                 ))}
             </FormControl>
-            <Button onClick={() => props.onAdd(selectedRoomId!)} disabled={!selectedRoomId}>{resolveText('Add')}</Button>
+            <Button className="mx-1" onClick={() => props.onAdd(selectedRoomId!)} disabled={!selectedRoomId}>{resolveText('Add')}</Button>
         </InputGroup>
     );
 

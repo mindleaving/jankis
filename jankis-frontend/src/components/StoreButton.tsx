@@ -14,6 +14,7 @@ export const StoreButton = (props: StoreButtonProps) => {
         <AsyncButton
             type={props.type}
             form={props.form}
+            className="m-2"
             activeText={resolveText('Store')}
             executingText={resolveText('Storing...')}
             isExecuting={props.isStoring}

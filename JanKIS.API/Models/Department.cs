@@ -10,8 +10,8 @@ namespace JanKIS.API.Models
         public string Name { get; set; }
         public string InstitutionId { get; set; }
         [TypescriptIsOptional]
-        public string ParentDepartment { get; set; }
+        public string ParentDepartmentId { get; set; }
 
-        public List<Room> Rooms { get; set; }
+        public List<string> RoomIds { get; set; }
     }
 }

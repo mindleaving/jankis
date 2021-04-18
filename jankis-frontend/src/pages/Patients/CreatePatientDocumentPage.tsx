@@ -1,8 +1,7 @@
-import React, { FormEvent, useContext, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useContext, useEffect, useMemo, useState } from 'react';
 import { Alert, Col, Form, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { RouteComponentProps, useHistory } from 'react-router';
 import { resolveText } from '../../helpers/Globalizer';
-import { buidlAndStoreObject } from '../../helpers/StoringHelpers';
 import { PatientEventType } from '../../types/enums.d';
 import { PatientParams } from '../../types/frontendTypes';
 import { Models } from '../../types/models';
@@ -11,23 +10,19 @@ import UserContext from '../../contexts/UserContext';
 import { StoreButton } from '../../components/StoreButton';
 import { RowFormGroup } from '../../components/RowFormGroup';
 import { FileUpload } from '../../components/FileUpload';
-import { Autocomplete } from '../../components/Autocomplete';
-import { formatPerson, formatAdmission } from '../../helpers/Formatters';
-import { AutocompleteRunner } from '../../helpers/AutocompleteRunner';
+import { formatAdmission } from '../../helpers/Formatters';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { NotificationManager } from 'react-notifications';
 import { apiClient } from '../../communication/ApiClient';
-import { buildUrl } from '../../helpers/UrlBuilder';
+import { PatientAutocomplete } from '../../components/PatientAutocomplete';
 
 interface CreatePatientDocumentPageProps extends RouteComponentProps<PatientParams> {}
 
 export const CreatePatientDocumentPage = (props: CreatePatientDocumentPageProps) => {
 
     const matchedPatientId = props.match.params.patientId;
-    const patientAutocompleteRunner = useMemo(() => new AutocompleteRunner<Models.Person>('api/persons/search', 'searchText', 10), []);
     const user = useContext(UserContext);
 
-    const [ patientId, setPatientId ] = useState<string | undefined>(matchedPatientId);
     const [ profileData, setProfileData ] = useState<Models.Person>();
     const [ admissions, setAdmissions ] = useState<Models.Admission[]>([]);
     const [ admissionId, setAdmissionId ] = useState<string>();
@@ -38,27 +33,37 @@ export const CreatePatientDocumentPage = (props: CreatePatientDocumentPageProps)
     const id = useMemo(() => uuid(), []);
 
     useEffect(() => {
-        if(!patientId) return;
+        if(!matchedPatientId) return;
         const loadProfileData = buildLoadObjectFunc<Models.Person>(
-            `api/persons/${patientId}`,
+            `api/persons/${matchedPatientId}`,
             {},
             resolveText('Patient_CouldNotLoad'),
             setProfileData
         );
         loadProfileData();
+    }, [ matchedPatientId ]);
+    useEffect(() => {
+        if(!profileData) {
+            setAdmissions([]);
+            return;
+        }
         const loadAdmissions = buildLoadObjectFunc<Models.Admission[]>(
-            `api/patients/${patientId}/admissions`,
+            `api/patients/${profileData.id}/admissions`,
             {},
             resolveText('Admissions_CouldNotLoad'),
             setAdmissions
         );
         loadAdmissions();
-    }, [ patientId ]);
+    }, [ profileData]);
 
     const store = async (e: FormEvent) => {
         e.preventDefault();
         if(!file) {
             NotificationManager.error(resolveText('Document_NoFileSelected'));
+            return;
+        }
+        if(!profileData) {
+            NotificationManager.error(resolveText('PleaseSelect_Patient'));
             return;
         }
         setIsStoring(true);
@@ -78,7 +83,7 @@ export const CreatePatientDocumentPage = (props: CreatePatientDocumentPageProps)
         return {
             id: id,
             type: PatientEventType.Document,
-            patientId: patientId!,
+            patientId: profileData!.id,
             admissionId: admissionId,
             createdBy: user!.username,
             timestamp: new Date(),
@@ -94,13 +99,10 @@ export const CreatePatientDocumentPage = (props: CreatePatientDocumentPageProps)
             <FormGroup as={Row}>
                     <FormLabel column>{resolveText('Patient')}</FormLabel>
                     <Col>
-                        {matchedPatientId
-                        ? <Alert variant="info">{profileData ? formatPerson(profileData) : resolveText('Loading...')}</Alert>
-                        : <Autocomplete
-                            search={patientAutocompleteRunner.search}
-                            displayNameSelector={formatPerson}
-                            onItemSelected={person => setPatientId(person.id)}
-                        />}
+                        <PatientAutocomplete
+                            value={profileData}
+                            onChange={setProfileData}
+                        />
                     </Col>
                 </FormGroup>
                 {admissions.length > 0

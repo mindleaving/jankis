@@ -48,6 +48,7 @@ import { AdmissionsListPage } from './pages/Patients/AdmissionsListPage';
 import { InstitutionsListPage } from './pages/Config/InstitutionsListPage';
 import { PatientPage } from './pages/Patients/PatientPage';
 import { RoomsPage } from './pages/Departments/RoomsPage';
+import { BedOccupancyEditPage } from './pages/Departments/BedOccupancyEditPage';
 
 function App() {
 
@@ -294,6 +295,14 @@ function App() {
                     <Route
                         exact path="/rooms"
                         render={props => <RoomsPage {...props} />}
+                    />
+                    <Route
+                        exact path="/create/bedoccupancy/department/:departmentId/room/:roomId/bed/:bedPosition"
+                        render={props => <BedOccupancyEditPage {...props} />}
+                    />
+                    <Route
+                        exact path="/bedoccupancies/:occupancyId/edit"
+                        render={props => <BedOccupancyEditPage {...props} />}
                     />
                 </Switch>
             </Layout>

@@ -1,4 +1,4 @@
-import { MeasurementType, ServiceAudienceType } from "../types/enums.d";
+import { MeasurementType, ServiceAudienceType, Sex } from "../types/enums.d";
 import { Models } from "../types/models";
 import { resolveText } from "./Globalizer";
 
@@ -18,7 +18,10 @@ export const formatServiceAudience = (item: Models.ServiceAudience) => {
 }
 
 export const formatPerson = (person: Models.Person) => {
-    return `${person.firstName} ${person.lastName} (${new Date(person.birthDate).toLocaleDateString()})`;
+    const genderSymbol = person.sex === Sex.Male ? '♂'
+        : person.sex === Sex.Female ? '♀'
+        : '⚥';
+    return `${person.firstName} ${person.lastName} (${new Date(person.birthDate).toLocaleDateString()}, ${genderSymbol})`;
 }
 
 export const formatAdmission = (admission: Models.Admission) => {

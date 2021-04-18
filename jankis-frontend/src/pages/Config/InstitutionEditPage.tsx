@@ -63,7 +63,7 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
             id: uuid(),
             institutionId: id,
             name: '',
-            rooms: []
+            roomIds: []
         }));
     }
     const setRoomProperty = (roomId: string, propertyName: string, propertyValue: string) => {
@@ -111,7 +111,7 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
         }));
     }
     const addRoomToDepartment = (departmentId: string, roomId: string) => {
-        if(departments.find(x => x.id === departmentId)?.rooms.find(x => x.id === roomId)) {
+        if(departments.find(x => x.id === departmentId)?.roomIds.includes(roomId)) {
             return;
         }
         const room = rooms.find(x => x.id === roomId);
@@ -122,7 +122,7 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
             if(department.id === departmentId) {
                 return {
                     ...department,
-                    rooms: department.rooms.concat(room)
+                    roomIds: department.roomIds.concat(roomId)
                 }
             }
             return department;
@@ -133,7 +133,7 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
             if(department.id === departmentId) {
                 return {
                     ...department,
-                    rooms: department.rooms.filter(room => room.id !== roomId)
+                    roomIds: department.roomIds.filter(x => x !== roomId)
                 }
             }
             return department;
@@ -147,7 +147,7 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
         setDepartments(departments.map(department => {
             return {
                 ...department,
-                rooms: department.rooms.filter(x => x.id !== id)
+                roomIds: department.roomIds.filter(x => x !== id)
             };
         }));
     }
@@ -156,6 +156,19 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
             openConfirmAlert(id, name, resolveText('Department_ConfirmDelete_Title'), resolveText('Department_ConfirmDelete_Message'), () => deleteDepartment(id, name, true));
         }
         setDepartments(departments.filter(x => x.id !== id));
+    }
+    const isParentDepartment = (departmentId: string, potentialParentDepartmentId: string) => {
+        let nextDepartmentId = departmentId;
+        while(nextDepartmentId) {
+            let department = departments.find(x => x.id === nextDepartmentId);
+            if(!department?.parentDepartmentId) {
+                return false;
+            }
+            if(department.parentDepartmentId === potentialParentDepartmentId) {
+                return true;
+            }
+            nextDepartmentId = department.parentDepartmentId;
+        }
     }
 
     const store = async (e?: FormEvent) => {
@@ -260,12 +273,15 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
                         <Table>
                             <colgroup>
                                 <col width="100px" />
+                                <col width="25%" />
+                                <col width="25%" />
                                 <col width="*" />
                             </colgroup>
                             <thead>
                                 <tr>
                                     <th></th>
                                     <th>{resolveText('Department_Name')}</th>
+                                    <th>{resolveText('Department_ParentDepartment')}</th>
                                     <th>{resolveText('Department_Rooms')}</th>
                                 </tr>
                             </thead>
@@ -279,6 +295,20 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
                                         />
                                     </td>
                                     <td>
+                                        <FormControl
+                                            as="select"
+                                            value={department.parentDepartmentId ?? ''}
+                                            onChange={(e:any) => setDepartmentProperty(department.id, 'parentDepartmentId', e.target.value)}
+                                        >
+                                            <option value="">{resolveText('None')}</option>
+                                            {departments
+                                                .filter(otherDepartment => otherDepartment.id !== department.id && !isParentDepartment(otherDepartment.id, department.id))
+                                                .map(otherDepartment => (
+                                                <option key={otherDepartment.id} value={otherDepartment.id}>{otherDepartment.name}</option>
+                                            ))}
+                                        </FormControl>
+                                    </td>
+                                    <td>
                                         <Row>
                                             <Col>
                                                 <RoomSelector
@@ -290,7 +320,7 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
                                         <Row>
                                             <Col>
                                                 <ListFormControl<Models.Room>
-                                                    items={department.rooms}
+                                                    items={department.roomIds.map(roomId => rooms.find(x => x.id === roomId)).filter(x => x !== undefined) as Models.Room[]}
                                                     idFunc={room => room.id}
                                                     displayFunc={room => room.name}
                                                     removeItem={room => removeRoomFromDepartment(department.id, room.id)}

@@ -77,7 +77,7 @@ export const DepartmentsList = (props: DepartmentsListProps) => {
                     <tr key={department.id}>
                         <td><i className="fa fa-trash red clickable" onClick={() => deleteDepartment(department.id, department.name)} /></td>
                         <td>{department.name}</td>
-                        <td>{department.parentDepartment}</td>
+                        <td>{department.parentDepartmentId}</td>
                         <td><Button variant="link" onClick={() => history.push(`/departments/${department.id}/edit`)}>{resolveText('Edit...')}</Button></td>
                     </tr>
                 ))

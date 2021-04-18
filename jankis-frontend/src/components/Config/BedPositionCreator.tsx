@@ -19,7 +19,7 @@ export const BedPositionCreator = (props: BedPositionCreatorProps) => {
                 value={bedPosition}
                 onChange={(e:any) => setBedPosition(e.target.value)}
             />
-            <Button className="m-1" onClick={addBedPosition}>{resolveText('Add')}</Button>
+            <Button className="m-1" onClick={addBedPosition} disabled={!bedPosition}>{resolveText('Add')}</Button>
         </InputGroup>
     );
 

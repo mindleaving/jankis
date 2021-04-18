@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, Accordion, Row, Col, Button, Alert } from 'react-bootstrap';
+import { useHistory } from 'react-router';
 import { formatPerson } from '../../helpers/Formatters';
 import { resolveText } from '../../helpers/Globalizer';
 import { BedState } from '../../types/enums.d';
@@ -19,23 +20,31 @@ export const RoomCard = (props: RoomCardProps) => {
     const department= props.department;
     const bedOccupancies = props.bedOccupancies;
     const now = (props.now ?? new Date()).getTime();
+
+    const history = useHistory();
+
     return (
         <Card className="m-2">
             <Card.Header>{resolveText('Room')} {room.name}</Card.Header>
             <Card.Body>
                 <Accordion defaultActiveKey="0">
                 {room.bedPositions.map(bedPosition => {
-                    const occupancies = bedOccupancies.filter(x => 
-                        x.departmentId === department.id
-                        && x.roomId === room.id
-                        && x.bedPosition === bedPosition
-                        && (!x.endTime || x.endTime.getTime() > now));
+                    const occupancies = bedOccupancies
+                        .filter(x => 
+                            x.departmentId === department.id
+                            && x.roomId === room.id
+                            && x.bedPosition === bedPosition
+                            && (!x.endTime || x.endTime.getTime() > now))
+                        .sort((a,b) => a.startTime.getTime() - b.startTime.getTime());
                     const currentOccupancy = occupancies.find(x => x.startTime.getTime() <= now);
                     const stateColor = !currentOccupancy ? "light"
-                        : currentOccupancy.state === BedState.Occupied ? "primary"
+                        : currentOccupancy.state === BedState.Occupied ? "success"
                         : currentOccupancy.state === BedState.Reserved ? "warning"
                         : currentOccupancy.state === BedState.Unavailable ? "danger"
                         : "light";
+                    const textColor = !currentOccupancy ? 'text-dark'
+                        : [BedState.Unavailable, BedState.Occupied].includes(currentOccupancy.state) ? 'text-white'
+                        : 'text-dark';
                     return (
                         <AccordionCard 
                             title={<Row className="align-items-center">
@@ -43,18 +52,27 @@ export const RoomCard = (props: RoomCardProps) => {
                                     {resolveText('Bed')} {bedPosition} ({resolveText(`BedState_${currentOccupancy?.state ?? BedState.Empty}`)})
                                 </Col>
                                 <Col xs="auto">
-                                    <Button size="sm" className="mr-auto">{resolveText('Bed_AddOccupancy')}</Button>
+                                    <Button 
+                                        size="sm" 
+                                        className="mr-auto" 
+                                        onClick={() => history.push(`/create/bedoccupancy/department/${department.id}/room/${room.id}/bed/${bedPosition}`)}
+                                    >
+                                        {resolveText('Bed_AddOccupancy')}
+                                    </Button>
                                 </Col>
                             </Row>}
                             eventKey={bedPosition}
-                            className="m-1" 
+                            className={`m-1 ${textColor}`} 
                             bg={stateColor}
                         >
                             {occupancies.map(occupancy => (
                                 <Alert key={occupancy.id}>
                                     <Row>
                                         <Col>
-                                            <small>{`${occupancy.startTime.toLocaleDateString()} - ${occupancy.endTime?.toLocaleDateString()}`}</small>
+                                            <small>{`${occupancy.startTime.toLocaleDateString()} - ${occupancy.endTime?.toLocaleDateString() ?? ''}`}</small>
+                                        </Col>
+                                        <Col xs="auto">
+                                            <i className="fa fa-edit clickable" onClick={() => history.push(`/bedoccupancies/${occupancy.id}/edit`)} />
                                         </Col>
                                     </Row>
                                     <Row>
@@ -69,7 +87,15 @@ export const RoomCard = (props: RoomCardProps) => {
                                     occupancy.patient ? 
                                     <Row>
                                         <Col>{resolveText('Patient')}</Col>
-                                        <Col>{formatPerson(occupancy.patient)}</Col>
+                                        <Col>
+                                            <Button 
+                                                variant="link"
+                                                className="p-0 m-0 text-left text-light"
+                                                onClick={() => history.push(`/patients/${occupancy.patient!.id}`)}
+                                            >
+                                                {formatPerson(occupancy.patient)}
+                                            </Button>
+                                        </Col>
                                     </Row> : null}
                                 </Alert>
                             ))}

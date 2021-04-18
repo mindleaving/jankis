@@ -98,8 +98,8 @@ export namespace Models {
         id: string;
         name: string;
         institutionId: string;
-        parentDepartment?: string;
-        rooms: Models.Room[];
+        parentDepartmentId?: string;
+        roomIds: string[];
     }
 
     interface DiagnosticTestDefinition {
