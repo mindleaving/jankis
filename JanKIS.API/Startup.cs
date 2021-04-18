@@ -55,9 +55,13 @@ namespace JanKIS.API
             services.AddScoped<IAutocompleteCache, AutocompleteCache>();
             services.AddScoped<IReadonlyStore<Contact>, GenericReadonlyStore<Contact>>();
             services.AddScoped<IStore<Contact>, GenericStore<Contact>>();
+            services.AddScoped<IReadonlyStore<Admission>, GenericReadonlyStore<Admission>>();
+            services.AddScoped<IStore<Admission>, GenericStore<Admission>>();
             services.AddScoped<IAdmissionsStore, AdmissionsStore>();
             services.AddScoped<IReadonlyStore<Institution>, GenericReadonlyStore<Institution>>();
             services.AddScoped<IStore<Institution>, GenericStore<Institution>>();
+            services.AddScoped<IReadonlyStore<Room>, GenericReadonlyStore<Room>>();
+            services.AddScoped<IStore<Room>, GenericStore<Room>>();
             services.AddScoped<IReadonlyStore<Department>, GenericReadonlyStore<Department>>();
             services.AddScoped<IStore<Department>, GenericStore<Department>>();
             services.AddScoped<IReadonlyStore<ServiceDefinition>, GenericReadonlyStore<ServiceDefinition>>();
@@ -81,6 +85,8 @@ namespace JanKIS.API
             services.AddScoped<IReadonlyStore<BedOccupancy>, GenericReadonlyStore<BedOccupancy>>();
             services.AddScoped<IStore<BedOccupancy>, GenericStore<BedOccupancy>>();
             services.AddScoped<IFilesStore, FilesStore>();
+            services.AddScoped<ServiceRequestGatekeeper>();
+            services.AddScoped<ServiceRequestChangePolicy>();
 
             services.AddHttpContextAccessor();
             services.AddControllers()

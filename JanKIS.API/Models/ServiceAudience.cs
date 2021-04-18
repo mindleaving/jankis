@@ -1,4 +1,6 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using JanKIS.API.Converters;
+using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
 
 namespace JanKIS.API.Models
 {
@@ -6,6 +8,7 @@ namespace JanKIS.API.Models
         typeof(AllServiceAudience),
         typeof(RoleServiceAudience),
         typeof(PersonServiceAudience))]
+    [JsonConverter(typeof(ServiceAudienceJsonConverter))]
     public abstract class ServiceAudience
     {
         public ServiceAudienceType Type { get; set; }

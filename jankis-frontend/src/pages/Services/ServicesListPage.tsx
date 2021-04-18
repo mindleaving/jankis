@@ -14,7 +14,7 @@ export const ServicesListPage = (props: ServicesListPageProps) => {
     return (
         <>
             <h1>{resolveText('Services')}</h1>
-            <ServicesFilterView setFilter={setFilter} />
+            <ServicesFilterView filter={filter} setFilter={setFilter} />
             <ServicesList filter={filter} />
         </>
     );

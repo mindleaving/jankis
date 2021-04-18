@@ -80,13 +80,13 @@ export const ServiceAudienceEditForm = (props: ServiceAudienceEditFormProps) => 
                     value={type}
                     onChange={(e:any) => setType(e.target.value)}
                 >
-                    {Object.keys(ServiceParameterValueType).map(x => (
-                        <option key={x} value={x}>{resolveText(`ServiceParameterValueType_${x}`)}</option>
+                    {Object.keys(ServiceAudienceType).map(x => (
+                        <option key={x} value={x}>{resolveText(`ServiceAudienceType_${x}`)}</option>
                     ))}
                 </FormControl>
             </FormGroup>
             {typeSpecificFormElements}
-            <Button onClick={createAudience}></Button>
+            <Button onClick={createAudience}>{resolveText('Add')}</Button>
         </>
     );
 

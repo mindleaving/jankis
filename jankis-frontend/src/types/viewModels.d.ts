@@ -17,6 +17,13 @@ export namespace ViewModels {
         departments: Models.Department[];
     }
 
+    interface InstitutionViewModel {
+        id: string;
+        name: string;
+        rooms: Models.Room[];
+        departments: Models.Department[];
+    }
+
     interface LoggedInUserViewModel {
         profileData: Models.Person;
         authenticationResult: Models.AuthenticationResult;
@@ -25,7 +32,7 @@ export namespace ViewModels {
         accountType: Enums.AccountType;
         roles: Models.Role[];
         permissions: Enums.Permission[];
-        departmentIds: string[];
+        departments: Models.Department[];
     }
 
     interface PatientOverviewViewModel {

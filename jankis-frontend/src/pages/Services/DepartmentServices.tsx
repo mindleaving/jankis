@@ -1,10 +1,8 @@
 import { useContext, useState } from 'react';
 import { Form, FormControl, FormGroup } from 'react-bootstrap';
-import { useSelector } from 'react-redux';
 import { ServicesList } from '../../components/Services/ServicesList';
 import UserContext from '../../contexts/UserContext';
 import { resolveText } from '../../helpers/Globalizer';
-import { getDepartments } from '../../stores/selectors/departmentSelectors';
 import { AccountType } from '../../types/enums.d';
 
 interface DepartmentServicesProps {}
@@ -12,13 +10,12 @@ interface DepartmentServicesProps {}
 export const DepartmentServices = (props: DepartmentServicesProps) => {
 
     const [ searchText, setSearchText ] = useState<string>('');
-    const departments = useSelector(getDepartments);
 
     const user = useContext(UserContext);
     if(user?.accountType !== AccountType.Employee) {
         return (<h1>{resolveText('NotPermitted')}</h1>);
     }
-    const departmentIds = user.departmentIds;
+    const departments = user.departments;
     
     return (
         <>
@@ -31,10 +28,10 @@ export const DepartmentServices = (props: DepartmentServicesProps) => {
                     />
                 </FormGroup>
             </Form>
-            {departmentIds.map(departmentId => (
+            {departments.map(department => (
                 <>
-                    <h2>{departments.find(x => x.id === departmentId)?.name}</h2>
-                    <ServicesList filter={{ searchText: searchText, departmentId: departmentId }} />
+                    <h2>{departments.find(x => x.id === department.id)?.name}</h2>
+                    <ServicesList filter={{ searchText: searchText, departmentId: department.id }} />
                 </>
             ))}
         </>

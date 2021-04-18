@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { PagedTable } from '../PagedTable';
 import { resolveText } from '../../helpers/Globalizer';
 import { Models } from '../../types/models';
@@ -8,6 +8,8 @@ import { Button } from 'react-bootstrap';
 import { useHistory } from 'react-router';
 import { NotificationManager } from 'react-notifications';
 import { apiClient } from '../../communication/ApiClient';
+import { openConfirmAlert } from '../../helpers/AlertHelpers';
+import { deleteObject } from '../../helpers/DeleteHelpers';
 
 interface ServicesListProps {
     filter: ServicesFilter;
@@ -27,7 +29,7 @@ export const ServicesList = (props: ServicesListProps) => {
         }
         setOrderDirection(orderDirection === OrderDirection.Ascending ? OrderDirection.Descending : OrderDirection.Ascending);
     }
-    const loadServices = async (pageIndex: number, entriesPerPage: number, orderBy?: string, orderDirection?: OrderDirection) => {
+    const loadServices = useCallback(async (pageIndex: number, entriesPerPage: number, orderBy?: string, orderDirection?: OrderDirection) => {
         try {
             let apiPath;
             if(props.filter?.searchText) {
@@ -50,6 +52,26 @@ export const ServicesList = (props: ServicesListProps) => {
         } catch(error) {
             NotificationManager.error(error.message, resolveText('Services_CouldNotLoad'));
         }
+    }, [ props.filter ]);
+
+    const deleteService = async (id: string, name: string, force: boolean = false) => {
+        if(!force) {
+            openConfirmAlert(
+                id, 
+                name,
+                resolveText('Service_ConfirmDelete_Title'),
+                resolveText('Service_ConfirmDelete_Message'),
+                () => deleteService(id, name, true)
+            );
+            return;
+        }
+        await deleteObject(
+            `api/services/${id}`,
+            {},
+            resolveText('Service_SuccessfullyDeleted'),
+            resolveText('Service_CouldNotDelete'),
+            () => setServices(services.filter(x => x.id !== id))
+        );
     }
 
     return (
@@ -62,7 +84,7 @@ export const ServicesList = (props: ServicesListProps) => {
         >
             <thead>
                 <tr>
-                    <th onClick={() => setOrderByOrDirection('id')}>{resolveText('Service_ID')}</th>
+                    <th></th>
                     <th onClick={() => setOrderByOrDirection('name')}>{resolveText('Service_Name')}</th>
                     <th onClick={() => setOrderByOrDirection('department')}>{resolveText('Service_Department')}</th>
                     <th>{resolveText('Service_Audience')}</th>
@@ -70,15 +92,19 @@ export const ServicesList = (props: ServicesListProps) => {
                 </tr>
             </thead>
             <tbody>
-                {services.map(service => (
+                {services.length > 0
+                ? services.map(service => (
                     <tr>
-                        <td>{service.id}</td>
+                        <td><i className="fa fa-trash red clickable" onClick={() => deleteService(service.id, service.name)}/></td>
                         <td>{service.name}</td>
                         <td>{service.departmentId}</td>
                         <td>{service.audience.map(formatServiceAudience).join(", ")}</td>
                         <td><Button variant="link" onClick={() => history.push(`/services/${service.id}/edit`)}>{resolveText('Edit...')}</Button></td>
                     </tr>
-                ))}
+                ))
+                : <tr>
+                    <td className="text-center" colSpan={5}>{resolveText('NoEntries')}</td>
+                </tr>}
             </tbody>
         </PagedTable>
     );

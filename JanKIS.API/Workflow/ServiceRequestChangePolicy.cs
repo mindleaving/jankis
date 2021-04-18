@@ -55,10 +55,11 @@ namespace JanKIS.API.Workflow
                 return new List<string>();
             if (account.AccountType == AccountType.Patient)
             {
+                throw new NotImplementedException();
                 var currentAdmission = await admissionsStore.GetCurrentAdmissionAsync(personId);
                 if (currentAdmission != null)
                 {
-                    departmentIds.AddRange(currentAdmission.BedOccupancies.Select(bedOccupancy => bedOccupancy.DepartmentId));
+                    //departmentIds.AddRange(currentAdmission.BedOccupancies.Select(bedOccupancy => bedOccupancy.DepartmentId));
                 }
                 return departmentIds.Distinct().ToList();
             }

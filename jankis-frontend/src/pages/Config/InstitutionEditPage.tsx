@@ -1,4 +1,4 @@
-import React, { FormEvent, useEffect, useState } from 'react';
+import React, { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Button, Col, Form, FormControl, Row, Table } from 'react-bootstrap';
 import { RouteComponentProps, useHistory } from 'react-router';
 import { resolveText } from '../../helpers/Globalizer';
@@ -13,6 +13,7 @@ import { ListFormControl } from '../../components/ListFormControl';
 import { RoomSelector } from '../../components/Config/RoomSelector';
 import { RoomGeneratorModal } from '../../components/Config/RoomGeneratorModal';
 import { BedPositionCreator } from '../../components/Config/BedPositionCreator';
+import { ViewModels } from '../../types/viewModels';
 
 interface InstitutionParams {
     institutionId?: string;
@@ -24,7 +25,7 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
     if (!isNew && !props.match.params.institutionId) {
         throw new Error('Invalid link');
     }
-    const id = props.match.params.institutionId ?? uuid();
+    const id = useMemo(() => props.match.params.institutionId ?? uuid(), [ props.match.params.institutionId ]);
 
     const [name, setName] = useState<string>('');
     const [rooms, setRooms] = useState<Models.Room[]>([]);
@@ -37,8 +38,8 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
     useEffect(() => {
         if (isNew) return;
         setIsLoading(true);
-        const loadInstitution = buildLoadObjectFunc<Models.Institution>(
-            `api/institutions/${id}`,
+        const loadInstitution = buildLoadObjectFunc<ViewModels.InstitutionViewModel>(
+            `api/institutions/${id}/viewmodel`,
             {},
             resolveText('Institution_CouldNotLoad'),
             item => {
@@ -175,7 +176,7 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
         e?.preventDefault();
         setIsStoring(true);
         await buidlAndStoreObject(
-            `api/institutions/${id}`,
+            `api/institutions/${id}/storeviewmodel`,
             resolveText('Institution_SuccessfullyStored'),
             resolveText('Institution_CouldNotStore'),
             buildInstitution,
@@ -183,7 +184,7 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
             () => setIsStoring(false)
         );
     }
-    const buildInstitution = (): Models.Institution => {
+    const buildInstitution = (): ViewModels.InstitutionViewModel => {
         return {
             id: id,
             name: name,

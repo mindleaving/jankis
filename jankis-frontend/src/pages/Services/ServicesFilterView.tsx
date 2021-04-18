@@ -7,14 +7,15 @@ import { ServicesFilter } from '../../types/frontendTypes';
 import { Models } from '../../types/models';
 
 interface ServicesFilterViewProps {
+    filter?: ServicesFilter;
     setFilter: (filter: ServicesFilter) => void;
 }
 
 export const ServicesFilterView = (props: ServicesFilterViewProps) => {
 
     const departmentAutocompleteRunner = useMemo(() => new AutocompleteRunner<Models.Department>('api/departments/search', 'searchText', 10), []);
-    const [ searchText, setSearchText ] = useState<string>('');
-    const [ departmentId, setDepartmentId ] = useState<string>();
+    const [ searchText, setSearchText ] = useState<string>(props.filter?.searchText ?? '');
+    const [ departmentId, setDepartmentId ] = useState<string | undefined>(props.filter?.departmentId);
 
     const setFilter = props.setFilter;
     useEffect(() => {

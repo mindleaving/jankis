@@ -45,7 +45,7 @@ export const Layout = (props: LayoutProps) => {
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     {userMenus}
-                    {!user.roles.some(role => role.name === "Patient") ? <DepartmentMenu /> : null}
+                    {!user.roles.some(role => role.name === "Patient") ? <DepartmentMenu departments={user.departments} /> : null}
                     <ConfigMenu />
                     {!user.roles.some(role => role.name === "Patient") ? <QRScannerMenu openQRScannerModal={openQRScannerModal}  /> : null}
                     <CommonMenu />

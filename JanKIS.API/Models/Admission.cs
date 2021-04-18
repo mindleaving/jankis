@@ -12,8 +12,7 @@ namespace JanKIS.API.Models
             Person profileData,
             DateTime admissionTime,
             DateTime dischargeTime,
-            List<Contact> contactPersons,
-            BedOccupancy bedOccupancy = null)
+            List<Contact> contactPersons)
         {
             Id = id;
             PatientId = patientId;
@@ -21,9 +20,6 @@ namespace JanKIS.API.Models
             AdmissionTime = admissionTime;
             DischargeTime = dischargeTime;
             ContactPersons = contactPersons ?? new List<Contact>();
-            BedOccupancies = new List<BedOccupancy>();
-            if(bedOccupancy != null)
-                BedOccupancies.Add(bedOccupancy);
         }
 
         public string Id { get; set; }
@@ -33,6 +29,5 @@ namespace JanKIS.API.Models
         public DateTime AdmissionTime { get; set; }
         public DateTime? DischargeTime { get; set; }
         public List<Contact> ContactPersons { get; set; }
-        public List<BedOccupancy> BedOccupancies { get; set; }
     }
 }

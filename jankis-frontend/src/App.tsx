@@ -143,7 +143,7 @@ function App() {
                     />
                     <Route
                         exact path="/services/:serviceId/requests"
-                        render={props => <ServiceRequestsListPage {...props} />}
+                        render={props => <ServiceRequestsListPage />}
                     />
                     <Route
                         exact path="/servicerequests/:requestId"
@@ -169,6 +169,10 @@ function App() {
                     <Route
                         exact path="/departments/:departmentId/services"
                         render={props => <ServicesListPage filter={{ departmentId: props.match.params.departmentId }} />}
+                    />
+                    <Route
+                        exact path="/departments/:departmentId/requests"
+                        render={props => <ServiceRequestsListPage filter={{ departmentId: props.match.params.departmentId }} />}
                     />
                     <Route
                         exact path="/departments/:departmentId/resources"

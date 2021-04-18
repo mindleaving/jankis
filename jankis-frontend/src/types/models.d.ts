@@ -220,8 +220,8 @@ export namespace Models {
     interface Institution {
         id: string;
         name: string;
-        rooms: Models.Room[];
-        departments: Models.Department[];
+        roomIds: string[];
+        departmentIds: string[];
     }
 
     interface InstitutionPolicy {

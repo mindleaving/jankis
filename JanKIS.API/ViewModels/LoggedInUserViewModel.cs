@@ -13,7 +13,7 @@ namespace JanKIS.API.ViewModels
             AccountType accountType,
             List<Role> roles,
             List<Permission> permissions,
-            List<string> departmentIds)
+            List<Department> departments)
         {
             ProfileData = profileData;
             AuthenticationResult = authenticationResult;
@@ -22,7 +22,7 @@ namespace JanKIS.API.ViewModels
             AccountType = accountType;
             Roles = roles ?? new List<Role>();
             Permissions = permissions ?? new List<Permission>();
-            DepartmentIds = departmentIds ?? new List<string>();
+            Departments = departments ?? new List<Department>();
         }
 
         public Person ProfileData { get; set; }
@@ -32,6 +32,6 @@ namespace JanKIS.API.ViewModels
         public AccountType AccountType { get; set; }
         public List<Role> Roles { get; set; }
         public List<Permission> Permissions { get; set; }
-        public List<string> DepartmentIds { get; }
+        public List<Department> Departments { get; }
     }
 }

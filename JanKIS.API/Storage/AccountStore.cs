@@ -24,7 +24,7 @@ namespace JanKIS.API.Storage
                     .Set(x => x.IsPasswordChangeRequired, changePasswordOnNextLogin));
             if(!result.IsAcknowledged)
                 return StorageResult.Error(StoreErrorType.UnknownDatabaseError);
-            if(result.ModifiedCount == 0)
+            if(result.MatchedCount == 0)
                 return StorageResult.Error(StoreErrorType.NoMatch);
             return StorageResult.Success();
         }
@@ -39,7 +39,7 @@ namespace JanKIS.API.Storage
                     .Set(x => x.Roles, roleIds));
             if(!result.IsAcknowledged)
                 return StorageResult.Error(StoreErrorType.UnknownDatabaseError);
-            if(result.ModifiedCount == 0)
+            if(result.MatchedCount == 0)
                 return StorageResult.Error(StoreErrorType.NoMatch);
             return StorageResult.Success();
         }
@@ -56,7 +56,7 @@ namespace JanKIS.API.Storage
                     .Push(x => x.Roles, roleId));
             if(!result.IsAcknowledged)
                 return StorageResult.Error(StoreErrorType.UnknownDatabaseError);
-            if(result.ModifiedCount == 0)
+            if(result.MatchedCount == 0)
                 return StorageResult.Error(StoreErrorType.NoMatch);
             return StorageResult.Success();
         }
@@ -73,7 +73,7 @@ namespace JanKIS.API.Storage
                     .Pull(x => x.Roles, roleId));
             if(!result.IsAcknowledged)
                 return StorageResult.Error(StoreErrorType.UnknownDatabaseError);
-            if(result.ModifiedCount == 0)
+            if(result.MatchedCount == 0)
                 return StorageResult.Error(StoreErrorType.NoMatch);
             return StorageResult.Success();
         }
@@ -88,7 +88,7 @@ namespace JanKIS.API.Storage
                     .Push(x => x.PermissionModifiers, permission));
             if(!result.IsAcknowledged)
                 return StorageResult.Error(StoreErrorType.UnknownDatabaseError);
-            if(result.ModifiedCount == 0)
+            if(result.MatchedCount == 0)
                 return StorageResult.Error(StoreErrorType.NoMatch);
             return StorageResult.Success();
         }
@@ -103,7 +103,7 @@ namespace JanKIS.API.Storage
                     .PullFilter(x => x.PermissionModifiers, x => x.Permission == permission));
             if(!result.IsAcknowledged)
                 return StorageResult.Error(StoreErrorType.UnknownDatabaseError);
-            if(result.ModifiedCount == 0)
+            if(result.MatchedCount == 0)
                 return StorageResult.Error(StoreErrorType.NoMatch);
             return StorageResult.Success();
         }
@@ -113,6 +113,12 @@ namespace JanKIS.API.Storage
             await collection.OfType<EmployeeAccount>().UpdateManyAsync(
                 x => true,
                 Builders<EmployeeAccount>.Update.Pull(x => x.Roles, roleName));
+        }
+
+        public async Task<bool> IsEmployee(string username)
+        {
+            var account = await GetByIdAsync(username);
+            return account.AccountType == AccountType.Employee;
         }
     }
 }

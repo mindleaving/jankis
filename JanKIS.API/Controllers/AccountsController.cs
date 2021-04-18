@@ -158,6 +158,8 @@ namespace JanKIS.API.Controllers
                 return StatusCode((int) HttpStatusCode.Unauthorized, authenticationResult);
             var userRoles = await GetUserRoles(account);
             var userPermissions = GetUserPermissions(account, userRoles);
+            var departmentIds = (account as EmployeeAccount)?.DepartmentIds ?? new List<string>();
+            var departments = await departmentsStore.SearchAsync(x => departmentIds.Contains(x.Id));
             var userViewModel = new LoggedInUserViewModel(
                 person,
                 authenticationResult,
@@ -166,7 +168,7 @@ namespace JanKIS.API.Controllers
                 account.AccountType,
                 userRoles,
                 userPermissions,
-                (account as EmployeeAccount)?.DepartmentIds);
+                departments);
             return Ok(userViewModel);
         }
 
@@ -242,6 +244,8 @@ namespace JanKIS.API.Controllers
         {
             if (!await rolesStore.ExistsAsync(roleId))
                 return BadRequest("No such role exists");
+            if (!await accountsStore.IsEmployee(username))
+                return BadRequest("Cannot add roles to non-employee accounts");
             var result = await accountsStore.AddRole(username, roleId);
             return HandleStorageResult(result);
         }
@@ -253,6 +257,8 @@ namespace JanKIS.API.Controllers
         {
             if (!await rolesStore.ExistsAsync(roleId))
                 return BadRequest("No such role exists");
+            if (!await accountsStore.IsEmployee(username))
+                return BadRequest("Cannot add roles to non-employee accounts");
             var result = await accountsStore.RemoveRole(username, roleId);
             return HandleStorageResult(result);
         }
@@ -264,6 +270,8 @@ namespace JanKIS.API.Controllers
         {
             if (!Enum.TryParse<Permission>(permissionId, true, out var permission))
                 return BadRequest("Unknown permission");
+            if (!await accountsStore.IsEmployee(username))
+                return BadRequest("Cannot add permissions to non-employee accounts");
             var result = await accountsStore.AddPermission(username, new PermissionModifier(permission, PermissionModifierType.Grant));
             return HandleStorageResult(result);
         }
@@ -275,6 +283,8 @@ namespace JanKIS.API.Controllers
         {
             if (!Enum.TryParse<Permission>(permissionId, true, out var permission))
                 return BadRequest("Unknown permission");
+            if (!await accountsStore.IsEmployee(username))
+                return BadRequest("Cannot add permissions to non-employee accounts");
             var result = await accountsStore.AddPermission(username, new PermissionModifier(permission, PermissionModifierType.Deny));
             return HandleStorageResult(result);
         }
@@ -286,9 +296,68 @@ namespace JanKIS.API.Controllers
         {
             if (!Enum.TryParse<Permission>(permissionId, true, out var permission))
                 return BadRequest("Unknown permission");
+            if (!await accountsStore.IsEmployee(username))
+                return BadRequest("Cannot add permissions to non-employee accounts");
             var result = await accountsStore.RemovePermission(username, permission);
             return HandleStorageResult(result);
         }
+
+        [HttpPut("{username}/departments")]
+        [Authorize(Policy = nameof(Permission.ChangeEmployeePermissions))]
+        [Authorize(Policy = NotSameUserRequirement.PolicyName)]
+        public async Task<IActionResult> SetDepartments([FromRoute] string username, [FromBody] List<string> departmentIds)
+        {
+            var account = await accountsStore.GetByIdAsync(username);
+            if (account.AccountType != AccountType.Employee)
+                return BadRequest("Cannot add departments to non-employee accounts");
+            foreach (var departmentId in departmentIds)
+            {
+                if (!await departmentsStore.ExistsAsync(departmentId))
+                    return BadRequest($"Department with ID '{departmentId}' doesn't exist");
+            }
+
+            var employeeAccount = (EmployeeAccount) account;
+            employeeAccount.DepartmentIds = departmentIds;
+            await accountsStore.StoreAsync(employeeAccount);
+            return Ok();
+        }
+
+        [HttpPatch("{username}/departments/{departmentId}/add")]
+        [Authorize(Policy = nameof(Permission.ChangeEmployeePermissions))]
+        [Authorize(Policy = NotSameUserRequirement.PolicyName)]
+        public async Task<IActionResult> AddDepartment([FromRoute] string username, [FromRoute] string departmentId)
+        {
+            var account = await accountsStore.GetByIdAsync(username);
+            if (account.AccountType != AccountType.Employee)
+                return BadRequest("Cannot add departments to non-employee accounts");
+            if (!await departmentsStore.ExistsAsync(departmentId))
+                return BadRequest($"Department with ID '{departmentId}' doesn't exist");
+
+            var employeeAccount = (EmployeeAccount) account;
+            if (employeeAccount.DepartmentIds.Contains(departmentId))
+                return Ok();
+            employeeAccount.DepartmentIds.Add(departmentId);
+            await accountsStore.StoreAsync(employeeAccount);
+            return Ok();
+        }
+
+        [HttpPatch("{username}/departments/{departmentId}/remove")]
+        [Authorize(Policy = nameof(Permission.ChangeEmployeePermissions))]
+        [Authorize(Policy = NotSameUserRequirement.PolicyName)]
+        public async Task<IActionResult> RemoveDepartment([FromRoute] string username, [FromRoute] string departmentId)
+        {
+            var account = await accountsStore.GetByIdAsync(username);
+            if (account.AccountType != AccountType.Employee)
+                return BadRequest("Cannot add departments to non-employee accounts");
+            if (!await departmentsStore.ExistsAsync(departmentId))
+                return BadRequest($"Department with ID '{departmentId}' doesn't exist");
+
+            var employeeAccount = (EmployeeAccount) account;
+            employeeAccount.DepartmentIds.RemoveAll(x => x == departmentId);
+            await accountsStore.StoreAsync(employeeAccount);
+            return Ok();
+        }
+
 
         private IActionResult HandleStorageResult(StorageResult result)
         {

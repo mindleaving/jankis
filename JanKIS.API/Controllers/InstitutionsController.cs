@@ -6,20 +6,43 @@ using System.Threading.Tasks;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
+using JanKIS.API.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JanKIS.API.Controllers
 {
     public class InstitutionsController : RestControllerBase<Institution>
     {
+        private readonly IStore<Room> roomsStore;
+        private readonly IStore<Department> departmentsStore;
         private readonly IReadonlyStore<BedOccupancy> bedOccupanciesStore;
 
         public InstitutionsController(
             IStore<Institution> store,
+            IStore<Room> roomsStore,
+            IStore<Department> departmentsStore,
             IReadonlyStore<BedOccupancy> bedOccupanciesStore)
             : base(store)
         {
+            this.roomsStore = roomsStore;
+            this.departmentsStore = departmentsStore;
             this.bedOccupanciesStore = bedOccupanciesStore;
+        }
+
+        [HttpGet("{institutionId}/viewmodel")]
+        public async Task<IActionResult> GetViewModel([FromRoute] string institutionId)
+        {
+            var institution = await store.GetByIdAsync(institutionId);
+            if (institution == null)
+                return NotFound();
+            var rooms = await roomsStore.SearchAsync(x => institution.RoomIds.Contains(x.Id));
+            var departments = await departmentsStore.SearchAsync(x => x.InstitutionId == institutionId);
+            var viewModel = new InstitutionViewModel(
+                institution.Id,
+                institution.Name,
+                rooms.OrderBy(x => x.Name).ToList(),
+                departments.OrderBy(x => x.Name).ToList());
+            return Ok(viewModel);
         }
 
         [HttpGet("{institutionId}/bedoccupancies")]
@@ -28,9 +51,31 @@ namespace JanKIS.API.Controllers
             var institution = await store.GetByIdAsync(institutionId);
             if (institution == null)
                 return NotFound();
-            var departmentIds = institution.Departments.Select(x => x.Id).ToList();
+            var departmentIds = institution.DepartmentIds.ToList();
             var bedOccupancies = await bedOccupanciesStore.SearchAsync(x => departmentIds.Contains(x.DepartmentId));
             return Ok(bedOccupancies);
+        }
+
+        [HttpPut("{institutionId}/storeviewmodel")]
+        public async Task<IActionResult> StoreViewModel([FromRoute] string institutionId, [FromBody] InstitutionViewModel viewModel)
+        {
+            if (institutionId != viewModel.Id)
+                return BadRequest("ID from route and body do not match");
+            if (viewModel.Departments.Any(x => x.InstitutionId != institutionId))
+                return BadRequest("One or more departments don't belong to this institution");
+            var institution = new Institution(viewModel.Id, viewModel.Name);
+            foreach (var room in viewModel.Rooms)
+            {
+                await roomsStore.StoreAsync(room);
+                institution.RoomIds.Add(room.Id);
+            }
+            foreach (var department in viewModel.Departments)
+            {
+                await departmentsStore.StoreAsync(department);
+                institution.DepartmentIds.Add(department.Id);
+            }
+            await store.StoreAsync(institution);
+            return Ok();
         }
 
 

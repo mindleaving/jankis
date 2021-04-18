@@ -5,6 +5,7 @@ import { UniformGrid } from '../../components/UniformGrid';
 import { resolveText } from '../../helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { Models } from '../../types/models';
+import { ViewModels } from '../../types/viewModels';
 
 interface RoomsPageProps {}
 
@@ -12,7 +13,8 @@ export const RoomsPage = (props: RoomsPageProps) => {
 
     const [ isLoading, setIsLoading] = useState<boolean>(true);
     const [ institutions, setInstitutions] = useState<Models.Institution[]>([]);
-    const [ selectedInstitution, setSelectedInstitution ] = useState<Models.Institution>();
+    const [ selectedInstitutionId, setSelectedInstitutionId ] = useState<string>();
+    const [ selectedInstitution, setSelectedInstitution ] = useState<ViewModels.InstitutionViewModel>();
     const [ bedOccupancies, setBedOccupancies] = useState<Models.BedOccupancy[]>([]);
 
     useEffect(() => {
@@ -24,7 +26,7 @@ export const RoomsPage = (props: RoomsPageProps) => {
             items => {
                 setInstitutions(items);
                 if(items.length === 1) {
-                    setSelectedInstitution(items[0]);
+                    setSelectedInstitutionId(items[0].id);
                 }
             },
             () => setIsLoading(false)
@@ -32,9 +34,17 @@ export const RoomsPage = (props: RoomsPageProps) => {
         loadInstitutions();
     }, []);
     useEffect(() => {
-        if(!selectedInstitution) return;
+        if(!selectedInstitutionId) return;
+        setIsLoading(true);
+        const loadInstitutionViewModel = buildLoadObjectFunc<ViewModels.InstitutionViewModel>(
+            `api/institutions/${selectedInstitutionId}/viewmodel`,
+            {},
+            resolveText('Institution_CouldNotLoad'),
+            setSelectedInstitution
+        );
+        loadInstitutionViewModel();
         const loadOccupancies = buildLoadObjectFunc<Models.BedOccupancy[]>(
-            `api/institutions/${selectedInstitution.id}/bedoccupancies`,
+            `api/institutions/${selectedInstitutionId}/bedoccupancies`,
             {},
             resolveText('BedOccupancies_CouldNotLoad'),
             items => {
@@ -48,7 +58,7 @@ export const RoomsPage = (props: RoomsPageProps) => {
             () => setIsLoading(false)
         );
         loadOccupancies();
-    }, [ selectedInstitution ]);
+    }, [ selectedInstitutionId ]);
 
     if(isLoading) {
         return (<h1>{resolveText('Loading...')}</h1>);
@@ -64,7 +74,7 @@ export const RoomsPage = (props: RoomsPageProps) => {
                     <FormControl
                         as="select"
                         value={selectedInstitution?.id ?? ''}
-                        onChange={(e: any) => setSelectedInstitution(institutions.find(x => x.id === e.target.value))}
+                        onChange={(e: any) => setSelectedInstitutionId(e.target.value)}
                     >
                         {institutions.length > 0
                         ? <>

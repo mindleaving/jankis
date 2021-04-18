@@ -1,4 +1,4 @@
-import React, { FormEvent, useEffect, useState } from 'react';
+import React, { FormEvent, useContext, useEffect, useState } from 'react';
 import { Models } from '../../types/models';
 import { v4 as uuid } from 'uuid';
 import { resolveText } from '../../helpers/Globalizer';
@@ -11,6 +11,8 @@ import { ListFormControl } from '../ListFormControl';
 import { formatServiceAudience } from '../../helpers/Formatters';
 import { ServiceParameterEditForm } from './ServiceParameterEditForm';
 import { ServiceAudienceEditForm } from './ServiceAudienceEditForm';
+import { useHistory } from 'react-router';
+import UserContext from '../../contexts/UserContext';
 
 interface ServiceEditFormProps {
     serviceId?: string;
@@ -18,15 +20,16 @@ interface ServiceEditFormProps {
 
 export const ServiceEditForm = (props: ServiceEditFormProps) => {
 
-    const [ isLoading, setIsLoading ] = useState<boolean>(true);
+    const [ isLoading, setIsLoading ] = useState<boolean>(!!props.serviceId);
     const [ isStoring, setIsStoring ] = useState<boolean>(false);
     const [ name, setName ] = useState<string>();
     const [ description, setDescription ] = useState<string>();
     const [ selectedDepartment, setSelectedDepartment ] = useState<Models.Department>();
     const [ parameters, setParameters ] = useState<Models.ServiceParameter[]>([]);
     const [ audience, setAudience ] = useState<Models.ServiceAudience[]>([]);
-
-    const [ departments, setDepartments ] = useState<Models.Department[]>([]);
+    const user = useContext(UserContext);
+    const departments = user!.departments;
+    const history = useHistory();
 
     const serviceId = props.serviceId;
     useEffect(() => {
@@ -50,22 +53,11 @@ export const ServiceEditForm = (props: ServiceEditFormProps) => {
         };
         loadService();
     }, [ serviceId, departments ]);
-    useEffect(() => {
-        const loadDepartments = async () => {
-            try {
-                const response = await apiClient.get('api/departments', {});
-                const items = await response.json() as Models.Department[];
-                setDepartments(items);
-            } catch(error) {
-                NotificationManager.error(error.message, resolveText('Service_Departments_CouldNotLoad'));
-            }
-        }
-        loadDepartments();
-    }, []);
+    
 
     const buildService = () => {
         const service: Models.ServiceDefinition = {
-            id: uuid(),
+            id: serviceId ?? uuid(),
             name: name!,
             description: description!,
             departmentId: selectedDepartment!.id,
@@ -84,6 +76,7 @@ export const ServiceEditForm = (props: ServiceEditFormProps) => {
             const service = buildService();
             await apiClient.put(`api/departments/${service.departmentId}/services/${service.id}`, {}, service);
             NotificationManager.success(resolveText('Service_Stored'));
+            history.goBack();
         } catch(error) {
             NotificationManager.error(error.message, resolveText('Service_CannotStore'));
         } finally {
@@ -134,7 +127,7 @@ export const ServiceEditForm = (props: ServiceEditFormProps) => {
                     <FormControl
                         as="select"
                         value={selectedDepartment?.id ?? ''}
-                        onChange={(e:any) => setSelectedDepartment(e.target.value)}
+                        onChange={(e:any) => setSelectedDepartment(departments.find(x => x.id === e.target.value))}
                     >
                         <option value="" disabled>{resolveText('PleaseSelect...')}</option>
                         {departments.map(department => (
@@ -152,12 +145,15 @@ export const ServiceEditForm = (props: ServiceEditFormProps) => {
                 </Col>
             </FormGroup>
             <Row>
-                <ListFormControl
-                    items={audience}
-                    idFunc={formatServiceAudience}
-                    displayFunc={formatServiceAudience}
-                    removeItem={removeAudience}
-                />
+                <Col></Col>
+                <Col>
+                    <ListFormControl
+                        items={audience}
+                        idFunc={formatServiceAudience}
+                        displayFunc={formatServiceAudience}
+                        removeItem={removeAudience}
+                    />
+                </Col>
             </Row>
             <FormGroup as={Row}>
                 <FormLabel column>{resolveText('Service_Parameters')}</FormLabel>
@@ -168,12 +164,15 @@ export const ServiceEditForm = (props: ServiceEditFormProps) => {
                 </Col>
             </FormGroup>
             <Row>
-                <ListFormControl
-                    items={parameters}
-                    idFunc={x => x.name}
-                    displayFunc={x => x.name}
-                    removeItem={x => removeParameter(x.name)}
-                />
+                <Col></Col>
+                <Col>
+                    <ListFormControl
+                        items={parameters}
+                        idFunc={x => x.name}
+                        displayFunc={x => `${x.name} (${resolveText('Service_Parameter_ValueType')}: ${x.valueType})`}
+                        removeItem={x => removeParameter(x.name)}
+                    />
+                </Col>
             </Row>
             <AsyncButton
                 type="submit"

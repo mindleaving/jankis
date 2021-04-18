@@ -67,7 +67,7 @@ namespace JanKIS.API.Controllers
             if (existingService != null)
             {
                 if (!employeeAccount.DepartmentIds.Contains(existingService.DepartmentId))
-                    return Forbid("You cannot change a service of a department that you don't belong to");
+                    return Forbid();
             }
             await servicesStore.StoreAsync(serviceDefinition);
             return Ok(serviceDefinition.Id);

@@ -11,6 +11,10 @@ export interface ServicesFilter {
     searchText?: string;
     departmentId?: string;
 }
+export interface ServiceRequestsFilter {
+    searchText?: string;
+    departmentId?: string;
+}
 export interface DepartmentsFilter {
     searchText?: string;
 }

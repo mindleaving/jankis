@@ -13,5 +13,6 @@ namespace JanKIS.API.Storage
         Task<StorageResult> AddPermission(string username, PermissionModifier permission);
         Task<StorageResult> RemovePermission(string username, Permission permission);
         Task RemoveRoleFromAllUsers(string roleName);
+        Task<bool> IsEmployee(string username);
     }
 }

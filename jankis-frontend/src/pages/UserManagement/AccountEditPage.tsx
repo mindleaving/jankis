@@ -27,6 +27,7 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
 
     const personAutoCompleteRunner = useMemo(() => new AutocompleteRunner<Models.Person>('api/persons/search', 'searchText', 10), []);
     const roleAutoCompleteRunner = useMemo(() => new AutocompleteRunner<Models.Role>('api/roles/search', 'searchText', 10), []);
+    const departmentAutoCompleteRunner = useMemo(() => new AutocompleteRunner<Models.Department>('api/departments/search', 'searchText', 10), []);
     const currentUser = useContext(UserContext);
 
     const isNew = props.match.path.toLowerCase().startsWith('/create');
@@ -47,6 +48,7 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
     const [ birthDate, setBirthDate ] = useState<Date>();
     const [ sex, setSex ] = useState<Sex>();
     const [ roles, setRoles ] = useState<Models.Role[]>([]);
+    const [ departments, setDepartments ] = useState<Models.Department[]>([]);
 
     useEffect(() => {
         if(isNew) return;
@@ -63,6 +65,7 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
                 setBirthDate(viewModel.profileData.birthDate);
                 setSex(viewModel.profileData.sex);
                 setRoles(viewModel.roles);
+                setDepartments(viewModel.departments);
             } catch(error) {
                 NotificationManager.error(error.message, resolveText('Account_CouldNotLoad'));
             } finally {
@@ -89,6 +92,10 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
     }, [ isNew, username ]);
 
     const addRole = (role: Models.Role) => {
+        if(currentUser?.username === username) {
+            NotificationManager.error(resolveText('Account_CannotChangeOwnPermissions'), resolveText('Forbidden'));
+            return;
+        }
         if(roles.some(x => x.id === role.id)) {
             return;
         }
@@ -100,6 +107,24 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
             return;
         }
         setRoles(roles.filter(x => x.id !== role.id));
+    }
+
+    const addDepartment = (department: Models.Department) => {
+        if(currentUser?.username === username) {
+            NotificationManager.error(resolveText('Account_CannotChangeOwnPermissions'), resolveText('Forbidden'));
+            return;
+        }
+        if(departments.some(x => x.id === department.id)) {
+            return;
+        }
+        setDepartments(departments.concat(department));
+    }
+    const removeDepartment = (department: Models.Department) => {
+        if(currentUser?.username === username) {
+            NotificationManager.error(resolveText('Account_CannotChangeOwnPermissions'), resolveText('Forbidden'));
+            return;
+        }
+        setDepartments(departments.filter(x => x.id !== department.id));
     }
 
     const store = async (e: FormEvent) => {
@@ -127,8 +152,9 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
                 await apiClient.post('api/accounts', {}, accountCreationInfo);
             }
             await apiClient.put(`api/accounts/${username}/roles`, {}, roles.map(x => x.id));
+            await apiClient.put(`api/accounts/${username}/departments`, {}, departments.map(x => x.id));
             NotificationManager.success(resolveText('Account_SuccessfullyStored'));
-            history.push('/accounts');
+            history.goBack();
         } catch(error) {
             NotificationManager.error(error.message, resolveText('Account_CouldNotStore'));
         } finally {
@@ -244,7 +270,7 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
                         />
                     </Col>
                 </FormGroup>
-                <Row>
+                <Row className="mb-2">
                     <Col></Col>
                     <Col>
                         <ListFormControl<Models.Role>
@@ -252,6 +278,31 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
                             idFunc={role => role.id}
                             displayFunc={role => role.name}
                             removeItem={removeRole}
+                        />
+                    </Col>
+                </Row>
+                <FormGroup as={Row}>
+                    <FormLabel column>{resolveText('Account_Departments')}</FormLabel>
+                    <Col>
+                        <Autocomplete
+                            search={departmentAutoCompleteRunner.search}
+                            displayNameSelector={department => department.name}
+                            onItemSelected={addDepartment}
+                            placeholder={resolveText('Search...')}
+                            minSearchTextLength={3}
+                            resetOnSelect
+                            disabled={currentUser?.username === username}
+                        />
+                    </Col>
+                </FormGroup>
+                <Row className="mb-2">
+                    <Col></Col>
+                    <Col>
+                        <ListFormControl<Models.Department>
+                            items={departments}
+                            idFunc={department => department.id}
+                            displayFunc={department => department.name}
+                            removeItem={removeDepartment}
                         />
                     </Col>
                 </Row>
