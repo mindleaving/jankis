@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { PagedTable } from '../PagedTable';
 import { resolveText } from '../../helpers/Globalizer';
 import { Models } from '../../types/models';
@@ -10,6 +10,7 @@ import { NotificationManager } from 'react-notifications';
 import { apiClient } from '../../communication/ApiClient';
 import { openConfirmAlert } from '../../helpers/AlertHelpers';
 import { deleteObject } from '../../helpers/DeleteHelpers';
+import PagedTableLoader from '../../helpers/PagedTableLoader';
 
 interface ServicesListProps {
     filter: ServicesFilter;
@@ -29,29 +30,13 @@ export const ServicesList = (props: ServicesListProps) => {
         }
         setOrderDirection(orderDirection === OrderDirection.Ascending ? OrderDirection.Descending : OrderDirection.Ascending);
     }
-    const loadServices = useCallback(async (pageIndex: number, entriesPerPage: number, orderBy?: string, orderDirection?: OrderDirection) => {
-        try {
-            let apiPath;
-            if(props.filter?.searchText) {
-                if(props.filter.departmentId) {
-                    apiPath = `api/departments/${props.filter.departmentId}/services/search`;
-                } else {
-                    apiPath = 'api/services/search';
-                }
-            } else if(props.filter?.departmentId) {
-                apiPath = `api/departments/${props.filter.departmentId}/services`;
-            } else {
-                apiPath = 'api/services';
-            }
-            const response = await apiClient.get(apiPath, {
-                count: entriesPerPage + '',
-                skip: (pageIndex * entriesPerPage) + ''
-            });
-            const items = await response.json() as Models.ServiceDefinition[];
-            setServices(items);
-        } catch(error) {
-            NotificationManager.error(error.message, resolveText('Services_CouldNotLoad'));
-        }
+    const servicesLoader = useMemo(() => {
+        return new PagedTableLoader<Models.ServiceDefinition>(
+            'api/services', 
+            resolveText('Services_CouldNotLoad'),
+            setServices,
+            props.filter
+        );
     }, [ props.filter ]);
 
     const deleteService = async (id: string, name: string, force: boolean = false) => {
@@ -76,7 +61,7 @@ export const ServicesList = (props: ServicesListProps) => {
 
     return (
         <PagedTable
-            onPageChanged={loadServices}
+            onPageChanged={servicesLoader.load}
             orderBy={orderBy}
             orderDirection={orderDirection}
             hasCreateNewButton
@@ -89,6 +74,7 @@ export const ServicesList = (props: ServicesListProps) => {
                     <th onClick={() => setOrderByOrDirection('department')}>{resolveText('Service_Department')}</th>
                     <th>{resolveText('Service_Audience')}</th>
                     <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -99,6 +85,7 @@ export const ServicesList = (props: ServicesListProps) => {
                         <td>{service.name}</td>
                         <td>{service.departmentId}</td>
                         <td>{service.audience.map(formatServiceAudience).join(", ")}</td>
+                        <td><Button variant="primary" onClick={() => history.push(`/services/${service.id}/request`)}>{resolveText('Service_Request')}</Button></td>
                         <td><Button variant="link" onClick={() => history.push(`/services/${service.id}/edit`)}>{resolveText('Edit...')}</Button></td>
                     </tr>
                 ))

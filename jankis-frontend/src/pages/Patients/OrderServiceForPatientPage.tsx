@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, Form, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router';
 import { PatientAutocomplete } from '../../components/PatientAutocomplete';
@@ -47,7 +47,7 @@ export const OrderServiceForPatientPage = (props: OrderServiceForPatientPageProp
                     </Col>
                 </FormGroup>
                 <FormGroup as={Row}>
-                    <FormLabel column>{resolveText('Patient')}</FormLabel>
+                    <FormLabel column>{resolveText('Service')}</FormLabel>
                     <Col>
                         <ServiceAutocomplete
                             value={selectedService}
@@ -60,6 +60,7 @@ export const OrderServiceForPatientPage = (props: OrderServiceForPatientPageProp
             {selectedService
             ? <RequestServiceForm
                 service={selectedService}
+                patient={profileData}
             />
             : null}
         </>

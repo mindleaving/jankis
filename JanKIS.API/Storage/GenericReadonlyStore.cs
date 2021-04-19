@@ -14,7 +14,7 @@ namespace JanKIS.API.Storage
 
         public GenericReadonlyStore(IMongoDatabase mongoDatabase)
         {
-            this.database = mongoDatabase;
+            database = mongoDatabase;
             collection = mongoDatabase.GetCollection<T>(typeof(T).Name);
         }
 
@@ -29,11 +29,11 @@ namespace JanKIS.API.Storage
             Expression<Func<T, object>> orderBy,
             OrderDirection orderDirection)
         {
-            var findExpression = collection.Find(x => true).Skip(skip).Limit(count);
+            var findExpression = collection.Find(x => true);
             findExpression = orderDirection == OrderDirection.Ascending 
                 ? findExpression.SortBy(orderBy) 
                 : findExpression.SortByDescending(orderBy);
-            return findExpression.ToListAsync();
+            return findExpression.Skip(skip).Limit(count).ToListAsync();
         }
 
         public Task<bool> ExistsAsync(string id)

@@ -1,7 +1,8 @@
 import React from 'react';
-import { FormControl } from 'react-bootstrap';
+import { FormCheck, FormControl } from 'react-bootstrap';
 import { ServiceParameterValueType } from '../../types/enums.d';
 import { Models } from '../../types/models';
+import { PatientParameterResponse } from './PatientParameterResponse';
 
 interface ServiceParameterResponseFormControlProps {
     parameter: Models.ServiceParameter;
@@ -46,6 +47,55 @@ export const ServiceParameterResponseFormControl = (props: ServiceParameterRespo
             max={numberParameter.upperLimit ?? undefined}
             onChange={(e:any) => buildNumberParameterResponse(e.target.value)}
         />);
+    }
+
+    if(props.parameter.valueType === ServiceParameterValueType.Boolean) {
+        const booleanParameterResponse = props.value as Models.BooleanServiceParameterResponse;
+        const buildBooleanParameterResponse = (isTrue: boolean) => {
+            const parameterResponse: Models.BooleanServiceParameterResponse = {
+                parameterName: props.parameter.name,
+                valueType: ServiceParameterValueType.Boolean,
+                isTrue: isTrue
+            };
+            props.onChange(parameterResponse);
+        }
+        return (<FormCheck required
+            checked={booleanParameterResponse.isTrue}
+            onChange={(e:any) => buildBooleanParameterResponse(e.target.checked)}
+        />);
+    }
+
+    if(props.parameter.valueType === ServiceParameterValueType.Option) {
+        const optionParameter = props.parameter as Models.OptionsServiceParameter;
+        const optionParameterResponse = props.value as Models.OptionsServiceParameterResponse;
+        const buildOptionsParameterResponse = (selectedOption: string) => {
+            const parameterResponse: Models.OptionsServiceParameterResponse = {
+                parameterName: props.parameter.name,
+                valueType: ServiceParameterValueType.Option,
+                selectedOption: selectedOption
+            };
+            props.onChange(parameterResponse);
+        }
+        return (<FormControl
+            as="select"
+            value={optionParameterResponse.selectedOption}
+            onChange={(e:any) => buildOptionsParameterResponse(e.target.value)}
+        >
+            {optionParameter.options.map(option => (
+                <option key={option} value={option}>{option}</option>
+            ))}
+        </FormControl>);
+    }
+
+    if(props.parameter.valueType === ServiceParameterValueType.Patient) {
+        const patientParameterResponse = props.value as Models.PatientServiceParameterResponse;
+        return (
+            <PatientParameterResponse required
+                parameter={props.parameter}
+                value={patientParameterResponse}
+                onChange={props.onChange}
+            />
+        )
     }
 
     throw new Error(`Unsupported service parameter value type '${props.parameter.valueType}'`);

@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, Form, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
-import { Autocomplete } from '../../components/Autocomplete';
-import { AutocompleteRunner } from '../../helpers/AutocompleteRunner';
+import { DepartmentAutocomplete } from '../DepartmentAutocomplete';
 import { resolveText } from '../../helpers/Globalizer';
+import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { ServicesFilter } from '../../types/frontendTypes';
 import { Models } from '../../types/models';
 
@@ -13,18 +13,29 @@ interface ServicesFilterViewProps {
 
 export const ServicesFilterView = (props: ServicesFilterViewProps) => {
 
-    const departmentAutocompleteRunner = useMemo(() => new AutocompleteRunner<Models.Department>('api/departments/search', 'searchText', 10), []);
     const [ searchText, setSearchText ] = useState<string>(props.filter?.searchText ?? '');
-    const [ departmentId, setDepartmentId ] = useState<string | undefined>(props.filter?.departmentId);
+    const [ department, setDepartment ] = useState<Models.Department>();
+
+    useEffect(() => {
+        if(!props.filter?.departmentId) return;
+        const loadDepartment = buildLoadObjectFunc<Models.Department>(
+            `api/departments/${props.filter.departmentId}`,
+            {},
+            resolveText('Department_CouldNotLoad'),
+            setDepartment
+        );
+        loadDepartment();
+    }, [ props.filter?.departmentId ]);
 
     const setFilter = props.setFilter;
     useEffect(() => {
         const filter: ServicesFilter = {
             searchText: searchText,
-            departmentId: departmentId
+            departmentId: department?.id
         };
         setFilter(filter);
-    }, [ searchText, departmentId, setFilter ]);
+    }, [ searchText, department, setFilter ]);
+
     return (
         <Form>
             <FormGroup as={Row}>
@@ -39,10 +50,9 @@ export const ServicesFilterView = (props: ServicesFilterViewProps) => {
             <FormGroup as={Row}>
                 <FormLabel column>{resolveText('Department')}</FormLabel>
                 <Col>
-                    <Autocomplete
-                        search={departmentAutocompleteRunner.search}
-                        displayNameSelector={x => x.name}
-                        onItemSelected={x => setDepartmentId(x.id)}
+                    <DepartmentAutocomplete
+                        value={department}
+                        onChange={setDepartment}
                     />
                 </Col>
             </FormGroup>

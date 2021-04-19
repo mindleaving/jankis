@@ -1,5 +1,5 @@
 import React, { FormEvent, useMemo, useState } from 'react';
-import { Button, InputGroup } from 'react-bootstrap';
+import { Button, FormCheck, InputGroup } from 'react-bootstrap';
 import { Col, Form, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { useHistory } from 'react-router';
 import { Autocomplete } from '../../components/Autocomplete';
@@ -51,8 +51,7 @@ export const CreateAdmissionPage = (props: CreateAdmissionPageProps) => {
             isReadmission: isReadmission,
             patientId: person!.id,
             profileData: person!,
-            contactPersons: contactPersons,
-            bedOccupancies: []
+            contactPersons: contactPersons
         };
     }
 
@@ -84,6 +83,15 @@ export const CreateAdmissionPage = (props: CreateAdmissionPageProps) => {
                     </Col>
                 </Row> : null}
                 <hr />
+                <FormGroup as={Row}>
+                    <FormLabel column>{resolveText('Admission_IsReadmission')}</FormLabel>
+                    <Col>
+                        <FormCheck
+                            checked={isReadmission}
+                            onChange={(e:any) => setIsReadmission(e.target.checked)}
+                        />
+                    </Col>
+                </FormGroup>
                 <FormGroup as={Row}>
                     <FormLabel column>{resolveText('Admission_AdmissionDate')}</FormLabel>
                     <Col>

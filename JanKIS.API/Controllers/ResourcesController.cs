@@ -29,7 +29,7 @@ namespace JanKIS.API.Controllers
             int? count = null,
             int? skip = null,
             string orderBy = null,
-            OrderDirection? orderDirection = null)
+            OrderDirection orderDirection = OrderDirection.Ascending)
         {
             return base.GetMany(
                 count,

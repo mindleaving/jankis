@@ -1,6 +1,6 @@
 export enum OrderDirection {
-    Ascending = "asc",
-    Descending = "desc"
+    Ascending = "Ascending",
+    Descending = "Descending"
 }
 
 export interface ContactsListFilter {
@@ -14,6 +14,7 @@ export interface ServicesFilter {
 export interface ServiceRequestsFilter {
     searchText?: string;
     departmentId?: string;
+    serviceId?: string;
 }
 export interface DepartmentsFilter {
     searchText?: string;

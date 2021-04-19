@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { ServiceRequestsFilterView } from '../../components/Services/ServiceRequestsFilterView';
+import { ServiceRequestsList } from '../../components/Services/ServiceRequestsList';
+import { resolveText } from '../../helpers/Globalizer';
 import { ServiceRequestsFilter } from '../../types/frontendTypes';
 
 interface ServiceRequestsListPageProps {
@@ -7,8 +10,17 @@ interface ServiceRequestsListPageProps {
 
 export const ServiceRequestsListPage = (props: ServiceRequestsListPageProps) => {
 
-    return (
-        <h1>ServiceRequestsListPage</h1>
+    const [ filter, setFilter ] = useState<ServiceRequestsFilter>(props.filter ?? {});
+
+    useEffect(() => {
+        setFilter(props.filter ?? {});
+    }, [ props.filter ]);
+    
+    return (<>
+            <h1>{resolveText('ServiceRequests')}</h1>
+            <ServiceRequestsFilterView filter={filter} setFilter={setFilter} />
+            <ServiceRequestsList filter={filter} />
+        </>
     );
 
 }

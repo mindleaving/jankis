@@ -12,7 +12,7 @@ namespace JanKIS.API.Workflow
             ServiceRequest request,
             LoggedInUserViewModel user)
         {
-            if (request.ServiceId != service.Id)
+            if (request.Service.Id != service.Id)
                 throw new Exception("Service-ID doesn't match that of the request");
             return service.Audience.Any(audience => RequesterMatchesAudience(user, audience));
         }

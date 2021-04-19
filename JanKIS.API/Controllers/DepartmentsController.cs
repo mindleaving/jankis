@@ -84,34 +84,11 @@ namespace JanKIS.API.Controllers
         public async Task<IActionResult> SearchServices([FromRoute] string departmentId, [FromQuery] string searchText, int? count = null, int? skip = null)
         {
             var searchTerms = SearchTermSplitter.SplitAndToLower(searchText);
-            var searchExpression = SearchExpressionBuilder.And(x => x.DepartmentId == departmentId,
+            var searchExpression = SearchExpressionBuilder.And(
+                x => x.DepartmentId == departmentId,
                 SearchExpressionBuilder.ContainsAll<ServiceDefinition>(x => x.Name.ToLower(), searchTerms));
             var departmentServices = await servicesStore.SearchAsync(searchExpression, count, skip);
             return Ok(departmentServices);
-        }
-
-        [HttpGet("{departmentId}/rooms")]
-        public async Task<IActionResult> ListRooms([FromRoute] string departmentId)
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpGet("{departmentId}/rooms/{roomId}/beds")]
-        public async Task<IActionResult> ListBeds([FromRoute] string departmentId, [FromRoute] string roomId)
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpGet("{departmentId}/rooms/{roomId}/beds/{bedPosition}")]
-        public async Task<IActionResult> GetBed([FromRoute] string departmentId, [FromRoute] string roomId, [FromRoute] int bedPosition)
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpPatch("{departmentId}/rooms/{roomId}/beds/{bedPosition}/clear")]
-        public async Task<IActionResult> ClearBed([FromRoute] string departmentId, [FromRoute] string roomId, [FromRoute] int bedPosition)
-        {
-            throw new NotImplementedException();
         }
 
         protected override Expression<Func<Department, object>> BuildOrderByExpression(string orderBy)

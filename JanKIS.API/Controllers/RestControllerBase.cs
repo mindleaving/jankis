@@ -35,10 +35,10 @@ namespace JanKIS.API.Controllers
             [FromQuery] int? count = null,
             [FromQuery] int? skip = null,
             [FromQuery] string orderBy = null,
-            [FromQuery] OrderDirection? orderDirection = null)
+            [FromQuery] OrderDirection orderDirection = OrderDirection.Ascending)
         {
             var orderByExpression = BuildOrderByExpression(orderBy);
-            var items = await store.GetMany(count, skip, orderByExpression, orderDirection ?? OrderDirection.Ascending);
+            var items = await store.GetMany(count, skip, orderByExpression, orderDirection);
             return Ok(items);
         }
 

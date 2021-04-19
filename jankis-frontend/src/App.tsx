@@ -49,6 +49,7 @@ import { InstitutionsListPage } from './pages/Config/InstitutionsListPage';
 import { PatientPage } from './pages/Patients/PatientPage';
 import { RoomsPage } from './pages/Departments/RoomsPage';
 import { BedOccupancyEditPage } from './pages/Departments/BedOccupancyEditPage';
+import { OrderServiceForPatientPage } from './pages/Patients/OrderServiceForPatientPage';
 
 function App() {
 
@@ -120,6 +121,10 @@ function App() {
                         exact path="/patients/:patientId/equipment"
                         render={props => <PatientEquipmentPage {...props} />}
                     />
+                    <Route
+                        exact path="/patients/:patientId/order/service"
+                        render={props => <OrderServiceForPatientPage {...props} />}
+                    />
 
                     <Route
                         exact path="/services"
@@ -143,11 +148,19 @@ function App() {
                     />
                     <Route
                         exact path="/services/:serviceId/requests"
+                        render={props => <ServiceRequestsListPage filter={{ serviceId: props.match.params.serviceId }} />}
+                    />
+                    <Route
+                        exact path="/servicerequests"
                         render={props => <ServiceRequestsListPage />}
                     />
                     <Route
                         exact path="/servicerequests/:requestId"
                         render={props => <ServiceRequestPage {...props} />}
+                    />
+                    <Route
+                        exact path="/create/servicerequest"
+                        render={props => <RequestServicePage {...props} />}
                     />
 
                     <Route

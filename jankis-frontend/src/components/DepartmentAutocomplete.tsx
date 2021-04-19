@@ -1,21 +1,20 @@
 import React, { useMemo } from 'react';
 import { Alert } from 'react-bootstrap';
 import { AutocompleteRunner } from '../helpers/AutocompleteRunner';
-import { formatPerson } from '../helpers/Formatters';
 import { resolveText } from '../helpers/Globalizer';
 import { Models } from '../types/models';
 import { Autocomplete } from './Autocomplete';
 
-interface PatientAutocompleteProps {
-    required?: boolean;
+interface DepartmentAutocompleteProps {
     isLoading?: boolean;
-    value?: Models.Person;
-    onChange: (patient: Models.Person | undefined) => void;
+    value?: Models.Department;
+    onChange: (department: Models.Department | undefined) => void;
+    required?: boolean;
 }
 
-export const PatientAutocomplete = (props: PatientAutocompleteProps) => {
+export const DepartmentAutocomplete = (props: DepartmentAutocompleteProps) => {
 
-    const patientAutocompleteRunner = useMemo(() => new AutocompleteRunner<Models.Person>('api/persons/search', 'searchText', 10), []);
+    const departmentAutocompleteRunner = useMemo(() => new AutocompleteRunner<Models.Department>('api/departments/search', 'searchText', 10), []);
 
     if(props.value || props.isLoading) {
         return (<Alert 
@@ -25,12 +24,12 @@ export const PatientAutocomplete = (props: PatientAutocompleteProps) => {
         >
             {props.isLoading 
             ? resolveText('Loading...') 
-            : formatPerson(props.value!)}
+            : props.value!.name}
         </Alert>);
     }
     return (<Autocomplete required={props.required}
-        search={patientAutocompleteRunner.search}
-        displayNameSelector={formatPerson}
+        search={departmentAutocompleteRunner.search}
+        displayNameSelector={x => x.name}
         onItemSelected={props.onChange}
     />);
 

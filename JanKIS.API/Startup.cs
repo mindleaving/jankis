@@ -66,8 +66,10 @@ namespace JanKIS.API
             services.AddScoped<IStore<Department>, GenericStore<Department>>();
             services.AddScoped<IReadonlyStore<ServiceDefinition>, GenericReadonlyStore<ServiceDefinition>>();
             services.AddScoped<IStore<ServiceDefinition>, GenericStore<ServiceDefinition>>();
+            services.AddScoped<IServiceStore, ServiceStore>();
             services.AddScoped<IReadonlyStore<ServiceRequest>, GenericReadonlyStore<ServiceRequest>>();
             services.AddScoped<IStore<ServiceRequest>, GenericStore<ServiceRequest>>();
+            services.AddScoped<IServiceRequestsStore, ServiceRequestsStore>();
             services.AddScoped<IReadonlyStore<ConsumableOrder>, GenericReadonlyStore<ConsumableOrder>>();
             services.AddScoped<IStore<ConsumableOrder>, GenericStore<ConsumableOrder>>();
             services.AddScoped<IReadonlyStore<Consumable>, GenericReadonlyStore<Consumable>>();

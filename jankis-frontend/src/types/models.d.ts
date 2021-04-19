@@ -9,7 +9,6 @@ export namespace Models {
         admissionTime: Date;
         dischargeTime?: Date | null;
         contactPersons: Models.Contact[];
-        bedOccupancies: Models.BedOccupancy[];
     }
 
     interface AllServiceAudience {
@@ -519,12 +518,18 @@ export namespace Models {
 
     interface ServiceRequest {
         id: string;
-        serviceId: string;
+        service: Models.ServiceDefinition;
         requester: string;
         parameterResponses: { [key: string]: Models.ServiceParameterResponse };
         note: string;
         state: Enums.ServiceRequestState;
-        timestamps: { [key: Enums.ServiceRequestState]: Date };
+        timestamps: Models.ServiceRequestStateChange[];
+        assignedTo?: string;
+    }
+
+    interface ServiceRequestStateChange {
+        newState: Enums.ServiceRequestState;
+        timestamp: Date;
     }
 
     interface SetDiagnosticTestResult {

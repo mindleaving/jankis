@@ -1,7 +1,7 @@
 import { ServiceParameterValueType } from "../types/enums.d";
 import { Models } from "../types/models";
 
-export const buildParameterResponse = (parameter: Models.ServiceParameter): Models.ServiceParameterResponse => {
+export const buildTemporaryParameterResponse = (parameter: Models.ServiceParameter): Models.ServiceParameterResponse => {
     if(parameter.valueType === ServiceParameterValueType.Text) {
         const textParameterResponse: Models.TextServiceParameterResponse = {
             parameterName: parameter.name,
@@ -18,6 +18,30 @@ export const buildParameterResponse = (parameter: Models.ServiceParameter): Mode
             value: numberParameter.lowerLimit ?? numberParameter.upperLimit ?? 0
         };
         return numberParameterResponse;
+    }
+    if(parameter.valueType === ServiceParameterValueType.Boolean) {
+        const booleanParameterResponse: Models.BooleanServiceParameterResponse = {
+            parameterName: parameter.name,
+            valueType: parameter.valueType,
+            isTrue: false
+        };
+        return booleanParameterResponse;
+    }
+    if(parameter.valueType === ServiceParameterValueType.Option) {
+        const optionParameterResponse: Models.OptionsServiceParameterResponse = {
+            parameterName: parameter.name,
+            valueType: parameter.valueType,
+            selectedOption: ''
+        };
+        return optionParameterResponse;
+    }
+    if(parameter.valueType === ServiceParameterValueType.Patient) {
+        const patientParameterResponse: Models.PatientServiceParameterResponse = {
+            parameterName: parameter.name,
+            valueType: parameter.valueType,
+            patientId: ''
+        };
+        return patientParameterResponse;
     }
     throw new Error(`Unsupported service parameter value type '${parameter.valueType}'`);
 }

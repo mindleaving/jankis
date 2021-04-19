@@ -2,26 +2,40 @@ import React, { FormEvent, useContext, useState } from 'react';
 import { Card, Col, Form, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { apiClient } from '../../communication/ApiClient';
 import { resolveText } from '../../helpers/Globalizer';
-import { buildParameterResponse } from '../../helpers/ServiceParameterResponseBuilder';
+import { buildTemporaryParameterResponse } from '../../helpers/ServiceParameterResponseBuilder';
 import { Models } from '../../types/models';
 import { AsyncButton } from '../AsyncButton';
 import { ServiceParameterResponseFormControl } from './ServiceParameterResponseFormControl';
 import { NotificationManager } from 'react-notifications';
 import { v4 as uuid} from 'uuid';
-import { ServiceRequestState } from '../../types/enums.d';
+import { ServiceParameterValueType, ServiceRequestState } from '../../types/enums.d';
 import { toDictionary } from '../../helpers/Transformations';
 import UserContext from '../../contexts/UserContext';
+import { useHistory } from 'react-router';
 
 interface RequestServiceFormProps {
     service: Models.ServiceDefinition;
+    patient?: Models.Person;
 }
 
 export const RequestServiceForm = (props: RequestServiceFormProps) => {
 
     const loggedInUser = useContext(UserContext);
-    const [ parameterResponses, setParameterResponses ] = useState<Models.ServiceParameterResponse[]>(props.service.parameters.map(buildParameterResponse));
+    const initialParameterResponses = props.service.parameters.map(parameter => {
+        if(props.patient && parameter.valueType === ServiceParameterValueType.Patient) {
+            const patientParameterResponse: Models.PatientServiceParameterResponse = {
+                parameterName: parameter.name,
+                valueType: parameter.valueType,
+                patientId: props.patient.id
+            };
+            return patientParameterResponse;
+        }
+        return buildTemporaryParameterResponse(parameter);
+    });
+    const [ parameterResponses, setParameterResponses ] = useState<Models.ServiceParameterResponse[]>(initialParameterResponses);
     const [ note, setNote ] = useState<string>('');
     const [ isSubmitting, setIsSubmitting ] = useState<boolean>(false);
+    const history = useHistory();
 
     const updateParameterResponse = (changedParameterResponse: Models.ServiceParameterResponse) => {
         setParameterResponses(parameterResponses.map(x => {
@@ -33,10 +47,13 @@ export const RequestServiceForm = (props: RequestServiceFormProps) => {
     }
 
     const submitRequest = async (e: FormEvent) => {
+        e.preventDefault();
         try {
             setIsSubmitting(true);
             const serviceRequest = buildServiceRequest();
             await apiClient.post(`api/services/${props.service.id}/request`, {}, serviceRequest);
+            NotificationManager.success(resolveText('ServiceRequest_SuccessfullySubmitted'));
+            history.goBack();
         } catch(error) {
             NotificationManager.error(error.message, resolveText('ServiceRequest_CouldNotSubmit'));
         } finally {
@@ -47,11 +64,11 @@ export const RequestServiceForm = (props: RequestServiceFormProps) => {
     const buildServiceRequest = () => {
         const serviceRequest: Models.ServiceRequest = {
             id: uuid(),
-            serviceId: props.service.id,
+            service: props.service,
             requester: loggedInUser!.username,
             parameterResponses: toDictionary(parameterResponses, x => x.parameterName),
             state: ServiceRequestState.Requested,
-            timestamps: {},
+            timestamps: [],
             note: note
         };
         return serviceRequest;
@@ -75,7 +92,7 @@ export const RequestServiceForm = (props: RequestServiceFormProps) => {
             {props.service.parameters.map(parameter => {
                 const parameterResponse = parameterResponses.find(x => x.parameterName === parameter.name)!;
                 return (
-                    <FormGroup>
+                    <FormGroup key={parameter.name}>
                         <FormLabel>
                             {parameter.name}
                             <div><small>{parameter.description}</small></div>
