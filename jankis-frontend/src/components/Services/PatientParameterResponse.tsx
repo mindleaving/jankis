@@ -14,37 +14,22 @@ interface PatientParameterResponseProps {
 
 export const PatientParameterResponse = (props: PatientParameterResponseProps) => {
 
-    const [ patient, setPatient ] = useState<Models.Person>();
-
-    const parameter = props.parameter;
-    const onChange = props.onChange;
-    const value = props.value;
-    useEffect(() => {
-        if(value?.patientId === patient?.id) return;
+    const onChange = (patient: Models.Person | undefined) => {
+        if(!patient) {
+            return;
+        }
         const response: Models.PatientServiceParameterResponse = {
-            parameterName: parameter.name,
+            parameterName: props.parameter.name,
             valueType: ServiceParameterValueType.Patient,
-            patientId: patient?.id ?? ''
+            patient: patient
         };
-        onChange(response);
-    }, [ patient, parameter ]);
-    useEffect(() => {
-        if(!value?.patientId) return;
-        if(value.patientId === patient?.id) return;
-        const loadPatient = buildLoadObjectFunc<Models.Person>(
-            `api/persons/${value.patientId}`,
-            {},
-            resolveText('Patient_CouldNotLoad'),
-            setPatient
-        );
-        loadPatient();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ value ]);
+        props.onChange(response);
+    }
 
     return (
         <PatientAutocomplete required={props.required}
-            value={patient}
-            onChange={setPatient}
+            value={props.value?.patient?.id ? props.value?.patient : undefined}
+            onChange={onChange}
         />
     );
 

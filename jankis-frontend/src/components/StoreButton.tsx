@@ -5,6 +5,7 @@ import { AsyncButton } from './AsyncButton';
 interface StoreButtonProps {
     type?: string;
     form?: string;
+    onClick?: () => void;
     isStoring: boolean;
 }
 
@@ -14,6 +15,7 @@ export const StoreButton = (props: StoreButtonProps) => {
         <AsyncButton
             type={props.type}
             form={props.form}
+            onClick={props.onClick}
             className="m-2"
             activeText={resolveText('Store')}
             executingText={resolveText('Storing...')}

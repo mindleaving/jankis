@@ -26,7 +26,7 @@ export const RequestServiceForm = (props: RequestServiceFormProps) => {
             const patientParameterResponse: Models.PatientServiceParameterResponse = {
                 parameterName: parameter.name,
                 valueType: parameter.valueType,
-                patientId: props.patient.id
+                patient: props.patient
             };
             return patientParameterResponse;
         }
@@ -69,7 +69,8 @@ export const RequestServiceForm = (props: RequestServiceFormProps) => {
             parameterResponses: toDictionary(parameterResponses, x => x.parameterName),
             state: ServiceRequestState.Requested,
             timestamps: [],
-            note: note
+            requesterNote: note,
+            handlerNote: ''
         };
         return serviceRequest;
     }
@@ -106,7 +107,7 @@ export const RequestServiceForm = (props: RequestServiceFormProps) => {
                 );
             })}
             <FormGroup>
-                <FormLabel>{resolveText('ServiceRequest_Note')}</FormLabel>
+                <FormLabel>{resolveText('ServiceRequest_RequesterNote')}</FormLabel>
                 <FormControl
                     as="textarea"
                     value={note}

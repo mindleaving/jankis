@@ -1,4 +1,4 @@
-import { ServiceParameterValueType } from "../types/enums.d";
+import { ServiceParameterValueType, Sex } from "../types/enums.d";
 import { Models } from "../types/models";
 
 export const buildTemporaryParameterResponse = (parameter: Models.ServiceParameter): Models.ServiceParameterResponse => {
@@ -39,7 +39,13 @@ export const buildTemporaryParameterResponse = (parameter: Models.ServiceParamet
         const patientParameterResponse: Models.PatientServiceParameterResponse = {
             parameterName: parameter.name,
             valueType: parameter.valueType,
-            patientId: ''
+            patient: {
+                id: '',
+                firstName: '',
+                lastName: '',
+                birthDate: new Date(),
+                sex: Sex.Other
+            }
         };
         return patientParameterResponse;
     }

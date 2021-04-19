@@ -12,14 +12,14 @@ namespace JanKIS.API.Models
             string id,
             ServiceDefinition service,
             string requester,
-            string note,
+            string requesterNote,
             Dictionary<string, ServiceParameterResponse> parameterResponses)
         {
             Id = id;
             Service = service;
             Requester = requester;
             ParameterResponses = parameterResponses;
-            Note = note;
+            RequesterNote = requesterNote;
             Timestamps = new List<ServiceRequestStateChange>();
             SetState(ServiceRequestState.Requested);
         }
@@ -31,11 +31,12 @@ namespace JanKIS.API.Models
         /// </summary>
         public string Requester { get; set; }
         public Dictionary<string, ServiceParameterResponse> ParameterResponses { get; set; }
-        public string Note { get; set; }
+        public string RequesterNote { get; set; }
         public ServiceRequestState State { get; set; }
         public List<ServiceRequestStateChange> Timestamps { get; set; }
         [TypescriptIsOptional]
         public string AssignedTo { get; set; }
+        public string HandlerNote { get; set; }
 
         public void SetState(ServiceRequestState newState)
         {
@@ -44,6 +45,7 @@ namespace JanKIS.API.Models
             if(State.InSet(ServiceRequestState.CancelledByRequester, ServiceRequestState.Declined, ServiceRequestState.Fulfilled))
                 throw new Exception($"Service request state cannot be changed away from its final state '{State}'");
             Timestamps.Add(new ServiceRequestStateChange(newState, DateTime.UtcNow));
+            State = newState;
         }
 
         public bool TrySetState(ServiceRequestState newState, out string error)

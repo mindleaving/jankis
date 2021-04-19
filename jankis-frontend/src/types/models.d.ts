@@ -396,7 +396,7 @@ export namespace Models {
 
     interface PatientServiceParameterResponse {
         valueType: Enums.ServiceParameterValueType;
-        patientId: string;
+        patient: Models.Person;
         parameterName: string;
     }
 
@@ -521,10 +521,11 @@ export namespace Models {
         service: Models.ServiceDefinition;
         requester: string;
         parameterResponses: { [key: string]: Models.ServiceParameterResponse };
-        note: string;
+        requesterNote: string;
         state: Enums.ServiceRequestState;
         timestamps: Models.ServiceRequestStateChange[];
         assignedTo?: string;
+        handlerNote: string;
     }
 
     interface ServiceRequestStateChange {

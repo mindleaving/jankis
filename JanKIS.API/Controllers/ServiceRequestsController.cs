@@ -48,6 +48,10 @@ namespace JanKIS.API.Controllers
             return Ok(items);
         }
 
+        /// <summary>
+        /// Method for changing request as requester. NOT suitable for handler-changes,
+        /// at least while change policy is only implemented with requester-changes in mind
+        /// </summary>
         [HttpPatch("{requestId}")]
         public async Task<IActionResult> UpdateRequest([FromRoute] string requestId, [FromBody] ServiceRequest request)
         {
@@ -62,10 +66,49 @@ namespace JanKIS.API.Controllers
             if (!existingRequest.TrySetState(request.State, out var stateChangeError))
                 return BadRequest(stateChangeError);
             existingRequest.ParameterResponses = request.ParameterResponses;
-            existingRequest.Note = request.Note;
+            existingRequest.RequesterNote = request.RequesterNote;
+            existingRequest.HandlerNote = request.HandlerNote;
             await store.StoreAsync(existingRequest);
             return Ok();
         }
+
+        [HttpPost("{requestId}/assign")]
+        public async Task<IActionResult> AssignRequest([FromRoute] string requestId, [FromBody] string assignee)
+        {
+            var existingRequest = await store.GetByIdAsync(requestId);
+            if (existingRequest == null)
+                return NotFound();
+            if (!await accountsStore.ExistsAsync(assignee))
+                return BadRequest("Assignee doesn't exist");
+            // TODO: Check permission to perform this action
+            //var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            //var account = await accountsStore.GetByIdAsync(username);
+            //var institutionPolicy = await institutionPolicyStore.GetByIdAsync(InstitutionPolicy.DefaultId);
+            //if (!await serviceRequestChangePolicy.CanChange(existingRequest, account, institutionPolicy))
+            //    return Forbid();
+            existingRequest.AssignedTo = assignee;
+            await store.StoreAsync(existingRequest);
+            return Ok();
+        }
+
+        [HttpPost("{requestId}/changestate")]
+        public async Task<IActionResult> ChangeState([FromRoute] string requestId, [FromBody] ServiceRequestState newState)
+        {
+            var existingRequest = await store.GetByIdAsync(requestId);
+            if (existingRequest == null)
+                return NotFound();
+            // TODO: Check permission to perform this action
+            //var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            //var account = await accountsStore.GetByIdAsync(username);
+            //var institutionPolicy = await institutionPolicyStore.GetByIdAsync(InstitutionPolicy.DefaultId);
+            //if (!await serviceRequestChangePolicy.CanChange(existingRequest, account, institutionPolicy))
+            //    return Forbid();
+            if (!existingRequest.TrySetState(newState, out var stateChangeError))
+                return BadRequest(stateChangeError);
+            await store.StoreAsync(existingRequest);
+            return Ok();
+        }
+
 
         protected override Expression<Func<ServiceRequest, object>> BuildOrderByExpression(string orderBy)
         {
