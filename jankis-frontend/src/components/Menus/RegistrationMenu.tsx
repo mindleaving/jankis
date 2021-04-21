@@ -13,7 +13,7 @@ export const RegistrationMenu = (props: RegistrationMenuProps) => {
         <Nav className="mr-auto">
             <NavDropdown title={resolveText('Menu_Registration')} id="basic-nav-dropdown">
                 <NavDropdown.Item onClick={() => history.push('/create/patient')}>{resolveText('Menu_CreatePatient')}</NavDropdown.Item>
-                <NavDropdown.Item onClick={() => history.push('/patients')}>{resolveText('Menu_PatientList')}</NavDropdown.Item>
+                <NavDropdown.Item onClick={() => history.push('/persons')}>{resolveText('Menu_PatientList')}</NavDropdown.Item>
             </NavDropdown>
             <NavDropdown title={resolveText('Menu_Admission')} id="basic-nav-dropdown">
                 <NavDropdown.Item onClick={() => history.push('/admission/admit')}>{resolveText('Menu_Admit')}</NavDropdown.Item>

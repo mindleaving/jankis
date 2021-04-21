@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
+using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -20,21 +21,24 @@ namespace JanKIS.API.Controllers
         private readonly IStore<Department> departmentsStore;
         private readonly IReadonlyStore<Account> accountsStore;
         private readonly IStore<ServiceDefinition> servicesStore;
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IStore<ServiceRequest> serviceRequestsStore;
+        private readonly ISubscriptionsStore subscriptionsStore;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         public DepartmentsController(
             IStore<Department> departmentsStore,
             IStore<ServiceDefinition> servicesStore,
             IReadonlyStore<Account> accountsStore,
             IStore<ServiceRequest> serviceRequestsStore,
+            ISubscriptionsStore subscriptionsStore,
             IHttpContextAccessor httpContextAccessor)
-            : base(departmentsStore)
+            : base(departmentsStore, httpContextAccessor)
         {
             this.departmentsStore = departmentsStore;
             this.servicesStore = servicesStore;
             this.accountsStore = accountsStore;
             this.serviceRequestsStore = serviceRequestsStore;
+            this.subscriptionsStore = subscriptionsStore;
             this.httpContextAccessor = httpContextAccessor;
         }
 
@@ -91,6 +95,34 @@ namespace JanKIS.API.Controllers
             return Ok(departmentServices);
         }
 
+        [HttpPost("{departmentId}/subscribe")]
+        public async Task<IActionResult> Subscribe([FromRoute] string departmentId)
+        {
+            var department = await departmentsStore.GetByIdAsync(departmentId);
+            if (department == null)
+                return NotFound();
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var subscription = new DepartmentSubscription(
+                Guid.NewGuid().ToString(),
+                username,
+                departmentId);
+            await subscriptionsStore.StoreAsync(subscription);
+            return Ok(subscription.Id);
+        }
+
+        [HttpPost("{departmentId}/unsubscribe")]
+        public async Task<IActionResult> Unsubscribe([FromRoute] string departmentId)
+        {
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var existingSubscription = await subscriptionsStore.GetDepartmentSubscription(departmentId, username);
+            if (existingSubscription == null)
+                return Ok();
+            await subscriptionsStore.DeleteAsync(existingSubscription.Id);
+            return Ok();
+        }
+
+
+
         protected override Expression<Func<Department, object>> BuildOrderByExpression(string orderBy)
         {
             return orderBy?.ToLower() switch
@@ -111,6 +143,15 @@ namespace JanKIS.API.Controllers
             string searchText)
         {
             return items.OrderBy(x => x.Name.Length);
+        }
+
+        protected override Task PublishChange(
+            Department item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            // Nothing to do
+            return Task.CompletedTask;
         }
     }
 }

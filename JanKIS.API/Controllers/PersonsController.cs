@@ -2,17 +2,32 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace JanKIS.API.Controllers
 {
     public class PersonsController : RestControllerBase<Person>
     {
-        public PersonsController(IStore<Person> store)
-            : base(store)
+        private readonly IAccountStore accountsStore;
+
+        public PersonsController(
+            IStore<Person> store,
+            IAccountStore accountsStore,
+            IHttpContextAccessor httpContextAccessor)
+            : base(store, httpContextAccessor)
         {
+            this.accountsStore = accountsStore;
+        }
+
+        public override async Task<IActionResult> Delete(string id)
+        {
+            await accountsStore.DeleteAllForPerson(id);
+            return await base.Delete(id);
         }
 
         protected override Expression<Func<Person, object>> BuildOrderByExpression(string orderBy)
@@ -23,6 +38,7 @@ namespace JanKIS.API.Controllers
                 "firstname" => x => x.FirstName,
                 "lastname" => x => x.LastName,
                 "birthdate" => x => x.BirthDate,
+                "insurer" => x => x.HealthInsurance.InsurerName,
                 _ => x => x.Id
             };
         }
@@ -40,6 +56,15 @@ namespace JanKIS.API.Controllers
             string searchText)
         {
             return items.OrderBy(x => x.Id);
+        }
+
+        protected override Task PublishChange(
+            Person item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            // Nothing to do
+            return Task.CompletedTask;
         }
     }
 }

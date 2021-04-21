@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using Commons.Extensions;
 using Commons.Misc;
 using Commons.Physics;
 using JanKIS.API.AccessManagement;
+using JanKIS.API.Hubs;
 using JanKIS.API.Models;
+using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -86,9 +89,16 @@ namespace JanKIS.API
             services.AddScoped<IStore<DiagnosticTestResult>, GenericStore<DiagnosticTestResult>>();
             services.AddScoped<IReadonlyStore<BedOccupancy>, GenericReadonlyStore<BedOccupancy>>();
             services.AddScoped<IStore<BedOccupancy>, GenericStore<BedOccupancy>>();
+            services.AddScoped<IReadonlyStore<SubscriptionBase>, GenericReadonlyStore<SubscriptionBase>>();
+            services.AddScoped<IStore<SubscriptionBase>, GenericStore<SubscriptionBase>>();
+            services.AddScoped<ISubscriptionsStore, SubscriptionsStore>();
+            services.AddScoped<IReadonlyStore<NotificationBase>, GenericReadonlyStore<NotificationBase>>();
+            services.AddScoped<IStore<NotificationBase>, GenericStore<NotificationBase>>();
+            services.AddScoped<INotificationsStore, NotificationsStore>();
             services.AddScoped<IFilesStore, FilesStore>();
             services.AddScoped<ServiceRequestGatekeeper>();
             services.AddScoped<ServiceRequestChangePolicy>();
+            services.AddScoped<INotificationDistributor, NotificationDistributor>();
 
             services.AddHttpContextAccessor();
             services.AddControllers()
@@ -121,7 +131,8 @@ namespace JanKIS.API
                             builder
                                 .WithOrigins(Configuration["CORS:Origins"].Split(','))
                                 .AllowAnyMethod()
-                                .AllowAnyHeader();
+                                .AllowAnyHeader()
+                                .AllowCredentials();
                         });
                 });
             services.AddSwaggerGen(
@@ -169,7 +180,7 @@ namespace JanKIS.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                //endpoints.MapHub<xxxx>("hubs/xxxx");
+                endpoints.MapHub<NotificationsHub>(NotificationsHub.Route);
             });
         }
 
@@ -223,6 +234,23 @@ namespace JanKIS.API
                             IssuerSigningKey = privateKey,
                             ValidAudience = "JanKIS",
                             ValidIssuer = "JanKIS"
+                        };
+                        options.Events = new JwtBearerEvents
+                        {
+                            OnMessageReceived = context =>
+                            {
+                                var accessToken = context.Request.Query["access_token"];
+
+                                // If the request is for our hub...
+                                var path = context.HttpContext.Request.Path;
+                                if (!string.IsNullOrEmpty(accessToken) &&
+                                    (path.StartsWithSegments(NotificationsHub.Route)))
+                                {
+                                    // Read the token out of the query string
+                                    context.Token = accessToken;
+                                }
+                                return Task.CompletedTask;
+                            }
                         };
                     });
             services.AddScoped<ISecurityTokenBuilder>(

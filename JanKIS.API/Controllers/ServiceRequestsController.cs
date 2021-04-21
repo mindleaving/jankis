@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
+using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
 using JanKIS.API.Workflow;
 using Microsoft.AspNetCore.Http;
@@ -19,19 +20,25 @@ namespace JanKIS.API.Controllers
         private readonly IReadonlyStore<Account> accountsStore;
         private readonly IReadonlyStore<InstitutionPolicy> institutionPolicyStore;
         private readonly ServiceRequestChangePolicy serviceRequestChangePolicy;
+        private readonly INotificationDistributor notificationDistributor;
+        private readonly ISubscriptionsStore subscriptionsStore;
 
         public ServiceRequestsController(
             IServiceRequestsStore serviceRequestsStore,
             IHttpContextAccessor httpContextAccessor,
             IReadonlyStore<Account> accountsStore,
             IReadonlyStore<InstitutionPolicy> institutionPolicyStore,
-            ServiceRequestChangePolicy serviceRequestChangePolicy)
-            : base(serviceRequestsStore)
+            ServiceRequestChangePolicy serviceRequestChangePolicy,
+            INotificationDistributor notificationDistributor,
+            ISubscriptionsStore subscriptionsStore)
+            : base(serviceRequestsStore, httpContextAccessor)
         {
             this.serviceRequestsStore = serviceRequestsStore;
             this.httpContextAccessor = httpContextAccessor;
             this.institutionPolicyStore = institutionPolicyStore;
             this.serviceRequestChangePolicy = serviceRequestChangePolicy;
+            this.notificationDistributor = notificationDistributor;
+            this.subscriptionsStore = subscriptionsStore;
             this.accountsStore = accountsStore;
         }
 
@@ -109,6 +116,32 @@ namespace JanKIS.API.Controllers
             return Ok();
         }
 
+        [HttpPost("{requestId}/subscribe")]
+        public async Task<IActionResult> Subscribe([FromRoute] string requestId)
+        {
+            var serviceRequest = await serviceRequestsStore.GetByIdAsync(requestId);
+            if (serviceRequest == null)
+                return NotFound();
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var subscription = new ServiceRequestSubscription(
+                Guid.NewGuid().ToString(),
+                username,
+                requestId);
+            await subscriptionsStore.StoreAsync(subscription);
+            return Ok(subscription.Id);
+        }
+
+        [HttpPost("{requestId}/unsubscribe")]
+        public async Task<IActionResult> Unsubscribe([FromRoute] string requestId)
+        {
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var existingSubscription = await subscriptionsStore.GetServiceRequestSubscription(requestId, username);
+            if (existingSubscription == null)
+                return Ok();
+            await subscriptionsStore.DeleteAsync(existingSubscription.Id);
+            return Ok();
+        }
+
 
         protected override Expression<Func<ServiceRequest, object>> BuildOrderByExpression(string orderBy)
         {
@@ -136,6 +169,14 @@ namespace JanKIS.API.Controllers
             string searchText)
         {
             return items.OrderBy(x => x.Timestamps[0].Timestamp);
+        }
+
+        protected override async Task PublishChange(
+            ServiceRequest item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            await notificationDistributor.NotifyNewServiceRequest(item, storageOperation, submitterUsername);
         }
     }
 }

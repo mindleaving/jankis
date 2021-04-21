@@ -1,8 +1,6 @@
-export enum OrderDirection {
-    Ascending = "Ascending",
-    Descending = "Descending"
+export interface PersonsFilter {
+    searchText?: string;
 }
-
 export interface ContactsListFilter {
     searchText?: string;
     departmentId?: string;

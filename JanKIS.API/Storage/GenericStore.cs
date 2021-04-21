@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using JanKIS.API.Models;
 using MongoDB.Driver;
 
 namespace JanKIS.API.Storage
@@ -10,9 +11,10 @@ namespace JanKIS.API.Storage
         {
         }
 
-        public Task StoreAsync(T item)
+        public async Task<StorageOperation> StoreAsync(T item)
         {
-            return collection.ReplaceOneAsync(x => x.Id == item.Id, item, new ReplaceOptions { IsUpsert = true });
+            var result = await collection.ReplaceOneAsync(x => x.Id == item.Id, item, new ReplaceOptions { IsUpsert = true });
+            return result.MatchedCount == 1 ? StorageOperation.Changed : StorageOperation.Created;
         }
 
         public Task DeleteAsync(string id)

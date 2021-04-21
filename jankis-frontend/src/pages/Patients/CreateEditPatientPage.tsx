@@ -64,7 +64,7 @@ export const CreateEditPatientPage = (props: CreateEditPatientPageProps) => {
             resolveText('Patient_SuccessfullyStored'),
             resolveText('Patient_CouldNotStore'),
             buildPatient,
-            () => history.push(`/patients/${id}`),
+            () => history.goBack(),
             () => setIsStoring(false)
         );
     }

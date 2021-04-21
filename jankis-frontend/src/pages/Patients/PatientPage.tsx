@@ -18,12 +18,14 @@ export const PatientPage = (props: PatientPageProps) => {
 
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
     const [ profileData, setProfileData ] = useState<Models.Person>();
+    const [ currentBedOccupancy, setBedOccupancy ] = useState<Models.BedOccupancy>();
     const [ admissions, setAdmissions ] = useState<Models.Admission[]>([]);
     const [ selectedAdmissionId, setSelectedAdmissionId ] = useState<string>();
     const [ notes, setNotes ] = useState<Models.PatientNote[]>([]);
     const [ observations, setObservations ] = useState<Models.Observation[]>([]);
     const [ testResults, setTestResults ] = useState<Models.IDiagnosticTestResult[]>([]);
     const [ documents, setDocuments ] = useState<Models.PatientDocument[]>([]);
+    const [ subscription, setSubscription ] = useState<Models.Subscriptions.PatientSubscription>();
     const isHistoricAdmission = selectedAdmissionId && admissions.find(x => x.id === selectedAdmissionId)?.dischargeTime;
     const history = useHistory();
 
@@ -35,12 +37,14 @@ export const PatientPage = (props: PatientPageProps) => {
             resolveText('Patient_CouldNotLoad'),
             vm => {
                 setProfileData(vm.profileData);
+                setBedOccupancy(vm.currentBedOccupancy);
                 setAdmissions(vm.admissions);
                 setSelectedAdmissionId(vm.admissions.length > 0 ? vm.admissions[vm.admissions.length-1].id : undefined);
                 setNotes(vm.notes);
                 setObservations(vm.observations);
                 setTestResults(vm.testResults);
                 setDocuments(vm.documents);
+                setSubscription(vm.subscription);
             },
             () => setIsLoading(false)
         );
@@ -85,6 +89,10 @@ export const PatientPage = (props: PatientPageProps) => {
                 <Col lg={6}>
                     <PatientProfileJumbotron
                         profileData={profileData}
+                        bedOccupancy={currentBedOccupancy}
+                        showSubscription
+                        subscription={subscription}
+                        onSubscriptionChanged={setSubscription}
                     />
                 </Col>
                 <Col lg={6}>

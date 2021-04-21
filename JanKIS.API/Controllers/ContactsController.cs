@@ -2,16 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
+using Microsoft.AspNetCore.Http;
 
 namespace JanKIS.API.Controllers
 {
     public class ContactsController : RestControllerBase<Contact>
     {
-        public ContactsController(IStore<Contact> store)
-            : base(store)
+        public ContactsController(
+            IStore<Contact> store,
+            IHttpContextAccessor httpContextAccessor)
+            : base(store, httpContextAccessor)
         {
         }
 
@@ -36,6 +40,15 @@ namespace JanKIS.API.Controllers
             string searchText)
         {
             return items.OrderBy(x => x.Name);
+        }
+
+        protected override Task PublishChange(
+            Contact item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            // Nothing to do
+            return Task.CompletedTask;
         }
     }
 }

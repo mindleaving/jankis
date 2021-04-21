@@ -38,8 +38,8 @@ export const BedOccupancyEditPage = (props: BedOccupancyEditPageProps) => {
 
 
     const [ isLoading, setIsLoading ] = useState<boolean>(!isNew);
-    const [ departmentId, setDepartmentId ] = useState<string | undefined>(matchedDepartmentId);
-    const [ roomId, setRoomId ] = useState<string | undefined>(matchedRoomId);
+    const [ department, setDepartment ] = useState<Models.Department | undefined>();
+    const [ room, setRoom ] = useState<Models.Room | undefined>();
     const [ bedPosition, setBedPosition ] = useState<string | undefined>(matchedBedPosition);
     const [ bedState, setBedState ] = useState<BedState>(BedState.Reserved);
     const [ patient, setPatient ] = useState<Models.Person>();
@@ -51,26 +51,45 @@ export const BedOccupancyEditPage = (props: BedOccupancyEditPageProps) => {
     const history = useHistory();
 
     useEffect(() => {
-        if(!matchedId) return;
         setIsLoading(true);
-        const loadOccupancy = buildLoadObjectFunc<Models.BedOccupancy>(
-            `api/bedoccupancies/${matchedId}`,
-            {},
-            resolveText('BedOccupancy_CouldNotLoad'),
-            item => {
-                setDepartmentId(item.departmentId);
-                setRoomId(item.roomId);
-                setBedPosition(item.bedPosition);
-                setBedState(item.state);
-                setPatient(item.patient);
-                setStartTime(item.startTime);
-                setEndTime(item.endTime ?? undefined);
-                setUnavailabilityReason(item.unavailabilityReason);
-            },
-            () => setIsLoading(false)
-        );
-        loadOccupancy();
-    }, [ matchedId ])
+        if(matchedId) {
+            const loadOccupancy = buildLoadObjectFunc<Models.BedOccupancy>(
+                `api/bedoccupancies/${matchedId}`,
+                {},
+                resolveText('BedOccupancy_CouldNotLoad'),
+                item => {
+                    setDepartment(item.department);
+                    setRoom(item.room);
+                    setBedPosition(item.bedPosition);
+                    setBedState(item.state);
+                    setPatient(item.patient);
+                    setStartTime(item.startTime);
+                    setEndTime(item.endTime ?? undefined);
+                    setUnavailabilityReason(item.unavailabilityReason);
+                },
+                () => setIsLoading(false)
+            );
+            loadOccupancy();
+        } else {
+            const loadDepartment = buildLoadObjectFunc<Models.Department>(
+                `api/departments/${matchedDepartmentId}`,
+                {},
+                resolveText('Department_CouldNotLoad'),
+                setDepartment,
+                () => setIsLoading(false)
+            );
+            loadDepartment();
+            const loadRoom = buildLoadObjectFunc<Models.Room>(
+                `api/rooms/${matchedRoomId}`,
+                {},
+                resolveText('Room_CouldNotLoad'),
+                setRoom,
+                () => setIsLoading(false)
+            );
+            loadRoom();
+        }
+    }, [ matchedId, matchedDepartmentId, matchedRoomId ]);
+
 
     const store = async (e: FormEvent) => {
         e.preventDefault();
@@ -88,8 +107,8 @@ export const BedOccupancyEditPage = (props: BedOccupancyEditPageProps) => {
     const buildBedOccupancy = (): Models.BedOccupancy => {
         return {
             id: id,
-            departmentId: departmentId!,
-            roomId: roomId!,
+            department: department!,
+            room: room!,
             bedPosition: bedPosition!,
             state: bedState,
             startTime: startTime,

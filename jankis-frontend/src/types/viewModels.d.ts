@@ -37,10 +37,12 @@ export namespace ViewModels {
 
     interface PatientOverviewViewModel {
         profileData: Models.Person;
+        currentBedOccupancy: Models.BedOccupancy;
         admissions: Models.Admission[];
         notes: Models.PatientNote[];
         testResults: Models.DiagnosticTestResult[];
         observations: Models.Observation[];
         documents: Models.PatientDocument[];
+        subscription: Models.Subscriptions.PatientSubscription;
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,10 +16,14 @@ namespace JanKIS.API.Controllers
     public abstract class RestControllerBase<T> : ControllerBase where T: class, IId
     {
         protected readonly IStore<T> store;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
-        protected RestControllerBase(IStore<T> store)
+        protected RestControllerBase(
+            IStore<T> store,
+            IHttpContextAccessor httpContextAccessor)
         {
             this.store = store;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet("{id}")]
@@ -59,7 +64,9 @@ namespace JanKIS.API.Controllers
         {
             if (id != item.Id)
                 return BadRequest("ID of route doesn't match body");
-            await store.StoreAsync(item);
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var storageOperation = await store.StoreAsync(item);
+            await PublishChange(item, storageOperation, username);
             return Ok(id);
         }
 
@@ -72,7 +79,9 @@ namespace JanKIS.API.Controllers
             updates.ApplyTo(item, ModelState);
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
             await store.StoreAsync(item);
+            await PublishChange(item, StorageOperation.Changed, username);
             return Ok();
         }
 
@@ -86,8 +95,10 @@ namespace JanKIS.API.Controllers
 
         protected abstract Expression<Func<T, object>> BuildOrderByExpression(string orderBy);
         protected abstract Expression<Func<T,bool>> BuildSearchExpression(string[] searchTerms);
-        protected abstract IEnumerable<T> PrioritizeItems(
-            List<T> items,
-            string searchText);
+        protected abstract IEnumerable<T> PrioritizeItems(List<T> items, string searchText);
+        protected abstract Task PublishChange(
+            T item,
+            StorageOperation storageOperation,
+            string submitterUsername);
     }
 }

@@ -116,6 +116,27 @@ export enum Sex {
     Female = "Female",
     Other = "Other"
 }
+export enum StorageOperation {
+    Created = "Created",
+    Changed = "Changed"
+}
+export enum NotificationType {
+    NewPatientEvent = "NewPatientEvent",
+    NewService = "NewService",
+    NewServiceRequest = "NewServiceRequest",
+    ServiceRequestStateChange = "ServiceRequestStateChange",
+    NewAdmission = "NewAdmission",
+    NewBedOccupancy = "NewBedOccupancy"
+}
+export enum SubscriptionObjectType {
+    Patient = "Patient",
+    Service = "Service",
+    ServiceRequest = "ServiceRequest",
+    Stock = "Stock",
+    Resource = "Resource",
+    Department = "Department",
+    Institution = "Institution"
+}
 export enum AuthenticationErrorType {
     Ok = "Ok",
     UserNotFound = "UserNotFound",

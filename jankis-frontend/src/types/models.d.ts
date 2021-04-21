@@ -35,8 +35,8 @@ export namespace Models {
     interface BedOccupancy {
         id: string;
         state: Enums.BedState;
-        departmentId: string;
-        roomId: string;
+        department: Models.Department;
+        room: Models.Room;
         bedPosition: string;
         patient?: Models.Person;
         startTime: Date;
@@ -592,13 +592,138 @@ export namespace Models {
     }
 
     export namespace Subscriptions {
+        interface AdmissionNotification {
+            notificationType: Enums.NotificationType;
+            admission: Models.Admission;
+            id: string;
+            subscription: Models.Subscriptions.SubscriptionBase;
+            isDismissed: boolean;
+            submitter: string;
+            timestamp: Date;
+        }
+    
+        interface BedOccupancyNotification {
+            notificationType: Enums.NotificationType;
+            bedOccupancy: Models.BedOccupancy;
+            id: string;
+            subscription: Models.Subscriptions.SubscriptionBase;
+            isDismissed: boolean;
+            submitter: string;
+            timestamp: Date;
+        }
+    
+        interface DepartmentSubscription {
+            type: Enums.SubscriptionObjectType;
+            departmentId: string;
+            id: string;
+            username: string;
+            mutedUntil?: Date | null;
+        }
+    
+        interface INotification {
+            notificationType: Enums.NotificationType;
+            subscription: Models.Subscriptions.SubscriptionBase;
+            isDismissed: boolean;
+            submitter: string;
+            timestamp: Date;
+        }
+    
+        interface InstitutionSubscription {
+            type: Enums.SubscriptionObjectType;
+            institutionId: string;
+            id: string;
+            username: string;
+            mutedUntil?: Date | null;
+        }
+    
+        interface NotificationBase {
+            notificationType: Enums.NotificationType;
+            id: string;
+            subscription: Models.Subscriptions.SubscriptionBase;
+            isDismissed: boolean;
+            submitter: string;
+            timestamp: Date;
+        }
+    
+        interface PatientEventNotification {
+            notificationType: Enums.NotificationType;
+            patient: Models.Person;
+            eventType: Enums.PatientEventType;
+            objectId: string;
+            storageOperation: Enums.StorageOperation;
+            id: string;
+            subscription: Models.Subscriptions.SubscriptionBase;
+            isDismissed: boolean;
+            submitter: string;
+            timestamp: Date;
+        }
+    
+        interface PatientSubscription {
+            type: Enums.SubscriptionObjectType;
+            patientId: string;
+            cancelSubscriptionOnDischarge: boolean;
+            id: string;
+            username: string;
+            mutedUntil?: Date | null;
+        }
+    
+        interface ResourceSubscription {
+            type: Enums.SubscriptionObjectType;
+            resourceId: string;
+            id: string;
+            username: string;
+            mutedUntil?: Date | null;
+        }
+    
+        interface ServiceNotification {
+            notificationType: Enums.NotificationType;
+            service: Models.ServiceDefinition;
+            id: string;
+            subscription: Models.Subscriptions.SubscriptionBase;
+            isDismissed: boolean;
+            submitter: string;
+            timestamp: Date;
+        }
+    
+        interface ServiceRequestNotification {
+            notificationType: Enums.NotificationType;
+            requestId: string;
+            id: string;
+            subscription: Models.Subscriptions.SubscriptionBase;
+            isDismissed: boolean;
+            submitter: string;
+            timestamp: Date;
+        }
+    
+        interface ServiceRequestSubscription {
+            type: Enums.SubscriptionObjectType;
+            requestId: string;
+            id: string;
+            username: string;
+            mutedUntil?: Date | null;
+        }
+    
         interface ServiceSubscription {
             serviceId: string;
-            employeeId: string;
+            type: Enums.SubscriptionObjectType;
+            id: string;
+            username: string;
+            mutedUntil?: Date | null;
+        }
+    
+        interface StockSubscription {
+            type: Enums.SubscriptionObjectType;
+            stockId: string;
+            id: string;
+            username: string;
+            mutedUntil?: Date | null;
         }
     
         interface SubscriptionBase {
-            employeeId: string;
+            type: Enums.SubscriptionObjectType;
+            id: string;
+            username: string;
+            mutedUntil?: Date | null;
         }
     }
 }

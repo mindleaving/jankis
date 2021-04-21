@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
+using JanKIS.API.Models;
 
 namespace JanKIS.API.Storage
 {
     public interface IStore<T> : IReadonlyStore<T> where T : IId
     {
-        Task StoreAsync(T item);
+        Task<StorageOperation> StoreAsync(T item);
         Task DeleteAsync(string id);
     }
 }

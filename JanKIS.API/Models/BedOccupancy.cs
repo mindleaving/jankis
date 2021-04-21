@@ -8,8 +8,8 @@ namespace JanKIS.API.Models
     {
         public string Id { get; set; }
         public BedState State { get; set; }
-        public string DepartmentId { get; set; }
-        public string RoomId { get; set; }
+        public Department Department { get; set; }
+        public Room Room { get; set; }
         public string BedPosition { get; set; }
         [TypescriptIsOptional]
         public Person Patient { get; set; }

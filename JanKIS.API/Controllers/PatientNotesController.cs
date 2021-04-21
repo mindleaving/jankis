@@ -1,17 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
+using JanKIS.API.Workflow;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace JanKIS.API.Controllers
 {
     public class PatientNotesController : RestControllerBase<PatientNote>
     {
-        public PatientNotesController(IStore<PatientNote> store)
-            : base(store)
+        private readonly INotificationDistributor notificationDistributor;
+
+        public PatientNotesController(
+            IStore<PatientNote> store,
+            INotificationDistributor notificationDistributor,
+            IHttpContextAccessor httpContextAccessor)
+            : base(store, httpContextAccessor)
         {
+            this.notificationDistributor = notificationDistributor;
         }
 
         protected override Expression<Func<PatientNote, object>> BuildOrderByExpression(string orderBy)
@@ -32,6 +42,14 @@ namespace JanKIS.API.Controllers
             string searchText)
         {
             return items;
+        }
+
+        protected override async Task PublishChange(
+            PatientNote item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            await notificationDistributor.NotifyNewPatientEvent(item, storageOperation, submitterUsername);
         }
     }
 }

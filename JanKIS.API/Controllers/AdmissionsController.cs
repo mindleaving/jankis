@@ -2,17 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
+using JanKIS.API.Workflow;
+using Microsoft.AspNetCore.Http;
 
 namespace JanKIS.API.Controllers
 {
     public class AdmissionsController : RestControllerBase<Admission>
     {
-        public AdmissionsController(IStore<Admission> store)
-            : base(store)
+        private readonly INotificationDistributor notificationDistributor;
+
+        public AdmissionsController(
+            IStore<Admission> store,
+            INotificationDistributor notificationDistributor,
+            IHttpContextAccessor httpContextAccessor)
+            : base(store, httpContextAccessor)
         {
+            this.notificationDistributor = notificationDistributor;
         }
 
         protected override Expression<Func<Admission, object>> BuildOrderByExpression(string orderBy)
@@ -38,6 +47,14 @@ namespace JanKIS.API.Controllers
             string searchText)
         {
             return items.OrderBy(x => x.Id);
+        }
+
+        protected override async Task PublishChange(
+            Admission item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            await notificationDistributor.NotifyNewAdmission(item, storageOperation, submitterUsername);
         }
     }
 }

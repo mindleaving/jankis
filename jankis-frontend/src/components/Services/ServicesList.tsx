@@ -1,16 +1,15 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { PagedTable } from '../PagedTable';
 import { resolveText } from '../../helpers/Globalizer';
 import { Models } from '../../types/models';
-import { OrderDirection, ServicesFilter } from '../../types/frontendTypes.d';
+import { ServicesFilter } from '../../types/frontendTypes.d';
 import { formatServiceAudience } from '../../helpers/Formatters';
 import { Button } from 'react-bootstrap';
 import { useHistory } from 'react-router';
-import { NotificationManager } from 'react-notifications';
-import { apiClient } from '../../communication/ApiClient';
 import { openConfirmAlert } from '../../helpers/AlertHelpers';
 import { deleteObject } from '../../helpers/DeleteHelpers';
 import PagedTableLoader from '../../helpers/PagedTableLoader';
+import { OrderDirection } from '../../types/enums.d';
 
 interface ServicesListProps {
     filter: ServicesFilter;

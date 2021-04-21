@@ -4,7 +4,7 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { resolveText } from '../helpers/Globalizer';
-import { OrderDirection } from '../types/frontendTypes';
+import { OrderDirection } from '../types/enums.d';
 
 interface PagedTableProps {
     onPageChanged: (pageIndex: number, entriesPerPage: number, orderBy?: string, orderDirection?: OrderDirection) => Promise<void>;
@@ -48,12 +48,16 @@ export const PagedTable = (props: PropsWithChildren<PagedTableProps>) => {
         setPageIndex(pageIndex+1);
     }
 
+    const navigationButtons = (<>
+        <Button className="m-1" onClick={() => setPageIndex(0)} disabled={pageIndex === 0}><i className="fa fa-step-backward" /></Button>
+        <Button className="m-1" onClick={gotoPreviousPage} disabled={pageIndex === 0}>{resolveText('Previous')}</Button>
+        <Button className="m-1" onClick={gotoNextPage}>{resolveText('Next')}</Button>
+    </>);
     return (
         <>
         <Form.Row>
             <Col xs="auto">
-                <Button className="m-1" onClick={gotoPreviousPage} disabled={pageIndex === 0}>{resolveText('Previous')}</Button>
-                <Button className="m-1" onClick={gotoNextPage}>{resolveText('Next')}</Button>
+                {navigationButtons}
             </Col>
             <Form.Label column xs="auto">Entries per page</Form.Label>
             <Col xs="auto">
@@ -84,8 +88,11 @@ export const PagedTable = (props: PropsWithChildren<PagedTableProps>) => {
             </tbody>
             : props.children}
         </Table>
-        <Button className="m-1" onClick={gotoPreviousPage} disabled={pageIndex === 0}>{resolveText('Previous')}</Button>
-        <Button className="m-1" onClick={gotoNextPage}>{resolveText('Next')}</Button>
+        <Form.Row>
+            <Col>
+                {navigationButtons}
+            </Col>
+        </Form.Row>
         </>
     );
 }

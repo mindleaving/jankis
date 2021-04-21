@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
+using JanKIS.API.Workflow;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JanKIS.API.Controllers
@@ -13,13 +15,17 @@ namespace JanKIS.API.Controllers
     public class DocumentsController : RestControllerBase<PatientDocument>
     {
         private readonly IFilesStore filesStore;
+        private readonly INotificationDistributor notificationDistributor;
 
         public DocumentsController(
             IStore<PatientDocument> store,
-            IFilesStore filesStore)
-            : base(store)
+            IFilesStore filesStore,
+            INotificationDistributor notificationDistributor,
+            IHttpContextAccessor httpContextAccessor)
+            : base(store, httpContextAccessor)
         {
             this.filesStore = filesStore;
+            this.notificationDistributor = notificationDistributor;
         }
 
         [HttpPut("{documentId}/upload")]
@@ -67,6 +73,14 @@ namespace JanKIS.API.Controllers
             string searchText)
         {
             return items;
+        }
+
+        protected override async Task PublishChange(
+            PatientDocument item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            await notificationDistributor.NotifyNewPatientEvent(item, storageOperation, submitterUsername);
         }
     }
 }

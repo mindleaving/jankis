@@ -31,8 +31,8 @@ export const RoomCard = (props: RoomCardProps) => {
                 {room.bedPositions.map(bedPosition => {
                     const occupancies = bedOccupancies
                         .filter(x => 
-                            x.departmentId === department.id
-                            && x.roomId === room.id
+                            x.department.id === department.id
+                            && x.room.id === room.id
                             && x.bedPosition === bedPosition
                             && (!x.endTime || x.endTime.getTime() > now))
                         .sort((a,b) => a.startTime.getTime() - b.startTime.getTime());

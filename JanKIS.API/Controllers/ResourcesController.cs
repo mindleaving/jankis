@@ -5,17 +5,27 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
+using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JanKIS.API.Controllers
 {
     public class ResourcesController : RestControllerBase<Resource>
     {
-        public ResourcesController(IStore<Resource> store)
-            : base(store)
+        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly ISubscriptionsStore subscriptionsStore;
+
+        public ResourcesController(
+            IStore<Resource> store,
+            IHttpContextAccessor httpContextAccessor,
+            ISubscriptionsStore subscriptionsStore)
+            : base(store, httpContextAccessor)
         {
+            this.httpContextAccessor = httpContextAccessor;
+            this.subscriptionsStore = subscriptionsStore;
         }
 
         [Authorize(Policy = nameof(Permission.ViewResources))]
@@ -64,6 +74,32 @@ namespace JanKIS.API.Controllers
             return base.Delete(id);
         }
 
+        [HttpPost("{resourceId}/subscribe")]
+        public async Task<IActionResult> Subscribe([FromRoute] string resourceId)
+        {
+            var resource = await store.GetByIdAsync(resourceId);
+            if (resource == null)
+                return NotFound();
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var subscription = new ResourceSubscription(
+                Guid.NewGuid().ToString(),
+                username,
+                resourceId);
+            await subscriptionsStore.StoreAsync(subscription);
+            return Ok(subscription.Id);
+        }
+
+        [HttpPost("{resourceId}/unsubscribe")]
+        public async Task<IActionResult> Unsubscribe([FromRoute] string resourceId)
+        {
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var existingSubscription = await subscriptionsStore.GetResourceSubscription(resourceId, username);
+            if (existingSubscription == null)
+                return Ok();
+            await subscriptionsStore.DeleteAsync(existingSubscription.Id);
+            return Ok();
+        }
+
         protected override Expression<Func<Resource, object>> BuildOrderByExpression(string orderBy)
         {
             return orderBy?.ToLower() switch
@@ -84,6 +120,15 @@ namespace JanKIS.API.Controllers
             string searchText)
         {
             return items.OrderBy(x => x.Name.Length);
+        }
+
+        protected override Task PublishChange(
+            Resource item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            // Nothing to do
+            return Task.CompletedTask;
         }
     }
 }

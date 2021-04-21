@@ -24,9 +24,9 @@ export const Layout = (props: LayoutProps) => {
     let userMenus = user.roles.map(role => {
         switch(role.name.toLowerCase()) {
             case "registration":
-                return (<RegistrationMenu />);
+                return (<RegistrationMenu key="registration" />);
             case "nurse":
-                return (<NurseMenu />);
+                return (<NurseMenu key="nurse" />);
             default:
                 return null;
         }

@@ -5,8 +5,10 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
+using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
 using JanKIS.API.ViewModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JanKIS.API.Controllers
@@ -16,17 +18,23 @@ namespace JanKIS.API.Controllers
         private readonly IStore<Room> roomsStore;
         private readonly IStore<Department> departmentsStore;
         private readonly IReadonlyStore<BedOccupancy> bedOccupanciesStore;
+        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly ISubscriptionsStore subscriptionsStore;
 
         public InstitutionsController(
             IStore<Institution> store,
             IStore<Room> roomsStore,
             IStore<Department> departmentsStore,
-            IReadonlyStore<BedOccupancy> bedOccupanciesStore)
-            : base(store)
+            IReadonlyStore<BedOccupancy> bedOccupanciesStore,
+            IHttpContextAccessor httpContextAccessor,
+            ISubscriptionsStore subscriptionsStore)
+            : base(store, httpContextAccessor)
         {
             this.roomsStore = roomsStore;
             this.departmentsStore = departmentsStore;
             this.bedOccupanciesStore = bedOccupanciesStore;
+            this.httpContextAccessor = httpContextAccessor;
+            this.subscriptionsStore = subscriptionsStore;
         }
 
         [HttpGet("{institutionId}/viewmodel")]
@@ -52,7 +60,7 @@ namespace JanKIS.API.Controllers
             if (institution == null)
                 return NotFound();
             var departmentIds = institution.DepartmentIds.ToList();
-            var bedOccupancies = await bedOccupanciesStore.SearchAsync(x => departmentIds.Contains(x.DepartmentId));
+            var bedOccupancies = await bedOccupanciesStore.SearchAsync(x => departmentIds.Contains(x.Department.Id));
             return Ok(bedOccupancies);
         }
 
@@ -78,6 +86,31 @@ namespace JanKIS.API.Controllers
             return Ok();
         }
 
+        [HttpPost("{institutionId}/subscribe")]
+        public async Task<IActionResult> Subscribe([FromRoute] string institutionId)
+        {
+            var institution = await store.GetByIdAsync(institutionId);
+            if (institution == null)
+                return NotFound();
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var subscription = new InstitutionSubscription(
+                Guid.NewGuid().ToString(),
+                username,
+                institutionId);
+            await subscriptionsStore.StoreAsync(subscription);
+            return Ok(subscription.Id);
+        }
+
+        [HttpPost("{institutionId}/unsubscribe")]
+        public async Task<IActionResult> Unsubscribe([FromRoute] string institutionId)
+        {
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var existingSubscription = await subscriptionsStore.GetInstitutionSubscription(institutionId, username);
+            if (existingSubscription == null)
+                return Ok();
+            await subscriptionsStore.DeleteAsync(existingSubscription.Id);
+            return Ok();
+        }
 
         protected override Expression<Func<Institution, object>> BuildOrderByExpression(string orderBy)
         {
@@ -99,6 +132,15 @@ namespace JanKIS.API.Controllers
             string searchText)
         {
             return items.OrderBy(x => x.Name.Length);
+        }
+
+        protected override Task PublishChange(
+            Institution item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            // Nothing to do
+            return Task.CompletedTask;
         }
     }
 }

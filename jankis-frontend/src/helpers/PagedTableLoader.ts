@@ -1,5 +1,5 @@
 import { apiClient } from "../communication/ApiClient";
-import { OrderDirection } from "../types/frontendTypes.d";
+import { OrderDirection } from "../types/enums.d";
 import { NotificationManager } from 'react-notifications';
 
 export default class PagedTableLoader<T> {

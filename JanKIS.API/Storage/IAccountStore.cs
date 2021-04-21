@@ -14,5 +14,6 @@ namespace JanKIS.API.Storage
         Task<StorageResult> RemovePermission(string username, Permission permission);
         Task RemoveRoleFromAllUsers(string roleName);
         Task<bool> IsEmployee(string username);
+        Task DeleteAllForPerson(string personId);
     }
 }

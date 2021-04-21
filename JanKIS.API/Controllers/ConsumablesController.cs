@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
+using JanKIS.API.Workflow;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JanKIS.API.Controllers
@@ -13,9 +16,15 @@ namespace JanKIS.API.Controllers
     [Route("api/[controller]")]
     public class ConsumablesController : RestControllerBase<Consumable>
     {
-        public ConsumablesController(IStore<Consumable> store)
-            : base(store)
+        private readonly INotificationDistributor notificationDistributor;
+
+        public ConsumablesController(
+            IStore<Consumable> store,
+            INotificationDistributor notificationDistributor,
+            IHttpContextAccessor httpContextAccessor)
+            : base(store, httpContextAccessor)
         {
+            this.notificationDistributor = notificationDistributor;
         }
 
         protected override Expression<Func<Consumable, object>> BuildOrderByExpression(string orderBy)
@@ -38,6 +47,15 @@ namespace JanKIS.API.Controllers
             string searchText)
         {
             return items.OrderBy(x => x.Name.Length);
+        }
+
+        protected override Task PublishChange(
+            Consumable item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            // Nothing to do 
+            return Task.CompletedTask;
         }
     }
 }

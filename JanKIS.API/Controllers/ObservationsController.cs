@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
+using JanKIS.API.Workflow;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,15 +15,18 @@ namespace JanKIS.API.Controllers
     {
         private readonly IAutocompleteCache autocompleteCache;
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly INotificationDistributor notificationDistributor;
 
         public ObservationsController(
             IStore<Observation> store,
             IAutocompleteCache autocompleteCache,
-            IHttpContextAccessor httpContextAccessor)
-            : base(store)
+            IHttpContextAccessor httpContextAccessor,
+            INotificationDistributor notificationDistributor)
+            : base(store, httpContextAccessor)
         {
             this.autocompleteCache = autocompleteCache;
             this.httpContextAccessor = httpContextAccessor;
+            this.notificationDistributor = notificationDistributor;
         }
 
         public override async Task<IActionResult> CreateOrReplace(
@@ -60,6 +64,14 @@ namespace JanKIS.API.Controllers
             string searchText)
         {
             return items;
+        }
+
+        protected override async Task PublishChange(
+            Observation item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            await notificationDistributor.NotifyNewPatientEvent(item, storageOperation, submitterUsername);
         }
     }
 }

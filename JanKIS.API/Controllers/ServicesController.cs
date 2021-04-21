@@ -5,7 +5,9 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
+using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
+using JanKIS.API.Workflow;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,16 +22,22 @@ namespace JanKIS.API.Controllers
         private readonly IServiceStore servicesStore;
         private readonly IStore<ServiceRequest> serviceRequestsStore;
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly INotificationDistributor notificationDistributor;
+        private readonly ISubscriptionsStore subscriptionsStore;
 
         public ServicesController(
             IServiceStore servicesStore,
             IStore<ServiceRequest> serviceRequestsStore,
-            IHttpContextAccessor httpContextAccessor)
-            : base(servicesStore)
+            IHttpContextAccessor httpContextAccessor,
+            INotificationDistributor notificationDistributor,
+            ISubscriptionsStore subscriptionsStore)
+            : base(servicesStore, httpContextAccessor)
         {
             this.servicesStore = servicesStore;
             this.serviceRequestsStore = serviceRequestsStore;
             this.httpContextAccessor = httpContextAccessor;
+            this.notificationDistributor = notificationDistributor;
+            this.subscriptionsStore = subscriptionsStore;
         }
 
         public override async Task<IActionResult> GetMany(
@@ -65,6 +73,32 @@ namespace JanKIS.API.Controllers
             return Ok(request.Id);
         }
 
+        [HttpPost("{serviceId}/subscribe")]
+        public async Task<IActionResult> Subscribe([FromRoute] string serviceId)
+        {
+            var service = await servicesStore.GetByIdAsync(serviceId);
+            if (service == null)
+                return NotFound();
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var subscription = new ServiceSubscription(
+                Guid.NewGuid().ToString(),
+                username,
+                serviceId);
+            await subscriptionsStore.StoreAsync(subscription);
+            return Ok(subscription.Id);
+        }
+
+        [HttpPost("{serviceId}/unsubscribe")]
+        public async Task<IActionResult> Unsubscribe([FromRoute] string serviceId)
+        {
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var existingSubscription = await subscriptionsStore.GetServiceSubscription(serviceId, username);
+            if (existingSubscription == null)
+                return Ok();
+            await subscriptionsStore.DeleteAsync(existingSubscription.Id);
+            return Ok();
+        }
+
         protected override Expression<Func<ServiceDefinition, object>> BuildOrderByExpression(string orderBy)
         {
             return orderBy?.ToLower() switch
@@ -88,5 +122,12 @@ namespace JanKIS.API.Controllers
             return items.OrderBy(x => x.Name.Length);
         }
 
+        protected override async Task PublishChange(
+            ServiceDefinition item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            await notificationDistributor.NotifyNewService(item, storageOperation, submitterUsername);
+        }
     }
 }

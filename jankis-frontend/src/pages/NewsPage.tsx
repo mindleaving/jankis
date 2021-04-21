@@ -1,27 +1,28 @@
-import React from 'react';
+import { useContext } from 'react';
 import Col from 'react-bootstrap/esm/Col';
 import Row from 'react-bootstrap/esm/Row';
 import { NewsTicker } from '../components/News/NewsTicker';
+import UserContext from '../contexts/UserContext';
+import { resolveText } from '../helpers/Globalizer';
+import { NotificationsTicker } from '../components/NotificationsTicker';
 
 interface NewsPageProps {}
 
 export const NewsPage = (props: NewsPageProps) => {
-    const userRole = "nurse";
+
+    const user = useContext(UserContext);
+
     return (
         <>
-            <h1>Neuigkeiten</h1>
+            <h1>{resolveText('Notifications')}</h1>
             <Row>
                 <Col>
-                    <h3>Generell</h3>
-                    <NewsTicker scope="general" />
+                    <h3>{resolveText('Notifications_General')}</h3>
+                    <NewsTicker scope="institution" />
                 </Col>
                 <Col>
-                    {userRole === "nurse" 
-                    ? <>
-                        <h3>Meine Patienten</h3>
-                        <NewsTicker scope="myPatients" />
-                    </>
-                    : null}
+                    <h3>{resolveText('Notifications_MyPatients')}</h3>
+                    <NotificationsTicker />
                 </Col>
             </Row>
         </>

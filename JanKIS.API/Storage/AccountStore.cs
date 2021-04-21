@@ -120,5 +120,10 @@ namespace JanKIS.API.Storage
             var account = await GetByIdAsync(username);
             return account.AccountType == AccountType.Employee;
         }
+
+        public Task DeleteAllForPerson(string personId)
+        {
+            return collection.DeleteManyAsync(x => x.PersonId == personId);
+        }
     }
 }

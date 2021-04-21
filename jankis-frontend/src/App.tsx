@@ -50,6 +50,7 @@ import { PatientPage } from './pages/Patients/PatientPage';
 import { RoomsPage } from './pages/Departments/RoomsPage';
 import { BedOccupancyEditPage } from './pages/Departments/BedOccupancyEditPage';
 import { OrderServiceForPatientPage } from './pages/Patients/OrderServiceForPatientPage';
+import { PersonsListPage } from './pages/Patients/PersonsListPage';
 
 function App() {
 
@@ -78,16 +79,20 @@ function App() {
                         render={props => <AdmissionsListPage {...props} />}
                     />
                     <Route
-                        exact path="/create/patient"
+                        exact path="/create/(patient|person)"
                         render={props => <CreateEditPatientPage {...props} />}
                     />
                     <Route
-                        exact path="/patients/:patientId/edit"
+                        exact path="/(patients|persons)/:patientId/edit"
                         render={props => <CreateEditPatientPage {...props} />}
                     />
                     <Route
                         exact path="/mypatients"
                         render={props => <MyPatientsPage {...props} />}
+                    />
+                    <Route
+                        exact path="/persons"
+                        render={props => <PersonsListPage filter={{}} {...props} />}
                     />
                     <Route
                         exact path="/patients/:patientId"

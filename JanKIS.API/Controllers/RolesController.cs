@@ -7,6 +7,7 @@ using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JanKIS.API.Controllers
@@ -21,8 +22,9 @@ namespace JanKIS.API.Controllers
 
         public RolesController(
             IStore<Role> rolesStore,
-            IAccountStore accountsStore)
-            : base(rolesStore)
+            IAccountStore accountsStore,
+            IHttpContextAccessor httpContextAccessor)
+            : base(rolesStore, httpContextAccessor)
         {
             this.rolesStore = rolesStore;
             this.accountsStore = accountsStore;
@@ -60,6 +62,15 @@ namespace JanKIS.API.Controllers
             return items
                 .OrderBy(x => x.Name.ToLower().StartsWith(searchText.ToLower()))
                 .ThenBy(x => x.Name.Length);
+        }
+
+        protected override Task PublishChange(
+            Role item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            // Nothing to do
+            return Task.CompletedTask;
         }
     }
 }

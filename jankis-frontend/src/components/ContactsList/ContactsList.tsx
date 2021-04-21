@@ -2,13 +2,14 @@ import React, { useCallback, useState } from 'react';
 import { useHistory } from 'react-router';
 import { apiClient } from '../../communication/ApiClient';
 import { resolveText } from '../../helpers/Globalizer';
-import { ContactsListFilter, OrderDirection } from '../../types/frontendTypes';
+import { ContactsListFilter } from '../../types/frontendTypes';
 import { Models } from '../../types/models';
 import { PagedTable } from '../PagedTable';
 import { NotificationManager } from 'react-notifications';
 import { Button } from 'react-bootstrap';
 import { confirmAlert } from 'react-confirm-alert';
 import { deleteObject } from '../../helpers/DeleteHelpers';
+import { OrderDirection } from '../../types/enums.d';
 
 interface ContactsListProps {
     filter?: ContactsListFilter
