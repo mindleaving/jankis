@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Alert, Button, Card, FormControl, InputGroup, Tab, TabContainer, Tabs } from 'react-bootstrap';
 import { Row, Col } from 'react-bootstrap';
 import { RouteComponentProps, useHistory } from 'react-router';
+import { PatientMedicationView } from '../../components/Patients/PatientMedicationView';
+import { PatientObservationsView } from '../../components/Patients/PatientObservationsView';
 import { PatientProfileJumbotron } from '../../components/Patients/PatientProfileJumbotron';
 import { formatAdmission } from '../../helpers/Formatters';
 import { resolveText } from '../../helpers/Globalizer';
@@ -22,6 +24,8 @@ export const PatientPage = (props: PatientPageProps) => {
     const [ admissions, setAdmissions ] = useState<Models.Admission[]>([]);
     const [ selectedAdmissionId, setSelectedAdmissionId ] = useState<string>();
     const [ notes, setNotes ] = useState<Models.PatientNote[]>([]);
+    const [ medicationSchedules, setMedicationSchedules ] = useState<Models.MedicationSchedule[]>([]);
+    const [ medicationDispensions, setMedicationDispensions ] = useState<Models.MedicationDispension[]>([]);
     const [ observations, setObservations ] = useState<Models.Observation[]>([]);
     const [ testResults, setTestResults ] = useState<Models.IDiagnosticTestResult[]>([]);
     const [ documents, setDocuments ] = useState<Models.PatientDocument[]>([]);
@@ -41,6 +45,8 @@ export const PatientPage = (props: PatientPageProps) => {
                 setAdmissions(vm.admissions);
                 setSelectedAdmissionId(vm.admissions.length > 0 ? vm.admissions[vm.admissions.length-1].id : undefined);
                 setNotes(vm.notes);
+                setMedicationSchedules(vm.medicationSchedules);
+                setMedicationDispensions(vm.medicationDispensions);
                 setObservations(vm.observations);
                 setTestResults(vm.testResults);
                 setDocuments(vm.documents);
@@ -118,10 +124,13 @@ export const PatientPage = (props: PatientPageProps) => {
 
                 </Tab>
                 <Tab eventKey="observations" title={resolveText('Patient_Observations')}>
-
+                    <PatientObservationsView observations={observations} />
                 </Tab>
                 <Tab eventKey="medications" title={resolveText('Patient_Medications')}>
-
+                    <PatientMedicationView
+                        medicationSchedules={medicationSchedules}
+                        medicationDispensions={medicationDispensions}
+                    />
                 </Tab>
                 <Tab eventKey="equipment" title={resolveText('Patient_Equipment')}>
 

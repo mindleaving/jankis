@@ -5,6 +5,7 @@
         Observation,
         Note,
         TestResult,
-        Document
+        Document,
+        MedicationDispension
     }
 }

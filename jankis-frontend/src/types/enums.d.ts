@@ -70,7 +70,8 @@ export enum PatientEventType {
     Observation = "Observation",
     Note = "Note",
     TestResult = "TestResult",
-    Document = "Document"
+    Document = "Document",
+    MedicationDispension = "MedicationDispension"
 }
 export enum Permission {
     ListEmployees = "ListEmployees",

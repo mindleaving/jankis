@@ -95,6 +95,11 @@ namespace JanKIS.API
             services.AddScoped<IReadonlyStore<NotificationBase>, GenericReadonlyStore<NotificationBase>>();
             services.AddScoped<IStore<NotificationBase>, GenericStore<NotificationBase>>();
             services.AddScoped<INotificationsStore, NotificationsStore>();
+            services.AddScoped<IReadonlyStore<MedicationSchedule>, GenericReadonlyStore<MedicationSchedule>>();
+            services.AddScoped<IStore<MedicationSchedule>, GenericStore<MedicationSchedule>>();
+            services.AddScoped<IMedicationScheduleStore, MedicationScheduleStore>();
+            services.AddScoped<IReadonlyStore<MedicationDispension>, GenericReadonlyStore<MedicationDispension>>();
+            services.AddScoped<IStore<MedicationDispension>, GenericStore<MedicationDispension>>();
             services.AddScoped<IFilesStore, FilesStore>();
             services.AddScoped<ServiceRequestGatekeeper>();
             services.AddScoped<ServiceRequestChangePolicy>();

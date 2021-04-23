@@ -7,5 +7,7 @@ namespace JanKIS.API.Models
         public Drug Drug { get; set; }
         public List<MedicationDispension> Dispensions { get; set; }
         public string Note { get; set; }
+        public bool IsPaused { get; set; }
+        public bool IsDispendedByPatient { get; set; }
     }
 }

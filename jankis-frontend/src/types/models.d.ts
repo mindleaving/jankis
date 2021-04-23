@@ -265,7 +265,13 @@ export namespace Models {
     }
 
     interface MedicationDispension {
-        time: Date;
+        id: string;
+        type: Enums.PatientEventType;
+        patientId: string;
+        admissionId: string;
+        createdBy: string;
+        timestamp: Date;
+        drug: Models.Drug;
         unit: string;
         value: number;
         state: Enums.MedicationDispensionState;
@@ -273,15 +279,22 @@ export namespace Models {
     }
 
     interface MedicationSchedule {
+        id: string;
+        name?: string;
         patientId: string;
+        admissionId?: string;
         items: Models.MedicationScheduleItem[];
         note: string;
+        isPaused: boolean;
+        isDispendedByPatient: boolean;
     }
 
     interface MedicationScheduleItem {
         drug: Models.Drug;
         dispensions: Models.MedicationDispension[];
         note: string;
+        isPaused: boolean;
+        isDispendedByPatient: boolean;
     }
 
     interface NewsItem {
@@ -704,8 +717,8 @@ export namespace Models {
         }
     
         interface ServiceSubscription {
-            serviceId: string;
             type: Enums.SubscriptionObjectType;
+            serviceId: string;
             id: string;
             username: string;
             mutedUntil?: Date | null;

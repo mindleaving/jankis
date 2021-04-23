@@ -159,7 +159,7 @@ export const CreatePatientObservationPage = (props: CreatePatientObservationPage
                             submitButtonText={resolveText('Create')}
                         />);
                 }
-                if(measurementForm.measurementType === MeasurementType.BloodPressure) {
+                else if(measurementForm.measurementType === MeasurementType.BloodPressure) {
                     headingText = resolveText('MeasurementType_BloodPressure');
                     formControl = (<BloodPressureMeasurementForm
                             patientId={profileData.id}
@@ -169,7 +169,7 @@ export const CreatePatientObservationPage = (props: CreatePatientObservationPage
                             submitButtonText={resolveText('Create')}
                         />);
                 }
-                if(measurementForm.measurementType === MeasurementType.Temperature) {
+                else if(measurementForm.measurementType === MeasurementType.Temperature) {
                     headingText = resolveText('MeasurementType_Temperature');
                     formControl = (<TemperatureMeasurementForm
                             patientId={profileData.id}

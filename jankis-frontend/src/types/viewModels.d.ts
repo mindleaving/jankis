@@ -40,6 +40,8 @@ export namespace ViewModels {
         currentBedOccupancy: Models.BedOccupancy;
         admissions: Models.Admission[];
         notes: Models.PatientNote[];
+        medicationSchedules: Models.MedicationSchedule[];
+        medicationDispensions: Models.MedicationDispension[];
         testResults: Models.DiagnosticTestResult[];
         observations: Models.Observation[];
         documents: Models.PatientDocument[];

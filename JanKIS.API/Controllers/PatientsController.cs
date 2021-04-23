@@ -26,6 +26,8 @@ namespace JanKIS.API.Controllers
         private readonly IReadonlyStore<BedOccupancy> bedOccupanciesStore;
         private readonly ISubscriptionsStore subscriptionsStore;
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IMedicationScheduleStore medicationSchedulesStore;
+        private readonly IReadonlyStore<MedicationDispension> medicationDispensionsStore;
 
         public PatientsController(
             IStore<Person> personsStore,
@@ -36,7 +38,9 @@ namespace JanKIS.API.Controllers
             IReadonlyStore<PatientDocument> documentsStore,
             IReadonlyStore<BedOccupancy> bedOccupanciesStore,
             ISubscriptionsStore subscriptionsStore,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IMedicationScheduleStore medicationSchedulesStore,
+            IReadonlyStore<MedicationDispension> medicationDispensionsStore)
         {
             this.personsStore = personsStore;
             this.admissionsStore = admissionsStore;
@@ -47,6 +51,8 @@ namespace JanKIS.API.Controllers
             this.bedOccupanciesStore = bedOccupanciesStore;
             this.subscriptionsStore = subscriptionsStore;
             this.httpContextAccessor = httpContextAccessor;
+            this.medicationSchedulesStore = medicationSchedulesStore;
+            this.medicationDispensionsStore = medicationDispensionsStore;
         }
 
         [HttpGet("{patientId}/" + nameof(OverviewViewModel))]
@@ -57,9 +63,11 @@ namespace JanKIS.API.Controllers
                 return NotFound();
             var now = DateTime.UtcNow;
             var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            var currentBedOccupancy = (await bedOccupanciesStore.SearchAsync(x => x.Patient.Id == patientId && x.StartTime <= now && x.EndTime > now)).FirstOrDefault();
+            var currentBedOccupancy = (await bedOccupanciesStore.SearchAsync(x => x.Patient.Id == patientId && x.StartTime <= now && (x.EndTime == null || x.EndTime > now))).FirstOrDefault();
             var admissions = await admissionsStore.SearchAsync(x => x.PatientId == patientId);
             var notes = await patientNotesStore.SearchAsync(x => x.PatientId == patientId);
+            var medicationSchedules = await medicationSchedulesStore.GetForPatient(patientId);
+            var medicationDispensions = await medicationDispensionsStore.SearchAsync(x => x.PatientId == patientId);
             var testResults = await testResultsStore.SearchAsync(x => x.PatientId == patientId);
             var observations = await observationsStore.SearchAsync(x => x.PatientId == patientId);
             var documents = await documentsStore.SearchAsync(x => x.PatientId == patientId);
@@ -69,6 +77,8 @@ namespace JanKIS.API.Controllers
                 currentBedOccupancy,
                 admissions,
                 notes,
+                medicationSchedules,
+                medicationDispensions,
                 testResults,
                 observations,
                 documents,

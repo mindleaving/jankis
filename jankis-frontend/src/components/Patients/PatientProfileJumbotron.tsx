@@ -5,6 +5,7 @@ import { resolveText } from '../../helpers/Globalizer';
 import { Models } from '../../types/models';
 import { NotificationManager } from 'react-notifications';
 import { loadObject } from '../../helpers/LoadingHelpers';
+import { formatAge } from '../../helpers/Formatters';
 
 interface PatientProfileJumbotronProps {
     profileData: Models.Person;
@@ -85,7 +86,7 @@ export const PatientProfileJumbotron = (props: PatientProfileJumbotronProps) => 
                 </Row>
                 <Row className="mb-2">
                     <Col>
-                        {resolveText('Patient_BirthDate')}: {new Date(birthDate).toLocaleDateString()}
+                        {resolveText('Patient_BirthDate')}: {new Date(birthDate).toLocaleDateString()} ({formatAge(birthDate)})
                     </Col>
                 </Row>
                 <Row>

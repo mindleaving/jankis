@@ -22,6 +22,6 @@ namespace JanKIS.API.Models
         public string AdmissionId { get; set; }
         public string CreatedBy { get; set; }
         public DateTime Timestamp { get; set; }
-        public abstract string MeasurementType { get; }
+        public abstract string MeasurementType { get; set; }
     }
 }

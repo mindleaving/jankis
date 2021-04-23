@@ -11,6 +11,8 @@ namespace JanKIS.API.ViewModels
             BedOccupancy currentBedOccupancy,
             List<Admission> admissions,
             List<PatientNote> notes,
+            List<MedicationSchedule> medicationSchedules,
+            List<MedicationDispension> medicationDispensions,
             List<DiagnosticTestResult> testResults,
             List<Observation> observations,
             List<PatientDocument> documents,
@@ -20,6 +22,8 @@ namespace JanKIS.API.ViewModels
             CurrentBedOccupancy = currentBedOccupancy;
             Admissions = admissions;
             Notes = notes;
+            MedicationSchedules = medicationSchedules;
+            MedicationDispensions = medicationDispensions;
             TestResults = testResults;
             Observations = observations;
             Documents = documents;
@@ -30,6 +34,8 @@ namespace JanKIS.API.ViewModels
         public BedOccupancy CurrentBedOccupancy { get; set; }
         public List<Admission> Admissions { get; set; }
         public List<PatientNote> Notes { get; set; }
+        public List<MedicationSchedule> MedicationSchedules { get; }
+        public List<MedicationDispension> MedicationDispensions { get; }
         public List<DiagnosticTestResult> TestResults { get; set; }
         public List<Observation> Observations { get; set; }
         public List<PatientDocument> Documents { get; set; }
