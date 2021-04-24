@@ -6,59 +6,150 @@ import { MeasurementType } from '../../types/enums.d';
 import { Models } from '../../types/models';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
+import { groupBy } from '../../helpers/CollectionHelpers';
 
 interface PatientObservationsViewProps {
     observations: Models.Observation[];
 }
-
+interface ObservationDataPoint {
+    measurementType: MeasurementType;
+    seriesName: string;
+    timestamp: Date;
+    value: number;
+}
+interface Group<T> {
+    key: string,
+    items: T[]
+}
 export const PatientObservationsView = (props: PatientObservationsViewProps) => {
     
-    const pulseObservations = props.observations.filter(x => x.measurementType === MeasurementType.Pulse);
-    const bloodPressureObservations = props.observations.filter(x => x.measurementType === MeasurementType.BloodPressure);
-    
-    const observationsChartData = [
-        {
-            name: `${formatMeasurementType(MeasurementType.Pulse)}`,
-            data: [
-                {x: new Date('2021-04-18T09:00Z').getTime(), y: 48},
-                {x: new Date('2021-04-18T17:00Z').getTime(), y: 52},
-                {x: new Date('2021-04-19T10:00Z').getTime(), y: 53},
-                {x: new Date('2021-04-20T05:00Z').getTime(), y: 49},
-                {x: new Date('2021-04-20T10:00Z').getTime(), y: 61},
-            ]
-        },
-        {
-            name: `${formatMeasurementType(MeasurementType.BloodPressure)} - ${resolveText('Systolic')}`,
-            data: [
-                {x: new Date('2021-04-18T09:00Z').getTime(), y: 120},
-                {x: new Date('2021-04-18T17:00Z').getTime(), y: 120},
-                {x: new Date('2021-04-19T10:00Z').getTime(), y: 110},
-                {x: new Date('2021-04-20T05:00Z').getTime(), y: 120},
-                {x: new Date('2021-04-20T10:00Z').getTime(), y: 125},
-            ]
-        },
-        {
-            name: `${formatMeasurementType(MeasurementType.BloodPressure)} - ${resolveText('Diastolic')}`,
-            data: [
-                {x: new Date('2021-04-18T09:00Z').getTime(), y: 70},
-                {x: new Date('2021-04-18T17:00Z').getTime(), y: 75},
-                {x: new Date('2021-04-19T10:00Z').getTime(), y: 75},
-                {x: new Date('2021-04-20T05:00Z').getTime(), y: 90},
-                {x: new Date('2021-04-20T10:00Z').getTime(), y: 80},
-            ]
-        },
-        {
-            name: `${formatMeasurementType(MeasurementType.Temperature)}`,
-            data: [
-                {x: new Date('2021-04-18T09:00Z').getTime(), y: 36.9},
-                {x: new Date('2021-04-18T17:00Z').getTime(), y: 37.1},
-                {x: new Date('2021-04-19T10:00Z').getTime(), y: 37.1},
-                {x: new Date('2021-04-20T05:00Z').getTime(), y: 37.5},
-                {x: new Date('2021-04-20T10:00Z').getTime(), y: 37.0},
-            ]
+    const observationDataPoints = props.observations.flatMap((observation): ObservationDataPoint[] => {
+        const measurementType = observation.measurementType as MeasurementType;
+        if(observation.measurementType === MeasurementType.Pulse) {
+            const pulseObservation = observation as Models.PulseObservation;
+            return [{
+                measurementType: measurementType,
+                seriesName: formatMeasurementType(measurementType),
+                timestamp: observation.timestamp,
+                value: pulseObservation.bpm
+            }];
         }
-    ];
-    const pulseChartOptions: ApexOptions = {
+        if(measurementType === MeasurementType.BloodPressure) {
+            const bloodPressureObservation = observation as Models.BloodPressureObservation;
+            return [
+                {
+                    measurementType: measurementType,
+                    seriesName: `${formatMeasurementType(measurementType)} - ${resolveText('Systolic')}`,
+                    timestamp: observation.timestamp,
+                    value: bloodPressureObservation.systolic
+                },
+                {
+                    measurementType: measurementType,
+                    seriesName: `${formatMeasurementType(measurementType)} - ${resolveText('Diastolic')}`,
+                    timestamp: observation.timestamp,
+                    value: bloodPressureObservation.diastolic
+                }
+            ];
+        }
+        if(measurementType === MeasurementType.Temperature) {
+            const temperatureObservation = observation as Models.TemperatureObservation;
+            return [{
+                measurementType: measurementType,
+                seriesName: formatMeasurementType(measurementType),
+                timestamp: observation.timestamp,
+                value: temperatureObservation.value
+            }];
+        }
+        const genericObservation = observation as Models.GenericObservation;
+        if(isNaN(parseFloat(genericObservation.value))) {
+            return [];
+        }
+        return [{
+            measurementType: measurementType,
+            seriesName: formatMeasurementType(measurementType),
+            timestamp: observation.timestamp,
+            value: parseFloat(genericObservation.value)
+        }];
+    });
+    const groupedObservations = groupBy(observationDataPoints, x => x.seriesName);
+    const observationsChartData = groupedObservations
+        .map(group => ({
+            name: group.key,
+            data: group.items.map(observation => (
+                {
+                    x: new Date(observation.timestamp).getTime(),
+                    y: observation.value
+                }
+            ))
+        }));
+    const getUnitForMeasurementType = (measurementType: MeasurementType) => {
+        switch(measurementType) {
+            case MeasurementType.Pulse:
+                return '1/min';
+            case MeasurementType.BloodPressure:
+                return 'mmHg';
+            case MeasurementType.Temperature:
+                return '°C';
+            case MeasurementType.OxygenSaturation:
+                return '%';
+            default:
+                throw new Error(`Unsupported measurement type '${measurementType}' for charting`);
+        }
+    }
+    const getYMinForMeasurementType = (measurementType: MeasurementType) => {
+        switch(measurementType) {
+            case MeasurementType.Temperature:
+                return 34;
+        }
+        return undefined;
+    }
+    const getYMaxForMeasurementType = (measurementType: MeasurementType) => {
+        switch(measurementType) {
+            case MeasurementType.Temperature:
+                return 42;
+        }
+        return undefined;
+    }
+    const generateYAxes = (observationGroups: Group<ObservationDataPoint>[]) => {
+        const measurementTypeSeriesNameMap: { [key: string]: string } = {};
+        const yAxesOptions: ApexYAxis[] = [];
+        for (const group of observationGroups) {
+            const seriesName = group.key;
+            const measurementType = group.items[0].measurementType;
+            const existingYAxisName = measurementTypeSeriesNameMap[measurementType];
+            if(existingYAxisName) {
+                yAxesOptions.push({
+                    seriesName: existingYAxisName,
+                    show: false
+                });
+            } else {
+                yAxesOptions.push({
+                    seriesName: seriesName,
+                    title: {
+                        text: getUnitForMeasurementType(measurementType)
+                    },
+                    min: getYMinForMeasurementType(measurementType),
+                    max: getYMaxForMeasurementType(measurementType),
+                    forceNiceScale: true
+                });
+                measurementTypeSeriesNameMap[measurementType] = seriesName;
+            }
+        }
+        return yAxesOptions;
+    }
+    const getColorForMeasurementType = (measurementType: MeasurementType) => {
+        switch(measurementType) {
+            case MeasurementType.Pulse:
+                return '#c00';
+            case MeasurementType.BloodPressure:
+                return '#08f';
+            case MeasurementType.Temperature:
+                return '#090';
+            default:
+                return '#333'
+        }
+    }
+    const chartOptions: ApexOptions = {
         chart: {
             type: 'line',
             toolbar: {
@@ -83,41 +174,16 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
         xaxis: {
             type: 'datetime'
         },
-        yaxis: [{
-            seriesName: observationsChartData[0].name,
-            title: {
-                text: '1/min'
-            },
-            forceNiceScale: true
-        },
-        {
-            seriesName: observationsChartData[1].name,
-            title: {
-                text: 'mmHg'
-            },
-            forceNiceScale: true
-        },
-        {
-            seriesName: observationsChartData[1].name,
-            show: false
-        },
-        {
-            seriesName: observationsChartData[3].name,
-            title: {
-                text: '°C'
-            },
-            min: 34,
-            max: 42
-        }],
+        yaxis: generateYAxes(groupedObservations),
         markers: {
             size: 8
         },
-        colors: [ '#f00', '#00f', '#00f', '#0f0' ]
+        colors: groupedObservations.map(group => getColorForMeasurementType(group.items[0].measurementType))
     }
 
     return (<>
         <Chart
-            options={pulseChartOptions}
+            options={chartOptions}
             series={observationsChartData}
             height="380px"
         />

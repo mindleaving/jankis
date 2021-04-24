@@ -74,3 +74,6 @@ export const formatAge = (birthDate: Date) => {
     const days = differenceInDays(now, convertedDate);
     return `${days} ${resolveText('Days')}`;
 }
+export const formatDrug = (drug: Models.Drug) => {
+    return `${drug.productName}`;
+}

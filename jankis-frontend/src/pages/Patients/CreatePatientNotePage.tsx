@@ -12,7 +12,7 @@ import { NotificationManager } from 'react-notifications';
 import { v4 as uuid} from 'uuid';
 import { PatientParams } from '../../types/frontendTypes';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
-import { PatientAutocomplete } from '../../components/PatientAutocomplete';
+import { PatientAutocomplete } from '../../components/Autocompletes/PatientAutocomplete';
 
 interface CreatePatientNotePageProps extends RouteComponentProps<PatientParams> {}
 

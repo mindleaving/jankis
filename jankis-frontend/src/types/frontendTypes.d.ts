@@ -23,6 +23,9 @@ export interface AccountsFilter {
 export interface AdmissionsFilter {
     searchText?: string;
 }
+export interface DrugsFilter {
+    searchText?: string;
+}
 
 interface PatientParams {
     patientId?: string;

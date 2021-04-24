@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import Autosuggest from 'react-autosuggest';
-import '../styles/react-autosuggest.css';
+import '../../styles/react-autosuggest.css';
 
 interface AutocompleteProps<T> {
+    defaultValue?: string;
     displayNameSelector: (item: T) => string;
     search: (searchText: string) => Promise<T[]>;
     onItemSelected: (item: T) => void;
@@ -27,7 +28,7 @@ export class Autocomplete<T> extends Component<AutocompleteProps<T>, Autocomplet
         super(props);
 
         this.state = { 
-            searchText: '',
+            searchText: props.defaultValue ?? '',
             suggestions: [],
             selectedItem: null
         };

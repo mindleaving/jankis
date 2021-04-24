@@ -8,7 +8,7 @@ import { Col, Form, FormControl, FormGroup, FormLabel } from 'react-bootstrap';
 import { Row } from 'react-bootstrap';
 import { RowFormGroup } from '../../components/RowFormGroup';
 import { ListFormControl } from '../../components/ListFormControl';
-import { Autocomplete } from '../../components/Autocomplete';
+import { Autocomplete } from '../../components/Autocompletes/Autocomplete';
 import { AutocompleteRunner } from '../../helpers/AutocompleteRunner';
 import Flatpickr from 'react-flatpickr';
 import { AsyncButton } from '../../components/AsyncButton';

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Button, Card, FormControl, InputGroup, Tab, TabContainer, Tabs } from 'react-bootstrap';
+import { Alert, Button, Card, FormControl, InputGroup, Tab, Tabs } from 'react-bootstrap';
 import { Row, Col } from 'react-bootstrap';
 import { RouteComponentProps, useHistory } from 'react-router';
 import { PatientMedicationView } from '../../components/Patients/PatientMedicationView';
@@ -11,6 +11,10 @@ import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { PatientParams } from '../../types/frontendTypes';
 import { Models } from '../../types/models';
 import { ViewModels } from '../../types/viewModels';
+import { v4 as uuid } from 'uuid';
+import { isAfter, isBefore } from 'date-fns';
+import { NotificationManager } from 'react-notifications';
+import { buidlAndStoreObject } from '../../helpers/StoringHelpers';
 
 interface PatientPageProps extends RouteComponentProps<PatientParams> {}
 
@@ -56,6 +60,28 @@ export const PatientPage = (props: PatientPageProps) => {
         );
         loadPatient();
     }, [ id ]);
+
+    const createNewMedicationSchedule = async () => {
+        NotificationManager.info(resolveText('MedicationSchedule_Creating...'));
+        const now = new Date();
+        const currentAdmission = admissions.find(x => isAfter(now, new Date(x.admissionTime)) && (!x.dischargeTime || isBefore(now, x.dischargeTime)));
+        const medicationSchedule: Models.MedicationSchedule = {
+            id: uuid(),
+            patientId: id!,
+            note: '',
+            isPaused: false,
+            isDispendedByPatient: false,
+            items: [],
+            admissionId: currentAdmission?.id
+        };
+        await buidlAndStoreObject<Models.MedicationSchedule>(
+            `api/medicationschedules/${medicationSchedule.id}`,
+            resolveText('MedicationSchedule_SuccessfullyStored'),
+            resolveText('MedicationSchedule_CouldNotStore'),
+            () => medicationSchedule,
+            () => setMedicationSchedules(medicationSchedules.concat(medicationSchedule))
+        );
+    }
 
     if(!id) {
         return (<h1>{resolveText('MissingID')}</h1>);
@@ -130,6 +156,7 @@ export const PatientPage = (props: PatientPageProps) => {
                     <PatientMedicationView
                         medicationSchedules={medicationSchedules}
                         medicationDispensions={medicationDispensions}
+                        onCreateNewMedicationSchedule={createNewMedicationSchedule}
                     />
                 </Tab>
                 <Tab eventKey="equipment" title={resolveText('Patient_Equipment')}>

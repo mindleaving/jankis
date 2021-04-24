@@ -14,7 +14,7 @@ import { formatAdmission } from '../../helpers/Formatters';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { NotificationManager } from 'react-notifications';
 import { apiClient } from '../../communication/ApiClient';
-import { PatientAutocomplete } from '../../components/PatientAutocomplete';
+import { PatientAutocomplete } from '../../components/Autocompletes/PatientAutocomplete';
 
 interface CreatePatientDocumentPageProps extends RouteComponentProps<PatientParams> {}
 

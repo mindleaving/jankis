@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { Alert } from 'react-bootstrap';
-import { AutocompleteRunner } from '../helpers/AutocompleteRunner';
-import { resolveText } from '../helpers/Globalizer';
-import { Models } from '../types/models';
+import { AutocompleteRunner } from '../../helpers/AutocompleteRunner';
+import { resolveText } from '../../helpers/Globalizer';
+import { Models } from '../../types/models';
 import { Autocomplete } from './Autocomplete';
 
 interface ServiceAutocompleteProps {

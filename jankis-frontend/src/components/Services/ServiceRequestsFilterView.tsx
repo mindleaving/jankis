@@ -4,9 +4,9 @@ import { resolveText } from '../../helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { ServiceRequestsFilter } from '../../types/frontendTypes';
 import { Models } from '../../types/models';
-import { DepartmentAutocomplete } from '../DepartmentAutocomplete';
+import { DepartmentAutocomplete } from '../Autocompletes/DepartmentAutocomplete';
 import { RowFormGroup } from '../RowFormGroup';
-import { ServiceAutocomplete } from '../ServiceAutocomplete';
+import { ServiceAutocomplete } from '../Autocompletes/ServiceAutocomplete';
 
 interface ServiceRequestsFilterViewProps {
     filter?: ServiceRequestsFilter;

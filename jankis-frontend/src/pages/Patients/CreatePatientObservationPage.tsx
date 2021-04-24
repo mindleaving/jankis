@@ -17,7 +17,7 @@ import { BloodPressureMeasurementForm } from '../../components/Patients/BloodPre
 import { TemperatureMeasurementForm } from '../../components/Patients/TemperatureMeasurementForm';
 import { GenericMeasurementForm } from '../../components/Patients/GenericMeasurementForm';
 import { v4 as uuid } from 'uuid';
-import { PatientAutocomplete } from '../../components/PatientAutocomplete';
+import { PatientAutocomplete } from '../../components/Autocompletes/PatientAutocomplete';
 
 interface CreatePatientObservationPageProps extends RouteComponentProps<PatientParams> { }
 interface MeasurementForm {
@@ -90,11 +90,12 @@ export const CreatePatientObservationPage = (props: CreatePatientObservationPage
     const removeMeasurementForm = (measurementFormId: string) => {
         setMeasurementForms(measurementForms.filter(x => x.id !== measurementFormId));
     }
-    const addObservation = (observation: Models.Observation) => {
+    const addObservation = (observation: Models.Observation, measurementFormId: string) => {
         setObservations(observations.concat(observation));
+        removeMeasurementForm(measurementFormId);
     }
-    const removeObservation = (observation: Models.Observation) => {
-        setObservations(observations.filter(x => x.id !== observation.id));
+    const removeObservation = (observationId: string) => {
+        setObservations(observations.filter(x => x.id !== observationId));
     }
 
     return (
@@ -154,7 +155,7 @@ export const CreatePatientObservationPage = (props: CreatePatientObservationPage
                     formControl =(<PulseMeasurementForm
                             patientId={profileData.id}
                             admissionId={admissionId}
-                            onSubmit={addObservation}
+                            onSubmit={(observation) => addObservation(observation, measurementForm.id)}
                             hasSubmitButton
                             submitButtonText={resolveText('Create')}
                         />);
@@ -164,7 +165,7 @@ export const CreatePatientObservationPage = (props: CreatePatientObservationPage
                     formControl = (<BloodPressureMeasurementForm
                             patientId={profileData.id}
                             admissionId={admissionId}
-                            onSubmit={addObservation}
+                            onSubmit={(observation) => addObservation(observation, measurementForm.id)}
                             hasSubmitButton
                             submitButtonText={resolveText('Create')}
                         />);
@@ -174,7 +175,7 @@ export const CreatePatientObservationPage = (props: CreatePatientObservationPage
                     formControl = (<TemperatureMeasurementForm
                             patientId={profileData.id}
                             admissionId={admissionId}
-                            onSubmit={addObservation}
+                            onSubmit={(observation) => addObservation(observation, measurementForm.id)}
                             hasSubmitButton
                             submitButtonText={resolveText('Create')}
                         />);
@@ -182,7 +183,7 @@ export const CreatePatientObservationPage = (props: CreatePatientObservationPage
                     formControl = (<GenericMeasurementForm
                         patientId={profileData.id}
                         admissionId={admissionId}
-                        onSubmit={addObservation}
+                        onSubmit={(observation) => addObservation(observation, measurementForm.id)}
                         hasSubmitButton
                         submitButtonText={resolveText('Create')}
                     />);
@@ -206,12 +207,16 @@ export const CreatePatientObservationPage = (props: CreatePatientObservationPage
             <Row>
                 <Col></Col>
                 <Col>
-                    <ListFormControl
-                        items={observations}
-                        idFunc={x => x.id}
-                        displayFunc={formatObservation}
-                        removeItem={removeObservation}
-                    />
+                    {observations.map(observation => (
+                        <Alert 
+                            key={observation.id}
+                            variant="info" 
+                            dismissible
+                            onClose={() => removeObservation(observation.id)}
+                        >
+                            {formatObservation(observation)}
+                        </Alert>
+                    ))}
                 </Col>
             </Row>
             </> : null}

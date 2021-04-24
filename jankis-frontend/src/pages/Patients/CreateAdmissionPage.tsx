@@ -2,7 +2,7 @@ import React, { FormEvent, useMemo, useState } from 'react';
 import { Button, FormCheck, InputGroup } from 'react-bootstrap';
 import { Col, Form, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { useHistory } from 'react-router';
-import { Autocomplete } from '../../components/Autocomplete';
+import { Autocomplete } from '../../components/Autocompletes/Autocomplete';
 import { PatientProfileJumbotron } from '../../components/Patients/PatientProfileJumbotron';
 import { AutocompleteRunner } from '../../helpers/AutocompleteRunner';
 import { resolveText } from '../../helpers/Globalizer';

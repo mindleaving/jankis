@@ -8,7 +8,7 @@ import { apiClient } from '../../communication/ApiClient';
 import { Models } from '../../types/models';
 import { RouteComponentProps, useHistory } from 'react-router';
 import { v4 as uuid } from 'uuid';
-import { Autocomplete } from '../../components/Autocomplete';
+import { Autocomplete } from '../../components/Autocompletes/Autocomplete';
 import { AutocompleteRunner } from '../../helpers/AutocompleteRunner';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 

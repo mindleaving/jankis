@@ -4,7 +4,7 @@ import { AutocompleteRunner } from '../../helpers/AutocompleteRunner';
 import { resolveText } from '../../helpers/Globalizer';
 import { ServiceAudienceType, ServiceParameterValueType } from '../../types/enums.d';
 import { Models } from '../../types/models';
-import { Autocomplete } from '../Autocomplete';
+import { Autocomplete } from '../Autocompletes/Autocomplete';
 
 interface ServiceAudienceEditFormProps {
     addAudience: (item: Models.ServiceAudience) => void;

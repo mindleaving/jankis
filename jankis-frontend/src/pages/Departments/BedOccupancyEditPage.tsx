@@ -9,7 +9,7 @@ import { BedState } from '../../types/enums.d';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { RowFormGroup } from '../../components/RowFormGroup';
 import { StoreButton } from '../../components/StoreButton';
-import { PatientAutocomplete } from '../../components/PatientAutocomplete';
+import { PatientAutocomplete } from '../../components/Autocompletes/PatientAutocomplete';
 import { DeleteButton } from '../../components/DeleteButon';
 import { deleteObject } from '../../helpers/DeleteHelpers';
 

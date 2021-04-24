@@ -10,7 +10,7 @@ import { NotificationManager } from 'react-notifications';
 import { Card, Col, Form, FormControl, FormGroup, FormLabel, InputGroup, Row } from 'react-bootstrap';
 import { ServiceParameterResponse } from '../../components/Services/ServiceParameterResponse';
 import { ServiceRequestStateChangeButtons } from '../../components/Services/ServiceRequestStateChangeButtons';
-import { PersonAutocomplete } from '../../components/PersonAutocomplete';
+import { PersonAutocomplete } from '../../components/Autocompletes/PersonAutocomplete';
 import { StoreButton } from '../../components/StoreButton';
 
 interface ServiceRequestParams {

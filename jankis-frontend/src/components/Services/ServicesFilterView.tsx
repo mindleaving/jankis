@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Col, Form, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
-import { DepartmentAutocomplete } from '../DepartmentAutocomplete';
+import { DepartmentAutocomplete } from '../Autocompletes/DepartmentAutocomplete';
 import { resolveText } from '../../helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { ServicesFilter } from '../../types/frontendTypes';

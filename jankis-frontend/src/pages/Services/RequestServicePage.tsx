@@ -6,7 +6,7 @@ import { apiClient } from '../../communication/ApiClient';
 import { Models } from '../../types/models';
 import { RequestServiceForm } from '../../components/Services/RequestServiceForm';
 import { Col, FormGroup, FormLabel, Row } from 'react-bootstrap';
-import { ServiceAutocomplete } from '../../components/ServiceAutocomplete';
+import { ServiceAutocomplete } from '../../components/Autocompletes/ServiceAutocomplete';
 
 interface RequestServiceParams {
     serviceId?: string;

@@ -11,7 +11,7 @@ import { RowFormGroup } from '../../components/RowFormGroup';
 import Form from 'react-bootstrap/esm/Form';
 import { AsyncButton } from '../../components/AsyncButton';
 import { Col, FormGroup, FormLabel, Row } from 'react-bootstrap';
-import { Autocomplete } from '../../components/Autocomplete';
+import { Autocomplete } from '../../components/Autocompletes/Autocomplete';
 import { AutocompleteRunner } from '../../helpers/AutocompleteRunner';
 
 interface ResourceParams {

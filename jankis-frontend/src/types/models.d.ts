@@ -290,6 +290,7 @@ export namespace Models {
     }
 
     interface MedicationScheduleItem {
+        id: string;
         drug: Models.Drug;
         dispensions: Models.MedicationDispension[];
         note: string;

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Col, Form, FormGroup, FormLabel, Row } from 'react-bootstrap';
-import { Autocomplete } from '../Autocomplete';
+import { Autocomplete } from '../Autocompletes/Autocomplete';
 import { RowFormGroup } from '../RowFormGroup';
 import { AutocompleteRunner } from '../../helpers/AutocompleteRunner';
 import { resolveText } from '../../helpers/Globalizer';

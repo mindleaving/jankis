@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Col, Form, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router';
-import { PatientAutocomplete } from '../../components/PatientAutocomplete';
-import { ServiceAutocomplete } from '../../components/ServiceAutocomplete';
+import { PatientAutocomplete } from '../../components/Autocompletes/PatientAutocomplete';
+import { ServiceAutocomplete } from '../../components/Autocompletes/ServiceAutocomplete';
 import { RequestServiceForm } from '../../components/Services/RequestServiceForm';
 import { resolveText } from '../../helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';

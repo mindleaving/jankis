@@ -1,9 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { resolveText } from '../../helpers/Globalizer';
-import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { ServiceParameterValueType } from '../../types/enums.d';
 import { Models } from '../../types/models';
-import { PatientAutocomplete } from '../PatientAutocomplete';
+import { PatientAutocomplete } from '../Autocompletes/PatientAutocomplete';
 
 interface PatientParameterResponseProps {
     required?: boolean;
