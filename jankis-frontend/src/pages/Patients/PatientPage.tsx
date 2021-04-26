@@ -15,6 +15,10 @@ import { v4 as uuid } from 'uuid';
 import { isAfter, isBefore } from 'date-fns';
 import { NotificationManager } from 'react-notifications';
 import { buidlAndStoreObject } from '../../helpers/StoringHelpers';
+import { PatientNotesView } from '../../components/Patients/PatientNotesView';
+import { PatientDocumentsView } from '../../components/Patients/PatientDocumentsView';
+import { PatientTestResultsView } from '../../components/Patients/PatientTestResultsView';
+import { PatientEventsOverview } from '../../components/Patients/PatientEventsOverview';
 
 interface PatientPageProps extends RouteComponentProps<PatientParams> {}
 
@@ -31,7 +35,7 @@ export const PatientPage = (props: PatientPageProps) => {
     const [ medicationSchedules, setMedicationSchedules ] = useState<Models.MedicationSchedule[]>([]);
     const [ medicationDispensions, setMedicationDispensions ] = useState<Models.MedicationDispension[]>([]);
     const [ observations, setObservations ] = useState<Models.Observation[]>([]);
-    const [ testResults, setTestResults ] = useState<Models.IDiagnosticTestResult[]>([]);
+    const [ testResults, setTestResults ] = useState<Models.DiagnosticTestResult[]>([]);
     const [ documents, setDocuments ] = useState<Models.PatientDocument[]>([]);
     const [ subscription, setSubscription ] = useState<Models.Subscriptions.PatientSubscription>();
     const isHistoricAdmission = selectedAdmissionId && admissions.find(x => x.id === selectedAdmissionId)?.dischargeTime;
@@ -144,10 +148,12 @@ export const PatientPage = (props: PatientPageProps) => {
             </Row>
             <Tabs defaultActiveKey="overview">
                 <Tab eventKey="overview" title={resolveText('Patient_Overview')}>
-
+                    <PatientEventsOverview
+                        events={(notes as Models.IPatientEvent[]).concat(observations).concat(documents).concat(testResults)}
+                    />
                 </Tab>
                 <Tab eventKey="notes" title={resolveText('Patient_Notes')}>
-
+                    <PatientNotesView notes={notes} />
                 </Tab>
                 <Tab eventKey="observations" title={resolveText('Patient_Observations')}>
                     <PatientObservationsView observations={observations} />
@@ -163,10 +169,10 @@ export const PatientPage = (props: PatientPageProps) => {
 
                 </Tab>
                 <Tab eventKey="testResults" title={resolveText('Patient_TestResults')}>
-
+                    <PatientTestResultsView testResults={testResults} />
                 </Tab>
                 <Tab eventKey="documents" title={resolveText('Patient_Documents')}>
-
+                    <PatientDocumentsView documents={documents} />
                 </Tab>
             </Tabs>
         </>

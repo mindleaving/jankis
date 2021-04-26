@@ -51,6 +51,9 @@ import { RoomsPage } from './pages/Departments/RoomsPage';
 import { BedOccupancyEditPage } from './pages/Departments/BedOccupancyEditPage';
 import { OrderServiceForPatientPage } from './pages/Patients/OrderServiceForPatientPage';
 import { PersonsListPage } from './pages/Patients/PersonsListPage';
+import { DrugsListPage } from './pages/Drugs/DrugsListPage';
+import { CreateEditDrugPage } from './pages/Drugs/CreateEditDrugPage';
+import { EditMedicationSchedulePage } from './pages/Patients/EditMedicationSchedulePage';
 
 function App() {
 
@@ -129,6 +132,10 @@ function App() {
                     <Route
                         exact path="/patients/:patientId/order/service"
                         render={props => <OrderServiceForPatientPage {...props} />}
+                    />
+                    <Route
+                        exact path="/medicationschedules/:scheduleId/edit"
+                        render={props => <EditMedicationSchedulePage {...props} />}
                     />
 
                     <Route
@@ -252,6 +259,18 @@ function App() {
                     <Route
                         exact path="/stocks/:stockId/edit"
                         render={props => <StockEditPage {...props} />}
+                    />
+                    <Route
+                        exact path="/drugs"
+                        render={props => <DrugsListPage {...props} />}
+                    />
+                    <Route
+                        exact path="/drugs/:drugId/edit"
+                        render={props => <CreateEditDrugPage {...props} />}
+                    />
+                    <Route
+                        exact path="/create/drug"
+                        render={props => <CreateEditDrugPage {...props} />}
                     />
 
                     <Route

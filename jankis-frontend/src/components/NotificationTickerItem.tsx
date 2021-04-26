@@ -27,7 +27,8 @@ export const NotificationTickerItem = (props: NotificationTickerItemProps) => {
     const notificationType = props.item.notificationType;
     if(notificationType === NotificationType.NewPatientEvent) {
         const patientEventNotification = props.item as Models.Subscriptions.PatientEventNotification;
-        return (<Alert 
+        return (<Alert
+            className="py-0 px-2 my-2"
             variant="info"
             dismissible
             onClose={() => dismiss(props.item.id)}
@@ -42,6 +43,7 @@ export const NotificationTickerItem = (props: NotificationTickerItemProps) => {
         </Alert>);
     }
     return (<Alert
+        className="py-0 px-2 my-2"
         dismissible
         onClose={dismiss}
     >

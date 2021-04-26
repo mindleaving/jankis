@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using JanKIS.API.Storage;
 using TypescriptGenerator.Attributes;
 
@@ -18,6 +19,7 @@ namespace JanKIS.API.Models
         public string Id { get; set; }
         [TypescriptIsOptional]
         public string Name { get; set; }
+        [Required]
         public string PatientId { get; set; }
         [TypescriptIsOptional]
         public string AdmissionId { get; set; }

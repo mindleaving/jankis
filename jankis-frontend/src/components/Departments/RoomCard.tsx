@@ -90,7 +90,7 @@ export const RoomCard = (props: RoomCardProps) => {
                                         <Col>
                                             <Button 
                                                 variant="link"
-                                                className="p-0 m-0 text-left text-light"
+                                                className={`p-0 m-0 text-left ${textColor}`}
                                                 onClick={() => history.push(`/patients/${occupancy.patient!.id}`)}
                                             >
                                                 {formatPerson(occupancy.patient)}

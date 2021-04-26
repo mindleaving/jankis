@@ -74,7 +74,7 @@ export const DrugsList = (props: DrugsListProps) => {
                         <td>{drug.productName}</td>
                         <td>{drug.brand}</td>
                         <td>
-                            <ul>
+                            <ul className="bulletFreeList">
                                 {drug.activeIngredients.map(activeIngredient => (
                                     <li>{activeIngredient}</li>
                                 ))}

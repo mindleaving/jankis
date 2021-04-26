@@ -1,10 +1,11 @@
 import React, { FormEvent, useEffect, useState } from 'react';
-import { Col, Form, FormCheck, FormControl, FormGroup, FormLabel, Row, Table } from 'react-bootstrap';
+import { Button, Col, Form, FormCheck, FormControl, FormGroup, FormLabel, Row, Table } from 'react-bootstrap';
 import { useHistory } from 'react-router';
 import { formatDrug } from '../../helpers/Formatters';
 import { resolveText } from '../../helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { buidlAndStoreObject } from '../../helpers/StoringHelpers';
+import { MedicationModal } from '../../modals/MedicationModal';
 import { Models } from '../../types/models';
 import { RowFormGroup } from '../RowFormGroup';
 import { StoreButton } from '../StoreButton';
@@ -26,6 +27,7 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
     const [ isPaused, setIsPaused ] = useState<boolean>(false);
     const [ isDispendedByPatient, setIsDispendedByPatient ] = useState<boolean>(false);
     const [ selectedScheduleItemIds, setSelectedScheduleItemIds ] = useState<string[]>([]);
+    const [ showMedicationModal, setShowMedicationModal] = useState<boolean>(false);
     const history = useHistory();
 
     useEffect(() => {
@@ -34,9 +36,13 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
             {},
             resolveText('MedicationSchedule_CouldNotLoad'),
             medicationSchedule => {
+                setPatientId(medicationSchedule.patientId);
+                setAdmissionId(medicationSchedule.admissionId);
                 setName(medicationSchedule.name ?? '');
                 setMedications(medicationSchedule.items);
                 setNote(medicationSchedule.note);
+                setIsPaused(medicationSchedule.isPaused);
+                setIsDispendedByPatient(medicationSchedule.isDispendedByPatient);
             },
             () => setIsLoading(false)
         );
@@ -81,6 +87,9 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
             setSelectedScheduleItemIds(selectedScheduleItemIds.filter(x => x !== medicationId));
         }
     }
+    const addMedication = async (medication: Models.MedicationScheduleItem) => {
+        setMedications(medications.concat(medication));
+    }
     const updateMedication = (medication: Models.MedicationScheduleItem) => {
         setMedications(medications.map(x => {
             return x.id === medication.id ? medication : x;
@@ -91,6 +100,7 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
     }
     
     return (
+        <>
         <Form onSubmit={store}>
             <RowFormGroup
                 label={resolveText('MedicationSchedule_Name')}
@@ -124,11 +134,13 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
             <Table>
                 <thead>
                     <tr>
-                        <th>{resolveText('Medication_Drug')}</th>
-                        <th>{resolveText('Medication_Note')}</th>
                         <th></th>
                         <th></th>
-                        <th></th>
+                        <th>{resolveText('Medication_Drug')} / {resolveText('Medication_Note')}</th>
+                        <th>{resolveText('MedicationSchedule_IsPaused')}</th>
+                        <th>{resolveText('MedicationSchedule_IsDispensedByPatient')}</th>
+                        <th>{resolveText('MedicationScheduleItem_DispensionsToday')}</th>
+                        <th>{resolveText('MedicationScheduleItem_DispensionsTomorrow')}</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -136,6 +148,8 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
                     {medications.map(medication => (
                         <MedicationScheduleItemEditTableRow
                             medication={medication}
+                            patientId={patientId!}
+                            admissionId={admissionId}
                             isSelected={selectedScheduleItemIds.includes(medication.id)}
                             onSelectionChanged={(isSelected) => updateSelection(isSelected, medication.id)}
                             onStore={updateMedication}
@@ -144,11 +158,22 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
                     ))}
                 </tbody>
             </Table>
+            <Row>
+                <Col className="text-center">
+                    <Button onClick={() => setShowMedicationModal(true)}>{resolveText('Medication_Add')}</Button>
+                </Col>
+            </Row>
             <StoreButton
                 type="submit"
                 isStoring={isStoring}
             />
         </Form>
+        <MedicationModal
+            show={showMedicationModal}
+            onMedicationAdded={addMedication}
+            onClose={() => setShowMedicationModal(false)}
+        />
+        </>
     );
 
 }

@@ -4,7 +4,11 @@ export enum AccountType {
 }
 export enum AutoCompleteContext {
     MeasurementType = "MeasurementType",
-    Unit = "Unit"
+    Unit = "Unit",
+    DrugBrand = "DrugBrand",
+    DrugActiveIngredient = "DrugActiveIngredient",
+    DrugApplicationSite = "DrugApplicationSite",
+    DrugDispensionForm = "DrugDispensionForm"
 }
 export enum BedState {
     Empty = "Empty",

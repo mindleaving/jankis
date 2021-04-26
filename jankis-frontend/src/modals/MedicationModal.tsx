@@ -28,6 +28,7 @@ export const MedicationModal = (props: MedicationModalProps) => {
         };
         props.onMedicationAdded(medication);
         props.onClose();
+        setSelectedDrug(undefined);
     }
     return (
         <Modal show={props.show} onHide={props.onClose}>

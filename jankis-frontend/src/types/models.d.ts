@@ -268,14 +268,14 @@ export namespace Models {
         id: string;
         type: Enums.PatientEventType;
         patientId: string;
-        admissionId: string;
+        admissionId?: string;
         createdBy: string;
         timestamp: Date;
         drug: Models.Drug;
         unit: string;
         value: number;
         state: Enums.MedicationDispensionState;
-        note: string;
+        note?: string;
     }
 
     interface MedicationSchedule {

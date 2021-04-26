@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Col, FormCheck, FormControl, FormLabel, Row, Table } from 'react-bootstrap';
+import { Alert, Button, Col, Form, FormCheck, FormControl, FormLabel, FormText, InputGroup, Row, Table } from 'react-bootstrap';
 import { resolveText } from '../../helpers/Globalizer';
 import { Models } from '../../types/models';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { MedicationScheduleItemTableRow } from './MedicationScheduleItemTableRow';
-import { MedicationModal } from '../../modals/MedicationModal';
 import { buidlAndStoreObject } from '../../helpers/StoringHelpers';
+import { useHistory } from 'react-router';
 
 interface PatientMedicationViewProps {
     medicationSchedules: Models.MedicationSchedule[];
@@ -19,7 +19,7 @@ export const PatientMedicationView = (props: PatientMedicationViewProps) => {
     const [ selectedMedicationSchedule, setSelectedMedicationSchedule ] = useState<Models.MedicationSchedule>();
     const [ medicationChartSeries, setMedicationChartSeries ] = useState<any[]>([{ data: [] }]);
     const [ selectedMedications, setSelectedMedications ] = useState<Models.MedicationScheduleItem[]>([]);
-    const [ showMedicationModal, setShowMedicationModal] = useState<boolean>(false);
+    const history = useHistory();
 
     useEffect(() => {
         if(selectedMedicationSchedule) return;
@@ -28,9 +28,9 @@ export const PatientMedicationView = (props: PatientMedicationViewProps) => {
     }, [ props.medicationSchedules ]);
     useEffect(() => {
         if(!selectedMedicationSchedule) return;
-        const series = selectedMedicationSchedule.items.map(medication => (
-            {
-                data: medication.dispensions.map(dispension => {
+        const series = [{
+            data: selectedMedicationSchedule.items.flatMap(medication => 
+                medication.dispensions.map(dispension => {
                     const time = new Date(dispension.timestamp).getTime();
                     return (
                         {
@@ -39,8 +39,8 @@ export const PatientMedicationView = (props: PatientMedicationViewProps) => {
                         }
                     )
                 })
-            }
-        ));
+            )
+        }];
         setMedicationChartSeries(series);
     }, [ selectedMedicationSchedule ]);
 
@@ -69,19 +69,7 @@ export const PatientMedicationView = (props: PatientMedicationViewProps) => {
     const removeMedicationFromSelection = (medication: Models.MedicationScheduleItem) => {
         setSelectedMedications(selectedMedications.filter(x => x !== medication));
     }
-    const addMedicationToSchedule = async (medication: Models.MedicationScheduleItem) => {
-        if(!selectedMedicationSchedule) return;
-        buidlAndStoreObject<Models.MedicationScheduleItem>(
-            `api/medicationschedule/${selectedMedicationSchedule.id}/items`,
-            resolveText('Medication_SuccessfullyStored'),
-            resolveText('Medication_CouldNotStore'),
-            () => medication
-        );
-        setSelectedMedicationSchedule({
-            ...selectedMedicationSchedule,
-            items: selectedMedicationSchedule.items.concat(medication)
-        });
-    }
+    
     return (
         <>
             <Row className="mt-2">
@@ -89,28 +77,38 @@ export const PatientMedicationView = (props: PatientMedicationViewProps) => {
                 </Col>
                 <FormLabel column xs="auto">{resolveText('MedicationSchedule')}</FormLabel>
                 <Col xs="auto">
-                    <FormControl
-                        as="select"
-                        value={selectedMedicationSchedule?.id ?? ''}
-                        onChange={(e:any) => setSelectedMedicationSchedule(props.medicationSchedules.find(x => x.id === e.target.value))}
-                        style={{ minWidth: '100px'}}
-                    >
-                        {props.medicationSchedules.map((medicationSchedule,index) => (
-                            <option key={medicationSchedule.id} value={medicationSchedule.id}>
-                                {medicationSchedule.name ?? `${resolveText('MedicationSchedule')} #${index}`}
-                            </option>
-                        ))}
-                    </FormControl>
+                    <InputGroup>
+                        <FormControl
+                            as="select"
+                            value={selectedMedicationSchedule?.id ?? ''}
+                            onChange={(e:any) => setSelectedMedicationSchedule(props.medicationSchedules.find(x => x.id === e.target.value))}
+                            style={{ minWidth: '100px'}}
+                        >
+                            {props.medicationSchedules.map((medicationSchedule,index) => (
+                                <option key={medicationSchedule.id} value={medicationSchedule.id}>
+                                    {medicationSchedule.name ?? `${resolveText('MedicationSchedule')} #${index}`}
+                                </option>
+                            ))}
+                        </FormControl>
+                        {selectedMedicationSchedule
+                        ? <i className="fa fa-edit clickable m-2" style={{ fontSize: '20px'}} onClick={() => history.push(`/medicationschedules/${selectedMedicationSchedule.id}/edit`)} />
+                        : null}
+                    </InputGroup>
                 </Col>
             </Row>
             {selectedMedicationSchedule
             ? <>
-                <Chart
+                {selectedMedicationSchedule.items.length > 0
+                ? <Chart
                     type="rangeBar"
                     options={chartOptions}
                     series={medicationChartSeries}
-                    height="380"
-                />
+                    height={Math.min(380, 100+50*selectedMedicationSchedule.items.length)}
+                /> : null}
+                {selectedMedicationSchedule.note
+                ? <Alert variant="danger">
+                    {selectedMedicationSchedule.note}
+                </Alert> : null}
                 <Table>
                     <thead>
                         <tr>
@@ -134,16 +132,6 @@ export const PatientMedicationView = (props: PatientMedicationViewProps) => {
                         })}
                     </tbody>
                 </Table>
-                <Row>
-                    <Col className="text-center">
-                        <Button onClick={() => setShowMedicationModal(true)}>{resolveText('Medication_Add')}</Button>
-                    </Col>
-                </Row>
-                <MedicationModal
-                    show={showMedicationModal}
-                    onMedicationAdded={addMedicationToSchedule}
-                    onClose={() => setShowMedicationModal(false)}
-                />
             </>
             : <Row>
                 <Col className="text-center">

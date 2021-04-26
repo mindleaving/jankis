@@ -14,6 +14,7 @@ interface AutocompleteProps<T> {
     placeholder?: string;
     disabled?: boolean;
     required?: boolean;
+    className?: string;
 }
 interface AutocompleteState<T> {
     searchText: string;
@@ -80,7 +81,7 @@ export class Autocomplete<T> extends Component<AutocompleteProps<T>, Autocomplet
                         }
                     },
                     placeholder: this.props.placeholder ?? 'Enter search text',
-                    className: 'form-control',
+                    className: `form-control ${this.props.className ?? ''}`,
                     disabled: this.props.disabled,
                     required: this.props.required
                 }}

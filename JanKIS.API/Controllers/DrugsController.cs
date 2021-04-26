@@ -12,10 +12,15 @@ namespace JanKIS.API.Controllers
 {
     public class DrugsController : RestControllerBase<Drug>
     {
-        public DrugsController(IStore<Drug> store,
-            IHttpContextAccessor httpContextAccessor)
+        private readonly IAutocompleteCache autocompleteCache;
+
+        public DrugsController(
+            IStore<Drug> store,
+            IHttpContextAccessor httpContextAccessor,
+            IAutocompleteCache autocompleteCache)
             : base(store, httpContextAccessor)
         {
+            this.autocompleteCache = autocompleteCache;
         }
 
         protected override Expression<Func<Drug, object>> BuildOrderByExpression(string orderBy)
@@ -42,13 +47,18 @@ namespace JanKIS.API.Controllers
             return items;
         }
 
-        protected override Task PublishChange(
+        protected override async Task PublishChange(
             Drug item,
             StorageOperation storageOperation,
             string submitterUsername)
         {
-            // Nothing to do
-            return Task.CompletedTask;
+            await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.DrugBrand.ToString(), item.Brand));
+            await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.DrugApplicationSite.ToString(), item.ApplicationSite));
+            await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.DrugDispensionForm.ToString(), item.DispensionForm));
+            foreach (var activeIngredient in item.ActiveIngredients)
+            {
+                await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.DrugActiveIngredient.ToString(), activeIngredient));
+            }
         }
     }
 }

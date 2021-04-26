@@ -1,5 +1,7 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using JanKIS.API.Attributes;
+using TypescriptGenerator.Attributes;
 
 namespace JanKIS.API.Models
 {
@@ -30,15 +32,19 @@ namespace JanKIS.API.Models
         public string Id { get; set; }
         public PatientEventType Type => PatientEventType.MedicationDispension;
         public string PatientId { get; set; }
+        [TypescriptIsOptional]
         public string AdmissionId { get; set; }
         public string CreatedBy { get; set; }
         public DateTime Timestamp { get; set; }
 
+        [Required]
         public Drug Drug { get; set; }
-        [OfferAutocomplete(Context = "MedicationUnit")]
+        [Required]
         public string Unit { get; set; }
+        [Required]
         public double Value { get; set; }
         public MedicationDispensionState State { get; set; }
+        [TypescriptIsOptional]
         public string Note { get; set; }
         
     }

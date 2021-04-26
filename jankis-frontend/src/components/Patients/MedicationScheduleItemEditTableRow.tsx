@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Button, FormCheck, FormControl } from 'react-bootstrap';
 import { formatDrug } from '../../helpers/Formatters';
 import { Models } from '../../types/models';
-import { isToday, isTomorrow } from 'date-fns';
+import { isToday, isTomorrow, startOfToday, startOfTomorrow } from 'date-fns';
 import { resolveText } from '../../helpers/Globalizer';
 import { MedicationDispensionEditor } from './MedicationDispensionEditor';
+import { v4 as uuid } from 'uuid';
+import { MedicationDispensionState, PatientEventType } from '../../types/enums.d';
+import UserContext from '../../contexts/UserContext';
 
 interface MedicationScheduleItemEditTableRowProps {
     medication: Models.MedicationScheduleItem;
+    patientId: string;
+    admissionId?: string;
     isSelected: boolean;
     onSelectionChanged: (isSelected: boolean) => void;
     onStore: (item: Models.MedicationScheduleItem) => void;
@@ -17,11 +22,27 @@ interface MedicationScheduleItemEditTableRowProps {
 export const MedicationScheduleItemEditTableRow = (props: MedicationScheduleItemEditTableRowProps) => {
 
     const medication = props.medication;
-    const [ note, setNote] = useState<string>(medication.note);
-    const [ isPaused, setIsPaused ] = useState<boolean>(false);
-    const [ isDispendedByPatient, setIsDispendedByPatient ] = useState<boolean>(false);
-    const [ dispensions, setDispensions ] = useState<Models.MedicationDispension[]>([]);
+    const user = useContext(UserContext);
+    const [ note, setNote] = useState<string>(medication.note ?? '');
+    const [ isPaused, setIsPaused ] = useState<boolean>(medication.isPaused ?? false);
+    const [ isDispendedByPatient, setIsDispendedByPatient ] = useState<boolean>(medication.isDispendedByPatient ?? false);
+    const [ dispensions, setDispensions ] = useState<Models.MedicationDispension[]>(medication.dispensions ?? []);
 
+    const addDispension = (timestamp: Date) => {
+        const dispension: Models.MedicationDispension = {
+            id: uuid(),
+            patientId: props.patientId,
+            admissionId: props.admissionId,
+            drug: medication.drug,
+            state: MedicationDispensionState.Scheduled,
+            type: PatientEventType.MedicationDispension,
+            value: 0,
+            unit: medication.drug.amountUnit,
+            timestamp: timestamp,
+            createdBy: user!.username
+        };
+        setDispensions(dispensions.concat([dispension]));
+    }
     const updateDispension = (updatedDispension: Models.MedicationDispension) => {
         setDispensions(dispensions.map(dispension => {
             return dispension.id === updatedDispension.id ? updatedDispension : dispension;
@@ -49,13 +70,16 @@ export const MedicationScheduleItemEditTableRow = (props: MedicationScheduleItem
                 checked={props.isSelected}
                 onChange={(e:any) => props.onSelectionChanged(e.target.checked)}
             />
+        </td>
+        <td>
             <i className="fa fa-trash red clickable" onClick={() => props.onDelete(medication.id)} />
         </td>
         <td>
             {formatDrug(medication.drug)}
-            {resolveText('Note')}: <FormControl
+            <FormControl
                 value={note}
                 onChange={(e:any) => setNote(e.target.value)}
+                placeholder={resolveText('Note')}
             />
         </td>
         <td>
@@ -81,6 +105,7 @@ export const MedicationScheduleItemEditTableRow = (props: MedicationScheduleItem
                     />
                 ))
             }
+            <Button size="sm" onClick={() => addDispension(startOfToday())}>+ {resolveText('Add')}</Button>
         </td>
         <td>
             {dispensions
@@ -93,6 +118,7 @@ export const MedicationScheduleItemEditTableRow = (props: MedicationScheduleItem
                     />
                 ))
             }
+            <Button size="sm" onClick={() => addDispension(startOfTomorrow())}>+ {resolveText('Add')}</Button>
         </td>
         <td>
             <Button onClick={store}>{resolveText('Store')}</Button>

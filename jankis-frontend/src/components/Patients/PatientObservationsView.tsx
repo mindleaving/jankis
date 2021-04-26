@@ -16,6 +16,7 @@ interface ObservationDataPoint {
     seriesName: string;
     timestamp: Date;
     value: number;
+    unit: string;
 }
 interface Group<T> {
     key: string,
@@ -31,7 +32,8 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
                 measurementType: measurementType,
                 seriesName: formatMeasurementType(measurementType),
                 timestamp: observation.timestamp,
-                value: pulseObservation.bpm
+                value: pulseObservation.bpm,
+                unit: '1/min'
             }];
         }
         if(measurementType === MeasurementType.BloodPressure) {
@@ -41,13 +43,15 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
                     measurementType: measurementType,
                     seriesName: `${formatMeasurementType(measurementType)} - ${resolveText('Systolic')}`,
                     timestamp: observation.timestamp,
-                    value: bloodPressureObservation.systolic
+                    value: bloodPressureObservation.systolic,
+                    unit: 'mmHg'
                 },
                 {
                     measurementType: measurementType,
                     seriesName: `${formatMeasurementType(measurementType)} - ${resolveText('Diastolic')}`,
                     timestamp: observation.timestamp,
-                    value: bloodPressureObservation.diastolic
+                    value: bloodPressureObservation.diastolic,
+                    unit: 'mmHg'
                 }
             ];
         }
@@ -57,7 +61,8 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
                 measurementType: measurementType,
                 seriesName: formatMeasurementType(measurementType),
                 timestamp: observation.timestamp,
-                value: temperatureObservation.value
+                value: temperatureObservation.value,
+                unit: '°C'
             }];
         }
         const genericObservation = observation as Models.GenericObservation;
@@ -68,7 +73,8 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
             measurementType: measurementType,
             seriesName: formatMeasurementType(measurementType),
             timestamp: observation.timestamp,
-            value: parseFloat(genericObservation.value)
+            value: parseFloat(genericObservation.value),
+            unit: genericObservation.unit
         }];
     });
     const groupedObservations = groupBy(observationDataPoints, x => x.seriesName);
@@ -82,20 +88,6 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
                 }
             ))
         }));
-    const getUnitForMeasurementType = (measurementType: MeasurementType) => {
-        switch(measurementType) {
-            case MeasurementType.Pulse:
-                return '1/min';
-            case MeasurementType.BloodPressure:
-                return 'mmHg';
-            case MeasurementType.Temperature:
-                return '°C';
-            case MeasurementType.OxygenSaturation:
-                return '%';
-            default:
-                throw new Error(`Unsupported measurement type '${measurementType}' for charting`);
-        }
-    }
     const getYMinForMeasurementType = (measurementType: MeasurementType) => {
         switch(measurementType) {
             case MeasurementType.Temperature:
@@ -116,6 +108,7 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
         for (const group of observationGroups) {
             const seriesName = group.key;
             const measurementType = group.items[0].measurementType;
+            const unit = group.items[0].unit;
             const existingYAxisName = measurementTypeSeriesNameMap[measurementType];
             if(existingYAxisName) {
                 yAxesOptions.push({
@@ -126,7 +119,7 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
                 yAxesOptions.push({
                     seriesName: seriesName,
                     title: {
-                        text: getUnitForMeasurementType(measurementType)
+                        text: unit
                     },
                     min: getYMinForMeasurementType(measurementType),
                     max: getYMaxForMeasurementType(measurementType),

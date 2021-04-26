@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
+import { MedicationScheduleEditor } from '../../components/Patients/MedicationScheduleEditor';
 import { RowFormGroup } from '../../components/RowFormGroup';
 import { resolveText } from '../../helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
@@ -32,6 +33,10 @@ export const PatientMedicationsPage = (props: PatientMedicationsPageProps) => {
         return (<h1>{resolveText('MissingID')}</h1>);
     }
 
+    if(isLoading) {
+        return (<h1>{resolveText('Loading...')}</h1>);
+    }
+
     return (
         <>
             <h1>{resolveText('MedicationSchedule')}</h1>
@@ -46,6 +51,11 @@ export const PatientMedicationsPage = (props: PatientMedicationsPageProps) => {
                     <option key={medicationSchedule.id} value={medicationSchedule.id}>{medicationSchedule.name ?? `${resolveText('MedicationSchedule')} #${index+1}`}</option>
                 ))}
             </RowFormGroup>
+            {selectedMedicationSchedule
+            ? <MedicationScheduleEditor
+                medicationScheduleId={selectedMedicationSchedule.id}
+            />
+            : null}
         </>
     );
 

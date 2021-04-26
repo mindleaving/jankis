@@ -10,6 +10,7 @@ import { RowFormGroup } from '../../components/RowFormGroup';
 import { MemoryFormControl } from '../../components/MemoryFormControl';
 import { ListFormControl } from '../../components/ListFormControl';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
+import { AutoCompleteContext } from '../../types/enums.d';
 
 interface DrugParams {
     drugId?: string;
@@ -110,17 +111,7 @@ export const CreateEditDrugPage = (props: CreateEditDrugPageProps) => {
                     <FormLabel column>{resolveText('Drug_Brand')}</FormLabel>
                     <Col>
                         <MemoryFormControl
-                            context="drugBrand"
-                            defaultValue={brand}
-                            onChange={setBrand}
-                        />
-                    </Col>
-                </FormGroup>
-                <FormGroup as={Row}>
-                    <FormLabel column>{resolveText('Drug_Brand')}</FormLabel>
-                    <Col>
-                        <MemoryFormControl
-                            context="drugBrand"
+                            context={AutoCompleteContext.DrugBrand}
                             defaultValue={brand}
                             onChange={setBrand}
                         />
@@ -131,10 +122,10 @@ export const CreateEditDrugPage = (props: CreateEditDrugPageProps) => {
                     <Col>
                         <InputGroup>
                             <MemoryFormControl
-                                context="drugActiveIngredient"
+                                context={AutoCompleteContext.DrugActiveIngredient}
                                 onChange={setNewActiveIngredient}
                             />
-                            <Button onClick={addActiveIngredient}>{resolveText('Add')}</Button>
+                            <Button className="mx-2" onClick={addActiveIngredient}>{resolveText('Add')}</Button>
                         </InputGroup>
                     </Col>
                 </FormGroup>
@@ -153,7 +144,7 @@ export const CreateEditDrugPage = (props: CreateEditDrugPageProps) => {
                     <FormLabel column>{resolveText('Drug_ApplicationSite')}</FormLabel>
                     <Col>
                         <MemoryFormControl required
-                            context="drugApplicationSite"
+                            context={AutoCompleteContext.DrugApplicationSite}
                             defaultValue={applicationSite}
                             onChange={setApplicationSite}
                         />
@@ -163,7 +154,7 @@ export const CreateEditDrugPage = (props: CreateEditDrugPageProps) => {
                     <FormLabel column>{resolveText('Drug_DispensionForm')}</FormLabel>
                     <Col>
                         <MemoryFormControl required
-                            context="drugDispensionForm"
+                            context={AutoCompleteContext.DrugDispensionForm}
                             defaultValue={dispensionForm}
                             onChange={setDispensionForm}
                         />
@@ -179,9 +170,12 @@ export const CreateEditDrugPage = (props: CreateEditDrugPageProps) => {
                                 onChange={(e:any) => setAmountValue(e.target.value)}
                             />
                             <MemoryFormControl required
-                                context="unit"
+                                className="mx-2"
+                                context={AutoCompleteContext.Unit}
                                 defaultValue={amountUnit}
                                 onChange={setAmountUnit}
+                                placeholder={resolveText('Unit')}
+                                minSearchTextLength={1}
                             />
                         </InputGroup>
                     </Col>
