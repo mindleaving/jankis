@@ -17,11 +17,31 @@ export namespace ViewModels {
         departments: Models.Department[];
     }
 
+    interface DepartmentViewModel {
+        parentDepartment?: ViewModels.DepartmentViewModel;
+        id: string;
+        name: string;
+        institutionId: string;
+        parentDepartmentId?: string;
+        roomIds: string[];
+    }
+
     interface InstitutionViewModel {
         id: string;
         name: string;
         rooms: Models.Room[];
         departments: Models.Department[];
+    }
+
+    interface IViewModel<T> {
+        
+    }
+
+    interface LocationViewModel {
+        department?: ViewModels.DepartmentViewModel;
+        room?: Models.Room;
+        type: Enums.LocationType;
+        id: string;
     }
 
     interface LoggedInUserViewModel {
@@ -46,5 +66,65 @@ export namespace ViewModels {
         observations: Models.Observation[];
         documents: Models.PatientDocument[];
         subscription: Models.Subscriptions.PatientSubscription;
+    }
+
+    interface ResourceViewModel {
+        locationViewModel?: ViewModels.LocationViewModel;
+        id: string;
+        name: string;
+        location?: Models.LocationReference;
+        groupName?: string;
+        note: string;
+    }
+
+    interface ServiceViewModel {
+        department: ViewModels.DepartmentViewModel;
+        id: string;
+        name: string;
+        description: string;
+        parameters: Models.ServiceParameter[];
+        audience: Models.ServiceAudience[];
+        departmentId: string;
+        autoAcceptRequests: boolean;
+        isAvailable: boolean;
+    }
+
+    interface StockViewModel {
+        department: ViewModels.DepartmentViewModel;
+        locationViewModel: ViewModels.LocationViewModel;
+        id: string;
+        name: string;
+        location: Models.LocationReference;
+        departmentId: string;
+    }
+
+    export namespace Builders {
+        interface AccountViewModelBuilder {
+            
+        }
+    
+        interface DepartmentViewModelBuilder {
+            
+        }
+    
+        interface IViewModelBuilder<T> {
+            
+        }
+    
+        interface LocationViewModelBuilder {
+            
+        }
+    
+        interface ResourceViewModelBuilder {
+            
+        }
+    
+        interface ServiceViewModelBuilder {
+            
+        }
+    
+        interface StockViewModelBuilder {
+            
+        }
     }
 }

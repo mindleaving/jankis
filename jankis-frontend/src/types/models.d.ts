@@ -465,15 +465,9 @@ export namespace Models {
     interface Resource {
         id: string;
         name: string;
-        location: Models.LocationReference;
-        groupId?: string;
+        location?: Models.LocationReference;
+        groupName?: string;
         note: string;
-    }
-
-    interface ResourceGroup {
-        id: string;
-        name: string;
-        parentGroup?: string;
     }
 
     interface Role {

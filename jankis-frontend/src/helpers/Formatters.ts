@@ -1,7 +1,8 @@
-import { MeasurementType, ServiceAudienceType, Sex } from "../types/enums.d";
+import { LocationType, MeasurementType, ServiceAudienceType, Sex } from "../types/enums.d";
 import { Models } from "../types/models";
 import { resolveText } from "./Globalizer";
 import { differenceInYears, differenceInMonths, differenceInDays } from 'date-fns';
+import { ViewModels } from "../types/viewModels";
 
 export const formatServiceAudience = (item: Models.ServiceAudience) => {
     if(item.type === ServiceAudienceType.All) {
@@ -76,4 +77,13 @@ export const formatAge = (birthDate: Date) => {
 }
 export const formatDrug = (drug: Models.Drug) => {
     return `${drug.productName}`;
+}
+export const formatLocation = (location: ViewModels.LocationViewModel) => {
+    switch(location.type) {
+        case LocationType.Department:
+            return `${resolveText(`LocationType_${location.type}`)} ${location.department?.name ?? location.id}`;
+        case LocationType.Room:
+            return `${resolveText(`LocationType_${location.type}`)} ${location.room?.name ?? location.id}`;
+    }
+    return `${resolveText(`LocationType_${location.type}`)} ${location.id}`;
 }

@@ -141,7 +141,6 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
                         <th>{resolveText('MedicationSchedule_IsDispensedByPatient')}</th>
                         <th>{resolveText('MedicationScheduleItem_DispensionsToday')}</th>
                         <th>{resolveText('MedicationScheduleItem_DispensionsTomorrow')}</th>
-                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -152,7 +151,7 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
                             admissionId={admissionId}
                             isSelected={selectedScheduleItemIds.includes(medication.id)}
                             onSelectionChanged={(isSelected) => updateSelection(isSelected, medication.id)}
-                            onStore={updateMedication}
+                            onChange={updateMedication}
                             onDelete={deleteMedication}
                         />
                     ))}

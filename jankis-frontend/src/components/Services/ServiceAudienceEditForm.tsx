@@ -2,9 +2,10 @@ import React, { useMemo, useState } from 'react';
 import { Button, FormControl, FormGroup, FormLabel } from 'react-bootstrap';
 import { AutocompleteRunner } from '../../helpers/AutocompleteRunner';
 import { resolveText } from '../../helpers/Globalizer';
-import { ServiceAudienceType, ServiceParameterValueType } from '../../types/enums.d';
+import { ServiceAudienceType } from '../../types/enums.d';
 import { Models } from '../../types/models';
 import { Autocomplete } from '../Autocompletes/Autocomplete';
+import { PersonAutocomplete } from '../Autocompletes/PersonAutocomplete';
 
 interface ServiceAudienceEditFormProps {
     addAudience: (item: Models.ServiceAudience) => void;
@@ -13,7 +14,6 @@ interface ServiceAudienceEditFormProps {
 export const ServiceAudienceEditForm = (props: ServiceAudienceEditFormProps) => {
 
     const roleAutoCompleteRunner = useMemo(() => new AutocompleteRunner<Models.Role>('api/roles/search', 'searchText', 10), []);
-    const personsAutoCompleteRunner = useMemo(() => new AutocompleteRunner<Models.Person>('api/persons/search', 'searchText', 10), []);
 
     const [ type, setType ] = useState<ServiceAudienceType>(ServiceAudienceType.Role);
     const [ selectedRole, setSelectedRole ] = useState<Models.Role>();
@@ -32,7 +32,7 @@ export const ServiceAudienceEditForm = (props: ServiceAudienceEditFormProps) => 
                 roleId: selectedRole!.id
             }
             audience = roleAudience;
-        }else if(type === ServiceAudienceType.Person) {
+        } else if(type === ServiceAudienceType.Person) {
             const patientAudience: Models.PersonServiceAudience = {
                 type: type,
                 personId: selectedPerson!.id
@@ -56,20 +56,16 @@ export const ServiceAudienceEditForm = (props: ServiceAudienceEditFormProps) => 
                 />
             </FormGroup>
         );
-    }else if(type === ServiceAudienceType.Person) {
+    } else if(type === ServiceAudienceType.Person) {
         typeSpecificFormElements = (
             <FormGroup>
                 <FormLabel>{resolveText('ServiceAudienceType_Person')}</FormLabel>
-                <Autocomplete
-                    search={personsAutoCompleteRunner.search}
-                    displayNameSelector={x => `${x.firstName} ${x.lastName} (${x.id})`}
-                    onItemSelected={setSelectedPerson}
+                <PersonAutocomplete
+                    onChange={setSelectedPerson}
                 />
             </FormGroup>
         );
-    }
-
-    
+    }    
 
     return (
         <>

@@ -47,6 +47,7 @@ export const RoomCard = (props: RoomCardProps) => {
                         : 'text-dark';
                     return (
                         <AccordionCard 
+                            key={bedPosition}
                             title={<Row className="align-items-center">
                                 <Col>
                                     {resolveText('Bed')} {bedPosition} ({resolveText(`BedState_${currentOccupancy?.state ?? BedState.Empty}`)})

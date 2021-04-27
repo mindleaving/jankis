@@ -7,6 +7,7 @@ using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
+using JanKIS.API.ViewModels.Builders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +25,7 @@ namespace JanKIS.API.Controllers
         private readonly IStore<ServiceRequest> serviceRequestsStore;
         private readonly ISubscriptionsStore subscriptionsStore;
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IViewModelBuilder<Department> departmentViewModelBuilder;
 
         public DepartmentsController(
             IStore<Department> departmentsStore,
@@ -31,7 +33,8 @@ namespace JanKIS.API.Controllers
             IReadonlyStore<Account> accountsStore,
             IStore<ServiceRequest> serviceRequestsStore,
             ISubscriptionsStore subscriptionsStore,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IViewModelBuilder<Department> departmentViewModelBuilder)
             : base(departmentsStore, httpContextAccessor)
         {
             this.departmentsStore = departmentsStore;
@@ -40,6 +43,7 @@ namespace JanKIS.API.Controllers
             this.serviceRequestsStore = serviceRequestsStore;
             this.subscriptionsStore = subscriptionsStore;
             this.httpContextAccessor = httpContextAccessor;
+            this.departmentViewModelBuilder = departmentViewModelBuilder;
         }
 
         [HttpGet(nameof(Hierarchy))]
@@ -122,6 +126,10 @@ namespace JanKIS.API.Controllers
         }
 
 
+        protected override async Task<object> TransformItem(Department item)
+        {
+            return await departmentViewModelBuilder.Build(item);
+        }
 
         protected override Expression<Func<Department, object>> BuildOrderByExpression(string orderBy)
         {

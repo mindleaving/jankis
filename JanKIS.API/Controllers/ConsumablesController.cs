@@ -6,25 +6,22 @@ using System.Threading.Tasks;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
-using JanKIS.API.Workflow;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace JanKIS.API.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
     public class ConsumablesController : RestControllerBase<Consumable>
     {
-        private readonly INotificationDistributor notificationDistributor;
-
         public ConsumablesController(
             IStore<Consumable> store,
-            INotificationDistributor notificationDistributor,
             IHttpContextAccessor httpContextAccessor)
             : base(store, httpContextAccessor)
         {
-            this.notificationDistributor = notificationDistributor;
+        }
+
+        protected override Task<object> TransformItem(Consumable item)
+        {
+            return Task.FromResult<object>(item);
         }
 
         protected override Expression<Func<Consumable, object>> BuildOrderByExpression(string orderBy)

@@ -5,6 +5,27 @@ namespace JanKIS.API.Models
 {
     public class ServiceDefinition : IId
     {
+        public ServiceDefinition() {}
+        public ServiceDefinition(
+            string id,
+            string name,
+            string description,
+            string departmentId,
+            List<ServiceParameter> parameters,
+            List<ServiceAudience> audience,
+            bool autoAcceptRequests,
+            bool isAvailable)
+        {
+            Id = id;
+            Name = name;
+            Description = description;
+            DepartmentId = departmentId;
+            Parameters = parameters;
+            Audience = audience;
+            AutoAcceptRequests = autoAcceptRequests;
+            IsAvailable = isAvailable;
+        }
+
         public string Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

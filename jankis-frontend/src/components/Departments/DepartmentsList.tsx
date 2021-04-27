@@ -7,6 +7,7 @@ import { resolveText } from '../../helpers/Globalizer';
 import PagedTableLoader from '../../helpers/PagedTableLoader';
 import { DepartmentsFilter } from '../../types/frontendTypes';
 import { Models } from '../../types/models';
+import { ViewModels } from '../../types/viewModels';
 import { PagedTable } from '../PagedTable';
 
 interface DepartmentsListProps {
@@ -15,11 +16,11 @@ interface DepartmentsListProps {
 
 export const DepartmentsList = (props: DepartmentsListProps) => {
 
-    const [ departments, setDepartments ] = useState<Models.Department[]>([]);
+    const [ departments, setDepartments ] = useState<ViewModels.DepartmentViewModel[]>([]);
     const history = useHistory();
     const filter = props.filter;
 
-    const departmentsLoader = useMemo(() => new PagedTableLoader<Models.Department>(
+    const departmentsLoader = useMemo(() => new PagedTableLoader<ViewModels.DepartmentViewModel>(
         'api/departments',
         resolveText('Departments_CouldNotLoad'),
         setDepartments,
@@ -77,7 +78,7 @@ export const DepartmentsList = (props: DepartmentsListProps) => {
                     <tr key={department.id}>
                         <td><i className="fa fa-trash red clickable" onClick={() => deleteDepartment(department.id, department.name)} /></td>
                         <td>{department.name}</td>
-                        <td>{department.parentDepartmentId}</td>
+                        <td>{department.parentDepartment?.name}</td>
                         <td><Button variant="link" onClick={() => history.push(`/departments/${department.id}/edit`)}>{resolveText('Edit...')}</Button></td>
                     </tr>
                 ))

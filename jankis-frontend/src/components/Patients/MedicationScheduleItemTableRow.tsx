@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
-import { Badge, FormCheck, FormControl, FormLabel, InputGroup } from 'react-bootstrap';
+import { Badge, FormCheck } from 'react-bootstrap';
 import { formatDrug } from '../../helpers/Formatters';
 import { Models } from '../../types/models';
-import { ListFormControl } from '../ListFormControl';
 import { isToday, isTomorrow } from 'date-fns';
 import { resolveText } from '../../helpers/Globalizer';
 
@@ -33,18 +31,22 @@ export const MedicationScheduleItemTableRow = (props: MedicationScheduleItemTabl
             </div> : null}
         </td>
         <td>
-            {dispensionsToday.map(dispension => (
+            {dispensionsToday.length > 0
+            ? dispensionsToday.map(dispension => (
                 <div>
                     <Badge variant="primary">{new Date(dispension.timestamp).toLocaleTimeString()}{dispension.note ? ` (${dispension.note})` : ''}</Badge>
                 </div>
-            ))}
+            ))
+            : resolveText('None')}
         </td>
         <td>
-            {dispensionsTomorrow.map(dispension => (
+            {dispensionsTomorrow.length > 0
+            ? dispensionsTomorrow.map(dispension => (
                 <div>
                     <Badge variant="primary">{new Date(dispension.timestamp).toLocaleTimeString()}{dispension.note ? ` (${dispension.note})` : ''}</Badge>
                 </div>
-            ))}
+            ))
+            : resolveText('None')}
         </td>
     </tr>);
 

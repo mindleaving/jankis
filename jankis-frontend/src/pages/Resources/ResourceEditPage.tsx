@@ -1,18 +1,20 @@
-import React, { FormEvent, useEffect, useMemo, useState } from 'react';
-import { RouteComponentProps } from 'react-router';
+import { FormEvent, useEffect, useState } from 'react';
+import { RouteComponentProps, useHistory } from 'react-router';
 import { apiClient } from '../../communication/ApiClient';
 import { resolveText } from '../../helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { Models } from '../../types/models';
 import { NotificationManager } from 'react-notifications';
 import { v4 as uuid } from 'uuid';
-import { LocationType } from '../../types/enums.d';
+import { AutoCompleteContext } from '../../types/enums.d';
 import { RowFormGroup } from '../../components/RowFormGroup';
 import Form from 'react-bootstrap/esm/Form';
-import { AsyncButton } from '../../components/AsyncButton';
 import { Col, FormGroup, FormLabel, Row } from 'react-bootstrap';
-import { Autocomplete } from '../../components/Autocompletes/Autocomplete';
-import { AutocompleteRunner } from '../../helpers/AutocompleteRunner';
+import { StoreButton } from '../../components/StoreButton';
+import { MemoryFormControl } from '../../components/MemoryFormControl';
+import { LocationFormControl } from '../../components/LocationFormControl';
+import { ViewModels } from '../../types/viewModels';
+import { buidlAndStoreObject } from '../../helpers/StoringHelpers';
 
 interface ResourceParams {
     resourceId?: string;
@@ -21,57 +23,64 @@ interface ResourceEditPageProps extends RouteComponentProps<ResourceParams> {}
 
 export const ResourceEditPage = (props: ResourceEditPageProps) => {
 
-    const resourceGroupAutocompleteRunner = useMemo(() => new AutocompleteRunner<Models.ResourceGroup>('api/resourcegroups/search', 'searchText', 10), []);
     const isNew = props.match.path.toLowerCase().startsWith('/create');
     if(!isNew && !props.match.params.resourceId) {
         throw new Error('Invalid link');
     }
-    const id = props.match.params.resourceId ?? uuid();
+    const matchedId = props.match.params.resourceId;
+    const id = matchedId ?? uuid();
 
-    const [ isLoading, setIsLoading ] = useState<boolean>(true);
+    const [ isLoading, setIsLoading ] = useState<boolean>(!isNew);
     const [ isStoring, setIsStoring ] = useState<boolean>(false);
     const [ name, setName ] = useState<string>('');
-    const [ resourceGroup, setResourceGroup ] = useState<Models.ResourceGroup>();
-    const [ roomId, setRoomId ] = useState<string>('');
+    const [ groupName, setGroupName ] = useState<string>();
+    const [ location, setLocation ] = useState<ViewModels.LocationViewModel>();
+    const [ note, setNote ] = useState<string>('');
+    const history = useHistory();
+    
 
     useEffect(() => {
         if(isNew) return;
         setIsLoading(true);
-        const loadConsumable = buildLoadObjectFunc<Models.Resource>(
-            `api/consumables/${id}`,
+        const loadResource = buildLoadObjectFunc<ViewModels.ResourceViewModel>(
+            `api/resources/${matchedId}`,
             {},
-            resolveText('Consumable_CouldNotLoad'),
-            consumable => {
-                setName(consumable.name);
+            resolveText('Resource_CouldNotLoad'),
+            resource => {
+                setName(resource.name);
+                setGroupName(resource.groupName);
+                setLocation(resource.locationViewModel);
+                setNote(resource.note);
             },
             () => setIsLoading(false)
         );
-        loadConsumable();
-    }, [ isNew, id ]);
+        loadResource();
+    }, [ isNew, matchedId ]);
 
     const store = async (e?: FormEvent) => {
         e?.preventDefault();
-        try {
-            setIsStoring(true);
-            const resource = buildResource();
-            await apiClient.put(`api/consumables/${resource.id}`, {}, resource);
-        } catch(error) {
-            NotificationManager.error(error.message, resolveText('Consumable_CouldNotStore'));
-        } finally {
-            setIsStoring(false);
-        }
+        setIsStoring(true);
+        await buidlAndStoreObject(
+            `api/resources/${id}`,
+            resolveText('Resource_SuccessfullyStored'),
+            resolveText('Resource_CouldNotStore'),
+            buildResource,
+            () => history.goBack(),
+            () => setIsStoring(false)
+        )
     }
 
     const buildResource = (): Models.Resource => {
         return {
             id: id,
             name: name,
-            groupId: resourceGroup?.id,
-            location: {
-                type: LocationType.Room,
-                id: roomId
-            },
-            note: ''
+            groupName: groupName,
+            location: location 
+            ? {
+                type: location.type,
+                id: location.id
+            } : undefined,
+            note: note
         };
     }
 
@@ -82,32 +91,34 @@ export const ResourceEditPage = (props: ResourceEditPageProps) => {
     return (
         <>
         <h1>{resolveText('Resource')} '{name}'</h1>
-            <Form className="needs-validation was-validated" onSubmit={store}>
+            <Form onSubmit={store}>
                 <RowFormGroup required
                     label={resolveText('Resource_Name')}
                     value={name}
                     onChange={setName}
                 />
                 <FormGroup as={Row}>
-                    <FormLabel column>{resolveText('')}</FormLabel>
+                    <FormLabel column>{resolveText('Resource_Group')}</FormLabel>
                     <Col>
-                        <Autocomplete
-                            search={resourceGroupAutocompleteRunner.search}
-                            displayNameSelector={x => x.name}
-                            onItemSelected={setResourceGroup}
+                        <MemoryFormControl
+                            context={AutoCompleteContext.ResourceGroup}
+                            defaultValue={groupName}
+                            onChange={setGroupName}
                         />
                     </Col>
                 </FormGroup>
-                <RowFormGroup
-                    label={resolveText('RoomNumber')}
-                    value={roomId}
-                    onChange={setRoomId}
-                />
-                <AsyncButton
+                <FormGroup as={Row}>
+                    <FormLabel column>{resolveText('Resource_Location')}</FormLabel>
+                    <Col>
+                        <LocationFormControl
+                            value={location}
+                            onChange={setLocation}
+                        />
+                    </Col>
+                </FormGroup>
+                <StoreButton
                     type="submit"
-                    activeText={resolveText('Store')}
-                    executingText={resolveText('Storing...')}
-                    isExecuting={isStoring}
+                    isStoring={isStoring}
                 />
             </Form>
         </>

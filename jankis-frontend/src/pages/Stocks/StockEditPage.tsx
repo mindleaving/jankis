@@ -1,5 +1,5 @@
 import React, { FormEvent, useEffect, useState } from 'react';
-import { Form } from 'react-bootstrap';
+import { Col, Form, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router';
 import { apiClient } from '../../communication/ApiClient';
 import { RowFormGroup } from '../../components/RowFormGroup';
@@ -9,8 +9,9 @@ import { Models } from '../../types/models';
 import { NotificationManager } from 'react-notifications';
 import { v4 as uuid } from 'uuid';
 import { AsyncButton } from '../../components/AsyncButton';
-import { useSelector } from 'react-redux';
-import { getDepartments } from '../../stores/selectors/departmentSelectors';
+import { DepartmentAutocomplete } from '../../components/Autocompletes/DepartmentAutocomplete';
+import { LocationFormControl } from '../../components/LocationFormControl';
+import { ViewModels } from '../../types/viewModels';
 
 interface StockParams {
     stockId?: string;
@@ -24,32 +25,32 @@ export const StockEditPage = (props: StockEditPageProps) => {
         throw new Error('Invalid link');
     }
     const id = props.match.params.stockId ?? uuid();
-    const departments = useSelector(getDepartments);
 
     const [ name, setName ] = useState<string>('');
-    const [ selectedDepartment, setSelectedDepartment ] = useState<Models.Department>();
-    const [ selectedLocation, setSelectedLocation ] = useState<Models.LocationReference>();
+    const [ selectedDepartment, setSelectedDepartment ] = useState<ViewModels.DepartmentViewModel>();
+    const [ location, setLocation ] = useState<ViewModels.LocationViewModel>();
     const [ isLoading, setIsLoading ] = useState<boolean>(!isNew);
     const [ isStoring, setIsStoring] = useState<boolean>(false);
 
     useEffect(() => {
         if(isNew) return;
         setIsLoading(true);
-        const loadStock = buildLoadObjectFunc<Models.Stock>(
+        const loadStock = buildLoadObjectFunc<ViewModels.StockViewModel>(
             `api/stocks/${id}`,
             {},
             resolveText('Stock_CouldNotLoad'),
             stock => {
                 setName(stock.name);
-                setSelectedDepartment(departments.find(x => x.id === stock.departmentId));
-                setSelectedLocation(stock.location);
+                setSelectedDepartment(stock.department);
+                setLocation(stock.locationViewModel);
             },
             () => setIsLoading(false)
         );
         loadStock();
-    }, [ isNew, id, departments ]);
+    }, [ isNew, id ]);
 
     const store = async (e?: FormEvent) => {
+        e?.preventDefault();
         try {
             setIsStoring(true);
             const stock = buildStock();
@@ -66,7 +67,10 @@ export const StockEditPage = (props: StockEditPageProps) => {
         return {
             id: id,
             name: name,
-            location: selectedLocation!,
+            location: {
+                type: location!.type,
+                id: location!.id
+            },
             departmentId: selectedDepartment!.id
         };
     }
@@ -78,12 +82,30 @@ export const StockEditPage = (props: StockEditPageProps) => {
     return (
         <>
             <h1>{resolveText('Stock')} '{name}'</h1>
-            <Form className="needs-validation was-validated" onSubmit={store}>
+            <Form onSubmit={store}>
                 <RowFormGroup required
                     label={resolveText('Stock_Name')}
                     value={name}
                     onChange={setName}
                 />
+                <FormGroup as={Row}>
+                    <FormLabel column>{resolveText('Stock_Department')}</FormLabel>
+                    <Col>
+                        <DepartmentAutocomplete required
+                            value={selectedDepartment}
+                            onChange={setSelectedDepartment}
+                        />
+                    </Col>
+                </FormGroup>
+                <FormGroup as={Row}>
+                    <FormLabel column>{resolveText('Stock_Location')}</FormLabel>
+                    <Col>
+                        <LocationFormControl required
+                            value={location}
+                            onChange={setLocation}
+                        />
+                    </Col>
+                </FormGroup>
                 <AsyncButton
                     type="submit"
                     activeText={resolveText('Store')}

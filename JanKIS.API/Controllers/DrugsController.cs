@@ -23,6 +23,11 @@ namespace JanKIS.API.Controllers
             this.autocompleteCache = autocompleteCache;
         }
 
+        protected override Task<object> TransformItem(Drug item)
+        {
+            return Task.FromResult<object>(item);
+        }
+
         protected override Expression<Func<Drug, object>> BuildOrderByExpression(string orderBy)
         {
             return orderBy?.ToLower() switch

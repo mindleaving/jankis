@@ -37,6 +37,11 @@ namespace JanKIS.API.Controllers
             return await base.CreateOrReplace(id, item);
         }
 
+        protected override Task<object> TransformItem(SubscriptionBase item)
+        {
+            return Task.FromResult<object>(item);
+        }
+
         protected override Expression<Func<SubscriptionBase, object>> BuildOrderByExpression(string orderBy)
         {
             return orderBy?.ToLower() switch

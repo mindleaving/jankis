@@ -30,6 +30,11 @@ namespace JanKIS.API.Controllers
             return await base.Delete(id);
         }
 
+        protected override Task<object> TransformItem(Person item)
+        {
+            return Task.FromResult<object>(item);
+        }
+
         protected override Expression<Func<Person, object>> BuildOrderByExpression(string orderBy)
         {
             return orderBy?.ToLower() switch

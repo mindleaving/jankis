@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 
 namespace JanKIS.API.ViewModels
 {
-    public class AccountViewModel
+    public class AccountViewModel : IViewModel<Account>
     {
         public AccountViewModel(string username,
             AccountType accountType,

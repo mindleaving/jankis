@@ -18,6 +18,11 @@ namespace JanKIS.API.Controllers
         {
         }
 
+        protected override Task<object> TransformItem(Room item)
+        {
+            return Task.FromResult<object>(item);
+        }
+
         protected override Expression<Func<Room, object>> BuildOrderByExpression(string orderBy)
         {
             return orderBy?.ToLower() switch

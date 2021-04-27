@@ -7,6 +7,7 @@ using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
+using JanKIS.API.ViewModels.Builders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,15 +18,21 @@ namespace JanKIS.API.Controllers
     {
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ISubscriptionsStore subscriptionsStore;
+        private readonly IAutocompleteCache autocompleteCache;
+        private readonly IViewModelBuilder<Resource> resourceViewModelBuilder;
 
         public ResourcesController(
             IStore<Resource> store,
             IHttpContextAccessor httpContextAccessor,
-            ISubscriptionsStore subscriptionsStore)
+            ISubscriptionsStore subscriptionsStore,
+            IAutocompleteCache autocompleteCache,
+            IViewModelBuilder<Resource> resourceViewModelBuilder)
             : base(store, httpContextAccessor)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.subscriptionsStore = subscriptionsStore;
+            this.autocompleteCache = autocompleteCache;
+            this.resourceViewModelBuilder = resourceViewModelBuilder;
         }
 
         [Authorize(Policy = nameof(Permission.ViewResources))]
@@ -100,6 +107,11 @@ namespace JanKIS.API.Controllers
             return Ok();
         }
 
+        protected override async Task<object> TransformItem(Resource item)
+        {
+            return await resourceViewModelBuilder.Build(item);
+        }
+
         protected override Expression<Func<Resource, object>> BuildOrderByExpression(string orderBy)
         {
             return orderBy?.ToLower() switch
@@ -122,13 +134,20 @@ namespace JanKIS.API.Controllers
             return items.OrderBy(x => x.Name.Length);
         }
 
-        protected override Task PublishChange(
+        protected override async Task PublishChange(
             Resource item,
             StorageOperation storageOperation,
             string submitterUsername)
         {
-            // Nothing to do
-            return Task.CompletedTask;
+            if (!string.IsNullOrWhiteSpace(item.GroupName))
+            {
+                await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.ResourceGroup.ToString(), item.GroupName));
+            }
+
+            if (item.Location != null && item.Location.Type == LocationType.External)
+            {
+                await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.ExternalLocation.ToString(), item.Location.Id));
+            }
         }
     }
 }

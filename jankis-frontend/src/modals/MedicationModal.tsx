@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { FormEvent, useState } from 'react';
 import { Button, Col, Form, FormGroup, FormLabel, Modal, Row } from 'react-bootstrap';
 import { DrugAutocomplete } from '../components/Autocompletes/DrugAutocomplete';
 import { resolveText } from '../helpers/Globalizer';
@@ -14,7 +14,8 @@ interface MedicationModalProps {
 export const MedicationModal = (props: MedicationModalProps) => {
 
     const [ selectedDrug, setSelectedDrug ] = useState<Models.Drug>();
-    const addMedication = () => {
+    const addMedication = (e?: FormEvent) => {
+        e?.preventDefault();
         if(!selectedDrug) {
             return;
         }
@@ -36,7 +37,7 @@ export const MedicationModal = (props: MedicationModalProps) => {
                 <Modal.Title>{resolveText('AddMedication')}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Form>
+                <Form id="MedicationModal" onSubmit={addMedication}>
                     <FormGroup as={Row}>
                         <FormLabel column>{resolveText('Medication_Drug')}</FormLabel>
                         <Col>
@@ -50,7 +51,7 @@ export const MedicationModal = (props: MedicationModalProps) => {
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={() => props.onClose()}>{resolveText('Cancel')}</Button>
-                <Button onClick={addMedication} disabled={!selectedDrug}>{resolveText('Add')}</Button>
+                <Button type="submit" form="MedicationModal" disabled={!selectedDrug}>{resolveText('Add')}</Button>
             </Modal.Footer>
         </Modal>
     );

@@ -55,6 +55,11 @@ namespace JanKIS.API.Controllers
             return await base.Delete(id);
         }
 
+        protected override Task<object> TransformItem(PatientDocument item)
+        {
+            return Task.FromResult<object>(item);
+        }
+
         protected override Expression<Func<PatientDocument, object>> BuildOrderByExpression(string orderBy)
         {
             return orderBy?.ToLower() switch

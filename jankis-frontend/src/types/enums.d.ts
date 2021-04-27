@@ -8,7 +8,9 @@ export enum AutoCompleteContext {
     DrugBrand = "DrugBrand",
     DrugActiveIngredient = "DrugActiveIngredient",
     DrugApplicationSite = "DrugApplicationSite",
-    DrugDispensionForm = "DrugDispensionForm"
+    DrugDispensionForm = "DrugDispensionForm",
+    ResourceGroup = "ResourceGroup",
+    ExternalLocation = "ExternalLocation"
 }
 export enum BedState {
     Empty = "Empty",

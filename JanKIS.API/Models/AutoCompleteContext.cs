@@ -7,6 +7,8 @@
         DrugBrand,
         DrugActiveIngredient,
         DrugApplicationSite,
-        DrugDispensionForm
+        DrugDispensionForm,
+        ResourceGroup,
+        ExternalLocation
     }
 }

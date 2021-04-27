@@ -143,6 +143,11 @@ namespace JanKIS.API.Controllers
         }
 
 
+        protected override Task<object> TransformItem(ServiceRequest item)
+        {
+            return Task.FromResult<object>(item);
+        }
+
         protected override Expression<Func<ServiceRequest, object>> BuildOrderByExpression(string orderBy)
         {
             return orderBy?.ToLower() switch

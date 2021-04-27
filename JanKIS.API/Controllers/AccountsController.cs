@@ -9,6 +9,7 @@ using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
 using JanKIS.API.ViewModels;
+using JanKIS.API.ViewModels.Builders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,15 +21,15 @@ namespace JanKIS.API.Controllers
     {
         private readonly IAccountStore accountsStore;
         private readonly IReadonlyStore<Person> personsStore;
-        private readonly IReadonlyStore<Role> rolesStore;
-        private readonly IReadonlyStore<Department> departmentsStore;
+        private readonly ICachedReadonlyStore<Role> rolesStore;
+        private readonly ICachedReadonlyStore<Department> departmentsStore;
         private readonly AuthenticationModule authenticationModule;
 
         public AccountsController(
             IAccountStore accountsStore,
             IReadonlyStore<Person> personsStore,
-            IReadonlyStore<Role> rolesStore,
-            IReadonlyStore<Department> departmentsStore,
+            ICachedReadonlyStore<Role> rolesStore,
+            ICachedReadonlyStore<Department> departmentsStore,
             AuthenticationModule authenticationModule)
         {
             this.accountsStore = accountsStore;
@@ -80,18 +81,16 @@ namespace JanKIS.API.Controllers
             return Ok(viewModels);
         }
 
-        private async Task<List<AccountViewModel>> BuildAccountViewModels(List<Account> items)
+        private async Task<List<IViewModel<Account>>> BuildAccountViewModels(List<Account> items)
         {
-            var viewModels = new List<AccountViewModel>();
-            var allRoles = (await rolesStore.GetAllAsync()).ToDictionary(x => x.Id, x => x);
-            var allDepartments = (await departmentsStore.GetAllAsync()).ToDictionary(x => x.Id, x => x);
-            var viewModelFactory = new AccountViewModelFactory(
-                allRoles,
-                allDepartments,
+            var viewModels = new List<IViewModel<Account>>();
+            var viewModelFactory = new AccountViewModelBuilder(
+                rolesStore,
+                departmentsStore,
                 personsStore);
             foreach (var account in items)
             {
-                var viewModel = await viewModelFactory.Create(account);
+                var viewModel = await viewModelFactory.Build(account);
                 viewModels.Add(viewModel);
             }
 
@@ -105,10 +104,8 @@ namespace JanKIS.API.Controllers
             var account = await accountsStore.GetByIdAsync(username);
             if (account == null)
                 return NotFound();
-            var allRoles = (await rolesStore.GetAllAsync()).ToDictionary(x => x.Id, x => x);
-            var allDepartments = (await departmentsStore.GetAllAsync()).ToDictionary(x => x.Id, x => x);
-            var viewModelFactory = new AccountViewModelFactory(allRoles, allDepartments, personsStore);
-            var viewModel = await viewModelFactory.Create(account);
+            var viewModelFactory = new AccountViewModelBuilder(rolesStore, departmentsStore, personsStore);
+            var viewModel = await viewModelFactory.Build(account);
             return Ok(viewModel);
         }
 

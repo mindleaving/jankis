@@ -32,7 +32,8 @@ namespace JanKIS.API.Controllers
             var item = await store.GetByIdAsync(id);
             if (item == null)
                 return NotFound();
-            return Ok(item);
+            var transformedItem = await TransformItem(item);
+            return Ok(transformedItem);
         }
 
         [HttpGet]
@@ -44,7 +45,8 @@ namespace JanKIS.API.Controllers
         {
             var orderByExpression = BuildOrderByExpression(orderBy);
             var items = await store.GetMany(count, skip, orderByExpression, orderDirection);
-            return Ok(items);
+            var transformedItems = await TransformItems(items);
+            return Ok(transformedItems);
         }
 
         [HttpGet(nameof(Search))]
@@ -56,7 +58,8 @@ namespace JanKIS.API.Controllers
             var searchExpression = BuildSearchExpression(searchTerms);
             var items = await store.SearchAsync(searchExpression, count, skip);
             var prioritizedItems = PrioritizeItems(items, searchText);
-            return Ok(prioritizedItems);
+            var transformedItems = await TransformItems(prioritizedItems);
+            return Ok(transformedItems);
         }
 
         [HttpPut("{id}")]
@@ -93,12 +96,21 @@ namespace JanKIS.API.Controllers
             return Ok();
         }
 
+        protected async Task<List<object>> TransformItems(IEnumerable<T> items)
+        {
+            var transformedItems = new List<object>();
+            foreach (var item in items)
+            {
+                var transformedItem = await TransformItem(item);
+                transformedItems.Add(transformedItem);
+            }
+            return transformedItems;
+        }
+
+        protected abstract Task<object> TransformItem(T item);
         protected abstract Expression<Func<T, object>> BuildOrderByExpression(string orderBy);
         protected abstract Expression<Func<T,bool>> BuildSearchExpression(string[] searchTerms);
         protected abstract IEnumerable<T> PrioritizeItems(List<T> items, string searchText);
-        protected abstract Task PublishChange(
-            T item,
-            StorageOperation storageOperation,
-            string submitterUsername);
+        protected abstract Task PublishChange(T item, StorageOperation storageOperation, string submitterUsername);
     }
 }

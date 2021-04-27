@@ -7,6 +7,7 @@ using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
+using JanKIS.API.ViewModels.Builders;
 using JanKIS.API.Workflow;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -24,13 +25,15 @@ namespace JanKIS.API.Controllers
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly INotificationDistributor notificationDistributor;
         private readonly ISubscriptionsStore subscriptionsStore;
+        private readonly IViewModelBuilder<ServiceDefinition> serviceViewModelBuilder;
 
         public ServicesController(
             IServiceStore servicesStore,
             IStore<ServiceRequest> serviceRequestsStore,
             IHttpContextAccessor httpContextAccessor,
             INotificationDistributor notificationDistributor,
-            ISubscriptionsStore subscriptionsStore)
+            ISubscriptionsStore subscriptionsStore,
+            IViewModelBuilder<ServiceDefinition> serviceViewModelBuilder)
             : base(servicesStore, httpContextAccessor)
         {
             this.servicesStore = servicesStore;
@@ -38,6 +41,7 @@ namespace JanKIS.API.Controllers
             this.httpContextAccessor = httpContextAccessor;
             this.notificationDistributor = notificationDistributor;
             this.subscriptionsStore = subscriptionsStore;
+            this.serviceViewModelBuilder = serviceViewModelBuilder;
         }
 
         public override async Task<IActionResult> GetMany(
@@ -49,7 +53,8 @@ namespace JanKIS.API.Controllers
             Request.Query.TryGetValue("departmentId", out var departmentId);
             var orderByExpression = BuildOrderByExpression(orderBy);
             var items = await servicesStore.GetManyFiltered(count, skip, orderByExpression, orderDirection, departmentId);
-            return Ok(items);
+            var transformedItems = await TransformItems(items);
+            return Ok(transformedItems);
         }
 
         [HttpPost("{serviceId}/request")]
@@ -97,6 +102,11 @@ namespace JanKIS.API.Controllers
                 return Ok();
             await subscriptionsStore.DeleteAsync(existingSubscription.Id);
             return Ok();
+        }
+
+        protected override async Task<object> TransformItem(ServiceDefinition item)
+        {
+            return await serviceViewModelBuilder.Build(item);
         }
 
         protected override Expression<Func<ServiceDefinition, object>> BuildOrderByExpression(string orderBy)

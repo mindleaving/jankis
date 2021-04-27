@@ -24,6 +24,11 @@ namespace JanKIS.API.Controllers
             this.notificationDistributor = notificationDistributor;
         }
 
+        protected override Task<object> TransformItem(MedicationDispension item)
+        {
+            return Task.FromResult<object>(item);
+        }
+
         protected override Expression<Func<MedicationDispension, object>> BuildOrderByExpression(string orderBy)
         {
             return orderBy?.ToLower() switch

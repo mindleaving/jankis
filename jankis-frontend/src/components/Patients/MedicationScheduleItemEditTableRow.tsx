@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button, FormCheck, FormControl } from 'react-bootstrap';
 import { formatDrug } from '../../helpers/Formatters';
 import { Models } from '../../types/models';
@@ -15,7 +15,7 @@ interface MedicationScheduleItemEditTableRowProps {
     admissionId?: string;
     isSelected: boolean;
     onSelectionChanged: (isSelected: boolean) => void;
-    onStore: (item: Models.MedicationScheduleItem) => void;
+    onChange: (item: Models.MedicationScheduleItem) => void;
     onDelete: (id: string) => void;
 }
 
@@ -27,6 +27,19 @@ export const MedicationScheduleItemEditTableRow = (props: MedicationScheduleItem
     const [ isPaused, setIsPaused ] = useState<boolean>(medication.isPaused ?? false);
     const [ isDispendedByPatient, setIsDispendedByPatient ] = useState<boolean>(medication.isDispendedByPatient ?? false);
     const [ dispensions, setDispensions ] = useState<Models.MedicationDispension[]>(medication.dispensions ?? []);
+
+    useEffect(() => {
+        const updatedMedication: Models.MedicationScheduleItem = {
+            id: medication.id,
+            drug: medication.drug,
+            dispensions: dispensions,
+            isPaused: isPaused,
+            isDispendedByPatient: isDispendedByPatient,
+            note: note
+        };
+        props.onChange(updatedMedication);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ note, isPaused, isDispendedByPatient, dispensions ]);
 
     const addDispension = (timestamp: Date) => {
         const dispension: Models.MedicationDispension = {
@@ -50,17 +63,6 @@ export const MedicationScheduleItemEditTableRow = (props: MedicationScheduleItem
     }
     const deleteDispension = (dispensionId: string) => {
         setDispensions(dispensions.filter(x => x.id !== dispensionId));
-    }
-    const store = () => {
-        const updatedMedication: Models.MedicationScheduleItem = {
-            id: medication.id,
-            drug: medication.drug,
-            dispensions: dispensions,
-            isPaused: isPaused,
-            isDispendedByPatient: isDispendedByPatient,
-            note: note
-        };
-        props.onStore(updatedMedication);
     }
 
     return (
@@ -119,9 +121,6 @@ export const MedicationScheduleItemEditTableRow = (props: MedicationScheduleItem
                 ))
             }
             <Button size="sm" onClick={() => addDispension(startOfTomorrow())}>+ {resolveText('Add')}</Button>
-        </td>
-        <td>
-            <Button onClick={store}>{resolveText('Store')}</Button>
         </td>
     </tr>);
 

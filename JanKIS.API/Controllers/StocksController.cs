@@ -7,6 +7,7 @@ using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
+using JanKIS.API.ViewModels.Builders;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,14 +17,20 @@ namespace JanKIS.API.Controllers
     {
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ISubscriptionsStore subscriptionsStore;
+        private readonly IAutocompleteCache autocompleteCache;
+        private readonly IViewModelBuilder<Stock> stockViewModelBuilder;
 
         public StocksController(IStore<Stock> store,
             IHttpContextAccessor httpContextAccessor,
-            ISubscriptionsStore subscriptionsStore)
+            ISubscriptionsStore subscriptionsStore,
+            IAutocompleteCache autocompleteCache,
+            IViewModelBuilder<Stock> stockViewModelBuilder)
             : base(store, httpContextAccessor)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.subscriptionsStore = subscriptionsStore;
+            this.autocompleteCache = autocompleteCache;
+            this.stockViewModelBuilder = stockViewModelBuilder;
         }
 
         [HttpPost("{stockId}/subscribe")]
@@ -52,6 +59,11 @@ namespace JanKIS.API.Controllers
             return Ok();
         }
 
+        protected override async Task<object> TransformItem(Stock item)
+        {
+            return await stockViewModelBuilder.Build(item);
+        }
+
         protected override Expression<Func<Stock, object>> BuildOrderByExpression(string orderBy)
         {
             return orderBy?.ToLower() switch
@@ -72,13 +84,15 @@ namespace JanKIS.API.Controllers
             return items.OrderBy(x => x.Name.Length);
         }
 
-        protected override Task PublishChange(
+        protected override async Task PublishChange(
             Stock item,
             StorageOperation storageOperation,
             string submitterUsername)
         {
-            // Nothing to do
-            return Task.CompletedTask;
+            if (item.Location.Type == LocationType.External)
+            {
+                await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.ExternalLocation.ToString(), item.Location.Id));
+            }
         }
     }
 }

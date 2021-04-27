@@ -1,4 +1,5 @@
-﻿using JanKIS.API.Storage;
+﻿using System;
+using JanKIS.API.Storage;
 using TypescriptGenerator.Attributes;
 
 namespace JanKIS.API.Models
@@ -8,11 +9,27 @@ namespace JanKIS.API.Models
     /// </summary>
     public class Resource : IId
     {
+        public Resource() {}
+        public Resource(
+            string id,
+            string name,
+            string groupName,
+            LocationReference location,
+            string note)
+        {
+            Id = id;
+            Name = name;
+            GroupName = groupName;
+            Location = location;
+            Note = note;
+        }
+
         public string Id { get; set; }
         public string Name { get; set; }
+        [TypescriptIsOptional]
         public LocationReference Location { get; set; }
         [TypescriptIsOptional]
-        public string GroupId { get; set; }
+        public string GroupName { get; set; }
         public string Note { get; set; }
     }
 }

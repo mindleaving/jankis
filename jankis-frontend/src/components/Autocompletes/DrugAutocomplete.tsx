@@ -8,7 +8,7 @@ import { Autocomplete } from './Autocomplete';
 interface DrugAutocompleteProps {
     isLoading?: boolean;
     value?: Models.Drug;
-    onChange: (service: Models.Drug | undefined) => void;
+    onChange: (drug: Models.Drug | undefined) => void;
 }
 
 export const DrugAutocomplete = (props: DrugAutocompleteProps) => {

@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { PagedTable } from '../PagedTable';
 import { resolveText } from '../../helpers/Globalizer';
-import { Models } from '../../types/models';
 import { ServicesFilter } from '../../types/frontendTypes.d';
 import { formatServiceAudience } from '../../helpers/Formatters';
 import { Button } from 'react-bootstrap';
@@ -10,6 +9,7 @@ import { openConfirmAlert } from '../../helpers/AlertHelpers';
 import { deleteObject } from '../../helpers/DeleteHelpers';
 import PagedTableLoader from '../../helpers/PagedTableLoader';
 import { OrderDirection } from '../../types/enums.d';
+import { ViewModels } from '../../types/viewModels';
 
 interface ServicesListProps {
     filter: ServicesFilter;
@@ -18,7 +18,7 @@ interface ServicesListProps {
 export const ServicesList = (props: ServicesListProps) => {
 
     const history = useHistory();
-    const [ services, setServices ] = useState<Models.ServiceDefinition[]>([]);
+    const [ services, setServices ] = useState<ViewModels.ServiceViewModel[]>([]);
     const [ orderBy, setOrderBy ] = useState<string>('id');
     const [ orderDirection, setOrderDirection ] = useState<OrderDirection>(OrderDirection.Ascending);
 
@@ -30,7 +30,7 @@ export const ServicesList = (props: ServicesListProps) => {
         setOrderDirection(orderDirection === OrderDirection.Ascending ? OrderDirection.Descending : OrderDirection.Ascending);
     }
     const servicesLoader = useMemo(() => {
-        return new PagedTableLoader<Models.ServiceDefinition>(
+        return new PagedTableLoader<ViewModels.ServiceViewModel>(
             'api/services', 
             resolveText('Services_CouldNotLoad'),
             setServices,
@@ -82,7 +82,7 @@ export const ServicesList = (props: ServicesListProps) => {
                     <tr>
                         <td><i className="fa fa-trash red clickable" onClick={() => deleteService(service.id, service.name)}/></td>
                         <td>{service.name}</td>
-                        <td>{service.departmentId}</td>
+                        <td>{service.department?.name ?? service.departmentId}</td>
                         <td>{service.audience.map(formatServiceAudience).join(", ")}</td>
                         <td><Button variant="primary" onClick={() => history.push(`/services/${service.id}/request`)}>{resolveText('Service_Request')}</Button></td>
                         <td><Button variant="link" onClick={() => history.push(`/services/${service.id}/edit`)}>{resolveText('Edit...')}</Button></td>

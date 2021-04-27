@@ -42,6 +42,11 @@ namespace JanKIS.API.Controllers
             return Ok();
         }
 
+        protected override Task<object> TransformItem(MedicationSchedule item)
+        {
+            return Task.FromResult<object>(item);
+        }
+
         protected override Expression<Func<MedicationSchedule, object>> BuildOrderByExpression(string orderBy)
         {
             return orderBy?.ToLower() switch

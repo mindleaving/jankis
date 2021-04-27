@@ -16,15 +16,14 @@ import { PatientMedicationsPage } from './pages/Patients/PatientMedicationsPage'
 import { CreatePatientNotePage } from './pages/Patients/CreatePatientNotePage';
 import { CreatePatientObservationPage } from './pages/Patients/CreatePatientObservationPage';
 import { PatientTimelinePage } from './pages/Patients/PatientTimelinePage';
-import { ConsumableEditPage } from './pages/Resources/ConsumableEditPage';
-import { ConsumablePage } from './pages/Resources/ConsumablePage';
-import { ConsumablesListPage } from './pages/Resources/ConsumablesListPage';
+import { ConsumablePage } from './pages/Consumables/ConsumablePage';
+import { ConsumablesListPage } from './pages/Consumables/ConsumablesListPage';
 import { ResourceEditPage } from './pages/Resources/ResourceEditPage';
 import { ResourcePage } from './pages/Resources/ResourcePage';
 import { ResourcesListPage } from './pages/Resources/ResourcesListPage';
-import { StockEditPage } from './pages/Resources/StockEditPage';
-import { StockPage } from './pages/Resources/StockPage';
-import { StocksListPage } from './pages/Resources/StocksListPage';
+import { StockEditPage } from './pages/Stocks/StockEditPage';
+import { StockPage } from './pages/Stocks/StockPage';
+import { StocksListPage } from './pages/Stocks/StocksListPage';
 import { RequestServicePage } from './pages/Services/RequestServicePage';
 import { ServiceEditPage } from './pages/Services/ServiceEditPage';
 import { ServicePage } from './pages/Services/ServicePage';
@@ -40,7 +39,6 @@ import { AccountsListPage } from './pages/UserManagement/AccountsListPage';
 import { RoleEditPage } from './pages/UserManagement/RoleEditPage';
 import { RolePage } from './pages/UserManagement/RolePage';
 import { RolesListPage } from './pages/UserManagement/RolesListPage';
-import { DepartmentServices } from './pages/Services/DepartmentServices';
 import { LoginPage } from './pages/LoginPage';
 import { apiClient } from './communication/ApiClient';
 import { ViewModels } from './types/viewModels';
@@ -54,6 +52,7 @@ import { PersonsListPage } from './pages/Patients/PersonsListPage';
 import { DrugsListPage } from './pages/Drugs/DrugsListPage';
 import { CreateEditDrugPage } from './pages/Drugs/CreateEditDrugPage';
 import { EditMedicationSchedulePage } from './pages/Patients/EditMedicationSchedulePage';
+import { ConsumableEditPage } from './pages/Consumables/ConsumableEditPage';
 
 function App() {
 
@@ -207,10 +206,6 @@ function App() {
                         exact path="/departments/:departmentId/stocks"
                         render={props => <StocksListPage {...props} />}
                     />
-                    <Route
-                        exact path="/departments/services"
-                        render={props => <DepartmentServices {...props} />}
-                    />
 
                     <Route
                         exact path="/resources"
@@ -250,7 +245,7 @@ function App() {
                     />
                     <Route
                         exact path="/create/stock"
-                        render={props => <ConsumableEditPage {...props} />}
+                        render={props => <StockEditPage {...props} />}
                     />
                     <Route
                         exact path="/stocks/:stockId"

@@ -6,10 +6,12 @@ using Commons.Extensions;
 using Commons.Misc;
 using Commons.Physics;
 using JanKIS.API.AccessManagement;
+using JanKIS.API.Helpers;
 using JanKIS.API.Hubs;
 using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
+using JanKIS.API.ViewModels.Builders;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,67 +47,8 @@ namespace JanKIS.API
             services.Configure<FileStoreOptions>(Configuration.GetSection(FileStoreOptions.AppSettingsSectionName));
             SetupMongoDB(services);
 
-            services.AddScoped<IAccountStore, AccountStore>();
-            services.AddScoped<IStore<Account>, GenericStore<Account>>();
-            services.AddScoped<IReadonlyStore<Account>, GenericReadonlyStore<Account>>();
-            services.AddScoped<IReadonlyStore<Role>, GenericReadonlyStore<Role>>();
-            services.AddScoped<IStore<Role>, GenericStore<Role>>();
-            services.AddScoped<IReadonlyStore<Person>, GenericReadonlyStore<Person>>();
-            services.AddScoped<IStore<Person>, GenericStore<Person>>();
-            services.AddScoped<IAccountStore, AccountStore>();
-            services.AddScoped<IReadonlyStore<Person>, GenericReadonlyStore<Person>>();
-            services.AddScoped<IStore<Person>, GenericStore<Person>>();
-            services.AddScoped<IAutocompleteCache, AutocompleteCache>();
-            services.AddScoped<IReadonlyStore<Contact>, GenericReadonlyStore<Contact>>();
-            services.AddScoped<IStore<Contact>, GenericStore<Contact>>();
-            services.AddScoped<IReadonlyStore<Admission>, GenericReadonlyStore<Admission>>();
-            services.AddScoped<IStore<Admission>, GenericStore<Admission>>();
-            services.AddScoped<IAdmissionsStore, AdmissionsStore>();
-            services.AddScoped<IReadonlyStore<Institution>, GenericReadonlyStore<Institution>>();
-            services.AddScoped<IStore<Institution>, GenericStore<Institution>>();
-            services.AddScoped<IReadonlyStore<Room>, GenericReadonlyStore<Room>>();
-            services.AddScoped<IStore<Room>, GenericStore<Room>>();
-            services.AddScoped<IReadonlyStore<Department>, GenericReadonlyStore<Department>>();
-            services.AddScoped<IStore<Department>, GenericStore<Department>>();
-            services.AddScoped<IReadonlyStore<ServiceDefinition>, GenericReadonlyStore<ServiceDefinition>>();
-            services.AddScoped<IStore<ServiceDefinition>, GenericStore<ServiceDefinition>>();
-            services.AddScoped<IServiceStore, ServiceStore>();
-            services.AddScoped<IReadonlyStore<ServiceRequest>, GenericReadonlyStore<ServiceRequest>>();
-            services.AddScoped<IStore<ServiceRequest>, GenericStore<ServiceRequest>>();
-            services.AddScoped<IServiceRequestsStore, ServiceRequestsStore>();
-            services.AddScoped<IReadonlyStore<ConsumableOrder>, GenericReadonlyStore<ConsumableOrder>>();
-            services.AddScoped<IStore<ConsumableOrder>, GenericStore<ConsumableOrder>>();
-            services.AddScoped<IReadonlyStore<Consumable>, GenericReadonlyStore<Consumable>>();
-            services.AddScoped<IStore<Consumable>, GenericStore<Consumable>>();
-            services.AddScoped<IReadonlyStore<InstitutionPolicy>, GenericReadonlyStore<InstitutionPolicy>>();
-            services.AddScoped<IStore<InstitutionPolicy>, GenericStore<InstitutionPolicy>>();
-            services.AddScoped<IReadonlyStore<PatientNote>, GenericReadonlyStore<PatientNote>>();
-            services.AddScoped<IStore<PatientNote>, GenericStore<PatientNote>>();
-            services.AddScoped<IReadonlyStore<Observation>, GenericReadonlyStore<Observation>>();
-            services.AddScoped<IStore<Observation>, GenericStore<Observation>>();
-            services.AddScoped<IReadonlyStore<PatientDocument>, GenericReadonlyStore<PatientDocument>>();
-            services.AddScoped<IStore<PatientDocument>, GenericStore<PatientDocument>>();
-            services.AddScoped<IReadonlyStore<DiagnosticTestResult>, GenericReadonlyStore<DiagnosticTestResult>>();
-            services.AddScoped<IStore<DiagnosticTestResult>, GenericStore<DiagnosticTestResult>>();
-            services.AddScoped<IReadonlyStore<BedOccupancy>, GenericReadonlyStore<BedOccupancy>>();
-            services.AddScoped<IStore<BedOccupancy>, GenericStore<BedOccupancy>>();
-            services.AddScoped<IReadonlyStore<SubscriptionBase>, GenericReadonlyStore<SubscriptionBase>>();
-            services.AddScoped<IStore<SubscriptionBase>, GenericStore<SubscriptionBase>>();
-            services.AddScoped<ISubscriptionsStore, SubscriptionsStore>();
-            services.AddScoped<IReadonlyStore<NotificationBase>, GenericReadonlyStore<NotificationBase>>();
-            services.AddScoped<IStore<NotificationBase>, GenericStore<NotificationBase>>();
-            services.AddScoped<INotificationsStore, NotificationsStore>();
-            services.AddScoped<IReadonlyStore<MedicationSchedule>, GenericReadonlyStore<MedicationSchedule>>();
-            services.AddScoped<IStore<MedicationSchedule>, GenericStore<MedicationSchedule>>();
-            services.AddScoped<IMedicationScheduleStore, MedicationScheduleStore>();
-            services.AddScoped<IReadonlyStore<MedicationDispension>, GenericReadonlyStore<MedicationDispension>>();
-            services.AddScoped<IStore<MedicationDispension>, GenericStore<MedicationDispension>>();
-            services.AddScoped<IReadonlyStore<Drug>, GenericReadonlyStore<Drug>>();
-            services.AddScoped<IStore<Drug>, GenericStore<Drug>>();
-            services.AddScoped<IFilesStore, FilesStore>();
-            services.AddScoped<ServiceRequestGatekeeper>();
-            services.AddScoped<ServiceRequestChangePolicy>();
-            services.AddScoped<INotificationDistributor, NotificationDistributor>();
+            SetupStores(services);
+            SetupViewModelBuilders(services);
 
             services.AddHttpContextAccessor();
             services.AddControllers()
@@ -160,6 +103,64 @@ namespace JanKIS.API
                     });
                 });
             services.AddSignalR();
+        }
+
+        private static void SetupStores(IServiceCollection services)
+        {
+            SetupTypeStores<Account>(services);
+            services.AddScoped<IAccountStore, AccountStore>();
+            SetupTypeStores<Role>(services);
+            SetupTypeStores<Person>(services);
+            SetupTypeStores<Account>(services);
+            services.AddScoped<IAutocompleteCache, AutocompleteCache>();
+            SetupTypeStores<Contact>(services);
+            SetupTypeStores<Admission>(services);
+            services.AddScoped<IAdmissionsStore, AdmissionsStore>();
+            SetupTypeStores<Institution>(services);
+            SetupTypeStores<Room>(services);
+            SetupTypeStores<Department>(services);
+            SetupTypeStores<ServiceDefinition>(services);
+            services.AddScoped<IServiceStore, ServiceStore>();
+            SetupTypeStores<ServiceRequest>(services);
+            services.AddScoped<IServiceRequestsStore, ServiceRequestsStore>();
+            SetupTypeStores<ConsumableOrder>(services);
+            SetupTypeStores<Consumable>(services);
+            SetupTypeStores<Resource>(services);
+            SetupTypeStores<Stock>(services);
+            SetupTypeStores<InstitutionPolicy>(services);
+            SetupTypeStores<PatientNote>(services);
+            SetupTypeStores<Observation>(services);
+            SetupTypeStores<PatientDocument>(services);
+            SetupTypeStores<DiagnosticTestResult>(services);
+            SetupTypeStores<BedOccupancy>(services);
+            SetupTypeStores<SubscriptionBase>(services);
+            services.AddScoped<ISubscriptionsStore, SubscriptionsStore>();
+            SetupTypeStores<NotificationBase>(services);
+            services.AddScoped<INotificationsStore, NotificationsStore>();
+            SetupTypeStores<MedicationSchedule>(services);
+            services.AddScoped<IMedicationScheduleStore, MedicationScheduleStore>();
+            SetupTypeStores<MedicationDispension>(services);
+            SetupTypeStores<Drug>(services);
+            services.AddScoped<IFilesStore, FilesStore>();
+            services.AddScoped<ServiceRequestGatekeeper>();
+            services.AddScoped<ServiceRequestChangePolicy>();
+            services.AddScoped<INotificationDistributor, NotificationDistributor>();
+        }
+
+        private static void SetupTypeStores<T>(IServiceCollection services) where T: IId
+        {
+            services.AddScoped<IReadonlyStore<T>, GenericReadonlyStore<T>>();
+            services.AddSingleton<ICachedReadonlyStore<T>, GenericCachedReadonlyStore<T>>();
+            services.AddScoped<IStore<T>, GenericStore<T>>();
+        }
+
+        private static void SetupViewModelBuilders(IServiceCollection services)
+        {
+            services.AddScoped<IViewModelBuilder<Department>, DepartmentViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<LocationReference>, LocationViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<Stock>, StockViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<ServiceDefinition>, ServiceViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<Resource>, ResourceViewModelBuilder>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
