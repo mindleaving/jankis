@@ -9,13 +9,15 @@ import { apiClient } from '../communication/ApiClient';
 import { OrderState } from '../types/enums.d';
 import UserContext from '../contexts/UserContext';
 import { v4 as uuid } from 'uuid';
+import { ViewModels } from '../types/viewModels';
+import { formatStock } from '../helpers/Formatters';
 
 interface ConsumableOrderModalProps {
     show: boolean;
     onHide: () => void;
-    consumableId: string;
-    consumableName: string;
-    orderInfo: Models.StockState;
+    consumableId?: string;
+    consumableName?: string;
+    stockState?: ViewModels.StockStateViewModel;
 }
 
 export const ConsumableOrderModal = (props: ConsumableOrderModalProps) => {
@@ -30,10 +32,13 @@ export const ConsumableOrderModal = (props: ConsumableOrderModalProps) => {
     }
     const order = async (e?: FormEvent) => {
         e?.preventDefault();
+        if(!props.consumableId || !props.consumableName || !props.stockState) {
+            return;
+        }
         try {
             setIsOrdering(true);
             const consumableOrder = buildOrder();
-            await apiClient.post(`api/consumables/${props.consumableId}/order`, {}, consumableOrder);
+            await apiClient.post(`api/consumables/${props.consumableId}/orders/${consumableOrder.id}`, {}, consumableOrder);
             resetAndClose();
             NotificationManager.success(resolveText('Consumable_Order_SuccessfullyOrdered'));
         } catch(error) {
@@ -45,9 +50,10 @@ export const ConsumableOrderModal = (props: ConsumableOrderModalProps) => {
     const buildOrder = (): Models.ConsumableOrder => {
         return {
             id: uuid(),
-            consumableId: props.consumableId,
+            consumableId: props.consumableId!,
+            consumableName: props.consumableName!,
             note: note,
-            preferredSources: [ props.orderInfo.stockId ],
+            preferredSources: [ props.stockState!.stockId ],
             quantity: quantity,
             requester: user!.username,
             state: OrderState.Ordered,
@@ -58,7 +64,7 @@ export const ConsumableOrderModal = (props: ConsumableOrderModalProps) => {
     return (
         <Modal show={props.show} onHide={resetAndClose} backdrop="static">
             <Modal.Header closeButton>
-                <Modal.Title></Modal.Title>
+                <Modal.Title>{resolveText('Consumable_Order')}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form onSubmit={order} id="ConsumableOrderModalForm">
@@ -71,13 +77,13 @@ export const ConsumableOrderModal = (props: ConsumableOrderModalProps) => {
                     <FormGroup as={Row}>
                         <FormLabel column>{resolveText('Stock')}</FormLabel>
                         <Col>
-                            <b>{props.orderInfo.stockId}</b>
+                            <b>{props.stockState ? formatStock(props.stockState.stock) : resolveText('Loading...')}</b>
                         </Col>
                     </FormGroup>
                     <RowFormGroup required
                         type="number"
                         min={1}
-                        max={props.orderInfo.isUnlimitedOrderable ? undefined : props.orderInfo.quantity}
+                        max={props.stockState && !props.stockState.isUnlimitedOrderable ? props.stockState.quantity : undefined}
                         label={resolveText('Consumable_Order_Quantity')}
                         value={quantity}
                         onChange={setQuantity}

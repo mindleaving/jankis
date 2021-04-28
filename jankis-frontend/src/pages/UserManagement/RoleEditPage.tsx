@@ -100,7 +100,7 @@ export const RoleEditPage = (props: RoleEditPageProps) => {
                         <InputGroup>
                             <FormControl
                                 as="select"
-                                value={selectedPermission}
+                                value={selectedPermission ?? ''}
                                 onChange={(e:any) => setSelectedPermission(e.target.value)}
                             >
                                 <option value="" disabled></option>

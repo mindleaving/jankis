@@ -1,7 +1,6 @@
-import React, { FormEvent, useEffect, useState } from 'react';
-import { Button, Col, Form, FormCheck, FormControl, FormGroup, FormLabel, Row, Table } from 'react-bootstrap';
+import { FormEvent, useEffect, useState } from 'react';
+import { Button, Col, Form, FormCheck, FormGroup, FormLabel, Row, Table } from 'react-bootstrap';
 import { useHistory } from 'react-router';
-import { formatDrug } from '../../helpers/Formatters';
 import { resolveText } from '../../helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { buidlAndStoreObject } from '../../helpers/StoringHelpers';

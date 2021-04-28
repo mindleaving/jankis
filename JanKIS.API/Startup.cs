@@ -11,6 +11,7 @@ using JanKIS.API.Hubs;
 using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
+using JanKIS.API.ViewModels;
 using JanKIS.API.ViewModels.Builders;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -161,6 +162,11 @@ namespace JanKIS.API
             services.AddScoped<IViewModelBuilder<Stock>, StockViewModelBuilder>();
             services.AddScoped<IViewModelBuilder<ServiceDefinition>, ServiceViewModelBuilder>();
             services.AddScoped<IViewModelBuilder<Resource>, ResourceViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<Consumable>, ConsumableViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<StockState>, StockStateViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<ServiceAudience>, ServiceAudienceViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<Account>, AccountViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<ConsumableOrder>, ConsumableOrderViewModelBuilder>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

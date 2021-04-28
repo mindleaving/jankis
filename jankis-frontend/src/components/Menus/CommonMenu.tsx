@@ -13,6 +13,8 @@ export const CommonMenu = (props: CommonMenuProps) => {
         <Nav className="mr-1">
             <NavDropdown title={resolveText('Menu_Common')} id="basic-nav-dropdown">
                 <NavDropdown.Item onClick={() => history.push('/contacts')}>{resolveText('Menu_Contacts')}</NavDropdown.Item>
+                <NavDropdown.Item onClick={() => history.push('/consumables')}>{resolveText('Menu_Consumables')}</NavDropdown.Item>
+                <NavDropdown.Item onClick={() => history.push('/resources')}>{resolveText('Menu_Resources')}</NavDropdown.Item>
             </NavDropdown>
         </Nav>
     );

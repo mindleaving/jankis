@@ -10,7 +10,6 @@ import { NotificationManager } from 'react-notifications';
 import { StoreButton } from '../../components/StoreButton';
 import { formatAdmission, formatObservation } from '../../helpers/Formatters';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
-import { ListFormControl } from '../../components/ListFormControl';
 import { apiClient } from '../../communication/ApiClient';
 import { PulseMeasurementForm } from '../../components/Patients/PulseMeasurementForm';
 import { BloodPressureMeasurementForm } from '../../components/Patients/BloodPressureMeasurementForm';

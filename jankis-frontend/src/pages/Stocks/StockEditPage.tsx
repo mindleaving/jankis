@@ -1,17 +1,16 @@
-import React, { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { Col, Form, FormGroup, FormLabel, Row } from 'react-bootstrap';
-import { RouteComponentProps } from 'react-router';
-import { apiClient } from '../../communication/ApiClient';
+import { RouteComponentProps, useHistory } from 'react-router';
 import { RowFormGroup } from '../../components/RowFormGroup';
 import { resolveText } from '../../helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { Models } from '../../types/models';
-import { NotificationManager } from 'react-notifications';
 import { v4 as uuid } from 'uuid';
 import { AsyncButton } from '../../components/AsyncButton';
 import { DepartmentAutocomplete } from '../../components/Autocompletes/DepartmentAutocomplete';
 import { LocationFormControl } from '../../components/LocationFormControl';
 import { ViewModels } from '../../types/viewModels';
+import { buidlAndStoreObject } from '../../helpers/StoringHelpers';
 
 interface StockParams {
     stockId?: string;
@@ -21,16 +20,18 @@ interface StockEditPageProps extends RouteComponentProps<StockParams> {}
 export const StockEditPage = (props: StockEditPageProps) => {
 
     const isNew = props.match.path.toLowerCase().startsWith('/create');
-    if(!isNew && !props.match.params.stockId) {
+    const matchedId = props.match.params.stockId;
+    if(!isNew && !matchedId) {
         throw new Error('Invalid link');
     }
-    const id = props.match.params.stockId ?? uuid();
+    const id = matchedId ?? uuid();
 
     const [ name, setName ] = useState<string>('');
     const [ selectedDepartment, setSelectedDepartment ] = useState<ViewModels.DepartmentViewModel>();
     const [ location, setLocation ] = useState<ViewModels.LocationViewModel>();
     const [ isLoading, setIsLoading ] = useState<boolean>(!isNew);
     const [ isStoring, setIsStoring] = useState<boolean>(false);
+    const history = useHistory();
 
     useEffect(() => {
         if(isNew) return;
@@ -51,16 +52,15 @@ export const StockEditPage = (props: StockEditPageProps) => {
 
     const store = async (e?: FormEvent) => {
         e?.preventDefault();
-        try {
-            setIsStoring(true);
-            const stock = buildStock();
-            await apiClient.put(`api/stocks/${stock.id}`, {}, stock);
-            NotificationManager.success(resolveText('Stock_SuccessfullyStored'));
-        } catch(error) {
-            NotificationManager.error(error.message, resolveText('Stock_CouldNotStore'));
-        } finally {
-            setIsStoring(false);
-        }
+        setIsStoring(true);
+        await buidlAndStoreObject(
+            `api/stocks/${id}`,
+            resolveText('Stock_SuccessfullyStored'),
+            resolveText('Stock_CouldNotStore'),
+            buildStock,
+            () => history.goBack(),
+            () => setIsStoring(false)
+        )
     }
 
     const buildStock = (): Models.Stock => {

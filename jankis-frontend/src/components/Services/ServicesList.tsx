@@ -79,7 +79,7 @@ export const ServicesList = (props: ServicesListProps) => {
             <tbody>
                 {services.length > 0
                 ? services.map(service => (
-                    <tr>
+                    <tr key={service.id}>
                         <td><i className="fa fa-trash red clickable" onClick={() => deleteService(service.id, service.name)}/></td>
                         <td>{service.name}</td>
                         <td>{service.department?.name ?? service.departmentId}</td>

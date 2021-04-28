@@ -11,6 +11,6 @@ namespace JanKIS.API.Models
     [JsonConverter(typeof(ServiceAudienceJsonConverter))]
     public abstract class ServiceAudience
     {
-        public ServiceAudienceType Type { get; set; }
+        public abstract ServiceAudienceType Type { get; }
     }
 }

@@ -6,6 +6,7 @@
         Accepted,
         Declined,
         Delivered,
+        PartiallyDelivered,
         CancelledByRequester
     }
 }

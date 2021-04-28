@@ -13,6 +13,7 @@ interface PagedTableProps {
     hasCreateNewButton?: boolean;
     onCreateNew?: () => void;
     bordered?: boolean;
+    enableHighlighting?: boolean;
     className?: string;
 }
 
@@ -79,7 +80,7 @@ export const PagedTable = (props: PropsWithChildren<PagedTableProps>) => {
                 {props.hasCreateNewButton ? <Button className="m-1 float-right" onClick={props.onCreateNew}>{resolveText('CreateNew')}</Button> : null}
             </Col>
         </Form.Row>
-        <Table bordered={props.bordered} className={props.className}>
+        <Table bordered={props.bordered} className={props.className} hover={props.enableHighlighting}>
             {isLoading 
             ? <tbody>
                 <tr>

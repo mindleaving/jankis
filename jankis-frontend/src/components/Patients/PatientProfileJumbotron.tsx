@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Button, Col, Container, InputGroup, Jumbotron, Row } from 'react-bootstrap';
 import { apiClient } from '../../communication/ApiClient';
 import { resolveText } from '../../helpers/Globalizer';

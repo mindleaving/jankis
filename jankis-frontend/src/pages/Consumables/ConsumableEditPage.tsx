@@ -1,5 +1,5 @@
 import React, { FormEvent, useEffect, useState } from 'react';
-import { Form, Table } from 'react-bootstrap';
+import { Button, Col, Form, FormControl, FormGroup, FormLabel, Row, Table } from 'react-bootstrap';
 import { RouteComponentProps, useHistory } from 'react-router';
 import { resolveText } from '../../helpers/Globalizer';
 import { v4 as uuid } from 'uuid';
@@ -9,6 +9,8 @@ import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { RowFormGroup } from '../../components/RowFormGroup';
 import { StockState } from '../../components/Consumables/StockState';
 import { StoreButton } from '../../components/StoreButton';
+import { CreateStockStateModal } from '../../modals/CreateStockStateModal';
+import { ViewModels } from '../../types/viewModels';
 
 interface ConsumableParams {
     consumableId?: string;
@@ -25,20 +27,21 @@ export const ConsumableEditPage = (props: ConsumableEditPageProps) => {
 
     const [ isLoading, setIsLoading ] =  useState<boolean>(!isNew);
     const [ name, setName ] = useState<string>('');
-    const [ stockStates, setStockStates ] = useState<Models.StockState[]>([]);
+    const [ stockStates, setStockStates ] = useState<ViewModels.StockStateViewModel[]>([]);
     const [ isStoring, setIsStoring ] = useState<boolean>(false);
+    const [ showStockStateCreationModal, setShowStockStateCreationModal] = useState<boolean>(false);
     const history = useHistory();
 
     useEffect(() => {
         if(isNew) return;
         setIsLoading(true);
-        const loadConsumable = buildLoadObjectFunc<Models.Consumable>(
+        const loadConsumable = buildLoadObjectFunc<ViewModels.ConsumableViewModel>(
             `api/consumables/${matchedId}`,
             {},
             resolveText('Consumable_CouldNotLoad'),
             item => {
                 setName(item.name);
-                setStockStates(item.stockStates);
+                setStockStates(item.stockStateViewModels);
             },
             () => setIsLoading(false)
         );
@@ -64,10 +67,16 @@ export const ConsumableEditPage = (props: ConsumableEditPageProps) => {
             stockStates: stockStates
         };
     }
-    const updateStockState = (updatedStockState: Models.StockState) => {
+    const addStockState = (stockState: ViewModels.StockStateViewModel) => {
+        setStockStates(stockStates.concat(stockState));
+    }
+    const updateStockState = (updatedStockState: ViewModels.StockStateViewModel) => {
         setStockStates(stockStates.map(x => {
             return x.stockId === updatedStockState.stockId ? updatedStockState : x;
         }));
+    }
+    const deleteStockState = (stockId: string) => {
+        setStockStates(stockStates.filter(x => x.stockId !== stockId));
     }
 
     if(isLoading) {
@@ -78,35 +87,52 @@ export const ConsumableEditPage = (props: ConsumableEditPageProps) => {
         <>
             <h1>{resolveText('Consumable')}</h1>
             <Form onSubmit={store}>
-                <RowFormGroup
-                    label={resolveText('Consumable_Name')}
-                    value={name}
-                    onChange={setName}
-                />
-                <h3>{resolveText('Consumable_StockStates')}</h3>
-                <Table>
-                    <thead>
-                        <tr>
-                            <th>{resolveText('StockState_Stock')}</th>
-                            <th>{resolveText('StockState_IsOrderable')}</th>
-                            <th>{resolveText('StockState_IsUnlimitedOrderable')}</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {stockStates.map(stockState => (
-                            <StockState key={stockState.stockId}
-                                stockState={stockState}
-                                onChange={updateStockState}
-                            />
-                        ))}
-                    </tbody>
-                </Table>
+                <FormGroup as={Row}>
+                    <FormLabel column md="3">{resolveText('Consumable_Name')}</FormLabel>
+                    <Col md="8">
+                        <FormControl
+                            value={name}
+                            onChange={(e:any) => setName(e.target.value)}
+                        />
+                    </Col>
+                </FormGroup>
+                <Row>
+                    <FormLabel column md="3">{resolveText('Consumable_StockStates')}</FormLabel>
+                    <Col md="8">
+                        <Table>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>{resolveText('StockState_Stock')}</th>
+                                    <th>{resolveText('StockState_Quantity')}</th>
+                                    <th>{resolveText('StockState_IsOrderable')}</th>
+                                    <th>{resolveText('StockState_IsUnlimitedOrderable')}</th>
+                                    <th>{resolveText('StockState_OrderableBy')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {stockStates.map(stockState => (
+                                    <StockState key={stockState.stockId}
+                                        stockState={stockState}
+                                        onChange={updateStockState}
+                                        onDelete={() => deleteStockState(stockState.stockId)}
+                                    />
+                                ))}
+                            </tbody>
+                        </Table>
+                        <Button onClick={() => setShowStockStateCreationModal(true)}>{resolveText('Add')}</Button>
+                    </Col>
+                </Row>
                 <StoreButton
                     type="submit"
                     isStoring={isStoring}
                 />
             </Form>
+            <CreateStockStateModal
+                show={showStockStateCreationModal}
+                onClose={() => setShowStockStateCreationModal(false)}
+                onStockStateCreated={addStockState}
+            />
         </>
     );
 

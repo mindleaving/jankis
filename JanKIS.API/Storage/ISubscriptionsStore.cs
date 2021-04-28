@@ -14,6 +14,7 @@ namespace JanKIS.API.Storage
         Task<List<InstitutionSubscription>> GetInstitutionSubscriptions(string institutionId);
         Task<List<ResourceSubscription>> GetResourceSubscriptions(string resourceId);
         Task<List<StockSubscription>> GetStockSubscription(string stockId);
+        Task<List<ConsumableOrderSubscription>> GetConsumableOrderSubscriptions(string orderId);
 
         Task<PatientSubscription> GetPatientSubscription(string patientId, string username);
         Task<ServiceSubscription> GetServiceSubscription(string serviceId, string username);
@@ -22,6 +23,7 @@ namespace JanKIS.API.Storage
         Task<InstitutionSubscription> GetInstitutionSubscription(string institutionId, string username);
         Task<ResourceSubscription> GetResourceSubscription(string resourceId, string username);
         Task<StockSubscription> GetStockSubscription(string stockId, string username);
+        Task<ConsumableOrderSubscription> GetConsumableOrderSubscription(string orderId, string username);
     }
 
     public class SubscriptionsStore : GenericStore<SubscriptionBase>, ISubscriptionsStore
@@ -64,6 +66,11 @@ namespace JanKIS.API.Storage
         public Task<List<StockSubscription>> GetStockSubscription(string stockId)
         {
             return collection.OfType<StockSubscription>().Find(x => x.StockId == stockId).ToListAsync();
+        }
+
+        public Task<List<ConsumableOrderSubscription>> GetConsumableOrderSubscriptions(string orderId)
+        {
+            return collection.OfType<ConsumableOrderSubscription>().Find(x => x.OrderId == orderId).ToListAsync();
         }
 
         public Task<PatientSubscription> GetPatientSubscription(
@@ -113,6 +120,13 @@ namespace JanKIS.API.Storage
             string username)
         {
             return collection.OfType<StockSubscription>().Find(x => x.StockId == stockId && x.Username == username).FirstOrDefaultAsync();
+        }
+
+        public Task<ConsumableOrderSubscription> GetConsumableOrderSubscription(
+            string orderId,
+            string username)
+        {
+            return collection.OfType<ConsumableOrderSubscription>().Find(x => x.OrderId == orderId && x.Username == username).FirstOrDefaultAsync();
         }
     }
 }

@@ -13,7 +13,7 @@ export const ServiceEditPage = (props: ServiceEditPageProps) => {
 
     const isNew = props.match.path.toLowerCase().startsWith('/create');
     const matchedId = props.match.params.serviceId;
-    if(!isNew && !props.match.params.serviceId) {
+    if(!isNew && !matchedId) {
         throw new Error('Invalid link');
     }
     

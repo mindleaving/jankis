@@ -6,22 +6,59 @@ using System.Threading.Tasks;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
+using JanKIS.API.ViewModels;
+using JanKIS.API.ViewModels.Builders;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace JanKIS.API.Controllers
 {
     public class ConsumablesController : RestControllerBase<Consumable>
     {
+        private readonly IStore<ConsumableOrder> consumableOrdersStore;
+        private readonly IViewModelBuilder<Consumable> consumableViewModelBuilder;
+        private readonly IViewModelBuilder<ConsumableOrder> consumableOrderViewModelBuilder;
+
         public ConsumablesController(
             IStore<Consumable> store,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IViewModelBuilder<Consumable> consumableViewModelBuilder,
+            IStore<ConsumableOrder> consumableOrdersStore,
+            IViewModelBuilder<ConsumableOrder> consumableOrderViewModelBuilder)
             : base(store, httpContextAccessor)
         {
+            this.consumableViewModelBuilder = consumableViewModelBuilder;
+            this.consumableOrdersStore = consumableOrdersStore;
+            this.consumableOrderViewModelBuilder = consumableOrderViewModelBuilder;
         }
 
-        protected override Task<object> TransformItem(Consumable item)
+        [HttpPut("{consumableId}/orders")]
+        public async Task<IActionResult> GetOrders([FromRoute] string consumableId, int? count = null, int? skip = null)
         {
-            return Task.FromResult<object>(item);
+            var items = await consumableOrdersStore.SearchAsync(x => x.ConsumableId == consumableId, count, skip);
+            var transformedItems = new List<IViewModel<ConsumableOrder>>();
+            foreach (var consumableOrder in items)
+            {
+                var consumableOrderViewModel = await consumableOrderViewModelBuilder.Build(consumableOrder);
+                transformedItems.Add(consumableOrderViewModel);
+            }
+            return Ok(transformedItems);
+        }
+
+        [HttpPut("{consumableId}/orders/{orderId}")]
+        public async Task<IActionResult> OrderConsumable([FromRoute] string consumableId, [FromRoute] string orderId, ConsumableOrder order)
+        {
+            if (order.ConsumableId != consumableId)
+                return BadRequest("Consumable ID from route doesn't match order");
+            if (order.Id != orderId)
+                return BadRequest("Order ID from route doesn't match order");
+            await consumableOrdersStore.StoreAsync(order);
+            return Ok();
+        }
+
+        protected override async Task<object> TransformItem(Consumable item)
+        {
+            return await consumableViewModelBuilder.Build(item);
         }
 
         protected override Expression<Func<Consumable, object>> BuildOrderByExpression(string orderBy)

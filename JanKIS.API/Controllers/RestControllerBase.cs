@@ -16,7 +16,7 @@ namespace JanKIS.API.Controllers
     public abstract class RestControllerBase<T> : ControllerBase where T: class, IId
     {
         protected readonly IStore<T> store;
-        private readonly IHttpContextAccessor httpContextAccessor;
+        protected readonly IHttpContextAccessor httpContextAccessor;
 
         protected RestControllerBase(
             IStore<T> store,

@@ -6,7 +6,6 @@ import { deleteObject } from '../../helpers/DeleteHelpers';
 import { resolveText } from '../../helpers/Globalizer';
 import PagedTableLoader from '../../helpers/PagedTableLoader';
 import { DepartmentsFilter } from '../../types/frontendTypes';
-import { Models } from '../../types/models';
 import { ViewModels } from '../../types/viewModels';
 import { PagedTable } from '../PagedTable';
 

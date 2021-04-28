@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Badge, Card, Col, FormCheck, FormGroup, Row } from 'react-bootstrap';
+import { Badge, Card, Col, FormCheck, Row } from 'react-bootstrap';
 import { apiClient } from '../communication/ApiClient';
 import { resolveText } from '../helpers/Globalizer';
 import { Models } from '../types/models';

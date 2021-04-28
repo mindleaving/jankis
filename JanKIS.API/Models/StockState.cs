@@ -4,6 +4,21 @@ namespace JanKIS.API.Models
 {
     public class StockState
     {
+        public StockState() {}
+        public StockState(
+            string stockId,
+            bool isOrderable,
+            bool isUnlimitedOrderable,
+            List<ServiceAudience> orderableBy,
+            int quantity)
+        {
+            StockId = stockId;
+            IsOrderable = isOrderable;
+            IsUnlimitedOrderable = isUnlimitedOrderable;
+            OrderableBy = orderableBy;
+            Quantity = quantity;
+        }
+
         public string StockId { get; set; }
         public int Quantity { get; set; }
         public bool IsOrderable { get; set; }

@@ -4,17 +4,15 @@ import { resolveText } from "./Globalizer";
 import { differenceInYears, differenceInMonths, differenceInDays } from 'date-fns';
 import { ViewModels } from "../types/viewModels";
 
-export const formatServiceAudience = (item: Models.ServiceAudience) => {
+export const formatServiceAudience = (item: ViewModels.ServiceAudienceViewModel) => {
     if(item.type === ServiceAudienceType.All) {
         return resolveText('ServiceAudienceType_All');
     }
     if(item.type === ServiceAudienceType.Role) {
-        const roleAudience = item as Models.RoleServiceAudience;
-        return `${resolveText('ServiceAudienceType_Role')}: ${roleAudience.roleId}`;
+        return `${resolveText('ServiceAudienceType_Role')}: ${item.role!.name}`;
     }
     if(item.type === ServiceAudienceType.Person) {
-        const patientAudience = item as Models.PersonServiceAudience;
-        return `${resolveText('ServiceAudienceType_Person')}: ${patientAudience.personId}`;
+        return `${resolveText('ServiceAudienceType_Person')}: ${formatPerson(item.person!)}`;
     }
     throw new Error(`Formatting of service audience type '${item.type}' not implemented`);
 }
@@ -86,4 +84,7 @@ export const formatLocation = (location: ViewModels.LocationViewModel) => {
             return `${resolveText(`LocationType_${location.type}`)} ${location.room?.name ?? location.id}`;
     }
     return `${resolveText(`LocationType_${location.type}`)} ${location.id}`;
+}
+export const formatStock = (stock: ViewModels.StockViewModel) => {
+    return `${stock.name} (${resolveText('Department')} ${stock.department.name})`;
 }

@@ -35,6 +35,10 @@ export interface ConsumablesFilter {
 export interface ResourcessFilter {
     searchText?: string;
 }
+export interface ConsumableOrdersFilter {
+    searchText?: string;
+    consumableId?: string;
+}
 
 interface PatientParams {
     patientId?: string;

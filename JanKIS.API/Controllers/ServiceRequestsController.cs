@@ -16,7 +16,6 @@ namespace JanKIS.API.Controllers
     public class ServiceRequestsController : RestControllerBase<ServiceRequest>
     {
         private readonly IServiceRequestsStore serviceRequestsStore;
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IReadonlyStore<Account> accountsStore;
         private readonly IReadonlyStore<InstitutionPolicy> institutionPolicyStore;
         private readonly ServiceRequestChangePolicy serviceRequestChangePolicy;
@@ -34,7 +33,6 @@ namespace JanKIS.API.Controllers
             : base(serviceRequestsStore, httpContextAccessor)
         {
             this.serviceRequestsStore = serviceRequestsStore;
-            this.httpContextAccessor = httpContextAccessor;
             this.institutionPolicyStore = institutionPolicyStore;
             this.serviceRequestChangePolicy = serviceRequestChangePolicy;
             this.notificationDistributor = notificationDistributor;
@@ -119,7 +117,7 @@ namespace JanKIS.API.Controllers
         [HttpPost("{requestId}/subscribe")]
         public async Task<IActionResult> Subscribe([FromRoute] string requestId)
         {
-            var serviceRequest = await serviceRequestsStore.GetByIdAsync(requestId);
+            var serviceRequest = await store.GetByIdAsync(requestId);
             if (serviceRequest == null)
                 return NotFound();
             var username = ControllerHelpers.GetUsername(httpContextAccessor);

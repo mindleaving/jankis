@@ -4,11 +4,12 @@ import { AutocompleteRunner } from '../../helpers/AutocompleteRunner';
 import { resolveText } from '../../helpers/Globalizer';
 import { ServiceAudienceType } from '../../types/enums.d';
 import { Models } from '../../types/models';
+import { ViewModels } from '../../types/viewModels';
 import { Autocomplete } from '../Autocompletes/Autocomplete';
 import { PersonAutocomplete } from '../Autocompletes/PersonAutocomplete';
 
 interface ServiceAudienceEditFormProps {
-    addAudience: (item: Models.ServiceAudience) => void;
+    addAudience: (item: ViewModels.ServiceAudienceViewModel) => void;
 }
 
 export const ServiceAudienceEditForm = (props: ServiceAudienceEditFormProps) => {
@@ -20,27 +21,11 @@ export const ServiceAudienceEditForm = (props: ServiceAudienceEditFormProps) => 
     const [ selectedPerson, setSelectedPerson ] = useState<Models.Person>();
 
     const createAudience = () => {
-        let audience: Models.ServiceAudience;
-        if(type === ServiceAudienceType.All) {
-            const allAudience: Models.AllServiceAudience = {
-                type: type
-            };
-            audience = allAudience;
-        } else if(type === ServiceAudienceType.Role) {
-            const roleAudience: Models.RoleServiceAudience = {
-                type: type,
-                roleId: selectedRole!.id
-            }
-            audience = roleAudience;
-        } else if(type === ServiceAudienceType.Person) {
-            const patientAudience: Models.PersonServiceAudience = {
-                type: type,
-                personId: selectedPerson!.id
-            };
-            audience = patientAudience;
-        } else {
-            throw new Error(`Cannot create audience for service audience type '${type}'`);
-        }
+        const audience: ViewModels.ServiceAudienceViewModel = {
+            type: type,
+            role: type === ServiceAudienceType.Role ? selectedRole : undefined,
+            person: type === ServiceAudienceType.Person ? selectedPerson : undefined
+        };
         props.addAudience(audience);
     }
 

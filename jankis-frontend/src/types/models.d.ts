@@ -77,6 +77,7 @@ export namespace Models {
     interface ConsumableOrder {
         id: string;
         consumableId: string;
+        consumableName: string;
         requester: string;
         quantity: number;
         preferredSources: string[];
@@ -429,8 +430,8 @@ export namespace Models {
     }
 
     interface PersonServiceAudience {
-        personId: string;
         type: Enums.ServiceAudienceType;
+        personId: string;
     }
 
     interface PulseObservation {
@@ -478,8 +479,8 @@ export namespace Models {
     }
 
     interface RoleServiceAudience {
-        roleId: string;
         type: Enums.ServiceAudienceType;
+        roleId: string;
     }
 
     interface Room {

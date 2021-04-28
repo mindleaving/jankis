@@ -8,6 +8,16 @@ namespace JanKIS.API.Models
     /// </summary>
     public class Consumable : IId
     {
+        public Consumable() {}
+        public Consumable(
+            string id,
+            string name)
+        {
+            Id = id;
+            Name = name;
+            StockStates = new List<StockState>();
+        }
+
         public string Id { get; set; }
         public string Name { get; set; }
         public List<StockState> StockStates { get; set; }

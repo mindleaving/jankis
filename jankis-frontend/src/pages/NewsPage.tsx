@@ -1,16 +1,12 @@
-import { useContext } from 'react';
 import Col from 'react-bootstrap/esm/Col';
 import Row from 'react-bootstrap/esm/Row';
 import { NewsTicker } from '../components/News/NewsTicker';
-import UserContext from '../contexts/UserContext';
 import { resolveText } from '../helpers/Globalizer';
 import { NotificationsTicker } from '../components/NotificationsTicker';
 
 interface NewsPageProps {}
 
 export const NewsPage = (props: NewsPageProps) => {
-
-    const user = useContext(UserContext);
 
     return (
         <>

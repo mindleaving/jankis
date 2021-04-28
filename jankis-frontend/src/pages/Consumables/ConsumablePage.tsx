@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Table } from 'react-bootstrap';
-import { useSelector } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
+import { formatStock } from '../../helpers/Formatters';
 import { resolveText } from '../../helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { ConsumableOrderModal } from '../../modals/ConsumableOrderModal';
-import { getStocks } from '../../stores/selectors/stockSelectors';
-import { Models } from '../../types/models';
+import { ViewModels } from '../../types/viewModels';
 
 interface ConsumableParams {
     consumableId: string;
@@ -16,14 +15,13 @@ interface ConsumablePageProps extends RouteComponentProps<ConsumableParams> {}
 export const ConsumablePage = (props: ConsumablePageProps) => {
 
     const id = props.match.params.consumableId;
-    const stocks = useSelector(getStocks);
     
-    const [ consumable, setConsumable ] = useState<Models.Consumable>();
+    const [ consumable, setConsumable ] = useState<ViewModels.ConsumableViewModel>();
     const [ showOrderModal, setShowOrderModal ] = useState<boolean>(false);
-    const [ orderInfo, setOrderInfo ] = useState<Models.StockState>();
+    const [ orderInfo, setOrderInfo ] = useState<ViewModels.StockStateViewModel>();
 
     useEffect(() => {
-        const loadConsumable = buildLoadObjectFunc<Models.Consumable>(
+        const loadConsumable = buildLoadObjectFunc<ViewModels.ConsumableViewModel>(
             `api/consumables/${id}`,
             {},
             resolveText('Consumable_CouldNotLoad'),
@@ -32,7 +30,7 @@ export const ConsumablePage = (props: ConsumablePageProps) => {
         loadConsumable();
     }, [ id ]);
 
-    const openOrderModal = (stockState: Models.StockState) => {
+    const openOrderModal = (stockState: ViewModels.StockStateViewModel) => {
         setOrderInfo(stockState);
         setShowOrderModal(true);
     }
@@ -53,15 +51,16 @@ export const ConsumablePage = (props: ConsumablePageProps) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {consumable.stockStates.map(stockState => (
+                    {consumable.stockStateViewModels.map(stockState => (
                         <tr>
-                            <td>{stocks?.find(stock => stock.id === stockState.stockId)?.name ?? resolveText('Loading...')}</td>
+                            <td>{formatStock(stockState.stock)}</td>
                             <td>{stockState.quantity}</td>
                             <td>
                                 {stockState.isOrderable 
                                 ? <Button
+                                    size="sm"
                                     onClick={() => openOrderModal(stockState)}
-                                    disabled={!stockState.isUnlimitedOrderable && stockState.quantity === 0}
+                                    disabled={stockState.quantity <= 0 && !stockState.isUnlimitedOrderable}
                                 >
                                     {resolveText('Order')}
                                 </Button>
@@ -76,7 +75,7 @@ export const ConsumablePage = (props: ConsumablePageProps) => {
                 onHide={() => setShowOrderModal(false)} 
                 consumableId={id}
                 consumableName={consumable.name}
-                orderInfo={orderInfo!} 
+                stockState={orderInfo} 
             />
         </>
     );

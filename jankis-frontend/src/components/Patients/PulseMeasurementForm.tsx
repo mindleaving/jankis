@@ -1,5 +1,5 @@
 import React, { FormEvent, useContext, useMemo, useState } from 'react';
-import { Button, FormText } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import { Col, Form, FormControl, FormGroup, FormLabel, InputGroup, Row } from 'react-bootstrap';
 import UserContext from '../../contexts/UserContext';
 import { resolveText } from '../../helpers/Globalizer';

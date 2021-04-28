@@ -4,7 +4,6 @@ import { Models } from '../../types/models';
 import { v4 as uuid } from 'uuid';
 import { MeasurementType, PatientEventType } from '../../types/enums.d';
 import UserContext from '../../contexts/UserContext';
-import { RowFormGroup } from '../RowFormGroup';
 import { resolveText } from '../../helpers/Globalizer';
 import { InputGroup } from 'react-bootstrap';
 

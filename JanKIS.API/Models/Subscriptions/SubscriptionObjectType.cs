@@ -8,6 +8,7 @@
         Stock,
         Resource,
         Department,
-        Institution
+        Institution,
+        ConsumableOrder
     }
 }

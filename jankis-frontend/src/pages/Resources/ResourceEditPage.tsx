@@ -1,10 +1,8 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { RouteComponentProps, useHistory } from 'react-router';
-import { apiClient } from '../../communication/ApiClient';
 import { resolveText } from '../../helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { Models } from '../../types/models';
-import { NotificationManager } from 'react-notifications';
 import { v4 as uuid } from 'uuid';
 import { AutoCompleteContext } from '../../types/enums.d';
 import { RowFormGroup } from '../../components/RowFormGroup';

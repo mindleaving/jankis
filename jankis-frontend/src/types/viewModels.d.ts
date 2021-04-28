@@ -17,6 +17,28 @@ export namespace ViewModels {
         departments: Models.Department[];
     }
 
+    interface ConsumableOrderViewModel {
+        consumable: Models.Consumable;
+        stockViewModels: ViewModels.StockViewModel[];
+        requesterViewModel: ViewModels.AccountViewModel;
+        id: string;
+        consumableId: string;
+        consumableName: string;
+        requester: string;
+        quantity: number;
+        preferredSources: string[];
+        note: string;
+        state: Enums.OrderState;
+        timestamps: { [key: Enums.OrderState]: Date };
+    }
+
+    interface ConsumableViewModel {
+        stockStateViewModels: ViewModels.StockStateViewModel[];
+        id: string;
+        name: string;
+        stockStates: Models.StockState[];
+    }
+
     interface DepartmentViewModel {
         parentDepartment?: ViewModels.DepartmentViewModel;
         id: string;
@@ -77,6 +99,12 @@ export namespace ViewModels {
         note: string;
     }
 
+    interface ServiceAudienceViewModel {
+        type: Enums.ServiceAudienceType;
+        role?: Models.Role;
+        person?: Models.Person;
+    }
+
     interface ServiceViewModel {
         department: ViewModels.DepartmentViewModel;
         id: string;
@@ -87,6 +115,16 @@ export namespace ViewModels {
         departmentId: string;
         autoAcceptRequests: boolean;
         isAvailable: boolean;
+    }
+
+    interface StockStateViewModel {
+        stock: ViewModels.StockViewModel;
+        audience: ViewModels.ServiceAudienceViewModel[];
+        stockId: string;
+        quantity: number;
+        isOrderable: boolean;
+        isUnlimitedOrderable: boolean;
+        orderableBy: Models.ServiceAudience[];
     }
 
     interface StockViewModel {
@@ -100,6 +138,14 @@ export namespace ViewModels {
 
     export namespace Builders {
         interface AccountViewModelBuilder {
+            
+        }
+    
+        interface ConsumableOrderViewModelBuilder {
+            
+        }
+    
+        interface ConsumableViewModelBuilder {
             
         }
     
@@ -119,7 +165,15 @@ export namespace ViewModels {
             
         }
     
+        interface ServiceAudienceViewModelBuilder {
+            
+        }
+    
         interface ServiceViewModelBuilder {
+            
+        }
+    
+        interface StockStateViewModelBuilder {
             
         }
     

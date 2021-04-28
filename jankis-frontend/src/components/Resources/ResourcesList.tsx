@@ -7,7 +7,6 @@ import { formatLocation } from '../../helpers/Formatters';
 import { resolveText } from '../../helpers/Globalizer';
 import PagedTableLoader from '../../helpers/PagedTableLoader';
 import { ResourcessFilter } from '../../types/frontendTypes';
-import { Models } from '../../types/models';
 import { ViewModels } from '../../types/viewModels';
 import { PagedTable } from '../PagedTable';
 
