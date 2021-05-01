@@ -57,7 +57,7 @@ export const ConsumableOrderModal = (props: ConsumableOrderModalProps) => {
             quantity: quantity,
             requester: user!.username,
             state: OrderState.Ordered,
-            timestamps: {}
+            timestamps: []
         };
     }
 

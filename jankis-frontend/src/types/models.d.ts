@@ -83,7 +83,14 @@ export namespace Models {
         preferredSources: string[];
         note: string;
         state: Enums.OrderState;
-        timestamps: { [key: Enums.OrderState]: Date };
+        assignedTo?: string;
+        followUpOrderId?: string;
+        timestamps: Models.ConsumableOrderStateChange[];
+    }
+
+    interface ConsumableOrderStateChange {
+        newState: Enums.OrderState;
+        timestamp: Date;
     }
 
     interface Contact {
@@ -619,6 +626,14 @@ export namespace Models {
             isDismissed: boolean;
             submitter: string;
             timestamp: Date;
+        }
+    
+        interface ConsumableOrderSubscription {
+            type: Enums.SubscriptionObjectType;
+            orderId: string;
+            id: string;
+            username: string;
+            mutedUntil?: Date | null;
         }
     
         interface DepartmentSubscription {

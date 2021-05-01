@@ -3,22 +3,14 @@ using JanKIS.API.Models;
 
 namespace JanKIS.API.ViewModels
 {
-    public class InstitutionViewModel
+    public class InstitutionViewModel : Institution, IViewModel<Institution>
     {
-        public InstitutionViewModel(string id,
-            string name,
-            List<Room> rooms,
-            List<Department> departments)
+        public InstitutionViewModel(Institution model)
+            : base(model.Id, model.Name, model.DepartmentIds, model.RoomIds)
         {
-            Id = id;
-            Name = name;
-            Rooms = rooms;
-            Departments = departments;
         }
 
-        public string Id { get; set; }
-        public string Name { get; set; }
         public List<Room> Rooms { get; set; }
-        public List<Department> Departments { get; set; }
+        public List<DepartmentViewModel> Departments { get; set; }
     }
 }

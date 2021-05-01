@@ -88,3 +88,6 @@ export const formatLocation = (location: ViewModels.LocationViewModel) => {
 export const formatStock = (stock: ViewModels.StockViewModel) => {
     return `${stock.name} (${resolveText('Department')} ${stock.department.name})`;
 }
+export const formatBed = (room: Models.Room, bedPosition: string) => {
+    return `${room.name}${bedPosition}`;
+}

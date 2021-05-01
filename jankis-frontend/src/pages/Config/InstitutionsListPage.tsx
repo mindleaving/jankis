@@ -4,19 +4,19 @@ import { useHistory } from 'react-router';
 import { openConfirmAlert } from '../../helpers/AlertHelpers';
 import { resolveText } from '../../helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
-import { Models } from '../../types/models';
+import { ViewModels } from '../../types/viewModels';
 
 interface InstitutionsListPageProps {}
 
 export const InstitutionsListPage = (props: InstitutionsListPageProps) => {
 
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
-    const [ institutions, setInstitutions ] = useState<Models.Institution[]>([]);
+    const [ institutions, setInstitutions ] = useState<ViewModels.InstitutionViewModel[]>([]);
     const history = useHistory();
 
     useEffect(() => {
         setIsLoading(true);
-        const loadInstitutions = buildLoadObjectFunc<Models.Institution[]>(
+        const loadInstitutions = buildLoadObjectFunc<ViewModels.InstitutionViewModel[]>(
             'api/institutions',
             {},
             resolveText('Institutions_CouldNotLoad'),

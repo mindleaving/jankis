@@ -29,7 +29,9 @@ export namespace ViewModels {
         preferredSources: string[];
         note: string;
         state: Enums.OrderState;
-        timestamps: { [key: Enums.OrderState]: Date };
+        assignedTo?: string;
+        followUpOrderId?: string;
+        timestamps: Models.ConsumableOrderStateChange[];
     }
 
     interface ConsumableViewModel {
@@ -49,10 +51,12 @@ export namespace ViewModels {
     }
 
     interface InstitutionViewModel {
+        rooms: Models.Room[];
+        departments: ViewModels.DepartmentViewModel[];
         id: string;
         name: string;
-        rooms: Models.Room[];
-        departments: Models.Department[];
+        roomIds: string[];
+        departmentIds: string[];
     }
 
     interface IViewModel<T> {
@@ -150,6 +154,10 @@ export namespace ViewModels {
         }
     
         interface DepartmentViewModelBuilder {
+            
+        }
+    
+        interface InstitutionViewModelBuilder {
             
         }
     

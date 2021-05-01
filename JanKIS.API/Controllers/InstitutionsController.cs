@@ -8,6 +8,7 @@ using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
 using JanKIS.API.ViewModels;
+using JanKIS.API.ViewModels.Builders;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,8 +19,8 @@ namespace JanKIS.API.Controllers
         private readonly IStore<Room> roomsStore;
         private readonly IStore<Department> departmentsStore;
         private readonly IReadonlyStore<BedOccupancy> bedOccupanciesStore;
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ISubscriptionsStore subscriptionsStore;
+        private readonly IViewModelBuilder<Institution> institutionViewModelBuilder;
 
         public InstitutionsController(
             IStore<Institution> store,
@@ -27,30 +28,15 @@ namespace JanKIS.API.Controllers
             IStore<Department> departmentsStore,
             IReadonlyStore<BedOccupancy> bedOccupanciesStore,
             IHttpContextAccessor httpContextAccessor,
-            ISubscriptionsStore subscriptionsStore)
+            ISubscriptionsStore subscriptionsStore,
+            IViewModelBuilder<Institution> institutionViewModelBuilder)
             : base(store, httpContextAccessor)
         {
             this.roomsStore = roomsStore;
             this.departmentsStore = departmentsStore;
             this.bedOccupanciesStore = bedOccupanciesStore;
-            this.httpContextAccessor = httpContextAccessor;
             this.subscriptionsStore = subscriptionsStore;
-        }
-
-        [HttpGet("{institutionId}/viewmodel")]
-        public async Task<IActionResult> GetViewModel([FromRoute] string institutionId)
-        {
-            var institution = await store.GetByIdAsync(institutionId);
-            if (institution == null)
-                return NotFound();
-            var rooms = await roomsStore.SearchAsync(x => institution.RoomIds.Contains(x.Id));
-            var departments = await departmentsStore.SearchAsync(x => x.InstitutionId == institutionId);
-            var viewModel = new InstitutionViewModel(
-                institution.Id,
-                institution.Name,
-                rooms.OrderBy(x => x.Name).ToList(),
-                departments.OrderBy(x => x.Name).ToList());
-            return Ok(viewModel);
+            this.institutionViewModelBuilder = institutionViewModelBuilder;
         }
 
         [HttpGet("{institutionId}/bedoccupancies")]
@@ -112,9 +98,9 @@ namespace JanKIS.API.Controllers
             return Ok();
         }
 
-        protected override Task<object> TransformItem(Institution item)
+        protected override async Task<object> TransformItem(Institution item)
         {
-            return Task.FromResult<object>(item);
+            return await institutionViewModelBuilder.Build(item);
         }
 
         protected override Expression<Func<Institution, object>> BuildOrderByExpression(string orderBy)

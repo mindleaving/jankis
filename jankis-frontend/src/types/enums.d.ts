@@ -70,6 +70,7 @@ export enum OrderState {
     Accepted = "Accepted",
     Declined = "Declined",
     Delivered = "Delivered",
+    PartiallyDelivered = "PartiallyDelivered",
     CancelledByRequester = "CancelledByRequester"
 }
 export enum PatientEventType {
@@ -142,7 +143,8 @@ export enum SubscriptionObjectType {
     Stock = "Stock",
     Resource = "Resource",
     Department = "Department",
-    Institution = "Institution"
+    Institution = "Institution",
+    ConsumableOrder = "ConsumableOrder"
 }
 export enum AuthenticationErrorType {
     Ok = "Ok",

@@ -10,13 +10,18 @@ namespace JanKIS.API.Storage
 {
     public interface IServiceRequestsStore : IStore<ServiceRequest>
     {
-        Task<List<ServiceRequest>> GetManyFiltered(
+        Task<List<ServiceRequest>> GetManyFilteredAsync(
             int? count = null,
             int? skip = null,
             Expression<Func<ServiceRequest, object>> orderBy = null,
             OrderDirection orderDirection = OrderDirection.Ascending,
             string departmentId = null,
             string serviceId = null);
+
+        Task<bool> TrySetStateAsync(
+            string requestId,
+            ServiceRequestState expectedCurrentState,
+            ServiceRequestState newState);
     }
 
     public class ServiceRequestsStore : GenericStore<ServiceRequest>, IServiceRequestsStore
@@ -26,7 +31,7 @@ namespace JanKIS.API.Storage
         {
         }
 
-        public Task<List<ServiceRequest>> GetManyFiltered(
+        public Task<List<ServiceRequest>> GetManyFilteredAsync(
             int? count = null,
             int? skip = null,
             Expression<Func<ServiceRequest, object>> orderBy = null,
@@ -48,6 +53,19 @@ namespace JanKIS.API.Storage
                 ? findExpression.SortBy(orderBy) 
                 : findExpression.SortByDescending(orderBy);
             return findExpression.Skip(skip).Limit(count).ToListAsync();
+        }
+
+        public async Task<bool> TrySetStateAsync(
+            string requestId,
+            ServiceRequestState expectedCurrentState,
+            ServiceRequestState newState)
+        {
+            if (expectedCurrentState == newState)
+                return true;
+            var result = await collection.UpdateOneAsync(
+                x => x.Id == requestId && x.State == expectedCurrentState,
+                Builders<ServiceRequest>.Update.Set(x => x.State, newState));
+            return result.IsAcknowledged && result.ModifiedCount > 0;
         }
     }
 }

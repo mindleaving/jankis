@@ -39,7 +39,7 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
         if (isNew) return;
         setIsLoading(true);
         const loadInstitution = buildLoadObjectFunc<ViewModels.InstitutionViewModel>(
-            `api/institutions/${id}/viewmodel`,
+            `api/institutions/${id}`,
             {},
             resolveText('Institution_CouldNotLoad'),
             item => {
@@ -189,7 +189,9 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
             id: id,
             name: name,
             rooms: rooms,
-            departments: departments
+            roomIds: rooms.map(x => x.id),
+            departments: departments,
+            departmentIds: departments.map(x => x.id)
         };
     }
 

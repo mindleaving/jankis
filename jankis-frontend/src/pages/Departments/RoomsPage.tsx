@@ -1,32 +1,37 @@
-import { useEffect, useState } from 'react';
-import { Col, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { ButtonGroup, Button, Col, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { RoomCard } from '../../components/Departments/RoomCard';
-import { UniformGrid } from '../../components/UniformGrid';
+import { RoomGridView } from '../../components/Departments/RoomGridView';
 import { resolveText } from '../../helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { Models } from '../../types/models';
 import { ViewModels } from '../../types/viewModels';
+import { BedOccupancyTimelineView } from '../../components/Departments/BedOccupancyTimelineView';
 
 interface RoomsPageProps {}
 
+enum RoomsViewType {
+    Grid,
+    Timeline
+}
 export const RoomsPage = (props: RoomsPageProps) => {
 
     const [ isLoading, setIsLoading] = useState<boolean>(true);
-    const [ institutions, setInstitutions] = useState<Models.Institution[]>([]);
-    const [ selectedInstitutionId, setSelectedInstitutionId ] = useState<string>();
+    const [ institutions, setInstitutions] = useState<ViewModels.InstitutionViewModel[]>([]);
     const [ selectedInstitution, setSelectedInstitution ] = useState<ViewModels.InstitutionViewModel>();
+    const [ viewType, setViewType ] = useState<RoomsViewType>(RoomsViewType.Grid);
     const [ bedOccupancies, setBedOccupancies] = useState<Models.BedOccupancy[]>([]);
 
     useEffect(() => {
         setIsLoading(true);
-        const loadInstitutions = buildLoadObjectFunc<Models.Institution[]>(
+        const loadInstitutions = buildLoadObjectFunc<ViewModels.InstitutionViewModel[]>(
             'api/institutions',
             {},
             resolveText('Institutions_CouldNotLoad'),
             items => {
                 setInstitutions(items);
                 if(items.length === 1) {
-                    setSelectedInstitutionId(items[0].id);
+                    setSelectedInstitution(items[0]);
                 }
             },
             () => setIsLoading(false)
@@ -34,17 +39,10 @@ export const RoomsPage = (props: RoomsPageProps) => {
         loadInstitutions();
     }, []);
     useEffect(() => {
-        if(!selectedInstitutionId) return;
+        if(!selectedInstitution) return;
         setIsLoading(true);
-        const loadInstitutionViewModel = buildLoadObjectFunc<ViewModels.InstitutionViewModel>(
-            `api/institutions/${selectedInstitutionId}/viewmodel`,
-            {},
-            resolveText('Institution_CouldNotLoad'),
-            setSelectedInstitution
-        );
-        loadInstitutionViewModel();
         const loadOccupancies = buildLoadObjectFunc<Models.BedOccupancy[]>(
-            `api/institutions/${selectedInstitutionId}/bedoccupancies`,
+            `api/institutions/${selectedInstitution.id}/bedoccupancies`,
             {},
             resolveText('BedOccupancies_CouldNotLoad'),
             items => {
@@ -58,12 +56,11 @@ export const RoomsPage = (props: RoomsPageProps) => {
             () => setIsLoading(false)
         );
         loadOccupancies();
-    }, [ selectedInstitutionId ]);
+    }, [ selectedInstitution ]);
 
     if(isLoading) {
         return (<h1>{resolveText('Loading...')}</h1>);
     }
-    const now = new Date();
     return (
         <>
             <h1>{resolveText('BedOccupancies')}</h1>
@@ -74,7 +71,7 @@ export const RoomsPage = (props: RoomsPageProps) => {
                     <FormControl
                         as="select"
                         value={selectedInstitution?.id ?? ''}
-                        onChange={(e: any) => setSelectedInstitutionId(e.target.value)}
+                        onChange={(e: any) => setSelectedInstitution(institutions.find(x => x.id === e.target.value))}
                     >
                         {institutions.length > 0
                         ? <>
@@ -87,28 +84,34 @@ export const RoomsPage = (props: RoomsPageProps) => {
                     </FormControl>
                 </Col>
             </FormGroup>
+            <Row className="mb-3">
+                <Col></Col>
+                <Col xs="auto">
+                    <ButtonGroup>
+                        <Button 
+                            variant={viewType === RoomsViewType.Grid ? 'primary' : 'light'} 
+                            onClick={() => setViewType(RoomsViewType.Grid)} 
+                            title={resolveText('Rooms_GridView')}
+                            style={{ width: '100px'}}
+                        >
+                            <i className="fa fa-th" />
+                        </Button>
+                        <Button 
+                            variant={viewType === RoomsViewType.Timeline ? 'primary' : 'light'} 
+                            onClick={() => setViewType(RoomsViewType.Timeline)} 
+                            title={resolveText('Rooms_TimelineView')}
+                            style={{ width: '100px' }}
+                        >
+                            <i className="fa fa-calendar" />
+                        </Button>
+                    </ButtonGroup>
+                </Col>
+            </Row>
             {selectedInstitution
-            ? <>
-                {selectedInstitution.departments.map(department => (
-                    <>
-                        <h2>{department.name}</h2>
-                        <UniformGrid
-                            columnCount={3}
-                            size="lg"
-                            items={department.roomIds.map(roomId => {
-                                const room = selectedInstitution.rooms.find(x => x.id === roomId)!;
-                                return (<RoomCard
-                                    room={room}
-                                    department={department}
-                                    bedOccupancies={bedOccupancies}
-                                    now={now}
-                                />);
-                            })}
-                        />
-                        
-                    </>
-                ))}
-            </> : null}
+                ? viewType === RoomsViewType.Grid ? <RoomGridView institution={selectedInstitution} bedOccupancies={bedOccupancies} />
+                : viewType === RoomsViewType.Timeline ? <BedOccupancyTimelineView institution={selectedInstitution} bedOccupancies={bedOccupancies} />
+                : null
+            : null}
         </>
     );
 

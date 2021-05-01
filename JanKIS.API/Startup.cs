@@ -125,6 +125,7 @@ namespace JanKIS.API
             SetupTypeStores<ServiceRequest>(services);
             services.AddScoped<IServiceRequestsStore, ServiceRequestsStore>();
             SetupTypeStores<ConsumableOrder>(services);
+            services.AddScoped<IConsumableOrdersStore, ConsumableOrdersStore>();
             SetupTypeStores<Consumable>(services);
             SetupTypeStores<Resource>(services);
             SetupTypeStores<Stock>(services);
@@ -167,6 +168,7 @@ namespace JanKIS.API
             services.AddScoped<IViewModelBuilder<ServiceAudience>, ServiceAudienceViewModelBuilder>();
             services.AddScoped<IViewModelBuilder<Account>, AccountViewModelBuilder>();
             services.AddScoped<IViewModelBuilder<ConsumableOrder>, ConsumableOrderViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<Institution>, InstitutionViewModelBuilder>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

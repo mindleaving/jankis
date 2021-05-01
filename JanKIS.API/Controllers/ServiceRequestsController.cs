@@ -49,7 +49,7 @@ namespace JanKIS.API.Controllers
             Request.Query.TryGetValue("departmentId", out var departmentId);
             Request.Query.TryGetValue("serviceId", out var serviceId);
             var orderByExpression = BuildOrderByExpression(orderBy);
-            var items = await serviceRequestsStore.GetManyFiltered(count, skip, orderByExpression, orderDirection, departmentId, serviceId);
+            var items = await serviceRequestsStore.GetManyFilteredAsync(count, skip, orderByExpression, orderDirection, departmentId, serviceId);
             return Ok(items);
         }
 
@@ -102,15 +102,26 @@ namespace JanKIS.API.Controllers
             var existingRequest = await store.GetByIdAsync(requestId);
             if (existingRequest == null)
                 return NotFound();
+            if (existingRequest.State == newState)
+                return Ok();
             // TODO: Check permission to perform this action
             //var username = ControllerHelpers.GetUsername(httpContextAccessor);
             //var account = await accountsStore.GetByIdAsync(username);
             //var institutionPolicy = await institutionPolicyStore.GetByIdAsync(InstitutionPolicy.DefaultId);
             //if (!await serviceRequestChangePolicy.CanChange(existingRequest, account, institutionPolicy))
             //    return Forbid();
+            var expectedStoredState = existingRequest.State;
             if (!existingRequest.TrySetState(newState, out var stateChangeError))
                 return BadRequest(stateChangeError);
-            await store.StoreAsync(existingRequest);
+            var isStateChanged = await serviceRequestsStore.TrySetStateAsync(requestId, expectedStoredState, newState);
+            if(!isStateChanged)
+            {
+                return BadRequest(new
+                {
+                    Error = $"Could not change state of request '{requestId}' to {newState}. Someone else may already have changed the state.",
+                    Request = existingRequest
+                });
+            }
             return Ok();
         }
 

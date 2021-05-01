@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Commons.Extensions;
 using JanKIS.API.Storage;
+using TypescriptGenerator.Attributes;
 
 namespace JanKIS.API.Models
 {
@@ -39,10 +40,12 @@ namespace JanKIS.API.Models
         public string Note { get; set; }
 
         public OrderState State { get; set; }
+        [TypescriptIsOptional]
         public string AssignedTo { get; set; }
         /// <summary>
         /// ID of new order if this one was partially delivered
         /// </summary>
+        [TypescriptIsOptional]
         public string FollowUpOrderId { get; set; }
         public List<ConsumableOrderStateChange> Timestamps { get; set; }
 

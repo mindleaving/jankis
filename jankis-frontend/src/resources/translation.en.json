@@ -447,6 +447,8 @@
   "Room_Name": "Name",
   "RoomNumber": "Room number",
   "Rooms": "Rooms",
+  "Rooms_GridView": "Grid",
+  "Rooms_TimelineView": "Timeline",
   "Save": "Save",
   "Search": "Search",
   "Search...": "Search...",
