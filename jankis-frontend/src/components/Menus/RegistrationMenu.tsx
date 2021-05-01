@@ -16,6 +16,7 @@ export const RegistrationMenu = (props: RegistrationMenuProps) => {
                 <NavDropdown.Item onClick={() => history.push('/persons')}>{resolveText('Menu_PatientList')}</NavDropdown.Item>
             </NavDropdown>
             <NavDropdown title={resolveText('Menu_Admission')} id="basic-nav-dropdown">
+                <NavDropdown.Item onClick={() => history.push('/admissions')}>{resolveText('Menu_ListOfAdmissions')}</NavDropdown.Item>
                 <NavDropdown.Item onClick={() => history.push('/admission/admit')}>{resolveText('Menu_Admit')}</NavDropdown.Item>
                 <NavDropdown.Item onClick={() => history.push('/admission/orderdiagnostics')}>{resolveText('Menu_OrderDiagnostics')}</NavDropdown.Item>
                 <NavDropdown.Item onClick={() => history.push('/admission/schedulebeds')}>{resolveText('Menu_ScheduleBeds')}</NavDropdown.Item>

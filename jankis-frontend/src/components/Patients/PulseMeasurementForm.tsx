@@ -87,6 +87,7 @@ export const PulseMeasurementForm = (props: PulseMeasurementFormProps) => {
                     </Button>
                 </Col>
             </Row>
+            <hr />
             {props.hasSubmitButton
             ? <Button type="submit">{props.submitButtonText ?? resolveText('Submit')}</Button>
             : null}

@@ -53,6 +53,7 @@ import { DrugsListPage } from './pages/Drugs/DrugsListPage';
 import { CreateEditDrugPage } from './pages/Drugs/CreateEditDrugPage';
 import { EditMedicationSchedulePage } from './pages/Patients/EditMedicationSchedulePage';
 import { ConsumableEditPage } from './pages/Consumables/ConsumableEditPage';
+import { PatientNursingPage } from './pages/Patients/PatientNursingPage';
 
 function App() {
 
@@ -99,6 +100,10 @@ function App() {
                     <Route
                         exact path="/patients/:patientId"
                         render={props => <PatientPage {...props} />}
+                    />
+                    <Route
+                        exact path="/patients/:patientId/nursing"
+                        render={props => <PatientNursingPage {...props} />}
                     />
                     <Route
                         exact path="/patients/:patientId/timeline"

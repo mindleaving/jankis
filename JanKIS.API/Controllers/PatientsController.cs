@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JanKIS.API.Helpers;
@@ -6,6 +7,7 @@ using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
 using JanKIS.API.ViewModels;
+using JanKIS.API.ViewModels.Builders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +30,8 @@ namespace JanKIS.API.Controllers
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IMedicationScheduleStore medicationSchedulesStore;
         private readonly IReadonlyStore<MedicationDispension> medicationDispensionsStore;
+        private readonly IReadonlyStore<AttachedEquipment> patientEquipmentStore;
+        private readonly IViewModelBuilder<AttachedEquipment> attachedEquipmentViewModelBuilder;
 
         public PatientsController(
             IStore<Person> personsStore,
@@ -40,7 +44,9 @@ namespace JanKIS.API.Controllers
             ISubscriptionsStore subscriptionsStore,
             IHttpContextAccessor httpContextAccessor,
             IMedicationScheduleStore medicationSchedulesStore,
-            IReadonlyStore<MedicationDispension> medicationDispensionsStore)
+            IReadonlyStore<MedicationDispension> medicationDispensionsStore,
+            IReadonlyStore<AttachedEquipment> patientEquipmentStore,
+            IViewModelBuilder<AttachedEquipment> attachedEquipmentViewModelBuilder)
         {
             this.personsStore = personsStore;
             this.admissionsStore = admissionsStore;
@@ -53,6 +59,8 @@ namespace JanKIS.API.Controllers
             this.httpContextAccessor = httpContextAccessor;
             this.medicationSchedulesStore = medicationSchedulesStore;
             this.medicationDispensionsStore = medicationDispensionsStore;
+            this.patientEquipmentStore = patientEquipmentStore;
+            this.attachedEquipmentViewModelBuilder = attachedEquipmentViewModelBuilder;
         }
 
         [HttpGet("{patientId}/" + nameof(OverviewViewModel))]
@@ -85,6 +93,28 @@ namespace JanKIS.API.Controllers
                 subscription);
             return Ok(viewModel);
         }
+
+        [HttpGet("{patientId}/" + nameof(NursingViewModel))]
+        public async Task<IActionResult> NursingViewModel([FromRoute] string patientId)
+        {
+            var profileData = await personsStore.GetByIdAsync(patientId);
+            if (profileData == null)
+                return NotFound();
+            var currentAdmission = await admissionsStore.GetCurrentAdmissionAsync(patientId);
+            var equipments = await patientEquipmentStore.SearchAsync(x => x.PatientId == patientId);
+            var equipmentViewModels = new List<AttachedEquipmentViewModel>();
+            foreach (var equipment in equipments)
+            {
+                var equipmentViewModel = await attachedEquipmentViewModelBuilder.Build(equipment);
+                equipmentViewModels.Add((AttachedEquipmentViewModel) equipmentViewModel);
+            }
+            var viewModel = new PatientNursingViewModel(
+                profileData,
+                currentAdmission,
+                equipmentViewModels);
+            return Ok(viewModel);
+        }
+
 
         [HttpGet("{patientId}/admissions")]
         public async Task<IActionResult> GetAdmissions([FromRoute] string patientId)
@@ -129,6 +159,21 @@ namespace JanKIS.API.Controllers
                 return NotFound();
             var documents = await documentsStore.SearchAsync(x => x.PatientId == patientId);
             return Ok(documents);
+        }
+
+        [HttpGet("{patientId}/equipment")]
+        public async Task<IActionResult> GetAttachedEquipment([FromRoute] string patientId)
+        {
+            if (!await personsStore.ExistsAsync(patientId))
+                return NotFound();
+            var equipments = await patientEquipmentStore.SearchAsync(x => x.PatientId == patientId);
+            var equipmentViewModels = new List<AttachedEquipmentViewModel>();
+            foreach (var equipment in equipments)
+            {
+                var equipmentViewModel = await attachedEquipmentViewModelBuilder.Build(equipment);
+                equipmentViewModels.Add((AttachedEquipmentViewModel) equipmentViewModel);
+            }
+            return Ok(equipmentViewModels);
         }
 
         [HttpPost("{patientId}/subscribe")]

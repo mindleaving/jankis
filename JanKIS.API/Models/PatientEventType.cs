@@ -6,6 +6,7 @@
         Note,
         TestResult,
         Document,
-        MedicationDispension
+        MedicationDispension,
+        Equipment
     }
 }

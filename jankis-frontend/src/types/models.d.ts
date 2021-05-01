@@ -16,7 +16,14 @@ export namespace Models {
     }
 
     interface AttachedEquipment {
-        equipment: Models.MedicalEquipment;
+        id: string;
+        type: Enums.PatientEventType;
+        patientId: string;
+        admissionId: string;
+        createdBy: string;
+        timestamp: Date;
+        equipmentType: string;
+        materials: Models.MaterialReference[];
         attachmentTime: Date;
         detachmentTime?: Date | null;
     }
@@ -249,6 +256,11 @@ export namespace Models {
         id: string;
     }
 
+    interface MaterialReference {
+        type: Enums.MaterialType;
+        id: string;
+    }
+
     interface Meal {
         patientId: string;
         state: Enums.MealState;
@@ -265,11 +277,6 @@ export namespace Models {
         ingredients: string[];
         dietaryCharacteristics: Enums.DietaryCharacteristic[];
         deliveryTime: Date;
-    }
-
-    interface MedicalEquipment {
-        id: string;
-        type: string;
     }
 
     interface MedicationDispension {

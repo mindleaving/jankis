@@ -40,6 +40,10 @@ export enum LocationType {
     Department = "Department",
     External = "External"
 }
+export enum MaterialType {
+    Consumable = "Consumable",
+    Resource = "Resource"
+}
 export enum MealState {
     Ordered = "Ordered",
     InPreparation = "InPreparation",
@@ -78,7 +82,8 @@ export enum PatientEventType {
     Note = "Note",
     TestResult = "TestResult",
     Document = "Document",
-    MedicationDispension = "MedicationDispension"
+    MedicationDispension = "MedicationDispension",
+    Equipment = "Equipment"
 }
 export enum Permission {
     ListEmployees = "ListEmployees",

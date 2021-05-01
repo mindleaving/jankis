@@ -17,6 +17,20 @@ export namespace ViewModels {
         departments: Models.Department[];
     }
 
+    interface AttachedEquipmentViewModel {
+        materialViewModels: ViewModels.MaterialViewModel[];
+        id: string;
+        type: Enums.PatientEventType;
+        patientId: string;
+        admissionId: string;
+        createdBy: string;
+        timestamp: Date;
+        equipmentType: string;
+        materials: Models.MaterialReference[];
+        attachmentTime: Date;
+        detachmentTime?: Date | null;
+    }
+
     interface ConsumableOrderViewModel {
         consumable: Models.Consumable;
         stockViewModels: ViewModels.StockViewModel[];
@@ -81,6 +95,18 @@ export namespace ViewModels {
         departments: Models.Department[];
     }
 
+    interface MaterialViewModel {
+        type: Enums.MaterialType;
+        consumable?: Models.Consumable;
+        resource?: Models.Resource;
+    }
+
+    interface PatientNursingViewModel {
+        profileData: Models.Person;
+        currentAdmission: Models.Admission;
+        equipments: ViewModels.AttachedEquipmentViewModel[];
+    }
+
     interface PatientOverviewViewModel {
         profileData: Models.Person;
         currentBedOccupancy: Models.BedOccupancy;
@@ -142,6 +168,10 @@ export namespace ViewModels {
 
     export namespace Builders {
         interface AccountViewModelBuilder {
+            
+        }
+    
+        interface AttachedEquipmentViewModelBuilder {
             
         }
     

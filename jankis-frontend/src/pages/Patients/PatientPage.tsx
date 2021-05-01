@@ -138,10 +138,11 @@ export const PatientPage = (props: PatientPageProps) => {
                             <Button className="m-1" onClick={() => history.push(`/patients/${id}/create/note`)}>{resolveText('Action_AddNote')}</Button>
                             <Button className="m-1" onClick={() => history.push(`/patients/${id}/create/observation`)}>{resolveText('Action_AddObservation')}</Button>
                             <Button className="m-1" onClick={() => history.push(`/patients/${id}/add/medication`)}>{resolveText('Action_AddMedication')}</Button>
-                            <Button className="m-1" onClick={() => history.push(`/patients/${id}/add/equipment`)}>{resolveText('Action_AddEquipment')}</Button>
+                            <Button className="m-1" onClick={() => history.push(`/patients/${id}/nursing`)}>{resolveText('Action_AddEquipment')}</Button>
                             <Button className="m-1" onClick={() => history.push(`/patients/${id}/create/testresult`)}>{resolveText('Action_AddTestResult')}</Button>
                             <Button className="m-1" onClick={() => history.push(`/patients/${id}/create/document`)}>{resolveText('Action_AddDocument')}</Button>
                             <Button className="m-1" onClick={() => history.push(`/patients/${id}/order/service`)}>{resolveText('Action_OrderService')}</Button>
+                            <Button className="m-1" onClick={() => history.push(`/patients/${id}/nursing`)}>{resolveText('Action_Nursing')}</Button>
                         </Card.Body>
                     </Card>
                 </Col>

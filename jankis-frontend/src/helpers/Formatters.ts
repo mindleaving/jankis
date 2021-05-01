@@ -1,4 +1,4 @@
-import { LocationType, MeasurementType, ServiceAudienceType, Sex } from "../types/enums.d";
+import { LocationType, MaterialType, MeasurementType, ServiceAudienceType, Sex } from "../types/enums.d";
 import { Models } from "../types/models";
 import { resolveText } from "./Globalizer";
 import { differenceInYears, differenceInMonths, differenceInDays } from 'date-fns';
@@ -90,4 +90,14 @@ export const formatStock = (stock: ViewModels.StockViewModel) => {
 }
 export const formatBed = (room: Models.Room, bedPosition: string) => {
     return `${room.name}${bedPosition}`;
+}
+export const formatEquipmentMaterial = (material: ViewModels.MaterialViewModel) => {
+    switch(material.type) {
+        case MaterialType.Consumable:
+            return `${material.consumable!.name}`;
+        case MaterialType.Resource:
+            return `${material.resource!.name}`;
+        default:
+            throw new Error(`Unsupported material type '${material.type}'`);
+    }
 }
