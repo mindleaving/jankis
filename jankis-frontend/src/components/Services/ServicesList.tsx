@@ -83,7 +83,7 @@ export const ServicesList = (props: ServicesListProps) => {
                         <td><i className="fa fa-trash red clickable" onClick={() => deleteService(service.id, service.name)}/></td>
                         <td>{service.name}</td>
                         <td>{service.department?.name ?? service.departmentId}</td>
-                        <td>{service.audience.map(formatServiceAudience).join(", ")}</td>
+                        <td>{service.audienceViewModels.map(formatServiceAudience).join(", ")}</td>
                         <td><Button variant="primary" onClick={() => history.push(`/services/${service.id}/request`)}>{resolveText('Service_Request')}</Button></td>
                         <td><Button variant="link" onClick={() => history.push(`/services/${service.id}/edit`)}>{resolveText('Edit...')}</Button></td>
                     </tr>

@@ -35,7 +35,7 @@ export default class PagedTableLoader<T> {
             }
             let apiMethodPath = this.apiControllerPath;
             if(this.filter) {
-                params = Object.assign(params, this.filter);
+                Object.assign(params, this.filter);
                 if(this.filter.searchText) {
                     if(!apiMethodPath.endsWith('/')) {
                         apiMethodPath += '/';

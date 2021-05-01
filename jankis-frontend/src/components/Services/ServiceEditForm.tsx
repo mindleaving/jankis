@@ -13,6 +13,7 @@ import { ServiceParameterEditForm } from './ServiceParameterEditForm';
 import { ServiceAudienceEditForm } from './ServiceAudienceEditForm';
 import { useHistory } from 'react-router';
 import UserContext from '../../contexts/UserContext';
+import { ViewModels } from '../../types/viewModels';
 
 interface ServiceEditFormProps {
     serviceId?: string;
@@ -26,25 +27,23 @@ export const ServiceEditForm = (props: ServiceEditFormProps) => {
     const [ description, setDescription ] = useState<string>();
     const [ selectedDepartment, setSelectedDepartment ] = useState<Models.Department>();
     const [ parameters, setParameters ] = useState<Models.ServiceParameter[]>([]);
-    const [ audience, setAudience ] = useState<Models.ServiceAudience[]>([]);
+    const [ audience, setAudience ] = useState<ViewModels.ServiceAudienceViewModel[]>([]);
     const user = useContext(UserContext);
-    const departments = user!.departments;
     const history = useHistory();
 
     const serviceId = props.serviceId;
     useEffect(() => {
         if(!serviceId) return;
-        if(departments.length === 0) return;
         const loadService = async () => {
             try {
                 setIsLoading(true);
                 const response = await apiClient.get(`api/services/${serviceId}`, {});
-                const service = await response.json() as Models.ServiceDefinition;
+                const service = await response.json() as ViewModels.ServiceViewModel;
                 setName(service.name);
                 setDescription(service.description);
-                setSelectedDepartment(departments.find(x => x.id === service.departmentId));
+                setSelectedDepartment(service.department);
                 setParameters(service.parameters);
-                setAudience(service.audience);
+                setAudience(service.audienceViewModels);
             } catch(error) {
                 NotificationManager.error(error.message, resolveText('Service_CouldNotLoad'));
             } finally {
@@ -52,7 +51,7 @@ export const ServiceEditForm = (props: ServiceEditFormProps) => {
             }
         };
         loadService();
-    }, [ serviceId, departments ]);
+    }, [ serviceId ]);
     
 
     const buildService = () => {
@@ -127,10 +126,10 @@ export const ServiceEditForm = (props: ServiceEditFormProps) => {
                     <FormControl
                         as="select"
                         value={selectedDepartment?.id ?? ''}
-                        onChange={(e:any) => setSelectedDepartment(departments.find(x => x.id === e.target.value))}
+                        onChange={(e:any) => setSelectedDepartment(user!.departments.find(x => x.id === e.target.value))}
                     >
                         <option value="" disabled>{resolveText('PleaseSelect...')}</option>
-                        {departments.map(department => (
+                        {user!.departments.map(department => (
                             <option value={department.id} key={department.id}>{department.name}</option>
                         ))}
                     </FormControl>

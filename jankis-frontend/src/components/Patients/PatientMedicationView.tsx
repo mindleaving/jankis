@@ -6,6 +6,7 @@ import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { MedicationScheduleItemTableRow } from './MedicationScheduleItemTableRow';
 import { useHistory } from 'react-router';
+import { addDays } from 'date-fns';
 
 interface PatientMedicationViewProps {
     medicationSchedules: Models.MedicationSchedule[];
@@ -43,6 +44,7 @@ export const PatientMedicationView = (props: PatientMedicationViewProps) => {
         setMedicationChartSeries(series);
     }, [ selectedMedicationSchedule ]);
 
+    const now = new Date();
     const chartOptions: ApexOptions = {
         chart: {
             type: 'rangeBar'
@@ -53,7 +55,9 @@ export const PatientMedicationView = (props: PatientMedicationViewProps) => {
             }
         },
         xaxis: {
-            type: 'datetime'
+            type: 'datetime',
+            min: addDays(now, -2).getTime(),
+            max: addDays(now, 3).getTime()
         },
         tooltip: {
             x: {

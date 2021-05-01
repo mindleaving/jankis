@@ -125,6 +125,24 @@ namespace JanKIS.API.Controllers
             return Ok();
         }
 
+        [HttpPut("{requestId}/handlernote")]
+        public async Task<IActionResult> ChangeHandlerNote([FromRoute] string requestId, [FromBody] string handlerNote)
+        {
+            var existingRequest = await store.GetByIdAsync(requestId);
+            if (existingRequest == null)
+                return NotFound();
+            // TODO: Check permission to perform this action
+            //var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            //var account = await accountsStore.GetByIdAsync(username);
+            //var institutionPolicy = await institutionPolicyStore.GetByIdAsync(InstitutionPolicy.DefaultId);
+            //if (!await serviceRequestChangePolicy.CanChange(existingRequest, account, institutionPolicy))
+            //    return Forbid();
+            existingRequest.HandlerNote = handlerNote;
+            await store.StoreAsync(existingRequest);
+            return Ok();
+        }
+
+
         [HttpPost("{requestId}/subscribe")]
         public async Task<IActionResult> Subscribe([FromRoute] string requestId)
         {

@@ -1,8 +1,8 @@
-import { compareDesc } from 'date-fns';
 import React from 'react';
 import { resolveText } from '../../helpers/Globalizer';
 import { Models } from '../../types/models';
 import { PatientTimelineItem } from './PatientTimelineItem';
+import { compareDesc } from 'date-fns';
 
 interface PatientEventsOverviewProps {
     events: Models.IPatientEvent[];
@@ -15,8 +15,8 @@ export const PatientEventsOverview = (props: PatientEventsOverviewProps) => {
             <div className="timelineSeparator">
                 <span className="text-secondary">{resolveText('Now')}</span>
             </div>
-            {props.events.sort((a,b) => compareDesc(a.timestamp, b.timestamp)).map(event => (
-                <PatientTimelineItem event={event} />
+            {props.events.sort((a,b) => compareDesc(new Date(a.timestamp), new Date(b.timestamp))).map(event => (
+                <PatientTimelineItem key={(event as any).id} event={event} />
             ))}
         </div>
     );

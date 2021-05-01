@@ -22,13 +22,16 @@ export const RoomGridView = (props: RoomGridViewProps) => {
                         size="lg"
                         items={department.roomIds.map(roomId => {
                             const room = props.institution.rooms.find(x => x.id === roomId)!;
+                            if(room.bedPositions.length === 0) {
+                                return null;
+                            }
                             return (<RoomCard
                                 room={room}
                                 department={department}
                                 bedOccupancies={props.bedOccupancies}
                                 now={now}
                             />);
-                        })}
+                        }).filter(x => x !== null)}
                     />
                     
                 </>

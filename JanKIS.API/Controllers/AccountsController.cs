@@ -305,6 +305,8 @@ namespace JanKIS.API.Controllers
         public async Task<IActionResult> SetDepartments([FromRoute] string username, [FromBody] List<string> departmentIds)
         {
             var account = await accountsStore.GetByIdAsync(username);
+            if (account == null)
+                return NotFound();
             if (account.AccountType != AccountType.Employee)
                 return BadRequest("Cannot add departments to non-employee accounts");
             foreach (var departmentId in departmentIds)
@@ -325,6 +327,8 @@ namespace JanKIS.API.Controllers
         public async Task<IActionResult> AddDepartment([FromRoute] string username, [FromRoute] string departmentId)
         {
             var account = await accountsStore.GetByIdAsync(username);
+            if (account == null)
+                return NotFound();
             if (account.AccountType != AccountType.Employee)
                 return BadRequest("Cannot add departments to non-employee accounts");
             if (!await departmentsStore.ExistsAsync(departmentId))
@@ -344,6 +348,8 @@ namespace JanKIS.API.Controllers
         public async Task<IActionResult> RemoveDepartment([FromRoute] string username, [FromRoute] string departmentId)
         {
             var account = await accountsStore.GetByIdAsync(username);
+            if (account == null)
+                return NotFound();
             if (account.AccountType != AccountType.Employee)
                 return BadRequest("Cannot add departments to non-employee accounts");
             if (!await departmentsStore.ExistsAsync(departmentId))

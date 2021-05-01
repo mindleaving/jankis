@@ -40,6 +40,7 @@ export const ServiceRequestPage = (props: ServiceRequestPageProps) => {
             item => {
                 setRequest(item);
                 setState(item.state);
+                setNote(item.handlerNote);
             },
             () => setIsLoading(false)
         );

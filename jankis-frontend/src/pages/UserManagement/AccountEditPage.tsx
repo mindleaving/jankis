@@ -15,6 +15,7 @@ import { AsyncButton } from '../../components/AsyncButton';
 import { AccountType, Sex } from '../../types/enums.d';
 import { ViewModels } from '../../types/viewModels';
 import UserContext from '../../contexts/UserContext';
+import { v4 as uuid} from 'uuid';
 
 interface AccountEditPageParams {
     username?: string;
@@ -135,18 +136,18 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
         }
         try {
             setIsStoring(true);
-            const employee: Models.Person = {
-                id: personId!, 
-                firstName, 
-                lastName, 
-                birthDate: birthDate!,
-                sex: sex!
-            };
-            await apiClient.put(`api/persons/${personId}`, {}, employee);
             if(isNew) {
+                const employee: Models.Person = {
+                    id: personId ?? uuid(), 
+                    firstName, 
+                    lastName, 
+                    birthDate: birthDate!,
+                    sex: sex!
+                };
+                await apiClient.put(`api/persons/${employee.id}`, {}, employee);
                 const accountCreationInfo: ViewModels.AccountCreationInfo = {
                     accountType: accountType!,
-                    personId: personId!,
+                    personId: employee.id,
                     username: username
                 }
                 await apiClient.post('api/accounts', {}, accountCreationInfo);
@@ -167,7 +168,7 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
             <h1>{isLoading ? resolveText('Loading...') : `${firstName} ${lastName}`}</h1>
             <Form onSubmit={store}>
                 <FormGroup as={Row}>
-                    <FormLabel column>{resolveText('Username')}</FormLabel>
+                    <FormLabel column xs="5">{resolveText('Username')}</FormLabel>
                     <Col>
                         <FormControl required
                             type="text"
@@ -180,7 +181,7 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
                     </Col>
                 </FormGroup>
                 <FormGroup as={Row}>
-                    <FormLabel column>{resolveText('Account_AccountType')}</FormLabel>
+                    <FormLabel column xs="5">{resolveText('Account_AccountType')}</FormLabel>
                     <Col>
                         <FormControl
                             as="select"
@@ -197,7 +198,7 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
                 </FormGroup>
                 {isNew 
                 ? <FormGroup as={Row}>
-                    <FormLabel column>{resolveText('Account_Person')}</FormLabel>
+                    <FormLabel column xs="5">{resolveText('Account_Person')}</FormLabel>
                     <Col>
                         <Autocomplete
                             search={personAutoCompleteRunner.search}
@@ -213,22 +214,36 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
                     </Col>
                 </FormGroup>
                 : null}
-                <RowFormGroup required
-                    label={resolveText('FirstName')}
-                    type="text"
-                    value={firstName}
-                    onChange={setFirstName}
-                    disabled={isNew && !personId}
-                />
-                <RowFormGroup required
-                    label={resolveText('LastName')}
-                    type="text"
-                    value={lastName}
-                    onChange={setLastName}
-                    disabled={isNew && !personId}
-                />
                 <FormGroup as={Row}>
-                    <FormLabel column>{resolveText('Birthday')}</FormLabel>
+                    <FormLabel column xs="5">{resolveText('FirstName')}</FormLabel>
+                    <Col>
+                        <FormControl
+                            value={firstName}
+                            onChange={(e:any) => setFirstName(e.target.value)}
+                            disabled={!isNew || personId !== undefined}
+                        />
+                    </Col>
+                    {!isNew 
+                    ? <Col xs="auto">
+                        <i className="fa fa-edit clickable" onClick={() => history.push(`/persons/${personId}/edit`)}/>
+                    </Col>: null}
+                </FormGroup>
+                <FormGroup as={Row}>
+                    <FormLabel column xs="5">{resolveText('LastName')}</FormLabel>
+                    <Col>
+                        <FormControl
+                            value={lastName}
+                            onChange={(e:any) => setLastName(e.target.value)}
+                            disabled={!isNew || personId !== undefined}
+                        />
+                    </Col>
+                    {!isNew 
+                    ? <Col xs="auto">
+                        <i className="fa fa-edit clickable" onClick={() => history.push(`/persons/${personId}/edit`)}/>
+                    </Col>: null}
+                </FormGroup>
+                <FormGroup as={Row}>
+                    <FormLabel column xs="5">{resolveText('Birthday')}</FormLabel>
                     <Col>
                         <Flatpickr required
                             options={{
@@ -236,18 +251,22 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
                             }}
                             value={birthDate}
                             onChange={selectedDates => setBirthDate(selectedDates.length > 0 ? selectedDates[0]: undefined)}
-                            disabled={isNew && !personId}
+                            disabled={!isNew || personId !== undefined}
                         />
                     </Col>
+                    {!isNew 
+                    ? <Col xs="auto">
+                        <i className="fa fa-edit clickable" onClick={() => history.push(`/persons/${personId}/edit`)}/>
+                    </Col>: null}
                 </FormGroup>
                 <FormGroup as={Row}>
-                    <FormLabel column>{resolveText('Person_Gender')}</FormLabel>
+                    <FormLabel column xs="5">{resolveText('Person_Gender')}</FormLabel>
                     <Col>
                         <FormControl
                             as="select"
                             value={sex ?? ''}
                             onChange={(e:any) => setSex(e.target.value)}
-                            disabled={isNew && !personId}
+                            disabled={!isNew || personId !== undefined}
                         >
                             <option value="" disabled>{resolveText('PleaseSelect...')}</option>
                             {Object.keys(Sex).map(x => (
@@ -255,9 +274,13 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
                             ))}
                         </FormControl>
                     </Col>
+                    {!isNew 
+                    ? <Col xs="auto">
+                        <i className="fa fa-edit clickable" onClick={() => history.push(`/persons/${personId}/edit`)}/>
+                    </Col>: null}
                 </FormGroup>
                 <FormGroup as={Row}>
-                    <FormLabel column>{resolveText('Account_Roles')}</FormLabel>
+                    <FormLabel column xs="5">{resolveText('Account_Roles')}</FormLabel>
                     <Col>
                         <Autocomplete
                             search={roleAutoCompleteRunner.search}
@@ -271,7 +294,7 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
                     </Col>
                 </FormGroup>
                 <Row className="mb-2">
-                    <Col></Col>
+                    <Col xs="5"></Col>
                     <Col>
                         <ListFormControl<Models.Role>
                             items={roles}
@@ -282,7 +305,7 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
                     </Col>
                 </Row>
                 <FormGroup as={Row}>
-                    <FormLabel column>{resolveText('Account_Departments')}</FormLabel>
+                    <FormLabel column xs="5">{resolveText('Account_Departments')}</FormLabel>
                     <Col>
                         <Autocomplete
                             search={departmentAutoCompleteRunner.search}
@@ -296,7 +319,7 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
                     </Col>
                 </FormGroup>
                 <Row className="mb-2">
-                    <Col></Col>
+                    <Col xs="5"></Col>
                     <Col>
                         <ListFormControl<Models.Department>
                             items={departments}

@@ -15,8 +15,8 @@ export const PatientDocumentsView = (props: PatientDocumentsViewProps) => {
         <div className="timelineSeparator">
             <span className="text-secondary">{resolveText('Now')}</span>
         </div>
-        {props.documents.sort((a,b) => compareDesc(a.timestamp, b.timestamp)).map(document => (
-            <PatientDocumentView document={document} />
+        {props.documents.sort((a,b) => compareDesc(new Date(a.timestamp), new Date(b.timestamp))).map(document => (
+            <PatientDocumentView key={document.id} document={document} />
         ))}
     </div>);
 

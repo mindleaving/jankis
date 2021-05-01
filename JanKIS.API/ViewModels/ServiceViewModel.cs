@@ -1,4 +1,5 @@
-﻿using JanKIS.API.Models;
+﻿using System.Collections.Generic;
+using JanKIS.API.Models;
 
 namespace JanKIS.API.ViewModels
 {
@@ -18,5 +19,6 @@ namespace JanKIS.API.ViewModels
         }
 
         public DepartmentViewModel Department { get; set; }
+        public List<ServiceAudienceViewModel> AudienceViewModels { get; set; }
     }
 }

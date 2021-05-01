@@ -105,6 +105,7 @@ export namespace ViewModels {
         profileData: Models.Person;
         currentAdmission: Models.Admission;
         equipments: ViewModels.AttachedEquipmentViewModel[];
+        observations: Models.Observation[];
     }
 
     interface PatientOverviewViewModel {
@@ -137,6 +138,7 @@ export namespace ViewModels {
 
     interface ServiceViewModel {
         department: ViewModels.DepartmentViewModel;
+        audienceViewModels: ViewModels.ServiceAudienceViewModel[];
         id: string;
         name: string;
         description: string;

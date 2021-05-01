@@ -147,9 +147,6 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
             type: 'line',
             toolbar: {
                 show: true
-            },
-            zoom: {
-                type: 'xy'
             }
         },
         tooltip: {

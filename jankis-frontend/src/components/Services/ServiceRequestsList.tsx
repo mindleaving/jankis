@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Button } from 'react-bootstrap';
+import { Badge, Button } from 'react-bootstrap';
 import { useHistory } from 'react-router';
 import { resolveText } from '../../helpers/Globalizer';
 import PagedTableLoader from '../../helpers/PagedTableLoader';
@@ -48,7 +48,15 @@ export const ServiceRequestsList = (props: ServiceRequestsListProps) => {
                         <td>{new Date(request.timestamps.find(x => x.newState === ServiceRequestState.Requested)!.timestamp).toLocaleString()}</td>
                         <td>{request.service.name}</td>
                         <td>{request.requester}</td>
-                        <td>{resolveText(`ServiceRequestState_${request.state}`)}</td>
+                        <td>
+                            {resolveText(`ServiceRequestState_${request.state}`)}
+                            {request.handlerNote
+                            ? <div>
+                                    <Badge variant="secondary">
+                                    {resolveText('ServiceRequest_HandlerNote').toLocaleUpperCase()}: {request.handlerNote}
+                                </Badge>
+                            </div>: null}
+                        </td>
                         <td>{request.assignedTo}</td>
                         <td>
                             <Button size="sm" onClick={() => history.push(`/servicerequests/${request.id}`)}>{resolveText('Open')}</Button>

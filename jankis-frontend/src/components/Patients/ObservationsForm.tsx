@@ -16,7 +16,7 @@ import { apiClient } from '../../communication/ApiClient';
 interface ObservationsFormProps {
     patientId: string;
     admissionId?: string;
-    onStore?: () => void;
+    onStore?: (observations: Models.Observation[]) => void;
 }
 interface MeasurementForm {
     id: string;
@@ -38,7 +38,7 @@ export const ObservationsForm = (props: ObservationsFormProps) => {
             }
             NotificationManager.success(resolveText('Patient_Observation_SuccessfullyStored'));
             if(props.onStore) {
-                props.onStore();
+                props.onStore(observations);
             }
         } catch(error) {
             NotificationManager.error(error.message, resolveText('Patient_Observation_CouldNotStore'));
@@ -137,14 +137,15 @@ export const ObservationsForm = (props: ObservationsFormProps) => {
             <Form onSubmit={store}>
                 <Row>
                     <Col>
-                        <h3>{resolveText('Observations')}</h3>
+                        <h4>{resolveText('Observations')}</h4>
                     </Col>
                     <Col></Col>
                 </Row>
                 <Row>
                     <Col></Col>
                     <Col>
-                        {observations.map(observation => (
+                        {observations.length > 0
+                        ? observations.map(observation => (
                             <Alert 
                                 key={observation.id}
                                 variant="info" 
@@ -153,11 +154,13 @@ export const ObservationsForm = (props: ObservationsFormProps) => {
                             >
                                 {formatObservation(observation)}
                             </Alert>
-                        ))}
+                        ))
+                        : resolveText('NoEntries')}
                     </Col>
                 </Row>
                 <StoreButton
                     type="submit"
+                    disabled={observations.length === 0}
                     isStoring={isStoring}
                 />
             </Form>

@@ -58,7 +58,7 @@ export class ApiClient {
         body?: any,
         options?: ApiClientOptions) => {
 
-        const effectiveOptions = Object.assign(this.defaultOptions, options ?? {});
+        const effectiveOptions = Object.assign({}, this.defaultOptions, options ?? {});
         const requestUrl = this.buildUrl(path, params);
         const jsonBody = body && effectiveOptions.stringifyBody ? this._convertToJson(body) : body;
         const headers: HeadersInit = {};

@@ -84,12 +84,12 @@ namespace JanKIS.API.Controllers
                 profileData,
                 currentBedOccupancy,
                 admissions,
-                notes,
+                notes.OrderByDescending(x => x.Timestamp).ToList(),
                 medicationSchedules,
-                medicationDispensions,
-                testResults,
-                observations,
-                documents,
+                medicationDispensions.OrderByDescending(x => x.Timestamp).ToList(),
+                testResults.OrderByDescending(x => x.Timestamp).ToList(),
+                observations.OrderByDescending(x => x.Timestamp).ToList(),
+                documents.OrderByDescending(x => x.Timestamp).ToList(),
                 subscription);
             return Ok(viewModel);
         }
@@ -108,10 +108,14 @@ namespace JanKIS.API.Controllers
                 var equipmentViewModel = await attachedEquipmentViewModelBuilder.Build(equipment);
                 equipmentViewModels.Add((AttachedEquipmentViewModel) equipmentViewModel);
             }
+
+            var threeDaysAgo = DateTime.Today.AddDays(-3);
+            var observations = await observationsStore.SearchAsync(x => x.PatientId == patientId && x.Timestamp > threeDaysAgo);
             var viewModel = new PatientNursingViewModel(
                 profileData,
                 currentAdmission,
-                equipmentViewModels);
+                equipmentViewModels,
+                observations);
             return Ok(viewModel);
         }
 

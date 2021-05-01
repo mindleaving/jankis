@@ -66,11 +66,14 @@ export const PersonsList = (props: PersonsListProps) => {
             onCreateNew={() => history.push('/create/person')}
         >
             <thead>
-                <th></th>
-                <th onClick={() => setOrderByOrOrderDirection('lastname')}>{resolveText('Person_Name')}</th>
-                <th onClick={() => setOrderByOrOrderDirection('birthdate')}>{resolveText('Person_BirthDate')}</th>
-                <th onClick={() => setOrderByOrOrderDirection('insurer')}>{resolveText('Insurance_InsurerName')}</th>
-                <th></th>
+                <tr>
+                    <th></th>
+                    <th onClick={() => setOrderByOrOrderDirection('lastname')}>{resolveText('Person_Name')}</th>
+                    <th onClick={() => setOrderByOrOrderDirection('birthdate')}>{resolveText('Person_BirthDate')}</th>
+                    <th onClick={() => setOrderByOrOrderDirection('insurer')}>{resolveText('Insurance_InsurerName')}</th>
+                    <th></th>
+                    <th></th>
+                </tr>
             </thead>
             <tbody>
                 {persons.length > 0
