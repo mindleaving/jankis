@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace JanKIS.API.Models
 {
@@ -7,9 +8,10 @@ namespace JanKIS.API.Models
         public EmployeeAccount(
             string personId,
             string username,
+            DateTime createdTimestamp,
             string salt,
             string passwordHash)
-            : base(personId, username, salt, passwordHash)
+            : base(personId, username, createdTimestamp, salt, passwordHash)
         {
             Roles = new List<string>();
             PermissionModifiers = new List<PermissionModifier>();

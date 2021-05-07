@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JanKIS.API.AccessManagement;
 using MongoDB.Driver;
 
 namespace JanKIS.API.Storage
@@ -11,8 +12,9 @@ namespace JanKIS.API.Storage
         private readonly ConcurrentDictionary<string, T> cachedItems = new();
         private bool hasAllItems = false;
 
-        public GenericCachedReadonlyStore(IMongoDatabase mongoDatabase)
-            : base(mongoDatabase)
+        public GenericCachedReadonlyStore(IMongoDatabase mongoDatabase,
+            IPermissionFilterBuilder<T> permissionFilterBuilder)
+            : base(mongoDatabase, permissionFilterBuilder)
         {
         }
 

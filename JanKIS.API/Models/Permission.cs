@@ -2,23 +2,20 @@
 {
     public enum Permission
     {
-        // Employee management
-        ListEmployees,
-        ViewEmployeeDetails,
-        CreateEmployees,
-        DeleteEmployees,
-        ChangeEmployeePermissions,
-        ResetPasswords,
+        ViewAllPersons,
+        ViewAllEmployees,
+        ViewAllDepartmentPatients,
+        ListAllPersons,
+        CreatePerson,
+        EditPerson,
+        DeletePerson,
 
-        // Bed allocation
-        ViewAllBedStates,
-        ViewWardBedStates,
+        ViewAccount,
+        ListAccounts,
+        CreateAccount,
+        EditAccount,
+        DeleteAccount,
 
-        // Service provider
-        ManageDepartmentServices,
-
-        ManageDepartments,
-        ViewResources,
-        ModifyResources
+        ViewDepartmentMedicalRecords,
     }
 }

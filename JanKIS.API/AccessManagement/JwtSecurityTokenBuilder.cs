@@ -27,22 +27,25 @@ namespace JanKIS.API.AccessManagement
         }
 
         public const string AccountTypeClaimName = "accounttype";
+        public const string IdClaimName = "id";
+        public const string RolesClaimName = "roles";
+        public const string PermissionsClaimName = "permissions";
 
         public async Task<string> BuildForUser(Person person, Account account)
         {
             var claims = new List<Claim>
             {
-                new ("id", account.Id),
+                new (IdClaimName, account.Id),
                 new (ClaimTypes.Name, $"{person.FirstName} {person.LastName}"),
                 new (AccountTypeClaimName, account.AccountType.ToString())
             };
             if (account.AccountType == AccountType.Employee)
             {
                 var employeeAccount = (EmployeeAccount) account;
-                var roleClaim = new Claim("roles", string.Join(",", employeeAccount.Roles));
+                var roleClaim = new Claim(RolesClaimName, string.Join(",", employeeAccount.Roles));
                 claims.Add(roleClaim);
-                var permissionClaims = await GetPermissionClaims(employeeAccount);
-                claims.AddRange(permissionClaims);
+                var permissionClaim = await GetPermissionClaims(employeeAccount);
+                claims.Add(permissionClaim);
             }
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -60,19 +63,19 @@ namespace JanKIS.API.AccessManagement
             return serializedToken;
         }
 
-        private async Task<IEnumerable<Claim>> GetPermissionClaims(EmployeeAccount account)
+        private async Task<Claim> GetPermissionClaims(EmployeeAccount account)
         {
             if (account.IsPasswordChangeRequired)
             {
                 // If password change is required, don't make any other claims than the user ID and name
-                return new List<Claim>();
+                return new Claim(PermissionsClaimName, "");
             }
 
             var permissionsAggregator = new PermissionsAggregator(rolesStore);
             var permissions = await permissionsAggregator.Aggregate(
                 account.Roles,
                 account.PermissionModifiers);
-            return permissions.Select(permission => new Claim(permission.ToString(), "true")).ToList();
+            return new Claim(PermissionsClaimName, string.Join(",", permissions.Select(x => x.ToString())));
         }
 
         

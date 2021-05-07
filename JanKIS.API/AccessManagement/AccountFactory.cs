@@ -15,7 +15,7 @@ namespace JanKIS.API.AccessManagement
             var saltBase64 = Convert.ToBase64String(salt);
             var passwordHash = PasswordHasher.Hash(password, salt, PasswordHasher.RecommendedHashLength);
             var passwordHashBase64 = Convert.ToBase64String(passwordHash);
-            return new EmployeeAccount(personId, username, saltBase64, passwordHashBase64);
+            return new EmployeeAccount(personId, username, DateTime.UtcNow, saltBase64, passwordHashBase64);
         }
 
         public static PatientAccount CreatePatientAccount(
@@ -27,7 +27,7 @@ namespace JanKIS.API.AccessManagement
             var saltBase64 = Convert.ToBase64String(salt);
             var passwordHash = PasswordHasher.Hash(password, salt, PasswordHasher.RecommendedHashLength);
             var passwordHashBase64 = Convert.ToBase64String(passwordHash);
-            return new PatientAccount(personId, username, saltBase64, passwordHashBase64);
+            return new PatientAccount(personId, username, DateTime.UtcNow, saltBase64, passwordHashBase64);
         }
 
         private static byte[] CreateSalt()

@@ -16,7 +16,6 @@ namespace JanKIS.API.Controllers
 {
     public class ResourcesController : RestControllerBase<Resource>
     {
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ISubscriptionsStore subscriptionsStore;
         private readonly IAutocompleteCache autocompleteCache;
         private readonly IViewModelBuilder<Resource> resourceViewModelBuilder;
@@ -29,56 +28,9 @@ namespace JanKIS.API.Controllers
             IViewModelBuilder<Resource> resourceViewModelBuilder)
             : base(store, httpContextAccessor)
         {
-            this.httpContextAccessor = httpContextAccessor;
             this.subscriptionsStore = subscriptionsStore;
             this.autocompleteCache = autocompleteCache;
             this.resourceViewModelBuilder = resourceViewModelBuilder;
-        }
-
-        [Authorize(Policy = nameof(Permission.ViewResources))]
-        public override Task<IActionResult> GetById(string id)
-        {
-            return base.GetById(id);
-        }
-
-        [Authorize(Policy = nameof(Permission.ViewResources))]
-        public override Task<IActionResult> GetMany(
-            int? count = null,
-            int? skip = null,
-            string orderBy = null,
-            OrderDirection orderDirection = OrderDirection.Ascending)
-        {
-            return base.GetMany(
-                count,
-                skip,
-                orderBy,
-                orderDirection);
-        }
-
-        [Authorize(Policy = nameof(Permission.ViewResources))]
-        public override Task<IActionResult> Search(
-            string searchText,
-            int? count = null,
-            int? skip = null)
-        {
-            return base.Search(
-                searchText,
-                count,
-                skip);
-        }
-
-        [Authorize(Policy = nameof(Permission.ModifyResources))]
-        public override Task<IActionResult> CreateOrReplace(
-            string id,
-            Resource item)
-        {
-            return base.CreateOrReplace(id, item);
-        }
-
-        [Authorize(Policy = nameof(Permission.ModifyResources))]
-        public override Task<IActionResult> Delete(string id)
-        {
-            return base.Delete(id);
         }
 
         [HttpPost("{resourceId}/subscribe")]

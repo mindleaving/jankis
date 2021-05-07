@@ -14,7 +14,6 @@ namespace JanKIS.API.Controllers
     public class ObservationsController : RestControllerBase<Observation>
     {
         private readonly IAutocompleteCache autocompleteCache;
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly INotificationDistributor notificationDistributor;
 
         public ObservationsController(
@@ -25,7 +24,6 @@ namespace JanKIS.API.Controllers
             : base(store, httpContextAccessor)
         {
             this.autocompleteCache = autocompleteCache;
-            this.httpContextAccessor = httpContextAccessor;
             this.notificationDistributor = notificationDistributor;
         }
 

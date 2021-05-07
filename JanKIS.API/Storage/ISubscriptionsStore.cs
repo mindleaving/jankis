@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using JanKIS.API.AccessManagement;
 using JanKIS.API.Models.Subscriptions;
 using MongoDB.Driver;
 
@@ -28,8 +29,8 @@ namespace JanKIS.API.Storage
 
     public class SubscriptionsStore : GenericStore<SubscriptionBase>, ISubscriptionsStore
     {
-        public SubscriptionsStore(IMongoDatabase mongoDatabase)
-            : base(mongoDatabase)
+        public SubscriptionsStore(IMongoDatabase mongoDatabase, IPermissionFilterBuilder<SubscriptionBase> permissionFilterBuilder)
+            : base(mongoDatabase, permissionFilterBuilder)
         {
         }
 

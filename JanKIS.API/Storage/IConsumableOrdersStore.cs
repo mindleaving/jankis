@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using JanKIS.API.AccessManagement;
 using JanKIS.API.Models;
 using MongoDB.Driver;
 
@@ -14,8 +15,9 @@ namespace JanKIS.API.Storage
 
     public class ConsumableOrdersStore : GenericStore<ConsumableOrder>, IConsumableOrdersStore
     {
-        public ConsumableOrdersStore(IMongoDatabase mongoDatabase)
-            : base(mongoDatabase)
+        public ConsumableOrdersStore(IMongoDatabase mongoDatabase,
+            IPermissionFilterBuilder<ConsumableOrder> permissionFilterBuilder)
+            : base(mongoDatabase, permissionFilterBuilder)
         {
         }
 

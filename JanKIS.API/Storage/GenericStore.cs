@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using JanKIS.API.AccessManagement;
 using JanKIS.API.Models;
 using MongoDB.Driver;
 
@@ -6,8 +7,8 @@ namespace JanKIS.API.Storage
 {
     public class GenericStore<T> : GenericReadonlyStore<T>, IStore<T> where T : IId
     {
-        public GenericStore(IMongoDatabase mongoDatabase)
-            : base(mongoDatabase)
+        public GenericStore(IMongoDatabase mongoDatabase, IPermissionFilterBuilder<T> permissionFilterBuilder)
+            : base(mongoDatabase, permissionFilterBuilder)
         {
         }
 

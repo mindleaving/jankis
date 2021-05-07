@@ -60,6 +60,9 @@ namespace JanKIS.API
                         options.SerializerSettings.Formatting = Formatting.None;
                     });
             SetupJwtTokenAuthentication(services);
+            services.AddScoped<UserBuilder>();
+            services.AddScoped(provider => provider.GetService<UserBuilder>().Build());
+            SetupPermissionFilterBuilders(services);
             services.AddScoped<AuthenticationModule>();
             services.AddScoped<IAuthorizationHandler, SameUserRequirementHandler>();
             services.AddScoped<IAuthorizationHandler, NotSameUserRequirementHandler>();
@@ -155,6 +158,18 @@ namespace JanKIS.API
             services.AddScoped<IReadonlyStore<T>, GenericReadonlyStore<T>>();
             services.AddSingleton<ICachedReadonlyStore<T>, GenericCachedReadonlyStore<T>>();
             services.AddScoped<IStore<T>, GenericStore<T>>();
+        }
+
+        private void SetupPermissionFilterBuilders(IServiceCollection services)
+        {
+            services.AddScoped<IPermissionFilterBuilder<Person>, PersonPermissionFilterBuilder>();
+            services.AddScoped<IPermissionFilterBuilder<Account>, AccountPermissionFilterBuilder>();
+            services.AddScoped<IPermissionFilterBuilder<PatientNote>, PatientEventPermissionFilterBuilder<PatientNote>>();
+            services.AddScoped<IPermissionFilterBuilder<Observation>, PatientEventPermissionFilterBuilder<Observation>>();
+            services.AddScoped<IPermissionFilterBuilder<MedicationDispension>, PatientEventPermissionFilterBuilder<MedicationDispension>>();
+            services.AddScoped<IPermissionFilterBuilder<PatientDocument>, PatientEventPermissionFilterBuilder<PatientDocument>>();
+            services.AddScoped<IPermissionFilterBuilder<DiagnosticTestResult>, PatientEventPermissionFilterBuilder<DiagnosticTestResult>>();
+            services.AddScoped<IPermissionFilterBuilder<AttachedEquipment>, PatientEventPermissionFilterBuilder<AttachedEquipment>>();
         }
 
         private static void SetupViewModelBuilders(IServiceCollection services)

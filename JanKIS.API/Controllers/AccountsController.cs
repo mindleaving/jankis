@@ -204,7 +204,6 @@ namespace JanKIS.API.Controllers
         }
 
         [HttpPost("{username}/resetpassword")]
-        [Authorize(Policy = nameof(Permission.ResetPasswords))]
         public async Task<IActionResult> ResetPassword([FromRoute] string username)
         {
             var password = TemporaryPasswordGenerator.Generate();
@@ -213,7 +212,6 @@ namespace JanKIS.API.Controllers
         }
 
         [HttpPost("{username}/changepassword")]
-        [Authorize(Policy = SameUserRequirement.PolicyName)]
         public async Task<IActionResult> ChangePassword([FromRoute] string username, [FromBody] string password)
         {
             await authenticationModule.ChangePasswordAsync(username, password);
@@ -221,8 +219,6 @@ namespace JanKIS.API.Controllers
         }
 
         [HttpPut("{username}/roles")]
-        [Authorize(Policy = nameof(Permission.ChangeEmployeePermissions))]
-        [Authorize(Policy = NotSameUserRequirement.PolicyName)]
         public async Task<IActionResult> SetRoles([FromRoute] string username, [FromBody] List<string> roleIds)
         {
             foreach (var roleId in roleIds)
@@ -235,8 +231,6 @@ namespace JanKIS.API.Controllers
         }
 
         [HttpPatch("{username}/roles/{roleId}/add")]
-        [Authorize(Policy = nameof(Permission.ChangeEmployeePermissions))]
-        [Authorize(Policy = NotSameUserRequirement.PolicyName)]
         public async Task<IActionResult> AddRole([FromRoute] string username, [FromRoute] string roleId)
         {
             if (!await rolesStore.ExistsAsync(roleId))
@@ -248,8 +242,6 @@ namespace JanKIS.API.Controllers
         }
 
         [HttpPatch("{username}/roles/{roleId}/remove")]
-        [Authorize(Policy = nameof(Permission.ChangeEmployeePermissions))]
-        [Authorize(Policy = NotSameUserRequirement.PolicyName)]
         public async Task<IActionResult> RemoveRole([FromRoute] string username, [FromRoute] string roleId)
         {
             if (!await rolesStore.ExistsAsync(roleId))
@@ -261,8 +253,6 @@ namespace JanKIS.API.Controllers
         }
 
         [HttpPatch("{username}/permissions/{permissionId}/grant")]
-        [Authorize(Policy = nameof(Permission.ChangeEmployeePermissions))]
-        [Authorize(Policy = NotSameUserRequirement.PolicyName)]
         public async Task<IActionResult> GrantPermission([FromRoute] string username, [FromRoute] string permissionId)
         {
             if (!Enum.TryParse<Permission>(permissionId, true, out var permission))
@@ -274,8 +264,6 @@ namespace JanKIS.API.Controllers
         }
 
         [HttpPatch("{username}/permissions/{permissionId}/deny")]
-        [Authorize(Policy = nameof(Permission.ChangeEmployeePermissions))]
-        [Authorize(Policy = NotSameUserRequirement.PolicyName)]
         public async Task<IActionResult> DenyPermission([FromRoute] string username, [FromRoute] string permissionId)
         {
             if (!Enum.TryParse<Permission>(permissionId, true, out var permission))
@@ -287,8 +275,6 @@ namespace JanKIS.API.Controllers
         }
 
         [HttpPatch("{username}/permissions/{permissionId}/remove")]
-        [Authorize(Policy = nameof(Permission.ChangeEmployeePermissions))]
-        [Authorize(Policy = NotSameUserRequirement.PolicyName)]
         public async Task<IActionResult> RemovePermissionModifier([FromRoute] string username, [FromRoute] string permissionId)
         {
             if (!Enum.TryParse<Permission>(permissionId, true, out var permission))
@@ -300,8 +286,6 @@ namespace JanKIS.API.Controllers
         }
 
         [HttpPut("{username}/departments")]
-        [Authorize(Policy = nameof(Permission.ChangeEmployeePermissions))]
-        [Authorize(Policy = NotSameUserRequirement.PolicyName)]
         public async Task<IActionResult> SetDepartments([FromRoute] string username, [FromBody] List<string> departmentIds)
         {
             var account = await accountsStore.GetByIdAsync(username);
@@ -322,8 +306,6 @@ namespace JanKIS.API.Controllers
         }
 
         [HttpPatch("{username}/departments/{departmentId}/add")]
-        [Authorize(Policy = nameof(Permission.ChangeEmployeePermissions))]
-        [Authorize(Policy = NotSameUserRequirement.PolicyName)]
         public async Task<IActionResult> AddDepartment([FromRoute] string username, [FromRoute] string departmentId)
         {
             var account = await accountsStore.GetByIdAsync(username);
@@ -343,8 +325,6 @@ namespace JanKIS.API.Controllers
         }
 
         [HttpPatch("{username}/departments/{departmentId}/remove")]
-        [Authorize(Policy = nameof(Permission.ChangeEmployeePermissions))]
-        [Authorize(Policy = NotSameUserRequirement.PolicyName)]
         public async Task<IActionResult> RemoveDepartment([FromRoute] string username, [FromRoute] string departmentId)
         {
             var account = await accountsStore.GetByIdAsync(username);

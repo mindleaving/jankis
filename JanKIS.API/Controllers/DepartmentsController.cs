@@ -24,7 +24,6 @@ namespace JanKIS.API.Controllers
         private readonly IStore<ServiceDefinition> servicesStore;
         private readonly IStore<ServiceRequest> serviceRequestsStore;
         private readonly ISubscriptionsStore subscriptionsStore;
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IViewModelBuilder<Department> departmentViewModelBuilder;
 
         public DepartmentsController(
@@ -42,7 +41,6 @@ namespace JanKIS.API.Controllers
             this.accountsStore = accountsStore;
             this.serviceRequestsStore = serviceRequestsStore;
             this.subscriptionsStore = subscriptionsStore;
-            this.httpContextAccessor = httpContextAccessor;
             this.departmentViewModelBuilder = departmentViewModelBuilder;
         }
 
@@ -57,7 +55,6 @@ namespace JanKIS.API.Controllers
 
 
         [HttpPut("{departmentId}/services/{serviceId}")]
-        [Authorize(Policy = nameof(Permission.ManageDepartmentServices))]
         public async Task<IActionResult> CreateOrUpdateService([FromRoute] string departmentId, [FromRoute] string serviceId, [FromBody] ServiceDefinition serviceDefinition)
         {
             if (serviceDefinition == null)

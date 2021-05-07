@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using JanKIS.API.AccessManagement;
 using JanKIS.API.Models;
 using MongoDB.Driver;
 
@@ -7,8 +8,9 @@ namespace JanKIS.API.Storage
 {
     public class AccountStore: GenericStore<Account>, IAccountStore
     {
-        public AccountStore(IMongoDatabase mongoDatabase)
-            : base(mongoDatabase)
+        public AccountStore(IMongoDatabase mongoDatabase,
+            IPermissionFilterBuilder<Account> permissionFilterBuilder)
+            : base(mongoDatabase, permissionFilterBuilder)
         {
         }
 

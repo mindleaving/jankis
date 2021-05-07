@@ -1,4 +1,5 @@
-﻿using JanKIS.API.Storage;
+﻿using System;
+using JanKIS.API.Storage;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
@@ -12,11 +13,13 @@ namespace JanKIS.API.Models
         public Account(
             string personId,
             string username,
+            DateTime createdTimestamp,
             string salt,
             string passwordHash)
         {
             PersonId = personId;
             Username = username;
+            CreatedTimestamp = createdTimestamp;
             Salt = salt;
             PasswordHash = passwordHash;
             IsPasswordChangeRequired = true;
@@ -26,6 +29,7 @@ namespace JanKIS.API.Models
         public string PersonId { get; set; }
         public abstract AccountType AccountType { get; }
         public string Username { get; set; }
+        public DateTime CreatedTimestamp { get; set; }
 
         #region Login-information
         [JsonIgnore]

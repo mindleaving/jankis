@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using JanKIS.API.AccessManagement;
 using JanKIS.API.Models.Subscriptions;
 using MongoDB.Driver;
 
@@ -13,8 +14,10 @@ namespace JanKIS.API.Storage
 
     public class NotificationsStore : GenericStore<NotificationBase>, INotificationsStore
     {
-        public NotificationsStore(IMongoDatabase mongoDatabase)
-            : base(mongoDatabase)
+        public NotificationsStore(
+            IMongoDatabase mongoDatabase,
+            IPermissionFilterBuilder<NotificationBase> permissionFilterBuilder)
+            : base(mongoDatabase, permissionFilterBuilder)
         {
         }
 

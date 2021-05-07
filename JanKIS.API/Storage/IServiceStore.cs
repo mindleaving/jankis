@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using JanKIS.API.AccessManagement;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using MongoDB.Driver;
@@ -20,8 +21,10 @@ namespace JanKIS.API.Storage
 
     public class ServiceStore : GenericStore<ServiceDefinition>, IServiceStore
     {
-        public ServiceStore(IMongoDatabase mongoDatabase)
-            : base(mongoDatabase)
+        public ServiceStore(
+            IMongoDatabase mongoDatabase,
+            IPermissionFilterBuilder<ServiceDefinition> permissionFilterBuilder)
+            : base(mongoDatabase, permissionFilterBuilder)
         {
         }
 
