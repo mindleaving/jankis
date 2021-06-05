@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Security;
 using System.Threading.Tasks;
 using JanKIS.API.AccessManagement;
 using JanKIS.API.Models;
@@ -8,17 +10,19 @@ namespace JanKIS.API.Storage
 {
     public class AccountStore: GenericStore<Account>, IAccountStore
     {
-        public AccountStore(IMongoDatabase mongoDatabase,
-            IPermissionFilterBuilder<Account> permissionFilterBuilder)
-            : base(mongoDatabase, permissionFilterBuilder)
+        public AccountStore(IMongoDatabase mongoDatabase)
+            : base(mongoDatabase)
         {
         }
 
         public async Task<StorageResult> ChangePasswordAsync(
             string username,
             string passwordBase64,
-            bool changePasswordOnNextLogin)
+            bool changePasswordOnNextLogin, 
+            PermissionFilter<Account> permissionFilter)
         {
+            ValidatePermissionFilter(permissionFilter, DataAccessType.Store);
+            TODO: NotImplementedException method for testing ability to perform operation on as Single object
             var result = await collection.UpdateOneAsync(
                 x => x.Id == username, 
                 Builders<Account>.Update
@@ -33,8 +37,10 @@ namespace JanKIS.API.Storage
 
         public async Task<StorageResult> SetRoles(
             string username,
-            List<string> roleIds)
+            List<string> roleIds, 
+            PermissionFilter<Account> permissionFilter)
         {
+            ValidatePermissionFilter(permissionFilter, DataAccessType.Store);
             var result = await collection.OfType<EmployeeAccount>().UpdateOneAsync(
                 x => x.Id == username,
                 Builders<EmployeeAccount>.Update
@@ -48,8 +54,10 @@ namespace JanKIS.API.Storage
 
         public async Task<StorageResult> AddRole(
             string username,
-            string roleId)
+            string roleId, 
+            PermissionFilter<Account> permissionFilter)
         {
+            ValidatePermissionFilter(permissionFilter, DataAccessType.Store);
             if(await collection.OfType<EmployeeAccount>().Find(x => x.Id == username && x.Roles.Contains(roleId)).AnyAsync())
                 return StorageResult.Success();
             var result = await collection.OfType<EmployeeAccount>().UpdateOneAsync(
@@ -65,8 +73,10 @@ namespace JanKIS.API.Storage
 
         public async Task<StorageResult> RemoveRole(
             string username,
-            string roleId)
+            string roleId, 
+            PermissionFilter<Account> permissionFilter)
         {
+            ValidatePermissionFilter(permissionFilter, DataAccessType.Store);
             if(await collection.OfType<EmployeeAccount>().Find(x => x.Id == username && !x.Roles.Contains(roleId)).AnyAsync())
                 return StorageResult.Success();
             var result = await collection.OfType<EmployeeAccount>().UpdateOneAsync(
@@ -82,8 +92,10 @@ namespace JanKIS.API.Storage
 
         public async Task<StorageResult> AddPermission(
             string username,
-            PermissionModifier permission)
+            PermissionModifier permission, 
+            PermissionFilter<Account> permissionFilter)
         {
+            ValidatePermissionFilter(permissionFilter, DataAccessType.Store);
             var result = await collection.OfType<EmployeeAccount>().UpdateOneAsync(
                 x => x.Id == username,
                 Builders<EmployeeAccount>.Update
@@ -97,8 +109,10 @@ namespace JanKIS.API.Storage
 
         public async Task<StorageResult> RemovePermission(
             string username,
-            Permission permission)
+            Permission permission, 
+            PermissionFilter<Account> permissionFilter)
         {
+            ValidatePermissionFilter(permissionFilter, DataAccessType.Store);
             var result = await collection.OfType<EmployeeAccount>().UpdateOneAsync(
                 x => x.Id == username,
                 Builders<EmployeeAccount>.Update
@@ -110,21 +124,39 @@ namespace JanKIS.API.Storage
             return StorageResult.Success();
         }
 
-        public async Task RemoveRoleFromAllUsers(string roleName)
+        public async Task RemoveRoleFromAllUsers(
+            string roleName, 
+            PermissionFilter<Account> permissionFilter)
         {
+            ValidatePermissionFilter(permissionFilter, DataAccessType.Store);
+            if (permissionFilter.AuthorizationLevel == AuthorizationLevel.FilteredAuthorization)
+            {
+                // Because this method is usually called before deleting the role,
+                // it is necessary that the role is removed from all accounts,
+                // not only those the current user has access to.
+                throw new NotSupportedException();
+            }
             await collection.OfType<EmployeeAccount>().UpdateManyAsync(
                 x => true,
                 Builders<EmployeeAccount>.Update.Pull(x => x.Roles, roleName));
         }
 
-        public async Task<bool> IsEmployee(string username)
+        public async Task<bool> IsEmployee(
+            string username,
+            PermissionFilter<Account> permissionFilter)
         {
-            var account = await GetByIdAsync(username);
+            ValidatePermissionFilter(permissionFilter, DataAccessType.Read);
+            var account = await GetByIdAsync(username, permissionFilter);
             return account.AccountType == AccountType.Employee;
         }
 
-        public Task DeleteAllForPerson(string personId)
+        public Task DeleteAllForPerson(
+            string personId,
+            PermissionFilter<Account> permissionFilter)
         {
+            ValidatePermissionFilter(permissionFilter, DataAccessType.Delete);
+            if (permissionFilter.AuthorizationLevel == AuthorizationLevel.FilteredAuthorization)
+                throw new NotSupportedException();
             return collection.DeleteManyAsync(x => x.PersonId == personId);
         }
     }

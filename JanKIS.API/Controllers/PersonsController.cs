@@ -26,7 +26,7 @@ namespace JanKIS.API.Controllers
 
         public override async Task<IActionResult> Delete(string id)
         {
-            await accountsStore.DeleteAllForPerson(id);
+            await accountsStore.DeleteAllForPerson(id, TODO);
             return await base.Delete(id);
         }
 

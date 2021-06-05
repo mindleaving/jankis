@@ -2,34 +2,44 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using JanKIS.API.AccessManagement;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JanKIS.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public abstract class RestControllerBase<T> : ControllerBase where T: class, IId
     {
         protected readonly IStore<T> store;
         protected readonly IHttpContextAccessor httpContextAccessor;
+        protected readonly IPermissionFilterBuilder<T> permissionFilterBuilder;
 
         protected RestControllerBase(
             IStore<T> store,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IPermissionFilterBuilder<T> permissionFilterBuilder)
         {
             this.store = store;
             this.httpContextAccessor = httpContextAccessor;
+            this.permissionFilterBuilder = permissionFilterBuilder;
         }
 
         [HttpGet("{id}")]
-        public virtual async Task<IActionResult> GetById([FromRoute] string id)
+        public virtual async Task<IActionResult> GetById(
+            [FromServices] CurrentUserProvider currentUserProvider,
+            [FromRoute] string id)
         {
-            var item = await store.GetByIdAsync(id);
+            var currentUser = await currentUserProvider.Build();
+            var permissionFilter = await permissionFilterBuilder.Build(currentUser);
+            var item = await store.GetByIdAsync(id, permissionFilter);
             if (item == null)
                 return NotFound();
             var transformedItem = await TransformItem(item);
@@ -38,61 +48,83 @@ namespace JanKIS.API.Controllers
 
         [HttpGet]
         public virtual async Task<IActionResult> GetMany(
+            [FromServices] CurrentUserProvider currentUserProvider,
             [FromQuery] int? count = null,
             [FromQuery] int? skip = null,
             [FromQuery] string orderBy = null,
             [FromQuery] OrderDirection orderDirection = OrderDirection.Ascending)
         {
+            var currentUser = await currentUserProvider.Build();
+            var permissionFilter = await permissionFilterBuilder.Build(currentUser);
             var orderByExpression = BuildOrderByExpression(orderBy);
-            var items = await store.GetMany(count, skip, orderByExpression, orderDirection);
+            var items = await store.GetMany(count, skip, orderByExpression, orderDirection, permissionFilter);
             var transformedItems = await TransformItems(items);
             return Ok(transformedItems);
         }
 
         [HttpGet(nameof(Search))]
-        public virtual async Task<IActionResult> Search([FromQuery] string searchText, [FromQuery] int? count = null, [FromQuery] int? skip = null)
+        public virtual async Task<IActionResult> Search(
+            [FromServices] CurrentUserProvider currentUserProvider,
+            [FromQuery] string searchText, 
+            [FromQuery] int? count = null, 
+            [FromQuery] int? skip = null)
         {
             if (searchText == null)
                 return BadRequest("No search text specified");
+            var currentUser = await currentUserProvider.Build();
+            var permissionFilter = await permissionFilterBuilder.Build(currentUser);
             var searchTerms = SearchTermSplitter.SplitAndToLower(searchText);
             var searchExpression = BuildSearchExpression(searchTerms);
-            var items = await store.SearchAsync(searchExpression, count, skip);
+            var items = await store.SearchAsync(searchExpression, permissionFilter, count, skip);
             var prioritizedItems = PrioritizeItems(items, searchText);
             var transformedItems = await TransformItems(prioritizedItems);
             return Ok(transformedItems);
         }
 
         [HttpPut("{id}")]
-        public virtual async Task<IActionResult> CreateOrReplace([FromRoute] string id, [FromBody] T item)
+        public virtual async Task<IActionResult> CreateOrReplace(
+            [FromServices] CurrentUserProvider currentUserProvider,
+            [FromRoute] string id, 
+            [FromBody] T item)
         {
             if (id != item.Id)
                 return BadRequest("ID of route doesn't match body");
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            var storageOperation = await store.StoreAsync(item);
-            await PublishChange(item, storageOperation, username);
+            var currentUser = await currentUserProvider.Build();
+            var permissionFilter = await permissionFilterBuilder.Build(currentUser);
+            var storageOperation = await store.StoreAsync(item, permissionFilter);
+            await PublishChange(item, storageOperation, currentUser.Username);
             return Ok(id);
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> PartialUpdate([FromRoute] string id, [FromBody] JsonPatchDocument<T> updates)
+        public async Task<IActionResult> PartialUpdate(
+            [FromServices] CurrentUserProvider currentUserProvider,
+            [FromRoute] string id, 
+            [FromBody] JsonPatchDocument<T> updates)
         {
-            var item = await store.GetByIdAsync(id);
+            var currentUser = await currentUserProvider.Build();
+            var permissionFilter = await permissionFilterBuilder.Build(currentUser);
+            var item = await store.GetByIdAsync(id, permissionFilter);
             if (item == null)
                 return NotFound();
             updates.ApplyTo(item, ModelState);
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            await store.StoreAsync(item);
+            await store.StoreAsync(item, permissionFilter);
             await PublishChange(item, StorageOperation.Changed, username);
             return Ok();
         }
 
 
         [HttpDelete("{id}")]
-        public virtual async Task<IActionResult> Delete([FromRoute] string id)
+        public virtual async Task<IActionResult> Delete(
+            [FromServices] CurrentUserProvider currentUserProvider,
+            [FromRoute] string id)
         {
-            await store.DeleteAsync(id);
+            var currentUser = await currentUserProvider.Build();
+            var permissionFilter = await permissionFilterBuilder.Build(currentUser);
+            await store.DeleteAsync(id, permissionFilter);
             return Ok();
         }
 

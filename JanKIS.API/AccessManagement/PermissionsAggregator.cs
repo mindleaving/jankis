@@ -19,7 +19,7 @@ namespace JanKIS.API.AccessManagement
             List<string> roleIds,
             List<PermissionModifier> permissionModifiers)
         {
-            var allRoles = await rolesStore.GetAllAsync();
+            var allRoles = await rolesStore.GetAllAsync(PermissionFilter<Role>.FullyAuthorized(TODO));
             var roles = allRoles.Where(role => roleIds.Contains(role.Id)).ToList();
             return Aggregate(roles, permissionModifiers);
         }

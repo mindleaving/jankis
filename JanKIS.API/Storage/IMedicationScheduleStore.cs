@@ -13,10 +13,8 @@ namespace JanKIS.API.Storage
 
     public class MedicationScheduleStore : GenericStore<MedicationSchedule>, IMedicationScheduleStore
     {
-        public MedicationScheduleStore(
-            IMongoDatabase mongoDatabase,
-            IPermissionFilterBuilder<MedicationSchedule> permissionFilterBuilder)
-            : base(mongoDatabase, permissionFilterBuilder)
+        public MedicationScheduleStore(IMongoDatabase mongoDatabase)
+            : base(mongoDatabase)
         {
         }
 

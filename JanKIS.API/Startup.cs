@@ -60,8 +60,7 @@ namespace JanKIS.API
                         options.SerializerSettings.Formatting = Formatting.None;
                     });
             SetupJwtTokenAuthentication(services);
-            services.AddScoped<UserBuilder>();
-            services.AddScoped(provider => provider.GetService<UserBuilder>().Build());
+            services.AddScoped<CurrentUserProvider>();
             SetupPermissionFilterBuilders(services);
             services.AddScoped<AuthenticationModule>();
             services.AddScoped<IAuthorizationHandler, SameUserRequirementHandler>();

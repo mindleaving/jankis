@@ -14,9 +14,8 @@ namespace JanKIS.API.Storage
 
     public class AdmissionsStore : GenericStore<Admission>, IAdmissionsStore
     {
-        public AdmissionsStore(IMongoDatabase mongoDatabase,
-            IPermissionFilterBuilder<Admission> permissionFilterBuilder)
-            : base(mongoDatabase, permissionFilterBuilder)
+        public AdmissionsStore(IMongoDatabase mongoDatabase)
+            : base(mongoDatabase)
         {
         }
 

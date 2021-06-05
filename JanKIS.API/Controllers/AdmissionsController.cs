@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using JanKIS.API.AccessManagement;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
@@ -18,8 +19,9 @@ namespace JanKIS.API.Controllers
         public AdmissionsController(
             IStore<Admission> store,
             INotificationDistributor notificationDistributor,
-            IHttpContextAccessor httpContextAccessor)
-            : base(store, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IPermissionFilterBuilder<Admission> permissionFilterBuilder)
+            : base(store, httpContextAccessor, permissionFilterBuilder)
         {
             this.notificationDistributor = notificationDistributor;
         }

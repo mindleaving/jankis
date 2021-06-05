@@ -14,9 +14,8 @@ namespace JanKIS.API.Storage
 
     public class BedOccupanciesStore : GenericStore<BedOccupancy>, IBedOccupanciesStore
     {
-        public BedOccupanciesStore(IMongoDatabase mongoDatabase,
-            IPermissionFilterBuilder<BedOccupancy> permissionFilterBuilder)
-            : base(mongoDatabase, permissionFilterBuilder)
+        public BedOccupanciesStore(IMongoDatabase mongoDatabase)
+            : base(mongoDatabase)
         {
         }
 

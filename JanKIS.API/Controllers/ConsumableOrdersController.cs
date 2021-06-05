@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using JanKIS.API.AccessManagement;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
@@ -23,8 +24,9 @@ namespace JanKIS.API.Controllers
             IHttpContextAccessor httpContextAccessor,
             IViewModelBuilder<ConsumableOrder> consumableOrderViewModelBuilder,
             IReadonlyStore<Account> accountsStore,
-            ISubscriptionsStore subscriptionsStore)
-            : base(store, httpContextAccessor)
+            ISubscriptionsStore subscriptionsStore,
+            IPermissionFilterBuilder<ConsumableOrder> permissionFilterBuilder)
+            : base(store, httpContextAccessor, permissionFilterBuilder)
         {
             this.consumableOrderViewModelBuilder = consumableOrderViewModelBuilder;
             this.accountsStore = accountsStore;
@@ -32,9 +34,13 @@ namespace JanKIS.API.Controllers
         }
 
         [HttpPost("{orderId}/assign")]
-        public async Task<IActionResult> AssignRequest([FromRoute] string orderId, [FromBody] string assignee)
+        public async Task<IActionResult> AssignRequest(
+            [FromServices] CurrentUserProvider currentUserProvider,
+            [FromRoute] string orderId, 
+            [FromBody] string assignee)
         {
-            var existingRequest = await store.GetByIdAsync(orderId);
+            var permissionFilter = await BuildPermissionFilter(currentUserProvider);
+            var existingRequest = await store.GetByIdAsync(orderId, permissionFilter);
             if (existingRequest == null)
                 return NotFound();
             if (!await accountsStore.ExistsAsync(assignee))
@@ -46,14 +52,18 @@ namespace JanKIS.API.Controllers
             //if (!await serviceRequestChangePolicy.CanChange(existingRequest, account, institutionPolicy))
             //    return Forbid();
             existingRequest.AssignedTo = assignee;
-            await store.StoreAsync(existingRequest);
+            await store.StoreAsync(existingRequest, permissionFilter);
             return Ok();
         }
 
         [HttpPost("{orderId}/changestate")]
-        public async Task<IActionResult> ChangeState([FromRoute] string orderId, [FromBody] OrderState newState)
+        public async Task<IActionResult> ChangeState(
+            [FromServices] CurrentUserProvider currentUserProvider,
+            [FromRoute] string orderId, 
+            [FromBody] OrderState newState)
         {
-            var existingRequest = await store.GetByIdAsync(orderId);
+            var permissionFilter = await BuildPermissionFilter(currentUserProvider);
+            var existingRequest = await store.GetByIdAsync(orderId, permissionFilter);
             if (existingRequest == null)
                 return NotFound();
             // TODO: Check permission to perform this action
@@ -64,7 +74,7 @@ namespace JanKIS.API.Controllers
             //    return Forbid();
             if (!existingRequest.TrySetState(newState, out var stateChangeError))
                 return BadRequest(stateChangeError);
-            await store.StoreAsync(existingRequest);
+            await store.StoreAsync(existingRequest, permissionFilter);
             return Ok();
         }
 
@@ -84,14 +94,22 @@ namespace JanKIS.API.Controllers
         }
 
         [HttpPost("{orderId}/unsubscribe")]
-        public async Task<IActionResult> Unsubscribe([FromRoute] string orderId)
+        public async Task<IActionResult> Unsubscribe(
+            [FromServices] CurrentUserProvider currentUserProvider,
+            [FromRoute] string orderId)
         {
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            var existingSubscription = await subscriptionsStore.GetConsumableOrderSubscription(orderId, username);
+            var currentUser = await currentUserProvider.Build();
+            var existingSubscription = await subscriptionsStore.GetConsumableOrderSubscription(orderId, currentUser.Username);
             if (existingSubscription == null)
                 return Ok();
             await subscriptionsStore.DeleteAsync(existingSubscription.Id);
             return Ok();
+        }
+
+        private async Task<PermissionFilter<ConsumableOrder>> BuildPermissionFilter(CurrentUserProvider currentUserProvider)
+        {
+            var currentUser = await currentUserProvider.Build();
+            return await permissionFilterBuilder.Build(currentUser);
         }
 
         protected override async Task<object> TransformItem(ConsumableOrder item)

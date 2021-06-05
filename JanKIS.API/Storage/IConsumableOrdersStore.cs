@@ -15,9 +15,8 @@ namespace JanKIS.API.Storage
 
     public class ConsumableOrdersStore : GenericStore<ConsumableOrder>, IConsumableOrdersStore
     {
-        public ConsumableOrdersStore(IMongoDatabase mongoDatabase,
-            IPermissionFilterBuilder<ConsumableOrder> permissionFilterBuilder)
-            : base(mongoDatabase, permissionFilterBuilder)
+        public ConsumableOrdersStore(IMongoDatabase mongoDatabase)
+            : base(mongoDatabase)
         {
         }
 

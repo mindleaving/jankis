@@ -14,10 +14,8 @@ namespace JanKIS.API.Storage
 
     public class NotificationsStore : GenericStore<NotificationBase>, INotificationsStore
     {
-        public NotificationsStore(
-            IMongoDatabase mongoDatabase,
-            IPermissionFilterBuilder<NotificationBase> permissionFilterBuilder)
-            : base(mongoDatabase, permissionFilterBuilder)
+        public NotificationsStore(IMongoDatabase mongoDatabase)
+            : base(mongoDatabase)
         {
         }
 

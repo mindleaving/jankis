@@ -29,8 +29,8 @@ namespace JanKIS.API.Storage
 
     public class SubscriptionsStore : GenericStore<SubscriptionBase>, ISubscriptionsStore
     {
-        public SubscriptionsStore(IMongoDatabase mongoDatabase, IPermissionFilterBuilder<SubscriptionBase> permissionFilterBuilder)
-            : base(mongoDatabase, permissionFilterBuilder)
+        public SubscriptionsStore(IMongoDatabase mongoDatabase)
+            : base(mongoDatabase)
         {
         }
 

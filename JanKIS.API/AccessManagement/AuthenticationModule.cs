@@ -23,7 +23,7 @@ namespace JanKIS.API.AccessManagement
 
         public async Task<bool> ChangePasswordAsync(string userId, string password, bool changePasswordOnNextLogin = false)
         {
-            var matchingAccount = await accountStore.GetByIdAsync(userId);
+            var matchingAccount = await accountStore.GetByIdAsync(userId, PermissionFilter<Account>.FullyAuthorized(DataAccessType.Read));
             if (matchingAccount == null)
                 return false;
             var saltBytes = Convert.FromBase64String(matchingAccount.Salt);

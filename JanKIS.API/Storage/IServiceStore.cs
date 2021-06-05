@@ -22,9 +22,8 @@ namespace JanKIS.API.Storage
     public class ServiceStore : GenericStore<ServiceDefinition>, IServiceStore
     {
         public ServiceStore(
-            IMongoDatabase mongoDatabase,
-            IPermissionFilterBuilder<ServiceDefinition> permissionFilterBuilder)
-            : base(mongoDatabase, permissionFilterBuilder)
+            IMongoDatabase mongoDatabase)
+            : base(mongoDatabase)
         {
         }
 

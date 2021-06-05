@@ -1,38 +1,23 @@
 ﻿using System.Threading.Tasks;
 using JanKIS.API.Models;
-using JanKIS.API.Storage;
 
 namespace JanKIS.API.AccessManagement
 {
     public class AccountPermissionFilterBuilder : IPermissionFilterBuilder<Account>
     {
-        private readonly CurrentUser currentUser;
-        private readonly IReadonlyStore<Account> accountsStore;
-
-        public AccountPermissionFilterBuilder(
-            CurrentUser currentUser,
-            IReadonlyStore<Account> accountsStore)
+        public async Task<PermissionFilter<Account>> Build(CurrentUser currentUser, DataAccessType accessType)
         {
-            this.currentUser = currentUser;
-            this.accountsStore = accountsStore;
-        }
-
-        public async Task<PermissionFilter<Account>> Build()
-        {
-            if(currentUser == null)
-                return PermissionFilter<Account>.FullyAuthorized();
-            var account = await accountsStore.GetByIdAsync(currentUser.Username);
-            if (account.AccountType == AccountType.Patient)
+            if (currentUser.AccountType == AccountType.Patient)
             {
-                return PermissionFilter<Account>.PartialAuthorization(x => x.Username == currentUser.Username, null);
+                return PermissionFilter<Account>.PartialAuthorization(accessType, x => x.Username == currentUser.Username, null);
             }
 
-            if (account.AccountType == AccountType.Employee)
+            if (currentUser.AccountType == AccountType.Employee)
             {
-                return PermissionFilter<Account>.FullyAuthorized();
+                return PermissionFilter<Account>.FullyAuthorized(accessType);
             }
 
-            return PermissionFilter<Account>.Unauthorized();
+            return PermissionFilter<Account>.Unauthorized(accessType);
         }
     }
 }

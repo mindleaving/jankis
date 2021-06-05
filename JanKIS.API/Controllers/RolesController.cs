@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using JanKIS.API.AccessManagement;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JanKIS.API.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    [Authorize]
     public class RolesController : RestControllerBase<Role>
     {
         private readonly IStore<Role> rolesStore;
@@ -23,14 +20,17 @@ namespace JanKIS.API.Controllers
         public RolesController(
             IStore<Role> rolesStore,
             IAccountStore accountsStore,
-            IHttpContextAccessor httpContextAccessor)
-            : base(rolesStore, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IPermissionFilterBuilder<Role> permissionFilterBuilder)
+            : base(rolesStore, httpContextAccessor, permissionFilterBuilder)
         {
             this.rolesStore = rolesStore;
             this.accountsStore = accountsStore;
         }
 
-        public override async Task<IActionResult> Delete(string id)
+        public override async Task<IActionResult> Delete(
+            CurrentUserProvider currentUserProvider,
+            string id)
         {
             var role = await rolesStore.GetByIdAsync(id);
             if (role == null)
@@ -40,7 +40,6 @@ namespace JanKIS.API.Controllers
             await accountsStore.RemoveRoleFromAllUsers(id);
             return await base.Delete(id);
         }
-
 
         protected override Task<object> TransformItem(Role item)
         {

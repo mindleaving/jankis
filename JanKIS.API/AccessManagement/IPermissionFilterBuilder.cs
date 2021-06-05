@@ -4,6 +4,6 @@ namespace JanKIS.API.AccessManagement
 {
     public interface IPermissionFilterBuilder<T>
     {
-        Task<PermissionFilter<T>> Build();
+        Task<PermissionFilter<T>> Build(CurrentUser currentUser, DataAccessType accessType);
     }
 }

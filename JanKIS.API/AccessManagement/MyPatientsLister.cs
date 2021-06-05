@@ -23,10 +23,9 @@ namespace JanKIS.API.AccessManagement
             this.serviceRequestsStore = serviceRequestsStore;
         }
 
-        public async Task<List<string>> ListMyPatientIds(EmployeeAccount account, MyPatientsListerOptions options = null)
+        public async Task<List<string>> ListMyPatientIds(List<string> myDepartmentIds, MyPatientsListerOptions options = null)
         {
-            var departmentIds = account.DepartmentIds;
-            var departmentBedOccupancies = await bedOccupanciesStore.SearchAsync(x => departmentIds.Contains(x.Department.Id));
+            var departmentBedOccupancies = await bedOccupanciesStore.SearchAsync(x => myDepartmentIds.Contains(x.Department.Id));
             var departmentPatientIds = departmentBedOccupancies
                 .Select(x => x.Patient?.Id)
                 .Where(patientId => patientId != null)
@@ -38,7 +37,7 @@ namespace JanKIS.API.AccessManagement
                 ServiceRequestState.ReadyWhenYouAre
             };
             IEnumerable<ServiceRequest> openDepartmentServiceRequests = await serviceRequestsStore.SearchAsync(
-                x => departmentIds.Contains(x.Service.DepartmentId) && openServiceRequestStates.Contains(x.State));
+                x => myDepartmentIds.Contains(x.Service.DepartmentId) && openServiceRequestStates.Contains(x.State));
             var serviceRequestPatients = openDepartmentServiceRequests
                 .SelectMany(request => request.ParameterResponses.Values.Where(response => response.ValueType == ServiceParameterValueType.Patient))
                 .Cast<PatientServiceParameterResponse>();

@@ -2,21 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using JanKIS.API.Models;
+using JanKIS.API.Storage;
 using Microsoft.AspNetCore.Http;
 
 namespace JanKIS.API.AccessManagement
 {
-    public class UserBuilder
+    public class CurrentUserProvider
     {
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IReadonlyStore<Account> accountsStore;
 
-        public UserBuilder(IHttpContextAccessor httpContextAccessor)
+        public CurrentUserProvider(
+            IHttpContextAccessor httpContextAccessor,
+            IReadonlyStore<Account> accountsStore)
         {
             this.httpContextAccessor = httpContextAccessor;
+            this.accountsStore = accountsStore;
         }
 
-        public CurrentUser Build()
+        public async Task<CurrentUser> Build()
         {
             var claimPrincipal = httpContextAccessor.HttpContext?.User;
             if (claimPrincipal == null)
@@ -24,10 +30,23 @@ namespace JanKIS.API.AccessManagement
             var username = GetUsername(claimPrincipal);
             var accountType = GetAccountType(claimPrincipal);
             var permissions = GetPermissions(claimPrincipal);
+            var account = await accountsStore.GetByIdAsync(username, PermissionFilter<Account>.FullyAuthorized(TODO));
+            var personId = account.PersonId;
+            List<string> departmentIds;
+            if (accountType == AccountType.Employee)
+            {
+                departmentIds = (account as EmployeeAccount)?.DepartmentIds ?? new List<string>();
+            }
+            else
+            {
+                departmentIds = new List<string>();
+            }
             return new CurrentUser(
                 username,
                 accountType,
-                permissions);
+                permissions,
+                personId,
+                departmentIds);
         }
 
         private static string GetUsername(ClaimsPrincipal claimPrincipal)
