@@ -39,6 +39,10 @@ export namespace Models {
         value: string;
     }
 
+    interface AutoCompleteContextGenerator {
+        
+    }
+
     interface BedOccupancy {
         id: string;
         state: Enums.BedState;
@@ -119,6 +123,25 @@ export namespace Models {
     interface DiagnosticTestDefinition {
         testCodeLoinc: string;
         testCodeLocal: string;
+        category: string;
+        scaleType: Enums.DiagnosticTestScaleType;
+        id: string;
+        name: string;
+        description: string;
+        parameters: Models.ServiceParameter[];
+        audience: Models.ServiceAudience[];
+        departmentId: string;
+        autoAcceptRequests: boolean;
+        isAvailable: boolean;
+    }
+
+    interface QuantitativeDiagnosticTestDefinition {
+        unit: string;
+        referenceRangeStart: number;
+        referenceRangeEnd: number;
+        testCodeLoinc: string;
+        testCodeLocal: string;
+        category: string;
         scaleType: Enums.DiagnosticTestScaleType;
         id: string;
         name: string;

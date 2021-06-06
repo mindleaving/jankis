@@ -8,5 +8,6 @@ namespace JanKIS.API.Models
     {
         public static readonly Role Patient = new() {Id = "Patient", Name = "Patient", Permissions = new List<Permission>(), IsSystemRole = true };
         public static readonly Role Admin = new() {Id = "Admin", Name = "Admin", Permissions = EnumExtensions.GetValues<Permission>().ToList(), IsSystemRole = true};
+        public static readonly Role Doctor = new() {Id = "Doctor", Name = "Doctor", Permissions = new List<Permission>(), IsSystemRole = true};
     }
 }

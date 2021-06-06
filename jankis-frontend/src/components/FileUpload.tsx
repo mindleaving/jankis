@@ -18,7 +18,8 @@ const baseStyle: CSSProperties = {
   backgroundColor: '#fafafa',
   color: '#bdbdbd',
   outline: 'none',
-  transition: 'border .24s ease-in-out'
+  transition: 'border .24s ease-in-out',
+  cursor: 'pointer'
 };
 
 const activeStyle = {

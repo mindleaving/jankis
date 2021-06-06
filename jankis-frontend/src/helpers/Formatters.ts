@@ -101,3 +101,37 @@ export const formatEquipmentMaterial = (material: ViewModels.MaterialViewModel) 
             throw new Error(`Unsupported material type '${material.type}'`);
     }
 }
+export const formatReferenceRange = (testResult: Models.QuantitativeDiagnosticTestResult) => {
+    if(testResult.referenceRangeStart && testResult.referenceRangeEnd) {
+        return `${testResult.referenceRangeStart}-${testResult.referenceRangeEnd}`;
+    }
+    if(testResult.referenceRangeStart) {
+        return `>${testResult.referenceRangeStart}`;
+    }
+    if(testResult.referenceRangeEnd) {
+        return `<${testResult.referenceRangeEnd}`;
+    }
+    return '';
+}
+export const formatDiagnosticTest = (testDefinition: Models.DiagnosticTestDefinition) => {
+    let code = '';
+    if(testDefinition.testCodeLoinc) {
+        code += `LOINC:${testDefinition.testCodeLoinc}`;
+    }
+    if(testDefinition.testCodeLocal) {
+        if(code !== '') code += '/';
+        code += `${resolveText('Local')}:${testDefinition.testCodeLocal}`;
+    }
+    return `${testDefinition.name} (${code})`;
+}
+export const formatDiagnosticTestNameOfResult = (testResult: Models.DiagnosticTestResult) => {
+    let code = '';
+    if(testResult.testCodeLoinc) {
+        code += `LOINC:${testResult.testCodeLoinc}`;
+    }
+    if(testResult.testCodeLocal) {
+        if(code !== '') code += '/';
+        code += `${resolveText('Local')}:${testResult.testCodeLocal}`;
+    }
+    return `${testResult.testName} (${code})`;
+}

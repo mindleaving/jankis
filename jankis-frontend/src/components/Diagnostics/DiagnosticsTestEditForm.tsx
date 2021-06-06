@@ -20,6 +20,7 @@ export const DiagnosticsTestEditForm = (props: DiagnosticsTestEditFormProps) => 
     const [ testCodeLoinc, setTestCodeLoinc ] = useState<string>('');
     const [ testCodeLocal, setTestCodeLocal ] = useState<string>('');
     const [ scaleType, setscaleType ] = useState<DiagnosticTestScaleType>(DiagnosticTestScaleType.Quantitative);
+    const [ category, setCategory ] = useState<string>('');
     const [ isStoring, setIsStoring ] = useState<boolean>(false);
 
     const store = async (e?: FormEvent) => {
@@ -43,6 +44,7 @@ export const DiagnosticsTestEditForm = (props: DiagnosticsTestEditFormProps) => 
             testCodeLoinc: testCodeLoinc,
             testCodeLocal: testCodeLocal,
             scaleType: scaleType,
+            category: category,
             audience: [
                 {
                     type: ServiceAudienceType.Role,
@@ -71,6 +73,11 @@ export const DiagnosticsTestEditForm = (props: DiagnosticsTestEditFormProps) => 
                 label={resolveText('Diagnostics_TestCodeLocal')}
                 value={testCodeLocal}
                 onChange={setTestCodeLocal}
+            />
+            <RowFormGroup
+                label={resolveText('Diagnostics_Category')}
+                value={category}
+                onChange={setCategory}
             />
             <FormGroup as={Row}>
                 <FormLabel column>{resolveText('Diagnostics_ScaleType')}</FormLabel>

@@ -2,7 +2,7 @@
 {
     public class NominalDiagnosticTestResult : DiagnosticTestResult
     {
-        public override DiagnosticTestScaleType ScaleType => DiagnosticTestScaleType.Quantitative;
+        public override DiagnosticTestScaleType ScaleType => DiagnosticTestScaleType.Nominal;
         public string Value { get; set; }
     }
 }

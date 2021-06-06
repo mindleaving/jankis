@@ -1,5 +1,7 @@
 ﻿using System;
+using JanKIS.API.Converters;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
 using TypescriptGenerator.Attributes;
 
 namespace JanKIS.API.Models
@@ -12,6 +14,7 @@ namespace JanKIS.API.Models
         typeof(DocumentDiagnosticTestResult),
         typeof(SetDiagnosticTestResult)
     )]
+    [JsonConverter(typeof(DiagnosticTestResultJsonConverter))]
     public abstract class DiagnosticTestResult : IDiagnosticTestResult
     {
         public string Id { get; set; }

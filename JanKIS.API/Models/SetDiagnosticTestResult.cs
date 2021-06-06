@@ -2,6 +2,6 @@
 {
     public class SetDiagnosticTestResult : DiagnosticTestResult
     {
-        public override DiagnosticTestScaleType ScaleType => DiagnosticTestScaleType.Quantitative;
+        public override DiagnosticTestScaleType ScaleType => DiagnosticTestScaleType.Set;
     }
 }
