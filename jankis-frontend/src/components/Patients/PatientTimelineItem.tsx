@@ -3,6 +3,7 @@ import { Button, Col, Row } from 'react-bootstrap';
 import { Alert } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import { apiClient } from '../../communication/ApiClient';
+import { formatDiagnosticTestNameOfResult } from '../../helpers/Formatters';
 import { resolveText } from '../../helpers/Globalizer';
 import { DiagnosticTestScaleType, PatientEventType } from '../../types/enums.d';
 import { Models } from '../../types/models';
@@ -43,31 +44,31 @@ export const PatientTimelineItem = (props: PatientTimelineItemProps) => {
         if(testResult.scaleType === DiagnosticTestScaleType.Freetext) {
             const freetextTestResult = testResult as Models.FreetextDiagnosticTestResult;
             body = (<>
-                <Alert.Heading>{testResult.testName} (LOINC: {testResult.testCodeLoinc} / Local: {testResult.testCodeLocal})</Alert.Heading>
+                <div><b>{formatDiagnosticTestNameOfResult(testResult)}</b></div>
                 {freetextTestResult.text}
             </>);
         } else if(testResult.scaleType === DiagnosticTestScaleType.Document) {
             const documentTestResult = testResult as Models.DocumentDiagnosticTestResult;
             body = (<>
-                <Alert.Heading>{testResult.testName} (LOINC: {testResult.testCodeLoinc} / Local: {testResult.testCodeLocal})</Alert.Heading>
+                <div><b>{formatDiagnosticTestNameOfResult(testResult)}</b></div>
                 <Button onClick={() => history.push(`/documents/${documentTestResult.documentId}`)}>{resolveText('Open')}</Button>
             </>);
         } else if(testResult.scaleType === DiagnosticTestScaleType.Quantitative) {
             const quantitiveResult = testResult as Models.QuantitativeDiagnosticTestResult;
             body = (<>
-                <Alert.Heading>{testResult.testName} (LOINC: {testResult.testCodeLoinc} / Local: {testResult.testCodeLocal})</Alert.Heading>
+                <div><b>{formatDiagnosticTestNameOfResult(testResult)}</b></div>
                 {quantitiveResult.value} {quantitiveResult.unit}
             </>);
         } else if(testResult.scaleType === DiagnosticTestScaleType.Ordinal) {
             const ordinalResult = testResult as Models.OrdinalDiagnosticTestResult;
             body = (<>
-                <Alert.Heading>{testResult.testName} (LOINC: {testResult.testCodeLoinc} / Local: {testResult.testCodeLocal})</Alert.Heading>
+                <div><b>{formatDiagnosticTestNameOfResult(testResult)}</b></div>
                 {ordinalResult.value}
             </>);
         } else if(testResult.scaleType === DiagnosticTestScaleType.Nominal) {
             const nominalResult = testResult as Models.NominalDiagnosticTestResult;
             body = (<>
-                <Alert.Heading>{testResult.testName} (LOINC: {testResult.testCodeLoinc} / Local: {testResult.testCodeLocal})</Alert.Heading>
+                <div><b>{formatDiagnosticTestNameOfResult(testResult)}</b></div>
                 {nominalResult.value}
             </>);
         }

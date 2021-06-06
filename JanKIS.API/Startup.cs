@@ -6,12 +6,10 @@ using Commons.Extensions;
 using Commons.Misc;
 using Commons.Physics;
 using JanKIS.API.AccessManagement;
-using JanKIS.API.Helpers;
 using JanKIS.API.Hubs;
 using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
-using JanKIS.API.ViewModels;
 using JanKIS.API.ViewModels.Builders;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -49,6 +47,9 @@ namespace JanKIS.API
             SetupMongoDB(services);
 
             SetupStores(services);
+            services.AddScoped<ServiceRequestGatekeeper>();
+            services.AddScoped<ServiceRequestChangePolicy>();
+            services.AddScoped<INotificationDistributor, NotificationDistributor>();
             SetupViewModelBuilders(services);
 
             services.AddHttpContextAccessor();
@@ -110,44 +111,41 @@ namespace JanKIS.API
         {
             SetupTypeStores<Account>(services);
             services.AddScoped<IAccountStore, AccountStore>();
-            SetupTypeStores<Role>(services);
-            SetupTypeStores<Person>(services);
-            SetupTypeStores<Account>(services);
-            services.AddScoped<IAutocompleteCache, AutocompleteCache>();
-            SetupTypeStores<Contact>(services);
             SetupTypeStores<Admission>(services);
             services.AddScoped<IAdmissionsStore, AdmissionsStore>();
-            SetupTypeStores<Institution>(services);
-            SetupTypeStores<Room>(services);
+            SetupTypeStores<AttachedEquipment>(services);
+            services.AddScoped<IAutocompleteCache, AutocompleteCache>();
+            SetupTypeStores<BedOccupancy>(services);
+            SetupTypeStores<Consumable>(services);
+            SetupTypeStores<ConsumableOrder>(services);
+            services.AddScoped<IConsumableOrdersStore, ConsumableOrdersStore>();
+            SetupTypeStores<Contact>(services);
             SetupTypeStores<Department>(services);
+            SetupTypeStores<DiagnosticTestDefinition>(services);
+            SetupTypeStores<DiagnosticTestResult>(services);
+            SetupTypeStores<Drug>(services);
+            services.AddScoped<IFilesStore, FilesStore>();
+            SetupTypeStores<Institution>(services);
+            SetupTypeStores<InstitutionPolicy>(services);
+            SetupTypeStores<MedicationSchedule>(services);
+            services.AddScoped<IMedicationScheduleStore, MedicationScheduleStore>();
+            SetupTypeStores<MedicationDispension>(services);
+            SetupTypeStores<NotificationBase>(services);
+            services.AddScoped<INotificationsStore, NotificationsStore>();
+            SetupTypeStores<Observation>(services);
+            SetupTypeStores<PatientDocument>(services);
+            SetupTypeStores<PatientNote>(services);
+            SetupTypeStores<Person>(services);
+            SetupTypeStores<Resource>(services);
+            SetupTypeStores<Role>(services);
+            SetupTypeStores<Room>(services);
             SetupTypeStores<ServiceDefinition>(services);
             services.AddScoped<IServiceStore, ServiceStore>();
             SetupTypeStores<ServiceRequest>(services);
             services.AddScoped<IServiceRequestsStore, ServiceRequestsStore>();
-            SetupTypeStores<ConsumableOrder>(services);
-            services.AddScoped<IConsumableOrdersStore, ConsumableOrdersStore>();
-            SetupTypeStores<Consumable>(services);
-            SetupTypeStores<Resource>(services);
             SetupTypeStores<Stock>(services);
-            SetupTypeStores<InstitutionPolicy>(services);
-            SetupTypeStores<PatientNote>(services);
-            SetupTypeStores<Observation>(services);
-            SetupTypeStores<PatientDocument>(services);
-            SetupTypeStores<DiagnosticTestResult>(services);
-            SetupTypeStores<BedOccupancy>(services);
             SetupTypeStores<SubscriptionBase>(services);
             services.AddScoped<ISubscriptionsStore, SubscriptionsStore>();
-            SetupTypeStores<NotificationBase>(services);
-            services.AddScoped<INotificationsStore, NotificationsStore>();
-            SetupTypeStores<MedicationSchedule>(services);
-            services.AddScoped<IMedicationScheduleStore, MedicationScheduleStore>();
-            SetupTypeStores<MedicationDispension>(services);
-            SetupTypeStores<Drug>(services);
-            SetupTypeStores<AttachedEquipment>(services);
-            services.AddScoped<IFilesStore, FilesStore>();
-            services.AddScoped<ServiceRequestGatekeeper>();
-            services.AddScoped<ServiceRequestChangePolicy>();
-            services.AddScoped<INotificationDistributor, NotificationDistributor>();
         }
 
         private static void SetupTypeStores<T>(IServiceCollection services) where T: IId
@@ -159,18 +157,18 @@ namespace JanKIS.API
 
         private static void SetupViewModelBuilders(IServiceCollection services)
         {
-            services.AddScoped<IViewModelBuilder<Department>, DepartmentViewModelBuilder>();
-            services.AddScoped<IViewModelBuilder<LocationReference>, LocationViewModelBuilder>();
-            services.AddScoped<IViewModelBuilder<Stock>, StockViewModelBuilder>();
-            services.AddScoped<IViewModelBuilder<ServiceDefinition>, ServiceViewModelBuilder>();
-            services.AddScoped<IViewModelBuilder<Resource>, ResourceViewModelBuilder>();
-            services.AddScoped<IViewModelBuilder<Consumable>, ConsumableViewModelBuilder>();
-            services.AddScoped<IViewModelBuilder<StockState>, StockStateViewModelBuilder>();
-            services.AddScoped<IViewModelBuilder<ServiceAudience>, ServiceAudienceViewModelBuilder>();
             services.AddScoped<IViewModelBuilder<Account>, AccountViewModelBuilder>();
-            services.AddScoped<IViewModelBuilder<ConsumableOrder>, ConsumableOrderViewModelBuilder>();
-            services.AddScoped<IViewModelBuilder<Institution>, InstitutionViewModelBuilder>();
             services.AddScoped<IViewModelBuilder<AttachedEquipment>, AttachedEquipmentViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<Consumable>, ConsumableViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<ConsumableOrder>, ConsumableOrderViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<Department>, DepartmentViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<Institution>, InstitutionViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<LocationReference>, LocationViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<Resource>, ResourceViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<ServiceAudience>, ServiceAudienceViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<ServiceDefinition>, ServiceViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<Stock>, StockViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<StockState>, StockStateViewModelBuilder>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,3 +1,5 @@
+type Update<T> = (item: T) => T;
+
 export interface PersonsFilter {
     searchText?: string;
 }

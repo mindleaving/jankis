@@ -6,6 +6,7 @@ interface AsyncButtonProps {
     form?: string;
     onClick?: () => void;
     variant?: string;
+    size?: "sm" | "lg";
     isExecuting?: boolean;
     activeText: string;
     executingText: string;
@@ -20,6 +21,7 @@ export const AsyncButton = (props: AsyncButtonProps) => {
             form={props.form}
             className={props.className}
             variant={props.variant}
+            size={props.size}
             onClick={props.onClick}
             disabled={props.isExecuting || props.disabled}
         >

@@ -8,6 +8,7 @@ using JanKIS.API.Models;
 using JanKIS.API.Storage;
 using JanKIS.API.Workflow;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace JanKIS.API.Controllers
 {
@@ -22,6 +23,14 @@ namespace JanKIS.API.Controllers
             : base(store, httpContextAccessor)
         {
             this.notificationDistributor = notificationDistributor;
+        }
+
+        public override async Task<IActionResult> CreateOrReplace(string id, MedicationDispension item)
+        {
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            item.CreatedBy = username;
+            item.Timestamp = DateTime.UtcNow;
+            return await base.CreateOrReplace(id, item);
         }
 
         protected override Task<object> TransformItem(MedicationDispension item)
