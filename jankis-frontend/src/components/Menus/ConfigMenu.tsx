@@ -15,6 +15,7 @@ export const ConfigMenu = (props: ConfigMenuProps) => {
                 <NavDropdown.Item onClick={() => history.push('/departments')}>{resolveText('Menu_Config_Departments')}</NavDropdown.Item>
                 <NavDropdown.Item onClick={() => history.push('/accounts')}>{resolveText('Menu_Config_Accounts')}</NavDropdown.Item>
                 <NavDropdown.Item onClick={() => history.push('/roles')}>{resolveText('Menu_Config_Roles')}</NavDropdown.Item>
+                <NavDropdown.Item onClick={() => history.push('/drugs')}>{resolveText('Menu_Config_Drugs')}</NavDropdown.Item>
             </NavDropdown>
         </Nav>
     );
