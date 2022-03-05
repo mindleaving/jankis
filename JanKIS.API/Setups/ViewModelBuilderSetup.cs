@@ -1,6 +1,6 @@
 ﻿using HealthModels;
 using JanKIS.API.Models;
-using JanKIS.API.ViewModels.Builders;
+using JanKIS.API.Workflow.ViewModelBuilders;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -14,10 +14,12 @@ namespace JanKIS.API.Workflow
         {
             var repositoryPath = Constants.GetRepositoryPath();
             TypescriptGenerator.TypescriptGenerator.Builder
-                .IncludeAllInNamespace(Assembly.GetAssembly(typeof(Person)), "JanKIS.API.Models")
-                .IncludeAllInNamespace(Assembly.GetAssembly(typeof(Person)), "JanKIS.API.ViewModels")
+                .IncludeAllInNamespace(Assembly.GetAssembly(typeof(Person)), "HealthModels")
+                .IncludeAllInNamespace(Assembly.GetAssembly(typeof(BedOccupancy)), "JanKIS.API.Models")
+                .IncludeAllInNamespace(Assembly.GetAssembly(typeof(BedOccupancy)), "JanKIS.API.ViewModels")
                 .Exclude<Account>()
                 .ReactDefaults()
+                .ConfigureNamespace("HealthModels", options => options.Translation = "Models")
                 .ConfigureNamespace("JanKIS.API.Models", options => options.Translation = "Models")
                 .ConfigureNamespace("JanKIS.API.ViewModels", options =>
                 {

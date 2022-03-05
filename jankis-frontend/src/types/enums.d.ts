@@ -1,3 +1,44 @@
+export enum AddressRole {
+    Primary = "Primary",
+    Secondary = "Secondary",
+    Temporary = "Temporary"
+}
+export enum DiagnosticTestScaleType {
+    Undefined = "Undefined",
+    Quantitative = "Quantitative",
+    Ordinal = "Ordinal",
+    OrdinalOrQuantitative = "OrdinalOrQuantitative",
+    Nominal = "Nominal",
+    Freetext = "Freetext",
+    Document = "Document",
+    Set = "Set"
+}
+export enum MeasurementType {
+    Pulse = "Pulse",
+    BloodPressure = "BloodPressure",
+    Temperature = "Temperature",
+    OxygenSaturation = "OxygenSaturation",
+    Height = "Height",
+    Weight = "Weight"
+}
+export enum MedicationDispensionState {
+    Scheduled = "Scheduled",
+    Dispensed = "Dispensed",
+    Missed = "Missed"
+}
+export enum PatientEventType {
+    Observation = "Observation",
+    Note = "Note",
+    TestResult = "TestResult",
+    Document = "Document",
+    MedicationDispension = "MedicationDispension",
+    Equipment = "Equipment"
+}
+export enum Sex {
+    Male = "Male",
+    Female = "Female",
+    Other = "Other"
+}
 export enum AccountType {
     Patient = "Patient",
     Employee = "Employee"
@@ -17,16 +58,6 @@ export enum BedState {
     Occupied = "Occupied",
     Reserved = "Reserved",
     Unavailable = "Unavailable"
-}
-export enum DiagnosticTestScaleType {
-    Undefined = "Undefined",
-    Quantitative = "Quantitative",
-    Ordinal = "Ordinal",
-    OrdinalOrQuantitative = "OrdinalOrQuantitative",
-    Nominal = "Nominal",
-    Freetext = "Freetext",
-    Document = "Document",
-    Set = "Set"
 }
 export enum DietaryCharacteristic {
     Vegetarian = "Vegetarian",
@@ -52,19 +83,6 @@ export enum MealState {
     Cancelled = "Cancelled",
     Discarded = "Discarded"
 }
-export enum MeasurementType {
-    Pulse = "Pulse",
-    BloodPressure = "BloodPressure",
-    Temperature = "Temperature",
-    OxygenSaturation = "OxygenSaturation",
-    Height = "Height",
-    Weight = "Weight"
-}
-export enum MedicationDispensionState {
-    Scheduled = "Scheduled",
-    Dispensed = "Dispensed",
-    Missed = "Missed"
-}
 export enum OrderDirection {
     Ascending = "Ascending",
     Descending = "Descending"
@@ -76,14 +94,6 @@ export enum OrderState {
     Delivered = "Delivered",
     PartiallyDelivered = "PartiallyDelivered",
     CancelledByRequester = "CancelledByRequester"
-}
-export enum PatientEventType {
-    Observation = "Observation",
-    Note = "Note",
-    TestResult = "TestResult",
-    Document = "Document",
-    MedicationDispension = "MedicationDispension",
-    Equipment = "Equipment"
 }
 export enum Permission {
     ListEmployees = "ListEmployees",
@@ -123,11 +133,6 @@ export enum ServiceRequestState {
     ReadyWhenYouAre = "ReadyWhenYouAre",
     InProgress = "InProgress",
     Fulfilled = "Fulfilled"
-}
-export enum Sex {
-    Male = "Male",
-    Female = "Female",
-    Other = "Other"
 }
 export enum StorageOperation {
     Created = "Created",
