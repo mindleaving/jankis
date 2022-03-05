@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using HealthModels;
 using JanKIS.API.Storage;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;

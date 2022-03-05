@@ -16,7 +16,6 @@ namespace JanKIS.API.Controllers
 {
     public class ResourcesController : RestControllerBase<Resource>
     {
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ISubscriptionsStore subscriptionsStore;
         private readonly IAutocompleteCache autocompleteCache;
         private readonly IViewModelBuilder<Resource> resourceViewModelBuilder;
@@ -29,7 +28,6 @@ namespace JanKIS.API.Controllers
             IViewModelBuilder<Resource> resourceViewModelBuilder)
             : base(store, httpContextAccessor)
         {
-            this.httpContextAccessor = httpContextAccessor;
             this.subscriptionsStore = subscriptionsStore;
             this.autocompleteCache = autocompleteCache;
             this.resourceViewModelBuilder = resourceViewModelBuilder;

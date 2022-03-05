@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using HealthModels;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
@@ -24,7 +25,6 @@ namespace JanKIS.API.Controllers
         private readonly IStore<ServiceDefinition> servicesStore;
         private readonly IStore<ServiceRequest> serviceRequestsStore;
         private readonly ISubscriptionsStore subscriptionsStore;
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IViewModelBuilder<Department> departmentViewModelBuilder;
 
         public DepartmentsController(
@@ -42,7 +42,6 @@ namespace JanKIS.API.Controllers
             this.accountsStore = accountsStore;
             this.serviceRequestsStore = serviceRequestsStore;
             this.subscriptionsStore = subscriptionsStore;
-            this.httpContextAccessor = httpContextAccessor;
             this.departmentViewModelBuilder = departmentViewModelBuilder;
         }
 

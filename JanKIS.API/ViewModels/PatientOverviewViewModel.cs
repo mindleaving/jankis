@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using HealthModels;
 using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using HealthModels;
 using JanKIS.API.Converters;
 using JanKIS.API.Storage;
 using MongoDB.Bson.Serialization.Attributes;

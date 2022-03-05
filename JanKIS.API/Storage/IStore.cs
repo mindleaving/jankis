@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using HealthModels;
 using JanKIS.API.Models;
 
 namespace JanKIS.API.Storage

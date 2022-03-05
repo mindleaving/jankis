@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using HealthModels;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
@@ -14,7 +15,6 @@ namespace JanKIS.API.Controllers
     public class ObservationsController : RestControllerBase<Observation>
     {
         private readonly IAutocompleteCache autocompleteCache;
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly INotificationDistributor notificationDistributor;
 
         public ObservationsController(
@@ -25,7 +25,6 @@ namespace JanKIS.API.Controllers
             : base(store, httpContextAccessor)
         {
             this.autocompleteCache = autocompleteCache;
-            this.httpContextAccessor = httpContextAccessor;
             this.notificationDistributor = notificationDistributor;
         }
 

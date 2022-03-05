@@ -1,0 +1,10 @@
+JanKIS TODO:
+- Apply permission checks in API
+- Restrict access/disable element in frontend based on permissions
+- Consumable order list
+- Consumable order page incl. state change and assinging
+- Resource order 
+- Order overview page (service, consumable, resource)
+- Patient hand-over page
+- Nursing page (change bandage, add observation, add/remove equipment)
+DONE - Bed occupancy timeline view

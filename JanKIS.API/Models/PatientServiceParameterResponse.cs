@@ -1,4 +1,6 @@
-﻿namespace JanKIS.API.Models
+﻿using HealthModels;
+
+namespace JanKIS.API.Models
 {
     public class PatientServiceParameterResponse : ServiceParameterResponse
     {

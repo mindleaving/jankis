@@ -15,7 +15,6 @@ namespace JanKIS.API.Controllers
 {
     public class StocksController : RestControllerBase<Stock>
     {
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ISubscriptionsStore subscriptionsStore;
         private readonly IAutocompleteCache autocompleteCache;
         private readonly IViewModelBuilder<Stock> stockViewModelBuilder;
@@ -27,7 +26,6 @@ namespace JanKIS.API.Controllers
             IViewModelBuilder<Stock> stockViewModelBuilder)
             : base(store, httpContextAccessor)
         {
-            this.httpContextAccessor = httpContextAccessor;
             this.subscriptionsStore = subscriptionsStore;
             this.autocompleteCache = autocompleteCache;
             this.stockViewModelBuilder = stockViewModelBuilder;

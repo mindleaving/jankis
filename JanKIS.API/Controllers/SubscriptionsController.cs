@@ -14,14 +14,11 @@ namespace JanKIS.API.Controllers
 {
     public class SubscriptionsController : RestControllerBase<SubscriptionBase>
     {
-        private readonly IHttpContextAccessor httpContextAccessor;
-
         public SubscriptionsController(
             IStore<SubscriptionBase> store,
             IHttpContextAccessor httpContextAccessor)
             : base(store, httpContextAccessor)
         {
-            this.httpContextAccessor = httpContextAccessor;
         }
 
         public override async Task<IActionResult> CreateOrReplace(

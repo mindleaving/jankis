@@ -1,4 +1,5 @@
-﻿using JanKIS.API.Storage;
+﻿using HealthModels;
+using JanKIS.API.Storage;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 

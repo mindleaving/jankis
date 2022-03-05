@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using HealthModels;
 using JanKIS.API.Models;
 using MongoDB.Driver;
 using NUnit.Framework;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HealthModels;
 using MongoDB.Driver;
 
 namespace JanKIS.API.Storage

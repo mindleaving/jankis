@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Commons.Extensions;
+using HealthModels;
 using JanKIS.API.Storage;
 using TypescriptGenerator.Attributes;
 

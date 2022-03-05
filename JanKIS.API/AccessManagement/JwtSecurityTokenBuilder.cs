@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using HealthModels;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
 using Microsoft.IdentityModel.Tokens;

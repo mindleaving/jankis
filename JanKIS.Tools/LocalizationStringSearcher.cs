@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using HealthModels;
 using JanKIS.API.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -13,12 +14,13 @@ namespace JanKIS.Tools
 {
     public class LocalizationStringSearcher
     {
-        private const string FrontendDirectory = @"G:\Projects\JanKIS\jankis-frontend";
+        private readonly string FrontendDirectory = Path.Combine(Constants.GetRepositoryPath(), "jankis-frontend");
 
         [Test]
         public void CreateLocalizationIdDictionary()
         {
-            var localizationOutputFile = Path.Combine(FrontendDirectory, "src/resources", "translation.en.json");
+            
+            var localizationOutputFile = Path.Combine(FrontendDirectory, "src", "resources", "translation.en.json");
             var tsFiles = Directory.GetFiles(Path.Combine(FrontendDirectory, "src"), "*.ts?", SearchOption.AllDirectories);
             var existingLocalizations = JObject.Parse(File.ReadAllText(localizationOutputFile));
             var existingResourceIds = existingLocalizations.Properties().Select(x => x.Name);
@@ -59,11 +61,11 @@ namespace JanKIS.Tools
             var primaryLanguage = "en";
             var primaryDictionaryFile = Path.Combine(
                 FrontendDirectory,
-                "src/resources",
+                "src", "resources",
                 $"translation.{primaryLanguage}.json");
             var secondaryDictionaryFile = Path.Combine(
                 FrontendDirectory,
-                "src/resources",
+                "src", "resources",
                 $"translation.{language}.json");
             var primaryJObject = JObject.Parse(File.ReadAllText(primaryDictionaryFile));
             var secondaryJObject = JObject.Parse(File.ReadAllText(secondaryDictionaryFile));

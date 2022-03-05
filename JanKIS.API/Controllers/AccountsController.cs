@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
+using HealthModels;
 using JanKIS.API.AccessManagement;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using HealthModels;
 using JanKIS.API.AccessManagement;
 using JanKIS.API.Models;
 using MongoDB.Bson;

@@ -22,7 +22,6 @@ namespace JanKIS.API.Controllers
     {
         private readonly IServiceStore servicesStore;
         private readonly IStore<ServiceRequest> serviceRequestsStore;
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly INotificationDistributor notificationDistributor;
         private readonly ISubscriptionsStore subscriptionsStore;
         private readonly IViewModelBuilder<ServiceDefinition> serviceViewModelBuilder;
@@ -38,7 +37,6 @@ namespace JanKIS.API.Controllers
         {
             this.servicesStore = servicesStore;
             this.serviceRequestsStore = serviceRequestsStore;
-            this.httpContextAccessor = httpContextAccessor;
             this.notificationDistributor = notificationDistributor;
             this.subscriptionsStore = subscriptionsStore;
             this.serviceViewModelBuilder = serviceViewModelBuilder;

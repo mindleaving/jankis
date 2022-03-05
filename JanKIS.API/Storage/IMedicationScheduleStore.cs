@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using HealthModels;
 using JanKIS.API.Models;
 using MongoDB.Driver;
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using HealthModels;
 using JanKIS.API.Storage;
 using TypescriptGenerator.Attributes;
 

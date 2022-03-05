@@ -1,4 +1,5 @@
 ﻿using System;
+using HealthModels;
 
 namespace JanKIS.API.Models.Subscriptions
 {

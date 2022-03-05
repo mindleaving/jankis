@@ -76,6 +76,7 @@ export const NotificationsTicker = (props: NotificationsTickerProps) => {
                 : notifications.length > 0
                 ? notifications.map(notification => (
                     <NotificationTickerItem
+                        key={notification.id}
                         item={notification}
                         onDismiss={dismissNotification}
                     />
