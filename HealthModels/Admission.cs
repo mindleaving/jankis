@@ -27,6 +27,9 @@ namespace HealthModels
         public bool IsReadmission { get; set; }
         public DateTime AdmissionTime { get; set; }
         public DateTime? DischargeTime { get; set; }
+        /// <summary>
+        /// E.g. relatives, primary care physician, nursing home.
+        /// </summary>
         public List<Contact> ContactPersons { get; set; }
     }
 }

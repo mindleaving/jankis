@@ -1,4 +1,5 @@
 ﻿using HealthModels;
+using HealthModels.DiagnosticTestResults;
 
 namespace JanKIS.API.Models
 {

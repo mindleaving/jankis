@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthModels.Medication;
 using HealthSharingPortal.Api.Helpers;
 using HealthSharingPortal.Api.Models;
 using HealthSharingPortal.Api.Storage;

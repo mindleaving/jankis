@@ -1,4 +1,5 @@
 ﻿using System;
+using HealthModels.Observations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

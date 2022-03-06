@@ -13,6 +13,7 @@ import { v4 as uuid} from 'uuid';
 import { PatientParams } from '../../types/frontendTypes';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { PatientAutocomplete } from '../../components/Autocompletes/PatientAutocomplete';
+import { MedicalTextEditor } from '../../components/MedicalTextEditor/MedicalTextEditor';
 
 interface CreatePatientNotePageProps extends RouteComponentProps<PatientParams> {}
 
@@ -117,6 +118,7 @@ export const CreatePatientNotePage = (props: CreatePatientNotePageProps) => {
                         value={message}
                         onChange={(e:any) => setMessage(e.target.value)}
                     />
+                    <MedicalTextEditor />
                 </FormGroup>
                 <StoreButton
                     type="submit"

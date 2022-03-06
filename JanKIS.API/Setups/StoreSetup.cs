@@ -1,6 +1,10 @@
 ﻿using Commons.Physics;
 using HealthModels;
+using HealthModels.DiagnosticTestResults;
+using HealthModels.Medication;
+using HealthModels.Observations;
 using JanKIS.API.Models;
+using JanKIS.API.Models.MedicalTextEditor;
 using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
 using Microsoft.Extensions.Configuration;
@@ -61,12 +65,14 @@ namespace JanKIS.API.Setups
             SetupTypeStores<MedicationSchedule>(services);
             services.AddScoped<IMedicationScheduleStore, MedicationScheduleStore>();
             SetupTypeStores<MedicationDispension>(services);
+            SetupTypeStores<MedicalText>(services);
             SetupTypeStores<NotificationBase>(services);
             services.AddScoped<INotificationsStore, NotificationsStore>();
             SetupTypeStores<Observation>(services);
             SetupTypeStores<PatientDocument>(services);
             SetupTypeStores<PatientNote>(services);
             SetupTypeStores<Person>(services);
+            SetupTypeStores<PersonalizedAbbreviation>(services);
             SetupTypeStores<Resource>(services);
             SetupTypeStores<Role>(services);
             SetupTypeStores<Room>(services);

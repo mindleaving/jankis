@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthModels.Medication;
 using JanKIS.API.Models;
 using MongoDB.Driver;
 
