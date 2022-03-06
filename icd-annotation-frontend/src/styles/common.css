@@ -1,0 +1,60 @@
+.listFormControl {
+    margin-top: -1rem;
+}
+
+.itemListBadge {
+    padding: 5px 10px;
+    margin: 10px 5px;
+}
+.itemListBadge a {
+    color: white;
+    text-decoration: underline;
+}
+.itemListBadge .badge {
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.treeview {
+    list-style-type: none;
+}
+
+.expand-icon {
+    cursor: pointer;
+}
+
+.navbar-brand {
+    cursor: pointer;
+}
+.navbar-brand:hover {
+    font-weight: bold;
+}
+
+.disease-list {
+    table-layout: fixed;
+    white-space: nowrap;
+    width: 100%;
+}
+.disease-list th.rotate {
+    padding-left: 0;
+    transform: rotate(-60deg) translate(-30px, -20px);
+}
+.disease-list td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.green {
+    color: green;
+}
+.red {
+    color: red;
+}
+.filter-card-header {
+    font-weight: 450;
+    color:darkblue;
+    background-color: lightskyblue;
+}
+.clickable {
+    cursor: pointer;
+}

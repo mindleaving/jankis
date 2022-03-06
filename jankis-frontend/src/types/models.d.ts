@@ -549,7 +549,7 @@ export namespace Models {
     interface Resource {
         id: string;
         name: string;
-        location?: Models.LocationReference;
+        location?: Models.Icd.Annotation.Epidemiology.LocationReference;
         groupName?: string;
         note: string;
     }
@@ -628,7 +628,7 @@ export namespace Models {
     interface Stock {
         id: string;
         name: string;
-        location: Models.LocationReference;
+        location: Models.Icd.Annotation.Epidemiology.LocationReference;
         departmentId: string;
     }
 

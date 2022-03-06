@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "jankis-frontend"
+		},
+		{
+			"path": "icd-annotation-frontend"
 		}
 	],
 	"settings": {}

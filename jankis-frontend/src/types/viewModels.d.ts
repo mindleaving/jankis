@@ -122,10 +122,10 @@ export namespace ViewModels {
     }
 
     interface ResourceViewModel {
-        locationViewModel?: ViewModels.LocationViewModel;
+        locationViewModel?: ViewModels.Icd.Annotation.Epidemiology.LocationViewModel;
         id: string;
         name: string;
-        location?: Models.LocationReference;
+        location?: Models.Icd.Annotation.Epidemiology.LocationReference;
         groupName?: string;
         note: string;
     }
@@ -161,10 +161,10 @@ export namespace ViewModels {
 
     interface StockViewModel {
         department: ViewModels.DepartmentViewModel;
-        locationViewModel: ViewModels.LocationViewModel;
+        locationViewModel: ViewModels.Icd.Annotation.Epidemiology.LocationViewModel;
         id: string;
         name: string;
-        location: Models.LocationReference;
+        location: Models.Icd.Annotation.Epidemiology.LocationReference;
         departmentId: string;
     }
 }

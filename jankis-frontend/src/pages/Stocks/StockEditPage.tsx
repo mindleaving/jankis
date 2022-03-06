@@ -28,7 +28,7 @@ export const StockEditPage = (props: StockEditPageProps) => {
 
     const [ name, setName ] = useState<string>('');
     const [ selectedDepartment, setSelectedDepartment ] = useState<ViewModels.DepartmentViewModel>();
-    const [ location, setLocation ] = useState<ViewModels.LocationViewModel>();
+    const [ location, setLocation ] = useState<ViewModels.Icd.Annotation.Epidemiology.LocationViewModel>();
     const [ isLoading, setIsLoading ] = useState<boolean>(!isNew);
     const [ isStoring, setIsStoring] = useState<boolean>(false);
     const history = useHistory();

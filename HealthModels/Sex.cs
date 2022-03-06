@@ -2,8 +2,9 @@
 {
     public enum Sex
     {
-        Male,
-        Female,
-        Other
+        Both = 0,
+        Male = 1,
+        Female = 2,
+        Other = 3
     }
 }

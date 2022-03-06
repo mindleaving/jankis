@@ -9,8 +9,8 @@ import { RoomAutocomplete } from './Autocompletes/RoomAutocomplete';
 import { MemoryFormControl } from './MemoryFormControl';
 
 interface LocationFormControlProps {
-    value?: ViewModels.LocationViewModel;
-    onChange: (location: Models.LocationReference) => void;
+    value?: ViewModels.Icd.Annotation.Epidemiology.LocationViewModel;
+    onChange: (location: Models.Icd.Annotation.Epidemiology.LocationReference) => void;
     required?: boolean;
 }
 

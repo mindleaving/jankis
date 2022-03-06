@@ -48,7 +48,6 @@ namespace JanKIS.API
             {
                 TypescriptGeneratorRunner.Run();
                 app.UseDeveloperExceptionPage();
-                app.UseCors();
             }
 
             app.UseHttpsRedirection();
@@ -59,7 +58,10 @@ namespace JanKIS.API
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "JanKIS API");
                 });
             app.UseRouting();
-
+            if (env.IsDevelopment())
+            {
+                app.UseCors();
+            }
             app.UseAuthentication();
             app.UseAuthorization();
 

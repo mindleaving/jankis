@@ -9,9 +9,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JanKIS.Tools", "JanKIS.Tool
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JanKIS.API.Test", "JanKIS.API.Test\JanKIS.API.Test.csproj", "{70746F78-2A77-45E6-BB8B-6C5215AFE30A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthModels", "HealthModels\HealthModels.csproj", "{83D05CAE-DDA5-4C69-BD7D-9ADB6C2583EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthModels", "HealthModels\HealthModels.csproj", "{83D05CAE-DDA5-4C69-BD7D-9ADB6C2583EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthSharingPortal.Api", "HealthSharingPortal.Api\HealthSharingPortal.Api.csproj", "{CBC11F06-BF67-49FE-B83F-60432FA831D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthSharingPortal.Api", "HealthSharingPortal.Api\HealthSharingPortal.Api.csproj", "{CBC11F06-BF67-49FE-B83F-60432FA831D1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IcdAnnotation.API", "IcdAnnotation.API\IcdAnnotation.API.csproj", "{790DE262-D5CF-4437-9430-308EC2DD6C0A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IcdAnnotation.API.Tools", "IcdAnnotation.API.Tools\IcdAnnotation.API.Tools.csproj", "{99139A59-5635-496A-A2E1-3992F53E90F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,14 @@ Global
 		{CBC11F06-BF67-49FE-B83F-60432FA831D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CBC11F06-BF67-49FE-B83F-60432FA831D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CBC11F06-BF67-49FE-B83F-60432FA831D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{790DE262-D5CF-4437-9430-308EC2DD6C0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{790DE262-D5CF-4437-9430-308EC2DD6C0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{790DE262-D5CF-4437-9430-308EC2DD6C0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{790DE262-D5CF-4437-9430-308EC2DD6C0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99139A59-5635-496A-A2E1-3992F53E90F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99139A59-5635-496A-A2E1-3992F53E90F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99139A59-5635-496A-A2E1-3992F53E90F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99139A59-5635-496A-A2E1-3992F53E90F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

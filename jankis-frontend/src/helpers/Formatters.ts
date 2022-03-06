@@ -76,7 +76,7 @@ export const formatAge = (birthDate: Date) => {
 export const formatDrug = (drug: Models.Drug) => {
     return `${drug.productName}`;
 }
-export const formatLocation = (location: ViewModels.LocationViewModel) => {
+export const formatLocation = (location: ViewModels.Icd.Annotation.Epidemiology.LocationViewModel) => {
     switch(location.type) {
         case LocationType.Department:
             return `${resolveText(`LocationType_${location.type}`)} ${location.department?.name ?? location.id}`;
