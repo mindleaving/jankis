@@ -390,6 +390,7 @@
   "PatientEventType_Note": "Note",
   "PatientEventType_Observation": "Observation",
   "PatientEventType_TestResult": "Test result",
+  "Paused": "Paused",
   "Permission_ChangeEmployeePermissions": "Change employee permissions",
   "Permission_CreateEmployees": "Create employee",
   "Permission_DeleteEmployees": "Delete employee",

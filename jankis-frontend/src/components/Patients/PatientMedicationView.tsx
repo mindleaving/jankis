@@ -29,25 +29,42 @@ export const PatientMedicationView = (props: PatientMedicationViewProps) => {
     useEffect(() => {
         if(!selectedMedicationSchedule) return;
         const series = [{
-            data: selectedMedicationSchedule.items.flatMap(medication => 
-                medication.dispensions.map(dispension => {
-                    const time = new Date(dispension.timestamp).getTime();
-                    return (
-                        {
-                            x: medication.drug.productName,
-                            y: [ time, time + 60*60*1000 ]
-                        }
-                    )
-                })
-            )
+            data: selectedMedicationSchedule.items.flatMap(medication => {
+                if(medication.isPaused) {
+                    return [];
+                }
+                return medication.dispensions
+                    .filter(dispension => new Date(dispension.timestamp).getTime() > 0)
+                    .map(dispension => {
+                        const time = new Date(dispension.timestamp).getTime();
+                        return (
+                            {
+                                x: medication.drug.productName,
+                                y: [ time, time + 60*60*1000 ]
+                            }
+                        )
+                    });
+            })
         }];
         setMedicationChartSeries(series);
     }, [ selectedMedicationSchedule ]);
 
     const now = new Date();
+    const minTime = addDays(now, -2).getTime();
+    const maxTime = addDays(now, 3).getTime();
     const chartOptions: ApexOptions = {
         chart: {
-            type: 'rangeBar'
+            type: 'rangeBar',
+            events: {
+                beforeResetZoom: (chart, options) => {
+                    return {
+                        xaxis: {
+                            min: minTime,
+                            max: maxTime
+                        }
+                    };
+                }
+            }
         },
         plotOptions: {
             bar: {
@@ -56,8 +73,8 @@ export const PatientMedicationView = (props: PatientMedicationViewProps) => {
         },
         xaxis: {
             type: 'datetime',
-            min: addDays(now, -2).getTime(),
-            max: addDays(now, 3).getTime()
+            min: minTime,
+            max: maxTime
         },
         tooltip: {
             x: {

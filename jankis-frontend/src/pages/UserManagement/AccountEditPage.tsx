@@ -6,7 +6,6 @@ import { NotificationManager } from 'react-notifications';
 import { apiClient } from '../../communication/ApiClient';
 import { Col, Form, FormControl, FormGroup, FormLabel } from 'react-bootstrap';
 import { Row } from 'react-bootstrap';
-import { RowFormGroup } from '../../components/RowFormGroup';
 import { ListFormControl } from '../../components/ListFormControl';
 import { Autocomplete } from '../../components/Autocompletes/Autocomplete';
 import { AutocompleteRunner } from '../../helpers/AutocompleteRunner';
@@ -142,7 +141,8 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
                     firstName, 
                     lastName, 
                     birthDate: birthDate!,
-                    sex: sex!
+                    sex: sex!,
+                    addresses: []
                 };
                 await apiClient.put(`api/persons/${employee.id}`, {}, employee);
                 const accountCreationInfo: ViewModels.AccountCreationInfo = {

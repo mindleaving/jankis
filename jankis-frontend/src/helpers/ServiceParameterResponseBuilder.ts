@@ -44,7 +44,8 @@ export const buildTemporaryParameterResponse = (parameter: Models.ServiceParamet
                 firstName: '',
                 lastName: '',
                 birthDate: new Date(),
-                sex: Sex.Other
+                sex: Sex.Other,
+                addresses: []
             }
         };
         return patientParameterResponse;

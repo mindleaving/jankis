@@ -1,7 +1,5 @@
-import React from 'react';
-import Chart from 'react-apexcharts';
-import { ApexOptions } from 'apexcharts';
 import { Models } from '../../types/models';
+import { TestResultTable } from './TestResultTable';
 
 interface PatientTestResultsViewProps {
     testResults: Models.DiagnosticTestResult[];
@@ -9,23 +7,12 @@ interface PatientTestResultsViewProps {
 
 export const PatientTestResultsView = (props: PatientTestResultsViewProps) => {
 
-    const chartSeries: any[] = [];
-    const chartOptions: ApexOptions = {
-        chart: {
-            type: 'line'
-        },
-        xaxis: {
-            type: 'datetime'
-        }
-    };
     return (
-        <>
-            <Chart
-                options={chartOptions}
-                series={chartSeries}
-                height={400}
+        <div className='m-3'>
+            <TestResultTable
+                items={props.testResults}
             />
-        </>
+        </div>
     );
 
 }

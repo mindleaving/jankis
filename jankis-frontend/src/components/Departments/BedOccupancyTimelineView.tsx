@@ -19,9 +19,21 @@ export const BedOccupancyTimelineView = (props: BedOccupancyTimelineViewProps) =
     const now = new Date();
     const nowTicks = now.getTime();
     const bedCount = props.institution.rooms.flatMap(x => x.bedPositions).length;
+    const minTime = addDays(now, -1).getTime();
+    const maxTime = addDays(now, 7).getTime();
     const chartOptions: ApexOptions = {
         chart: {
-            type: 'rangeBar'
+            type: 'rangeBar',
+            events: {
+                beforeResetZoom: (chart, options) => {
+                    return {
+                        xaxis: {
+                            min: minTime,
+                            max: maxTime
+                        }
+                    }
+                }
+            }
         },
         plotOptions: {
             bar: {
@@ -30,8 +42,8 @@ export const BedOccupancyTimelineView = (props: BedOccupancyTimelineViewProps) =
         },
         xaxis: {
             type: 'datetime',
-            min: addDays(now, -1).getTime(),
-            max: addDays(now, 7).getTime(),
+            min: minTime,
+            max: maxTime,
             position: 'top'
         },
         tooltip: {

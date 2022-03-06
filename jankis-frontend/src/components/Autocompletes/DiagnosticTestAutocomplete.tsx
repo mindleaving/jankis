@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Alert } from 'react-bootstrap';
 import { AutocompleteRunner } from '../../helpers/AutocompleteRunner';
-import { formatDiagnosticTest } from '../../helpers/Formatters';
+import { formatDiagnosticTestCode } from '../../helpers/Formatters';
 import { resolveText } from '../../helpers/Globalizer';
 import { Models } from '../../types/models';
 import { Autocomplete } from './Autocomplete';
@@ -24,12 +24,12 @@ export const DiagnosticTestAutocomplete = (props: DiagnosticTestAutocompleteProp
         >
             {props.isLoading 
             ? resolveText('Loading...') 
-            : formatDiagnosticTest(props.value!)}
+            : formatDiagnosticTestCode(props.value!)}
         </Alert>);
     }
     return (<Autocomplete
         search={testAutocompleteRunner.search}
-        displayNameSelector={formatDiagnosticTest}
+        displayNameSelector={formatDiagnosticTestCode}
         onItemSelected={props.onChange}
         resetOnSelect
     />);

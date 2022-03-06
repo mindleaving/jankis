@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TypescriptGenerator.Attributes;
 
 namespace HealthModels
@@ -24,6 +25,7 @@ namespace HealthModels
         public string LastName { get; set; }
         public DateTime BirthDate { get; set; }
         public Sex Sex { get; set; }
+        public List<Address> Addresses { get; set; }
 
         [TypescriptIsOptional]
         public HealthInsurance HealthInsurance { get; set; }

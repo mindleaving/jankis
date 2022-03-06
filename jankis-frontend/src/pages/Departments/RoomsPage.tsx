@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { ButtonGroup, Button, Col, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
-import { RoomCard } from '../../components/Departments/RoomCard';
 import { RoomGridView } from '../../components/Departments/RoomGridView';
 import { resolveText } from '../../helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
 import { Models } from '../../types/models';
 import { ViewModels } from '../../types/viewModels';
 import { BedOccupancyTimelineView } from '../../components/Departments/BedOccupancyTimelineView';
+import { addDays } from 'date-fns';
+import { isAfter } from 'date-fns/esm';
 
 interface RoomsPageProps {}
 
@@ -46,11 +47,14 @@ export const RoomsPage = (props: RoomsPageProps) => {
             {},
             resolveText('BedOccupancies_CouldNotLoad'),
             items => {
+                const now = new Date();
+                const cutoffDate = addDays(now, -30);
                 items = items.map(item => ({
                     ...item,
                     startTime: new Date(item.startTime),
                     endTime: item.endTime ? new Date(item.endTime) : undefined
                 }));
+                items = items.filter(item => !item.endTime || isAfter(item.endTime, cutoffDate));
                 setBedOccupancies(items);
             },
             () => setIsLoading(false)

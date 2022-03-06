@@ -21,7 +21,7 @@ export const formatPerson = (person: Models.Person) => {
     const genderSymbol = person.sex === Sex.Male ? '♂'
         : person.sex === Sex.Female ? '♀'
         : '⚥';
-    return `${person.firstName} ${person.lastName} (${new Date(person.birthDate).toLocaleDateString()}, ${genderSymbol})`;
+    return `${person.firstName} ${person.lastName} (${new Date(person.birthDate).toISOString().substring(0,10)}, ${genderSymbol})`;
 }
 
 export const formatAdmission = (admission: Models.Admission) => {
@@ -113,7 +113,7 @@ export const formatReferenceRange = (testResult: Models.QuantitativeDiagnosticTe
     }
     return '';
 }
-export const formatDiagnosticTest = (testDefinition: Models.DiagnosticTestDefinition) => {
+export const formatDiagnosticTestCode = (testDefinition: Models.DiagnosticTestDefinition) => {
     let code = '';
     if(testDefinition.testCodeLoinc) {
         code += `LOINC:${testDefinition.testCodeLoinc}`;

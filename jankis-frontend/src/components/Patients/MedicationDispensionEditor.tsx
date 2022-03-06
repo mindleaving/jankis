@@ -8,10 +8,12 @@ interface MedicationDispensionEditorProps {
     dispension: Models.MedicationDispension;
     onChange: (item: Models.MedicationDispension) => void;
     onDelete: (dispensionId: string) => void;
+    disabled?: boolean;
 }
 
 export const MedicationDispensionEditor = (props: MedicationDispensionEditorProps) => {
 
+    const [ date ] = useState<Date>(props.dispension.timestamp);
     const [ timestamp, setTimestamp  ] = useState<Date>(props.dispension.timestamp);
     const [ note, setNote ] = useState<string>(props.dispension.note ?? '');
 
@@ -31,16 +33,25 @@ export const MedicationDispensionEditor = (props: MedicationDispensionEditorProp
                     allowInput: true,
                     enableTime: true,
                     noCalendar: true,
-                    time_24hr: true
+                    time_24hr: true,
+                    minDate: date
                 }}
                 value={timestamp}
-                onChange={(selectedDates) => setTimestamp(selectedDates[0])}
+                onChange={(selectedDates) => {
+                    if(selectedDates.length === 0) {
+                        return;
+                    }
+                    console.log(selectedDates); 
+                    setTimestamp(selectedDates[0]);
+                }}
+                disabled={props.disabled}
             />
             <FormControl
                 value={note}
                 onChange={(e:any) => setNote(e.target.value)}
                 placeholder={resolveText('Note')}
                 className="mx-2"
+                disabled={props.disabled}
             />
             <i className="fa fa-trash red clickable m-2" onClick={() => props.onDelete(props.dispension.id)} />
         </InputGroup>

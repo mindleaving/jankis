@@ -79,7 +79,8 @@ export const CreateEditPatientPage = (props: CreateEditPatientPageProps) => {
                 insurerName: insurerName,
                 insurerNumber: insurerNumber,
                 insuranceNumber: insuranceNumber
-            }
+            },
+            addresses: []
         }
     }
 

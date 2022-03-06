@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Badge, Button, Table } from 'react-bootstrap';
+import { Button, Table } from 'react-bootstrap';
 import { useHistory } from 'react-router';
 import { openConfirmAlert } from '../../helpers/AlertHelpers';
 import { deleteObject } from '../../helpers/DeleteHelpers';

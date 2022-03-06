@@ -97,30 +97,38 @@ export const MedicationScheduleItemEditTableRow = (props: MedicationScheduleItem
             />
         </td>
         <td>
-            {dispensions
+            {!isPaused
+            ? <>
+                {dispensions
                 .filter(dispension => isToday(new Date(dispension.timestamp)))
                 .map(dispension => (
                     <MedicationDispensionEditor
                         dispension={dispension}
                         onChange={updateDispension}
                         onDelete={deleteDispension}
+                        disabled={isPaused}
                     />
-                ))
-            }
-            <Button size="sm" onClick={() => addDispension(startOfToday())}>+ {resolveText('Add')}</Button>
+                ))}
+                <Button size="sm" onClick={() => addDispension(startOfToday())}>+ {resolveText('Add')}</Button>
+            </>
+            : <><i className="fa fa-pause" /> {resolveText("Paused")}</>}
         </td>
         <td>
-            {dispensions
+            {!isPaused
+            ? <>
+                {dispensions
                 .filter(dispension => isTomorrow(new Date(dispension.timestamp)))
                 .map(dispension => (
                     <MedicationDispensionEditor
                         dispension={dispension}
                         onChange={updateDispension}
                         onDelete={deleteDispension}
+                        disabled={isPaused}
                     />
-                ))
-            }
-            <Button size="sm" onClick={() => addDispension(startOfTomorrow())}>+ {resolveText('Add')}</Button>
+                ))}
+                <Button size="sm" onClick={() => addDispension(startOfTomorrow())}>+ {resolveText('Add')}</Button>
+            </>
+            : <><i className="fa fa-pause" /> {resolveText("Paused")}</>}
         </td>
     </tr>);
 

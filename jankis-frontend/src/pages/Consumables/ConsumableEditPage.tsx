@@ -6,7 +6,6 @@ import { v4 as uuid } from 'uuid';
 import { buidlAndStoreObject } from '../../helpers/StoringHelpers';
 import { Models } from '../../types/models';
 import { buildLoadObjectFunc } from '../../helpers/LoadingHelpers';
-import { RowFormGroup } from '../../components/RowFormGroup';
 import { StockState } from '../../components/Consumables/StockState';
 import { StoreButton } from '../../components/StoreButton';
 import { CreateStockStateModal } from '../../modals/CreateStockStateModal';

@@ -13,23 +13,38 @@ interface MedicationScheduleItemTableRowProps {
 export const MedicationScheduleItemTableRow = (props: MedicationScheduleItemTableRowProps) => {
 
     const medication = props.medication;
-    const dispensionsToday = medication.dispensions.filter(dispension => isToday(new Date(dispension.timestamp)));
-    const dispensionsTomorrow = medication.dispensions.filter(dispension => isTomorrow(new Date(dispension.timestamp)));
-    return (
-    <tr>
-        <td>
-            <FormCheck
-                checked={props.isSelected}
-                onChange={(e:any) => props.onSelectionChanged(e.target.checked)}
-            />
-        </td>
-        <td>
+    const selectionCheckbox = (
+        <FormCheck
+            checked={props.isSelected}
+            onChange={(e:any) => props.onSelectionChanged(e.target.checked)}
+        />
+    );
+    const medicationInfos = (
+        <>
             {formatDrug(medication.drug)}
             {medication.note ?
             <div>
                 <span>{resolveText('Note')}:</span> {medication.note}
             </div> : null}
-        </td>
+        </>
+    )
+    if(medication.isPaused) {
+        return (
+            <tr>
+                <td>{selectionCheckbox}</td>
+                <td>{medicationInfos}</td>
+                <td><i className="fa fa-pause" /> {resolveText("Paused")}</td>
+                <td><i className="fa fa-pause" /> {resolveText("Paused")}</td>
+            </tr>
+        )
+    }
+    const timeSortedDispensions = medication.dispensions.sort((a:any,b:any) => a.timestamp.localeCompare(b.timestamp));
+    const dispensionsToday = timeSortedDispensions.filter(dispension => isToday(new Date(dispension.timestamp)));
+    const dispensionsTomorrow = timeSortedDispensions.filter(dispension => isTomorrow(new Date(dispension.timestamp)));
+    return (
+    <tr>
+        <td>{selectionCheckbox}</td>
+        <td>{medicationInfos}</td>
         <td>
             {dispensionsToday.length > 0
             ? dispensionsToday.map(dispension => (

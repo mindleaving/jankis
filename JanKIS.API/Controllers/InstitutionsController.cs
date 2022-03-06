@@ -64,10 +64,11 @@ namespace JanKIS.API.Controllers
                 await roomsStore.StoreAsync(room);
                 institution.RoomIds.Add(room.Id);
             }
-            foreach (var department in viewModel.Departments)
+            foreach (var departmentViewModel in viewModel.Departments)
             {
+                var department = departmentViewModel.ToModel();
                 await departmentsStore.StoreAsync(department);
-                institution.DepartmentIds.Add(department.Id);
+                institution.DepartmentIds.Add(departmentViewModel.Id);
             }
             await store.StoreAsync(institution);
             return Ok();
