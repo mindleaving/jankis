@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IcdAnnotation.API", "IcdAnn
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IcdAnnotation.API.Tools", "IcdAnnotation.API.Tools\IcdAnnotation.API.Tools.csproj", "{99139A59-5635-496A-A2E1-3992F53E90F9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthSharingPortal.Tools", "HealthSharingPortal.Tools\HealthSharingPortal.Tools.csproj", "{3393A42C-2A29-4F97-A97C-9B6C5EBBA331}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{99139A59-5635-496A-A2E1-3992F53E90F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99139A59-5635-496A-A2E1-3992F53E90F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99139A59-5635-496A-A2E1-3992F53E90F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3393A42C-2A29-4F97-A97C-9B6C5EBBA331}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3393A42C-2A29-4F97-A97C-9B6C5EBBA331}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3393A42C-2A29-4F97-A97C-9B6C5EBBA331}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3393A42C-2A29-4F97-A97C-9B6C5EBBA331}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

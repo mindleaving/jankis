@@ -23,7 +23,7 @@ export const LoginPage = (props: LoginPageProps) => {
             const response = await apiClient.post(`api/accounts/${username}/login`, {}, `"${password}"`);
             const userViewModel = await response.json() as ViewModels.LoggedInUserViewModel;
             props.onLoggedIn(userViewModel);
-        } catch(error) {
+        } catch(error: any) {
             NotificationManager.error(error.message, resolveText('Login_CouldNotLogIn'));
         } finally {
             setIsLoggingIn(false);

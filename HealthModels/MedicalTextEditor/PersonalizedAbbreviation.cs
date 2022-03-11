@@ -1,6 +1,4 @@
-﻿using HealthModels;
-
-namespace JanKIS.API.Models.MedicalTextEditor
+﻿namespace HealthModels.MedicalTextEditor
 {
     public class PersonalizedAbbreviation : IId
     {

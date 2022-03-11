@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using HealthModels.MedicalTextEditor;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
-using JanKIS.API.Models.MedicalTextEditor;
 using JanKIS.API.Storage;
 using Microsoft.AspNetCore.Http;
 

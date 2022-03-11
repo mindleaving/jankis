@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.15" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.14" />
     <PackageReference Include="mindleaving.Commons" Version="2.1.8" />
     <PackageReference Include="mindleaving.TypescriptGenerator" Version="0.8.0" />
@@ -14,10 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HealthModels\HealthModels.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ViewModels\" />
   </ItemGroup>
 
 </Project>

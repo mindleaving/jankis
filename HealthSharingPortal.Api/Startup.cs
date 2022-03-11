@@ -22,18 +22,17 @@ namespace HealthSharingPortal.Api
         {
             var setups = new ISetup[]
             {
-                new StoreSetup()
+                new StoreSetup(),
+                new ViewModelBuilderSetup(),
+                new ControllerSetup(),
+                new AccessControlSetup(),
+                new CorsSetup(),
+                new OpenApiSetup(),
             };
             foreach (var setup in setups)
             {
                 setup.Run(services, Configuration);
             }
-
-            services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "HealthSharingPortal.Api", Version = "v1" });
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

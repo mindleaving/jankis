@@ -1,4 +1,4 @@
-﻿namespace JanKIS.API.Models.MedicalTextEditor
+﻿namespace HealthModels.MedicalTextEditor
 {
     public class TextMedicalTextPart : MedicalTextPart
     {

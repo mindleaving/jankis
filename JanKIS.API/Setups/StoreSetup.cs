@@ -1,10 +1,10 @@
 ﻿using Commons.Physics;
 using HealthModels;
 using HealthModels.DiagnosticTestResults;
+using HealthModels.MedicalTextEditor;
 using HealthModels.Medication;
 using HealthModels.Observations;
 using JanKIS.API.Models;
-using JanKIS.API.Models.MedicalTextEditor;
 using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
 using Microsoft.Extensions.Configuration;
@@ -22,7 +22,6 @@ namespace JanKIS.API.Setups
         {
             services.Configure<FileStoreOptions>(configuration.GetSection(FileStoreOptions.AppSettingsSectionName));
             SetupMongoDB(services, configuration);
-
             SetupStores(services);
         }
 

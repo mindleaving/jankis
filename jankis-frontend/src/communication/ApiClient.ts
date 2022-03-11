@@ -95,5 +95,5 @@ export class ApiClient {
 }
 
 export const apiClient = window.location.hostname.toLowerCase() === "localhost"
-    ? new ApiClient(window.location.hostname, 5001)
+    ? new ApiClient(window.location.hostname, 44301)
     : new ApiClient(window.location.hostname, 443);

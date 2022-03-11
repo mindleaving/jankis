@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using HealthModels;
 
-namespace JanKIS.API.Models.MedicalTextEditor
+namespace HealthModels.MedicalTextEditor
 {
     public class MedicalText : IId
     {
