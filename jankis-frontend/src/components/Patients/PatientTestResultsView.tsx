@@ -2,7 +2,7 @@ import { Models } from '../../types/models';
 import { TestResultTable } from './TestResultTable';
 
 interface PatientTestResultsViewProps {
-    testResults: Models.DiagnosticTestResult[];
+    testResults: Models.DiagnosticTestResults.DiagnosticTestResult[];
 }
 
 export const PatientTestResultsView = (props: PatientTestResultsViewProps) => {

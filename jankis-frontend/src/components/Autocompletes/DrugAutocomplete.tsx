@@ -7,13 +7,13 @@ import { Autocomplete } from './Autocomplete';
 
 interface DrugAutocompleteProps {
     isLoading?: boolean;
-    value?: Models.Drug;
-    onChange: (drug: Models.Drug | undefined) => void;
+    value?: Models.Medication.Drug;
+    onChange: (drug: Models.Medication.Drug | undefined) => void;
 }
 
 export const DrugAutocomplete = (props: DrugAutocompleteProps) => {
 
-    const drugAutocompleteRunner = useMemo(() => new AutocompleteRunner<Models.Drug>('api/drugs/search', 'searchText', 10), []);
+    const drugAutocompleteRunner = useMemo(() => new AutocompleteRunner<Models.Medication.Drug>('api/drugs/search', 'searchText', 10), []);
 
     if(props.value || props.isLoading) {
         return (<Alert 

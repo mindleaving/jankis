@@ -2,7 +2,7 @@ import React, { FormEvent, useState } from 'react';
 import { Col, Form, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { apiClient } from '../../communication/ApiClient';
 import { resolveText } from '../../helpers/Globalizer';
-import { DiagnosticTestScaleType, ServiceAudienceType } from '../../types/enums';
+import { DiagnosticTestScaleType, ServiceAudienceType } from '../../types/enums.d';
 import { Models } from '../../types/models';
 import { AsyncButton } from '../AsyncButton';
 import { RowFormGroup } from '../RowFormGroup';

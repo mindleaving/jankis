@@ -11,7 +11,7 @@ import FrequencyMeasurer from '../../helpers/FrequencyMeasurer';
 interface PulseMeasurementFormProps {
     patientId: string;
     admissionId?: string;
-    onSubmit: (observation: Models.PulseObservation) => void;
+    onSubmit: (observation: Models.Observations.PulseObservation) => void;
     hasSubmitButton?: boolean;
     submitButtonText?: string;
     id?: string;
@@ -26,7 +26,7 @@ export const PulseMeasurementForm = (props: PulseMeasurementFormProps) => {
 
     const buildAndSubmitObservation = (e: FormEvent) => {
         e.preventDefault();
-        const observation: Models.PulseObservation = {
+        const observation: Models.Observations.PulseObservation = {
             id: uuid(),
             type: PatientEventType.Observation,
             measurementType: MeasurementType.Pulse,

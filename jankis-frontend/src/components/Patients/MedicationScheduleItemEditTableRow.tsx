@@ -10,12 +10,12 @@ import { MedicationDispensionState, PatientEventType } from '../../types/enums.d
 import UserContext from '../../contexts/UserContext';
 
 interface MedicationScheduleItemEditTableRowProps {
-    medication: Models.MedicationScheduleItem;
+    medication: Models.Medication.MedicationScheduleItem;
     patientId: string;
     admissionId?: string;
     isSelected: boolean;
     onSelectionChanged: (isSelected: boolean) => void;
-    onChange: (item: Models.MedicationScheduleItem) => void;
+    onChange: (item: Models.Medication.MedicationScheduleItem) => void;
     onDelete: (id: string) => void;
 }
 
@@ -26,10 +26,10 @@ export const MedicationScheduleItemEditTableRow = (props: MedicationScheduleItem
     const [ note, setNote] = useState<string>(medication.note ?? '');
     const [ isPaused, setIsPaused ] = useState<boolean>(medication.isPaused ?? false);
     const [ isDispendedByPatient, setIsDispendedByPatient ] = useState<boolean>(medication.isDispendedByPatient ?? false);
-    const [ dispensions, setDispensions ] = useState<Models.MedicationDispension[]>(medication.dispensions ?? []);
+    const [ dispensions, setDispensions ] = useState<Models.Medication.MedicationDispension[]>(medication.dispensions ?? []);
 
     useEffect(() => {
-        const updatedMedication: Models.MedicationScheduleItem = {
+        const updatedMedication: Models.Medication.MedicationScheduleItem = {
             id: medication.id,
             drug: medication.drug,
             dispensions: dispensions,
@@ -42,7 +42,7 @@ export const MedicationScheduleItemEditTableRow = (props: MedicationScheduleItem
     }, [ note, isPaused, isDispendedByPatient, dispensions ]);
 
     const addDispension = (timestamp: Date) => {
-        const dispension: Models.MedicationDispension = {
+        const dispension: Models.Medication.MedicationDispension = {
             id: uuid(),
             patientId: props.patientId,
             admissionId: props.admissionId,
@@ -56,7 +56,7 @@ export const MedicationScheduleItemEditTableRow = (props: MedicationScheduleItem
         };
         setDispensions(dispensions.concat([dispension]));
     }
-    const updateDispension = (updatedDispension: Models.MedicationDispension) => {
+    const updateDispension = (updatedDispension: Models.Medication.MedicationDispension) => {
         setDispensions(dispensions.map(dispension => {
             return dispension.id === updatedDispension.id ? updatedDispension : dispension;
         }));

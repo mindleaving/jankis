@@ -32,10 +32,10 @@ export const PatientPage = (props: PatientPageProps) => {
     const [ admissions, setAdmissions ] = useState<Models.Admission[]>([]);
     const [ selectedAdmissionId, setSelectedAdmissionId ] = useState<string>();
     const [ notes, setNotes ] = useState<Models.PatientNote[]>([]);
-    const [ medicationSchedules, setMedicationSchedules ] = useState<Models.MedicationSchedule[]>([]);
-    const [ medicationDispensions, setMedicationDispensions ] = useState<Models.MedicationDispension[]>([]);
-    const [ observations, setObservations ] = useState<Models.Observation[]>([]);
-    const [ testResults, setTestResults ] = useState<Models.DiagnosticTestResult[]>([]);
+    const [ medicationSchedules, setMedicationSchedules ] = useState<Models.Medication.MedicationSchedule[]>([]);
+    const [ medicationDispensions, setMedicationDispensions ] = useState<Models.Medication.MedicationDispension[]>([]);
+    const [ observations, setObservations ] = useState<Models.Observations.Observation[]>([]);
+    const [ testResults, setTestResults ] = useState<Models.DiagnosticTestResults.DiagnosticTestResult[]>([]);
     const [ documents, setDocuments ] = useState<Models.PatientDocument[]>([]);
     const [ subscription, setSubscription ] = useState<Models.Subscriptions.PatientSubscription>();
     const isHistoricAdmission = selectedAdmissionId && admissions.find(x => x.id === selectedAdmissionId)?.dischargeTime;
@@ -69,7 +69,7 @@ export const PatientPage = (props: PatientPageProps) => {
         NotificationManager.info(resolveText('MedicationSchedule_Creating...'));
         const now = new Date();
         const currentAdmission = admissions.find(x => isAfter(now, new Date(x.admissionTime)) && (!x.dischargeTime || isBefore(now, x.dischargeTime)));
-        const medicationSchedule: Models.MedicationSchedule = {
+        const medicationSchedule: Models.Medication.MedicationSchedule = {
             id: uuid(),
             patientId: id!,
             note: '',
@@ -78,7 +78,7 @@ export const PatientPage = (props: PatientPageProps) => {
             items: [],
             admissionId: currentAdmission?.id
         };
-        await buidlAndStoreObject<Models.MedicationSchedule>(
+        await buidlAndStoreObject<Models.Medication.MedicationSchedule>(
             `api/medicationschedules/${medicationSchedule.id}`,
             resolveText('MedicationSchedule_SuccessfullyStored'),
             resolveText('MedicationSchedule_CouldNotStore'),

@@ -1,11 +1,11 @@
 import React, { useContext, useMemo, useState } from 'react';
-import { FormControl, FormGroup, FormLabel, Table } from 'react-bootstrap';
+import { FormControl, FormGroup, FormLabel } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { PagedTable } from '../components/PagedTable';
 import UserContext from '../contexts/UserContext';
 import { resolveText } from '../helpers/Globalizer';
 import PagedTableLoader from '../helpers/PagedTableLoader';
-import { AccountType } from '../types/enums';
+import { AccountType } from '../types/enums.d';
 import { Models } from '../types/models';
 
 interface StudiesPageProps {}

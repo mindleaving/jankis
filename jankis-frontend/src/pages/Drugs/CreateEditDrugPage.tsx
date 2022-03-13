@@ -40,7 +40,7 @@ export const CreateEditDrugPage = (props: CreateEditDrugPageProps) => {
     useEffect(() => {
         if(isNew) return;
         setIsLoading(true);
-        const loadDrug = buildLoadObjectFunc<Models.Drug>(
+        const loadDrug = buildLoadObjectFunc<Models.Medication.Drug>(
             `api/drugs/${id}`,
             {},
             resolveText('Drug_CouldNotLoad'),
@@ -82,7 +82,7 @@ export const CreateEditDrugPage = (props: CreateEditDrugPageProps) => {
             () => setIsStoring(false)
         );
     }
-    const buildDrug = (): Models.Drug => {
+    const buildDrug = (): Models.Medication.Drug => {
         return {
             id: id,
             productName: productName,

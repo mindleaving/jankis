@@ -87,7 +87,7 @@ namespace JanKIS.API.Controllers
             StorageOperation storageOperation,
             string submitterUsername)
         {
-            if (item.Location.Type == LocationType.External)
+            if (item.Location.Type == InstitutionLocationType.External)
             {
                 await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.ExternalLocation.ToString(), item.Location.Id));
             }

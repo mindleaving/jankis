@@ -142,7 +142,7 @@ namespace JanKIS.API.Controllers
                 await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.ResourceGroup.ToString(), item.GroupName));
             }
 
-            if (item.Location != null && item.Location.Type == LocationType.External)
+            if (item.Location != null && item.Location.Type == InstitutionLocationType.External)
             {
                 await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.ExternalLocation.ToString(), item.Location.Id));
             }

@@ -11,13 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JanKIS.API.Test", "JanKIS.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthModels", "HealthModels\HealthModels.csproj", "{83D05CAE-DDA5-4C69-BD7D-9ADB6C2583EC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthSharingPortal.Api", "HealthSharingPortal.Api\HealthSharingPortal.Api.csproj", "{CBC11F06-BF67-49FE-B83F-60432FA831D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthSharingPortal.API", "HealthSharingPortal.Api\HealthSharingPortal.API.csproj", "{CBC11F06-BF67-49FE-B83F-60432FA831D1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IcdAnnotation.API", "IcdAnnotation.API\IcdAnnotation.API.csproj", "{790DE262-D5CF-4437-9430-308EC2DD6C0A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IcdAnnotation.API.Tools", "IcdAnnotation.API.Tools\IcdAnnotation.API.Tools.csproj", "{99139A59-5635-496A-A2E1-3992F53E90F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthSharingPortal.Tools", "HealthSharingPortal.Tools\HealthSharingPortal.Tools.csproj", "{3393A42C-2A29-4F97-A97C-9B6C5EBBA331}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthSharingPortal.Tools", "HealthSharingPortal.Tools\HealthSharingPortal.Tools.csproj", "{3393A42C-2A29-4F97-A97C-9B6C5EBBA331}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,4 +1,4 @@
-import { Models } from './models.d';
+import { Models, MongoDB, Commons } from './models.d';
 import * as Enums from './enums.d';
 
 export namespace ViewModels {
@@ -80,7 +80,7 @@ export namespace ViewModels {
     interface LocationViewModel {
         department?: ViewModels.DepartmentViewModel;
         room?: Models.Room;
-        type: Enums.LocationType;
+        type: Enums.InstitutionLocationType;
         id: string;
     }
 
@@ -105,7 +105,7 @@ export namespace ViewModels {
         profileData: Models.Person;
         currentAdmission: Models.Admission;
         equipments: ViewModels.AttachedEquipmentViewModel[];
-        observations: Models.Observation[];
+        observations: Models.Observations.Observation[];
     }
 
     interface PatientOverviewViewModel {
@@ -113,19 +113,19 @@ export namespace ViewModels {
         currentBedOccupancy: Models.BedOccupancy;
         admissions: Models.Admission[];
         notes: Models.PatientNote[];
-        medicationSchedules: Models.MedicationSchedule[];
-        medicationDispensions: Models.MedicationDispension[];
-        testResults: Models.DiagnosticTestResult[];
-        observations: Models.Observation[];
+        medicationSchedules: Models.Medication.MedicationSchedule[];
+        medicationDispensions: Models.Medication.MedicationDispension[];
+        testResults: Models.DiagnosticTestResults.DiagnosticTestResult[];
+        observations: Models.Observations.Observation[];
         documents: Models.PatientDocument[];
         subscription: Models.Subscriptions.PatientSubscription;
     }
 
     interface ResourceViewModel {
-        locationViewModel?: ViewModels.Icd.Annotation.Epidemiology.LocationViewModel;
+        locationViewModel?: ViewModels.LocationViewModel;
         id: string;
         name: string;
-        location?: Models.Icd.Annotation.Epidemiology.LocationReference;
+        location?: Models.LocationReference;
         groupName?: string;
         note: string;
     }
@@ -161,10 +161,10 @@ export namespace ViewModels {
 
     interface StockViewModel {
         department: ViewModels.DepartmentViewModel;
-        locationViewModel: ViewModels.Icd.Annotation.Epidemiology.LocationViewModel;
+        locationViewModel: ViewModels.LocationViewModel;
         id: string;
         name: string;
-        location: Models.Icd.Annotation.Epidemiology.LocationReference;
+        location: Models.LocationReference;
         departmentId: string;
     }
 }

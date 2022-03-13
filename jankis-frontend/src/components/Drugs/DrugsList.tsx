@@ -17,9 +17,9 @@ interface DrugsListProps {
 export const DrugsList = (props: DrugsListProps) => {
 
 
-    const [ drugs, setDrugs ] = useState<Models.Drug[]>([]);
+    const [ drugs, setDrugs ] = useState<Models.Medication.Drug[]>([]);
     const filter = props.filter;
-    const drugsLoader = useMemo(() => new PagedTableLoader<Models.Drug>(
+    const drugsLoader = useMemo(() => new PagedTableLoader<Models.Medication.Drug>(
         'api/drugs', 
         resolveText('Drugs_CouldNotLoad'),
         setDrugs,

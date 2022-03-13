@@ -10,7 +10,7 @@ import { InputGroup } from 'react-bootstrap';
 interface BloodPressureMeasurementFormProps {
     patientId: string;
     admissionId?: string;
-    onSubmit: (observation: Models.BloodPressureObservation) => void;
+    onSubmit: (observation: Models.Observations.BloodPressureObservation) => void;
     hasSubmitButton?: boolean;
     submitButtonText?: string;
     id?: string;
@@ -23,7 +23,7 @@ export const BloodPressureMeasurementForm = (props: BloodPressureMeasurementForm
     const [ diastolic, setDiastolic ] = useState<number>(0);
     const buildAndSubmitObservation = (e: FormEvent) => {
         e.preventDefault();
-        const observation: Models.BloodPressureObservation = {
+        const observation: Models.Observations.BloodPressureObservation = {
             id: uuid(),
             type: PatientEventType.Observation,
             measurementType: MeasurementType.BloodPressure,

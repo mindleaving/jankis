@@ -1,9 +1,9 @@
 cd JanKIS.API
 dotnet publish -c Release
-Compress-Archive -Path bin/Release/net5.0/publish -DestinationPath ../JanKIS.API.zip
+Compress-Archive -Path bin/Release/net5.0/publish -DestinationPath ../JanKIS.API.zip -Force
 cd ../jankis-frontend
 npm run build
-Compress-Archive -Path build -DestinationPath ../JanKIS.Frontend.zip
+Compress-Archive -Path build -DestinationPath ../JanKIS.Frontend.zip -Force
 cd ..
 
 scp -i ~/.ssh/nuc-webserver JanKIS.*.zip doctorstodo@192.168.178.73:~

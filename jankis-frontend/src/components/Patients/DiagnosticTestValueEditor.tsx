@@ -13,8 +13,8 @@ import { apiClient } from '../../communication/ApiClient';
 import { NotificationManager } from 'react-notifications';
 
 interface DiagnosticTestValueEditorProps {
-    testResult: Models.DiagnosticTestResult;
-    onChange: (update: Update<Models.DiagnosticTestResult>) => void;
+    testResult: Models.DiagnosticTestResults.DiagnosticTestResult;
+    onChange: (update: Update<Models.DiagnosticTestResults.DiagnosticTestResult>) => void;
 }
 
 export const DiagnosticTestValueEditor = (props: DiagnosticTestValueEditorProps) => {
@@ -39,13 +39,13 @@ export const DiagnosticTestValueEditor = (props: DiagnosticTestValueEditorProps)
 }
 
 const NominalValueEditor = (props: DiagnosticTestValueEditorProps) => {
-    const nominalTestResult = props.testResult as Models.NominalDiagnosticTestResult;
+    const nominalTestResult = props.testResult as Models.DiagnosticTestResults.NominalDiagnosticTestResult;
     const [ value, setValue ] = useState<string>(nominalTestResult.value);
     
     const onChange = props.onChange;
     useEffect(() => {
-        const update: Update<Models.DiagnosticTestResult> = (testResult) => {
-            const updatedItem: Models.NominalDiagnosticTestResult = {
+        const update: Update<Models.DiagnosticTestResults.DiagnosticTestResult> = (testResult) => {
+            const updatedItem: Models.DiagnosticTestResults.NominalDiagnosticTestResult = {
                 ...testResult,
                 value: value
             }
@@ -63,13 +63,13 @@ const NominalValueEditor = (props: DiagnosticTestValueEditorProps) => {
 }
 const OrdinalValueEditor = NominalValueEditor;
 const QuantativeValueEditor = (props: DiagnosticTestValueEditorProps) => {
-    const quantativeTestResult = props.testResult as Models.QuantitativeDiagnosticTestResult;
+    const quantativeTestResult = props.testResult as Models.DiagnosticTestResults.QuantitativeDiagnosticTestResult;
     const [ value, setValue ] = useState<number>(quantativeTestResult.value);
     const [ unit, setUnit ] = useState<string>(quantativeTestResult.unit);
     const onChange = props.onChange;
     useEffect(() => {
-        const update: Update<Models.DiagnosticTestResult> = (testResult) => {
-            const updatedItem: Models.QuantitativeDiagnosticTestResult = {
+        const update: Update<Models.DiagnosticTestResults.DiagnosticTestResult> = (testResult) => {
+            const updatedItem: Models.DiagnosticTestResults.QuantitativeDiagnosticTestResult = {
                 ...testResult,
                 value: value,
                 unit: unit,
@@ -108,8 +108,8 @@ const OrdinalOrQuantativeValueEditor = (props: DiagnosticTestValueEditorProps) =
         if(!scaleType) return;
         // Updating the scale type of the test result will commit that result to that scale type
         // and this OrdinalOrQuantativeValueEditor will be replaced by the editor for that scale type. 
-        const update: Update<Models.DiagnosticTestResult> = (testResult) => {
-            const updatedItem: Models.DiagnosticTestResult = {
+        const update: Update<Models.DiagnosticTestResults.DiagnosticTestResult> = (testResult) => {
+            const updatedItem: Models.DiagnosticTestResults.DiagnosticTestResult = {
                 ...testResult,
                 scaleType: scaleType
             };
@@ -136,12 +136,12 @@ const OrdinalOrQuantativeValueEditor = (props: DiagnosticTestValueEditorProps) =
     )
 }
 const FreetextValueEditor = (props: DiagnosticTestValueEditorProps) => {
-    const freetextTestResult = props.testResult as Models.FreetextDiagnosticTestResult;
+    const freetextTestResult = props.testResult as Models.DiagnosticTestResults.FreetextDiagnosticTestResult;
     const [ value, setValue ] = useState<string>(freetextTestResult.text);
     const onChange = props.onChange;
     useEffect(() => {
-        const update: Update<Models.DiagnosticTestResult> = (testResult) => {
-            const updatedItem: Models.FreetextDiagnosticTestResult = {
+        const update: Update<Models.DiagnosticTestResults.DiagnosticTestResult> = (testResult) => {
+            const updatedItem: Models.DiagnosticTestResults.FreetextDiagnosticTestResult = {
                 ...testResult,
                 text: value
             };
@@ -158,7 +158,7 @@ const FreetextValueEditor = (props: DiagnosticTestValueEditorProps) => {
     )
 }
 const DocumentValueEditor = (props: DiagnosticTestValueEditorProps) => {
-    const documentTestResult = props.testResult as Models.DocumentDiagnosticTestResult;
+    const documentTestResult = props.testResult as Models.DiagnosticTestResults.DocumentDiagnosticTestResult;
     const [ documentId, setDocumentId] = useState<string>(documentTestResult.documentId);
     const [ file, setFile ] = useState<File>();
     const [ isUploading, setIsUploading ] = useState<boolean>(false);
@@ -166,8 +166,8 @@ const DocumentValueEditor = (props: DiagnosticTestValueEditorProps) => {
     const onChange = props.onChange;
     useEffect(() => {
         if(!documentId) return;
-        const update: Update<Models.DiagnosticTestResult> = (testResult) => {
-            const updatedItem: Models.DocumentDiagnosticTestResult = {
+        const update: Update<Models.DiagnosticTestResults.DiagnosticTestResult> = (testResult) => {
+            const updatedItem: Models.DiagnosticTestResults.DocumentDiagnosticTestResult = {
                 ...testResult,
                 documentId: documentId
             }

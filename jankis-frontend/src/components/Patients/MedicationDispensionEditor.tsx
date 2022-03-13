@@ -5,8 +5,8 @@ import { FormControl, InputGroup } from 'react-bootstrap';
 import { resolveText } from '../../helpers/Globalizer';
 
 interface MedicationDispensionEditorProps {
-    dispension: Models.MedicationDispension;
-    onChange: (item: Models.MedicationDispension) => void;
+    dispension: Models.Medication.MedicationDispension;
+    onChange: (item: Models.Medication.MedicationDispension) => void;
     onDelete: (dispensionId: string) => void;
     disabled?: boolean;
 }

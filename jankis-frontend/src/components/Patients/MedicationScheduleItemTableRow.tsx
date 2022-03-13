@@ -5,7 +5,7 @@ import { isToday, isTomorrow } from 'date-fns';
 import { resolveText } from '../../helpers/Globalizer';
 
 interface MedicationScheduleItemTableRowProps {
-    medication: Models.MedicationScheduleItem;
+    medication: Models.Medication.MedicationScheduleItem;
     isSelected: boolean;
     onSelectionChanged: (isSelected: boolean) => void;
 }

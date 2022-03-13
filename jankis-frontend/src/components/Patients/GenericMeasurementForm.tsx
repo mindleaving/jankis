@@ -10,7 +10,7 @@ import { MemoryFormControl } from '../MemoryFormControl';
 interface GenericMeasurementFormProps {
     patientId: string;
     admissionId?: string;
-    onSubmit: (observation: Models.GenericObservation) => void;
+    onSubmit: (observation: Models.Observations.GenericObservation) => void;
     hasSubmitButton?: boolean;
     submitButtonText?: string;
     id?: string;
@@ -26,7 +26,7 @@ export const GenericMeasurementForm = (props: GenericMeasurementFormProps) => {
 
     const buildAndSubmitObservation = (e: FormEvent) => {
         e.preventDefault();
-        const observation: Models.GenericObservation = {
+        const observation: Models.Observations.GenericObservation = {
             id: uuid(),
             type: PatientEventType.Observation,
             measurementType: measurementType,

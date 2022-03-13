@@ -26,12 +26,12 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
         {
             IViewModel<Department> departmentViewModel = null;
             Room room = null;
-            if (model.Type == LocationType.Department)
+            if (model.Type == InstitutionLocationType.Department)
             {
                 var department = await departmentsStore.CachedGetByIdAsync(model.Id);
                 departmentViewModel = await departmentViewModelBuilder.Build(department);
             }
-            else if (model.Type == LocationType.Room)
+            else if (model.Type == InstitutionLocationType.Room)
             {
                 room = await roomsStore.GetByIdAsync(model.Id);
             }

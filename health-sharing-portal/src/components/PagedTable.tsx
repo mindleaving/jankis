@@ -1,5 +1,6 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import Table from 'react-bootstrap/Table';
+import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -56,7 +57,7 @@ export const PagedTable = (props: PropsWithChildren<PagedTableProps>) => {
     </>);
     return (
         <>
-        <Form.Row>
+        <Row>
             <Col xs="auto">
                 {navigationButtons}
             </Col>
@@ -79,7 +80,7 @@ export const PagedTable = (props: PropsWithChildren<PagedTableProps>) => {
             <Col xs="auto">
                 {props.hasCreateNewButton ? <Button className="m-1 float-right" onClick={props.onCreateNew}>{resolveText('CreateNew')}</Button> : null}
             </Col>
-        </Form.Row>
+        </Row>
         <Table bordered={props.bordered} className={props.className} hover={props.enableHighlighting}>
             {isLoading 
             ? <tbody>
@@ -89,11 +90,11 @@ export const PagedTable = (props: PropsWithChildren<PagedTableProps>) => {
             </tbody>
             : props.children}
         </Table>
-        <Form.Row>
+        <Row>
             <Col>
                 {navigationButtons}
             </Col>
-        </Form.Row>
+        </Row>
         </>
     );
 }

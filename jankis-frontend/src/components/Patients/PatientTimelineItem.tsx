@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Button, Col, Row } from 'react-bootstrap';
+import { Col, Row } from 'react-bootstrap';
 import { Alert } from 'react-bootstrap';
 import { apiClient } from '../../communication/ApiClient';
 import { formatDiagnosticTestNameOfResult } from '../../helpers/Formatters';
@@ -24,7 +24,7 @@ export const PatientTimelineItem = (props: PatientTimelineItemProps) => {
         body = note.message;
     }
     else if(props.event.type === PatientEventType.Observation) {
-        const observation = props.event as Models.Observation;
+        const observation = props.event as Models.Observations.Observation;
         colorVariant = "warning";
         symbol = "fa-stethoscope";
     }
@@ -37,7 +37,7 @@ export const PatientTimelineItem = (props: PatientTimelineItemProps) => {
         </>)
     }
     else if(props.event.type === PatientEventType.TestResult) {
-        const testResult = props.event as Models.DiagnosticTestResult;
+        const testResult = props.event as Models.DiagnosticTestResults.DiagnosticTestResult;
         colorVariant = "info";
         symbol = "fa-flask";
         body = (<>

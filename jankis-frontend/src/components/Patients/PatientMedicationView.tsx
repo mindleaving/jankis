@@ -9,16 +9,16 @@ import { useHistory } from 'react-router';
 import { addDays } from 'date-fns';
 
 interface PatientMedicationViewProps {
-    medicationSchedules: Models.MedicationSchedule[];
-    medicationDispensions: Models.MedicationDispension[];
+    medicationSchedules: Models.Medication.MedicationSchedule[];
+    medicationDispensions: Models.Medication.MedicationDispension[];
     onCreateNewMedicationSchedule: () => void;
 }
 
 export const PatientMedicationView = (props: PatientMedicationViewProps) => {
 
-    const [ selectedMedicationSchedule, setSelectedMedicationSchedule ] = useState<Models.MedicationSchedule>();
+    const [ selectedMedicationSchedule, setSelectedMedicationSchedule ] = useState<Models.Medication.MedicationSchedule>();
     const [ medicationChartSeries, setMedicationChartSeries ] = useState<any[]>([{ data: [] }]);
-    const [ selectedMedications, setSelectedMedications ] = useState<Models.MedicationScheduleItem[]>([]);
+    const [ selectedMedications, setSelectedMedications ] = useState<Models.Medication.MedicationScheduleItem[]>([]);
     const history = useHistory();
 
     useEffect(() => {
@@ -82,11 +82,11 @@ export const PatientMedicationView = (props: PatientMedicationViewProps) => {
             }
         }
     };
-    const addMedicationToSelection = (medication: Models.MedicationScheduleItem) => {
+    const addMedicationToSelection = (medication: Models.Medication.MedicationScheduleItem) => {
         if(selectedMedications.includes(medication)) return;
         setSelectedMedications(selectedMedications.concat(medication));
     }
-    const removeMedicationFromSelection = (medication: Models.MedicationScheduleItem) => {
+    const removeMedicationFromSelection = (medication: Models.Medication.MedicationScheduleItem) => {
         setSelectedMedications(selectedMedications.filter(x => x !== medication));
     }
     

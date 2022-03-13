@@ -10,7 +10,7 @@ import { MeasurementType, PatientEventType } from '../../types/enums.d';
 interface TemperatureMeasurementFormProps {
     patientId: string;
     admissionId?: string;
-    onSubmit: (observation: Models.TemperatureObservation) => void;
+    onSubmit: (observation: Models.Observations.TemperatureObservation) => void;
     hasSubmitButton?: boolean;
     submitButtonText?: string;
     id?: string;
@@ -25,7 +25,7 @@ export const TemperatureMeasurementForm = (props: TemperatureMeasurementFormProp
 
     const buildAndSubmitObservation = (e: FormEvent) => {
         e.preventDefault();
-        const observation: Models.TemperatureObservation = {
+        const observation: Models.Observations.TemperatureObservation = {
             id: uuid(),
             type: PatientEventType.Observation,
             measurementType: MeasurementType.Temperature,

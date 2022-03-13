@@ -6,7 +6,7 @@ import { resolveText } from '../helpers/Globalizer';
 import { Models } from '../types/models';
 import { NotificationManager } from 'react-notifications';
 import { v4 as uuid } from 'uuid';
-import { SharedAccessType } from '../types/enums';
+import { SharedAccessType } from '../types/enums.d';
 
 interface GiveHealthProfesionalAccessPageProps {
     userId: string;

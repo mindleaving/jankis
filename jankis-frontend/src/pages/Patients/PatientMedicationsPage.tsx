@@ -14,12 +14,12 @@ export const PatientMedicationsPage = (props: PatientMedicationsPageProps) => {
     const patientId = props.match.params.patientId;
 
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
-    const [ medicationSchedules, setMedicationSchedules ] = useState<Models.MedicationSchedule[]>([]);
-    const [ selectedMedicationSchedule, setSelectedMedicationSchedule ] = useState<Models.MedicationSchedule>();
+    const [ medicationSchedules, setMedicationSchedules ] = useState<Models.Medication.MedicationSchedule[]>([]);
+    const [ selectedMedicationSchedule, setSelectedMedicationSchedule ] = useState<Models.Medication.MedicationSchedule>();
 
     useEffect(() => {
         setIsLoading(true);
-        const loadMedicationSchedules = buildLoadObjectFunc<Models.MedicationSchedule[]>(
+        const loadMedicationSchedules = buildLoadObjectFunc<Models.Medication.MedicationSchedule[]>(
             `api/patients/${patientId}/medicationschedules`,
             {},
             resolveText('MedicationSchedules_CouldNotLoad'),

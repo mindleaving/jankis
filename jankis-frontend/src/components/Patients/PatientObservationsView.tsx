@@ -9,7 +9,7 @@ import { ApexOptions } from 'apexcharts';
 import { groupBy } from '../../helpers/CollectionHelpers';
 
 interface PatientObservationsViewProps {
-    observations: Models.Observation[];
+    observations: Models.Observations.Observation[];
 }
 interface ObservationDataPoint {
     measurementType: MeasurementType;
@@ -27,7 +27,7 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
     const observationDataPoints = props.observations.flatMap((observation): ObservationDataPoint[] => {
         const measurementType = observation.measurementType as MeasurementType;
         if(observation.measurementType === MeasurementType.Pulse) {
-            const pulseObservation = observation as Models.PulseObservation;
+            const pulseObservation = observation as Models.Observations.PulseObservation;
             return [{
                 measurementType: measurementType,
                 seriesName: formatMeasurementType(measurementType),
@@ -37,7 +37,7 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
             }];
         }
         if(measurementType === MeasurementType.BloodPressure) {
-            const bloodPressureObservation = observation as Models.BloodPressureObservation;
+            const bloodPressureObservation = observation as Models.Observations.BloodPressureObservation;
             return [
                 {
                     measurementType: measurementType,
@@ -56,7 +56,7 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
             ];
         }
         if(measurementType === MeasurementType.Temperature) {
-            const temperatureObservation = observation as Models.TemperatureObservation;
+            const temperatureObservation = observation as Models.Observations.TemperatureObservation;
             return [{
                 measurementType: measurementType,
                 seriesName: formatMeasurementType(measurementType),
@@ -65,7 +65,7 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
                 unit: '°C'
             }];
         }
-        const genericObservation = observation as Models.GenericObservation;
+        const genericObservation = observation as Models.Observations.GenericObservation;
         if(isNaN(parseFloat(genericObservation.value))) {
             return [];
         }

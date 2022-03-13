@@ -46,7 +46,7 @@ export default class PagedTableLoader<T> {
             const response = await apiClient.get(apiMethodPath, params);
             const items = await response.json() as T[];
             this.callback(items);
-        } catch(error) {
+        } catch(error: any) {
             NotificationManager.error(error.message, this.errorMessage);
         }
     }

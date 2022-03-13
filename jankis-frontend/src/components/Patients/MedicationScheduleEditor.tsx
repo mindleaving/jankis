@@ -21,7 +21,7 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
     const [ patientId, setPatientId ] = useState<string>();
     const [ admissionId, setAdmissionId ] = useState<string>();
     const [ name, setName ] = useState<string>('');
-    const [ medications, setMedications ] = useState<Models.MedicationScheduleItem[]>([]);
+    const [ medications, setMedications ] = useState<Models.Medication.MedicationScheduleItem[]>([]);
     const [ note, setNote ] = useState<string>('');
     const [ isPaused, setIsPaused ] = useState<boolean>(false);
     const [ isDispendedByPatient, setIsDispendedByPatient ] = useState<boolean>(false);
@@ -30,7 +30,7 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
     const history = useHistory();
 
     useEffect(() => {
-        const loadMedicationSchedule = buildLoadObjectFunc<Models.MedicationSchedule>(
+        const loadMedicationSchedule = buildLoadObjectFunc<Models.Medication.MedicationSchedule>(
             `api/medicationschedules/${props.medicationScheduleId}`,
             {},
             resolveText('MedicationSchedule_CouldNotLoad'),
@@ -51,7 +51,7 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
     const store = async (e?: FormEvent) => {
         e?.preventDefault();
         setIsStoring(true);
-        await buidlAndStoreObject<Models.MedicationSchedule>(
+        await buidlAndStoreObject<Models.Medication.MedicationSchedule>(
             `api/medicationschedules/${props.medicationScheduleId}`,
             resolveText('MedicationSchedule_SuccessfullyStored'),
             resolveText('MedicationSchedule_CouldNotStore'),
@@ -60,7 +60,7 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
             () => setIsStoring(false)
         );
     }
-    const buildMedicationSchedule = (): Models.MedicationSchedule => {
+    const buildMedicationSchedule = (): Models.Medication.MedicationSchedule => {
         return {
             id: props.medicationScheduleId,
             name: name,
@@ -86,10 +86,10 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
             setSelectedScheduleItemIds(selectedScheduleItemIds.filter(x => x !== medicationId));
         }
     }
-    const addMedication = async (medication: Models.MedicationScheduleItem) => {
+    const addMedication = async (medication: Models.Medication.MedicationScheduleItem) => {
         setMedications(medications.concat(medication));
     }
-    const updateMedication = (medication: Models.MedicationScheduleItem) => {
+    const updateMedication = (medication: Models.Medication.MedicationScheduleItem) => {
         setMedications(medications.map(x => {
             return x.id === medication.id ? medication : x;
         }));

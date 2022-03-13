@@ -4,14 +4,14 @@
     {
         public LocationReference() {}
         public LocationReference(
-            LocationType type,
+            InstitutionLocationType type,
             string id)
         {
             Type = type;
             Id = id;
         }
 
-        public LocationType Type { get; set; }
+        public InstitutionLocationType Type { get; set; }
         public string Id { get; set; }
     }
 }

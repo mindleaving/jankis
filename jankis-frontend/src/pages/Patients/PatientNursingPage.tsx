@@ -25,7 +25,7 @@ export const PatientNursingPage = (props: PatientNursingPageProps) => {
     const [ profileData, setProfileData ] = useState<Models.Person>();
     const [ currentAdmission, setCurrentAdmission ] = useState<Models.Admission>();
     const [ equipments, setEquipments ] = useState<ViewModels.AttachedEquipmentViewModel[]>([]);
-    const [ observations, setObservations ] = useState<Models.Observation[]>([]);
+    const [ observations, setObservations ] = useState<Models.Observations.Observation[]>([]);
     const [ bodyViewType, setBodyViewType ] = useState<BodyViewType>(BodyViewType.Front);
     const [ showAddEquipmentModal, setShowAddEquipmentModal] = useState<boolean>(false);
     const [ showObservationForm, setShowObservationForm ] = useState<boolean>(false);
@@ -49,7 +49,7 @@ export const PatientNursingPage = (props: PatientNursingPageProps) => {
         loadPatient();
     }, [ patientId ]);
 
-    const onObservationsAdded = (newObservations: Models.Observation[]) => {
+    const onObservationsAdded = (newObservations: Models.Observations.Observation[]) => {
         setObservations(observations.concat(newObservations).sort((a,b) => compareDesc(new Date(a.timestamp), new Date(b.timestamp))));
         setShowObservationForm(false);
     }

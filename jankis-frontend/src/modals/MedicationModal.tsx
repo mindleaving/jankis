@@ -7,19 +7,19 @@ import { v4 as uuid } from 'uuid';
 
 interface MedicationModalProps {
     show: boolean;
-    onMedicationAdded: (medication: Models.MedicationScheduleItem) => void;
+    onMedicationAdded: (medication: Models.Medication.MedicationScheduleItem) => void;
     onClose: () => void;
 }
 
 export const MedicationModal = (props: MedicationModalProps) => {
 
-    const [ selectedDrug, setSelectedDrug ] = useState<Models.Drug>();
+    const [ selectedDrug, setSelectedDrug ] = useState<Models.Medication.Drug>();
     const addMedication = (e?: FormEvent) => {
         e?.preventDefault();
         if(!selectedDrug) {
             return;
         }
-        const medication: Models.MedicationScheduleItem = {
+        const medication: Models.Medication.MedicationScheduleItem = {
             id: uuid(),
             drug: selectedDrug!,
             dispensions: [],

@@ -16,7 +16,7 @@ import { apiClient } from '../../communication/ApiClient';
 interface ObservationsFormProps {
     patientId: string;
     admissionId?: string;
-    onStore?: (observations: Models.Observation[]) => void;
+    onStore?: (observations: Models.Observations.Observation[]) => void;
 }
 interface MeasurementForm {
     id: string;
@@ -26,7 +26,7 @@ interface MeasurementForm {
 export const ObservationsForm = (props: ObservationsFormProps) => {
 
     const [ measurementForms, setMeasurementForms ] = useState<MeasurementForm[]>([]);
-    const [ observations, setObservations ] = useState<Models.Observation[]>([]);
+    const [ observations, setObservations ] = useState<Models.Observations.Observation[]>([]);
     const [isStoring, setIsStoring ] = useState<boolean>(false);
 
     const store = async (e: FormEvent) => {
@@ -56,7 +56,7 @@ export const ObservationsForm = (props: ObservationsFormProps) => {
     const removeMeasurementForm = (measurementFormId: string) => {
         setMeasurementForms(measurementForms.filter(x => x.id !== measurementFormId));
     }
-    const addObservation = (observation: Models.Observation, measurementFormId: string) => {
+    const addObservation = (observation: Models.Observations.Observation, measurementFormId: string) => {
         setObservations(observations.concat(observation));
         removeMeasurementForm(measurementFormId);
     }

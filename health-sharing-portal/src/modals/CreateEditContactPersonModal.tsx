@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal } from 'react-bootstrap';
-import { PublicationForm } from '../components/Study/PublicationForm';
+import { ContactPersonForm } from '../components/Study/ContactPersonForm';
 
 interface CreateEditContactPersonModalProps {
     show?: boolean;

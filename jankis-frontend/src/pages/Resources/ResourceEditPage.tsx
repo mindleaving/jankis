@@ -32,7 +32,7 @@ export const ResourceEditPage = (props: ResourceEditPageProps) => {
     const [ isStoring, setIsStoring ] = useState<boolean>(false);
     const [ name, setName ] = useState<string>('');
     const [ groupName, setGroupName ] = useState<string>();
-    const [ location, setLocation ] = useState<ViewModels.Icd.Annotation.Epidemiology.LocationViewModel>();
+    const [ location, setLocation ] = useState<ViewModels.LocationViewModel>();
     const [ note, setNote ] = useState<string>('');
     const history = useHistory();
     

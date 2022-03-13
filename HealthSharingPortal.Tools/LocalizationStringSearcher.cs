@@ -81,9 +81,10 @@ namespace HealthSharingPortal.Tools
 
         private static IEnumerable<string> GetEnumResourceIds()
         {
-            var enumResourceIds = Assembly.GetAssembly(typeof(AccountType))
-                .GetExportedTypes()
+            var enumResourceIds = Assembly.GetAssembly(typeof(AccountType)).GetExportedTypes()
                 .Where(t => t.Namespace.StartsWith(typeof(AccountType).Namespace) && t.IsEnum)
+                .Concat(Assembly.GetAssembly(typeof(Person)).GetExportedTypes()
+                    .Where(t => t.Namespace.StartsWith(typeof(Person).Namespace) && t.IsEnum))
                 .SelectMany(t => Enum.GetNames(t).Select(x => $"{t.Name}_{x}"));
             return enumResourceIds;
         }
