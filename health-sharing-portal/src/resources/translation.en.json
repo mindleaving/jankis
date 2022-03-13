@@ -16,6 +16,8 @@
   "AutoCompleteContext_MeasurementType": "",
   "AutoCompleteContext_ResourceGroup": "",
   "AutoCompleteContext_Unit": "",
+  "Emergency_PersonSearchRemarks": "Either enter the person ID or fill out the name and birthday",
+  "Emergency_TermsOfAccess": "I confirm that I have gained consent from the person I plan on accessing or I have determined that this person is unable to make an informed consent because of an emergency",
   "HealthSharingPortal": "Health Sharing Portal",
   "Hello": "Hello",
   "LabValues": "Lab values",

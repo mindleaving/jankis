@@ -89,6 +89,29 @@ export enum DiagnosticTestScaleType {
     Document = "Document",
     Set = "Set"
 }
+export enum AccessFilterType {
+    Undefined = "Undefined",
+    Date = "Date",
+    Category = "Category"
+}
+export enum PatientInformationCategory {
+    Undefined = "Undefined",
+    BasicInformation = "BasicInformation",
+    FamilyInformation = "FamilyInformation",
+    Observations = "Observations",
+    AdmissionHistory = "AdmissionHistory",
+    Documents = "Documents",
+    Notes = "Notes",
+    Medications = "Medications",
+    Diagnosis = "Diagnosis",
+    Genome = "Genome"
+}
+export enum SharedAccessType {
+    Unknonw = "Unknonw",
+    Research = "Research",
+    HealthProfessional = "HealthProfessional",
+    Emergency = "Emergency"
+}
 export enum AccountType {
     Sharer = "Sharer",
     HealthProfessional = "HealthProfessional",

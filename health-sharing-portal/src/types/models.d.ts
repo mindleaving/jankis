@@ -707,6 +707,108 @@ export namespace Models {
             typeId: any;
         }
     }
+
+    export namespace AccessControl {
+        interface DateAccessFilter {
+            type: Enums.AccessFilterType;
+            startDate?: Date | null;
+            endDate?: Date | null;
+        }
+    
+        interface EmergencyAccess {
+            id: string;
+            type: Enums.SharedAccessType;
+            requesterId: string;
+            targetPersonId: string;
+            accessGrantedTimestamp: Date;
+            accessEndTimestamp?: Date | null;
+            isRevoked: boolean;
+        }
+    
+        interface EmergencyAccessRequest {
+            id: string;
+            type: Enums.SharedAccessType;
+            requesterId: string;
+            targetPersonId: string;
+            createdTimestamp: Date;
+            isCompleted: boolean;
+            completedTimestamp?: Date | null;
+            targetPersonFirstName: string;
+            targetPersonLastName: string;
+            targetPersonBirthdate: Date;
+        }
+    
+        interface HealthProfessionalAccess {
+            id: string;
+            type: Enums.SharedAccessType;
+            requesterId: string;
+            targetPersonId: string;
+            accessGrantedTimestamp: Date;
+            accessEndTimestamp?: Date | null;
+            isRevoked: boolean;
+        }
+    
+        interface HealthProfessionalAccessRequest {
+            id: string;
+            type: Enums.SharedAccessType;
+            requesterId: string;
+            targetPersonId: string;
+            createdTimestamp: Date;
+            isCompleted: boolean;
+            completedTimestamp?: Date | null;
+        }
+    
+        interface IAccessFilter {
+            type: Enums.AccessFilterType;
+        }
+    
+        interface CategoryAccessFilter {
+            type: Enums.AccessFilterType;
+            categories: Enums.PatientInformationCategory[];
+        }
+    
+        interface IAccessRequest {
+            type: Enums.SharedAccessType;
+            requesterId: string;
+            targetPersonId: string;
+            createdTimestamp: Date;
+            isCompleted: boolean;
+            completedTimestamp?: Date | null;
+        }
+    
+        interface ISharedAccess {
+            type: Enums.SharedAccessType;
+            requesterId: string;
+            targetPersonId: string;
+            accessGrantedTimestamp: Date;
+            accessEndTimestamp?: Date | null;
+            isRevoked: boolean;
+        }
+    
+        interface ResearchAccess {
+            id: string;
+            type: Enums.SharedAccessType;
+            requesterId: string;
+            targetPersonId: string;
+            studyId: string;
+            accessFilters: Models.AccessControl.IAccessFilter[];
+            accessGrantedTimestamp: Date;
+            accessEndTimestamp?: Date | null;
+            isRevoked: boolean;
+        }
+    
+        interface ResearchAccessRequest {
+            id: string;
+            type: Enums.SharedAccessType;
+            requesterId: string;
+            targetPersonId: string;
+            createdTimestamp: Date;
+            isCompleted: boolean;
+            completedTimestamp?: Date | null;
+            studyId: string;
+            accessFilters: Models.AccessControl.IAccessFilter[];
+        }
+    }
 }
 export namespace MongoDB {
     export namespace Driver {

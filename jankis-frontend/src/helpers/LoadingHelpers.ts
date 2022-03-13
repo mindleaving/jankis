@@ -20,8 +20,7 @@ export const loadObject = async <T extends unknown>(
         const response = await apiClient.get(apiPath, params);
         const item = await response.json() as T;
         onItemLoaded(item);
-
-    } catch (error) {
+    } catch (error: any) {
         NotificationManager.error(error.message, errorText);
     } finally {
         if(onFinally) {
