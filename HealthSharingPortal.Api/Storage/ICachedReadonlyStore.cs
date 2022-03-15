@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using HealthModels;
 
-namespace HealthSharingPortal.Api.Storage
+namespace HealthSharingPortal.API.Storage
 {
     public interface ICachedReadonlyStore<T> : IReadonlyStore<T> where T : IId
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace HealthSharingPortal.Api.Setups
+namespace HealthSharingPortal.API.Setups
 {
     public interface ISetup
     {

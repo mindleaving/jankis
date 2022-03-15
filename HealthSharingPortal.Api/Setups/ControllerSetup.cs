@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace HealthSharingPortal.Api.Setups
+namespace HealthSharingPortal.API.Setups
 { 
     public class ControllerSetup : ISetup
     {

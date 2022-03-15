@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using HealthModels;
 using HealthModels.Medication;
-using HealthSharingPortal.Api.Helpers;
-using HealthSharingPortal.Api.Models;
-using HealthSharingPortal.Api.Storage;
+using HealthSharingPortal.API.Helpers;
+using HealthSharingPortal.API.Storage;
 using Microsoft.AspNetCore.Http;
 
-namespace HealthSharingPortal.Api.Controllers
+namespace HealthSharingPortal.API.Controllers
 {
     public class DrugsController : RestControllerBase<Drug>
     {

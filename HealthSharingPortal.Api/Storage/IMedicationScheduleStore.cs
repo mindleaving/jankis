@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using HealthModels;
 using HealthModels.Medication;
 using MongoDB.Driver;
 
-namespace HealthSharingPortal.Api.Storage
+namespace HealthSharingPortal.API.Storage
 {
     public interface IMedicationScheduleStore : IStore<MedicationSchedule>
     {

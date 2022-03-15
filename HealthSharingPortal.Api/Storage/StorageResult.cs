@@ -1,4 +1,4 @@
-﻿namespace HealthSharingPortal.Api.Storage
+﻿namespace HealthSharingPortal.API.Storage
 {
     public class StorageResult
     {

@@ -1,7 +1,7 @@
 ﻿using HealthModels;
 using Newtonsoft.Json;
 
-namespace HealthSharingPortal.Api.Models
+namespace HealthSharingPortal.API.Models
 {
     public class Account : IId
     {

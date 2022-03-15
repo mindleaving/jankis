@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
-using HealthSharingPortal.Api.Storage;
+using HealthSharingPortal.API.Storage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HealthSharingPortal.Api.Controllers
+namespace HealthSharingPortal.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

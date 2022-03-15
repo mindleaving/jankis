@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, useContext, useState } from 'react';
 import { Form, FormControl, FormGroup, FormLabel } from 'react-bootstrap';
 import { apiClient } from '../communication/ApiClient';
 import { AsyncButton } from '../components/AsyncButton';
@@ -7,14 +7,14 @@ import { Models } from '../types/models';
 import { NotificationManager } from 'react-notifications';
 import { v4 as uuid } from 'uuid';
 import { SharedAccessType } from '../types/enums.d';
+import UserContext from '../contexts/UserContext';
 
-interface GiveHealthProfesionalAccessPageProps {
-    userId: string;
-}
+interface GiveHealthProfesionalAccessPageProps {}
 
 export const GiveHealthProfesionalAccessPage = (props: GiveHealthProfesionalAccessPageProps) => {
 
 
+    const user = useContext(UserContext);
     const [ codeForHealthProfessional, setCodeForHealthProfessional ] = useState<string>('');
     const [ codeForSharer, setCodeForSharer ] = useState<string>('');
     const [ healthProfessionalId, setHealthProfessionalId ] = useState<string>();
@@ -27,7 +27,7 @@ export const GiveHealthProfesionalAccessPage = (props: GiveHealthProfesionalAcce
             const accessRequest: Models.AccessControl.HealthProfessionalAccessRequest = {
                 type: SharedAccessType.HealthProfessional,
                 id: uuid(),
-                targetPersonId: props.userId,
+                targetPersonId: user!.profileData.id,
                 requesterId: healthProfessionalId!,
                 isCompleted: false,
                 createdTimestamp: new Date()
@@ -57,7 +57,7 @@ export const GiveHealthProfesionalAccessPage = (props: GiveHealthProfesionalAcce
                     <h3>{codeForHealthProfessional}</h3>
                 </FormGroup>
                 <FormGroup>
-                    <FormLabel>{resolveText("GiveAccess_")}</FormLabel>
+                    <FormLabel>{resolveText("GiveAccess_CodeForSharer")}</FormLabel>
                     <FormControl
                         value={codeForSharer}
                         onChange={(e:any) => setCodeForSharer(e.target.value)}

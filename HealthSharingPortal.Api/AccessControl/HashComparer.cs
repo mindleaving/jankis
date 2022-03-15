@@ -1,4 +1,4 @@
-﻿namespace HealthSharingPortal.Api.AccessControl
+﻿namespace HealthSharingPortal.API.AccessControl
 {
     public static class HashComparer
     {

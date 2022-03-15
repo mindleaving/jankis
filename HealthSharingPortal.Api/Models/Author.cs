@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using HealthModels;
 
-namespace HealthSharingPortal.Api.Models
+namespace HealthSharingPortal.API.Models
 {
     public class Author : Person
     {

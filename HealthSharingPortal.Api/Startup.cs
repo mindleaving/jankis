@@ -1,12 +1,12 @@
+using HealthSharingPortal.API.Hubs;
+using HealthSharingPortal.API.Setups;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using HealthSharingPortal.Api.Setups;
 
-namespace HealthSharingPortal.Api
+namespace HealthSharingPortal.API
 {
     public class Startup
     {
@@ -23,6 +23,7 @@ namespace HealthSharingPortal.Api
             var setups = new ISetup[]
             {
                 new StoreSetup(),
+                new HubSetup(),
                 new ViewModelBuilderSetup(),
                 new ControllerSetup(),
                 new AccessControlSetup(),
@@ -58,6 +59,7 @@ namespace HealthSharingPortal.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<AccessRequestHub>(AccessRequestHub.Route);
             });
         }
     }

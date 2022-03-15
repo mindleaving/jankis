@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 
-namespace HealthSharingPortal.Api.AccessControl
+namespace HealthSharingPortal.API.AccessControl
 {
     public class SameUserRequirementHandler : AuthorizationHandler<SameUserRequirement>
     {

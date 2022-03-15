@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace HealthSharingPortal.Api.AccessControl
+namespace HealthSharingPortal.API.AccessControl
 {
     public class AdminRequirement : IAuthorizationRequirement
     {

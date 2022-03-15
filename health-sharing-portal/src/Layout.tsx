@@ -1,9 +1,14 @@
 import React, { PropsWithChildren, useContext } from 'react';
-import { Container, Row, Col, Navbar } from 'react-bootstrap';
+import { Container, Row, Col, Navbar, Nav } from 'react-bootstrap';
 import { NotificationContainer } from 'react-notifications';
 import { useNavigate } from 'react-router-dom';
+import { AdminMenu } from './components/Menus/AdminMenu';
+import { HealthProfessionalMenu } from './components/Menus/HealthProfessionalMenu';
 import { LoggedInUser } from './components/Menus/LoggedInUser';
+import { ResearcherMenu } from './components/Menus/ResearcherMenu';
+import { SharerMenu } from './components/Menus/SharerMenu';
 import UserContext from './contexts/UserContext';
+import { AccountType } from './types/enums.d';
 
 interface LayoutProps extends React.PropsWithChildren<{}> {
     onLogOut: () => void;
@@ -13,6 +18,26 @@ export const Layout = (props: PropsWithChildren<LayoutProps>) => {
 
     const user = useContext(UserContext)!;
     const navigate = useNavigate();
+
+    let userTypeMenus = null;
+    switch(user?.accountType) {
+        case AccountType.Admin:
+            userTypeMenus = (<AdminMenu />);
+            break;
+        case AccountType.HealthProfessional:
+            userTypeMenus = (<HealthProfessionalMenu />);
+            break;
+        case AccountType.Researcher:
+            userTypeMenus = (<ResearcherMenu />);
+            break;
+        case AccountType.Sharer:
+            userTypeMenus = (<SharerMenu />);
+            break;
+    }
+    if(user?.accountType === AccountType.Sharer) {
+        
+    }
+
     return (
         <>
             <NotificationContainer />
@@ -20,6 +45,8 @@ export const Layout = (props: PropsWithChildren<LayoutProps>) => {
                 <Navbar.Brand className="clickable" onClick={() => navigate('/')}>Health Sharing Portal</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
+                    {userTypeMenus}
+                    <Nav className='me-auto'></Nav>
                     <LoggedInUser user={user} onLogOut={props.onLogOut} />
                 </Navbar.Collapse>
             </Navbar>

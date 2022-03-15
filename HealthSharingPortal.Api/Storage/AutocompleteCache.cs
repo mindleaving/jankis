@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using HealthSharingPortal.Api.Models;
+using HealthSharingPortal.API.Models;
 using MongoDB.Driver;
 
-namespace HealthSharingPortal.Api.Storage
+namespace HealthSharingPortal.API.Storage
 {
     public class AutocompleteCache : IAutocompleteCache
     {

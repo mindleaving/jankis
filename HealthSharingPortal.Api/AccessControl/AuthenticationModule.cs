@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using HealthModels;
-using HealthSharingPortal.Api.Models;
-using HealthSharingPortal.Api.Storage;
+using HealthSharingPortal.API.Models;
+using HealthSharingPortal.API.Storage;
 
-namespace HealthSharingPortal.Api.AccessControl
+namespace HealthSharingPortal.API.AccessControl
 {
     public class AuthenticationModule
     {

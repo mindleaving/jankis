@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using HealthModels;
-using HealthSharingPortal.Api.Models;
-using HealthSharingPortal.Api.Storage;
-using HealthSharingPortal.Api.ViewModels;
+using HealthSharingPortal.API.Models;
+using HealthSharingPortal.API.Storage;
+using HealthSharingPortal.API.ViewModels;
 
-namespace HealthSharingPortal.Api.Workflow.ViewModelBuilders
+namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
 {
     public class AccountViewModelBuilder : IViewModelBuilder<Account>
     {

@@ -2,7 +2,7 @@
 using HealthModels;
 using MongoDB.Driver;
 
-namespace HealthSharingPortal.Api.Storage
+namespace HealthSharingPortal.API.Storage
 {
     public class GenericStore<T> : GenericReadonlyStore<T>, IStore<T> where T : IId
     {

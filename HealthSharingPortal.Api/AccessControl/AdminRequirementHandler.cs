@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using HealthSharingPortal.Api.Models;
+using HealthSharingPortal.API.Models;
 using Microsoft.AspNetCore.Authorization;
 
-namespace HealthSharingPortal.Api.AccessControl
+namespace HealthSharingPortal.API.AccessControl
 {
     public class AdminRequirementHandler : AuthorizationHandler<AdminRequirement>
     {

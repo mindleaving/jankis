@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 
-namespace HealthSharingPortal.Api.Storage
+namespace HealthSharingPortal.API.Storage
 {
     public interface IFilesStore
     {

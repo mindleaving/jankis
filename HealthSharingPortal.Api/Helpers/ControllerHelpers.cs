@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using HealthSharingPortal.Api.AccessControl;
+using HealthSharingPortal.API.AccessControl;
 using Microsoft.AspNetCore.Http;
 
-namespace HealthSharingPortal.Api.Helpers
+namespace HealthSharingPortal.API.Helpers
 {
     internal static class ControllerHelpers
     {

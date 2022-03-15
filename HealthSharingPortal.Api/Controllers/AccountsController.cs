@@ -5,16 +5,16 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 using HealthModels;
-using HealthSharingPortal.Api.AccessControl;
-using HealthSharingPortal.Api.Helpers;
-using HealthSharingPortal.Api.Models;
-using HealthSharingPortal.Api.Storage;
-using HealthSharingPortal.Api.ViewModels;
-using HealthSharingPortal.Api.Workflow.ViewModelBuilders;
+using HealthSharingPortal.API.AccessControl;
+using HealthSharingPortal.API.Helpers;
+using HealthSharingPortal.API.Models;
+using HealthSharingPortal.API.Storage;
+using HealthSharingPortal.API.ViewModels;
+using HealthSharingPortal.API.Workflow.ViewModelBuilders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HealthSharingPortal.Api.Controllers
+namespace HealthSharingPortal.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

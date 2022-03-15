@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels;
-using HealthSharingPortal.Api.Models;
+using HealthSharingPortal.API.Models;
 using MongoDB.Driver;
 
-namespace HealthSharingPortal.Api.Storage
+namespace HealthSharingPortal.API.Storage
 {
     public class GenericReadonlyStore<T> : IReadonlyStore<T> where T : IId
     {

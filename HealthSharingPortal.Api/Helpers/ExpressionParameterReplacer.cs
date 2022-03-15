@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace HealthSharingPortal.Api.Helpers
+namespace HealthSharingPortal.API.Helpers
 {
     /// <summary>
     /// From: https://stackoverflow.com/questions/9231569/exception-using-orelse-and-andalso-expression-methods

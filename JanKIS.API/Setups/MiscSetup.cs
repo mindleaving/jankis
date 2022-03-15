@@ -10,7 +10,6 @@ namespace JanKIS.API.Setups
         {
             services.AddScoped<ServiceRequestGatekeeper>();
             services.AddScoped<ServiceRequestChangePolicy>();
-            services.AddScoped<INotificationDistributor, NotificationDistributor>();
         }
     }
 }

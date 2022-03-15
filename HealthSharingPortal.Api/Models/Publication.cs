@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HealthSharingPortal.Api.Models
+namespace HealthSharingPortal.API.Models
 {
     public class Publication
     {

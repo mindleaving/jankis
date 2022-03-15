@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using Commons.Misc;
-using HealthSharingPortal.Api.AccessControl;
+using HealthSharingPortal.API.AccessControl;
+using HealthSharingPortal.API.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
-namespace HealthSharingPortal.Api.Setups
+namespace HealthSharingPortal.API.Setups
 {
     public class AccessControlSetup : ISetup
     {
@@ -56,6 +58,23 @@ namespace HealthSharingPortal.Api.Setups
                             IssuerSigningKey = privateKey,
                             ValidAudience = "HealthSharingPortal",
                             ValidIssuer = "HealthSharingPortal"
+                        };
+                        options.Events = new JwtBearerEvents
+                        {
+                            OnMessageReceived = context =>
+                            {
+                                var accessToken = context.Request.Query["access_token"];
+
+                                // If the request is for our hub...
+                                var path = context.HttpContext.Request.Path;
+                                if (!string.IsNullOrEmpty(accessToken) &&
+                                    (path.StartsWithSegments(AccessRequestHub.Route)))
+                                {
+                                    // Read the token out of the query string
+                                    context.Token = accessToken;
+                                }
+                                return Task.CompletedTask;
+                            }
                         };
                     });
             services.AddScoped<ISecurityTokenBuilder>(provider => new JwtSecurityTokenBuilder(privateKey, TimeSpan.FromMinutes(60)));

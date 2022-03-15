@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace HealthSharingPortal.Api.Models
+namespace HealthSharingPortal.API.Models
 {
     public class AutocompleteCacheItem
     {

@@ -4,11 +4,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels;
-using HealthSharingPortal.Api.Helpers;
-using HealthSharingPortal.Api.Storage;
+using HealthSharingPortal.API.Helpers;
+using HealthSharingPortal.API.Storage;
 using Microsoft.AspNetCore.Http;
 
-namespace HealthSharingPortal.Api.Controllers
+namespace HealthSharingPortal.API.Controllers
 {
     public class PersonsController : RestControllerBase<Person>
     {

@@ -4,10 +4,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using HealthModels;
-using HealthSharingPortal.Api.Models;
+using HealthSharingPortal.API.Models;
 using Microsoft.IdentityModel.Tokens;
 
-namespace HealthSharingPortal.Api.AccessControl
+namespace HealthSharingPortal.API.AccessControl
 {
     internal class JwtSecurityTokenBuilder : ISecurityTokenBuilder
     {

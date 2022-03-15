@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using HealthModels;
-using HealthSharingPortal.Api.Models;
+using HealthSharingPortal.API.Models;
 
-namespace HealthSharingPortal.Api.AccessControl
+namespace HealthSharingPortal.API.AccessControl
 {
     public interface ISecurityTokenBuilder
     {

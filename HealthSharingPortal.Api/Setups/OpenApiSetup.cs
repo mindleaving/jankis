@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
-namespace HealthSharingPortal.Api.Setups
+namespace HealthSharingPortal.API.Setups
 {
     public class OpenApiSetup : ISetup
     {

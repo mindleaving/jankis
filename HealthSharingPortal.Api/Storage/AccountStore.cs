@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using HealthSharingPortal.Api.Models;
+﻿using System.Threading.Tasks;
+using HealthSharingPortal.API.Models;
 using MongoDB.Driver;
 
-namespace HealthSharingPortal.Api.Storage
+namespace HealthSharingPortal.API.Storage
 {
     public class AccountStore: GenericStore<Account>, IAccountStore
     {

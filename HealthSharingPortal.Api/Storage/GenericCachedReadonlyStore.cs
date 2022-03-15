@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using HealthModels;
 using MongoDB.Driver;
 
-namespace HealthSharingPortal.Api.Storage
+namespace HealthSharingPortal.API.Storage
 {
     public class GenericCachedReadonlyStore<T> : GenericReadonlyStore<T>, ICachedReadonlyStore<T> where T : IId
     {

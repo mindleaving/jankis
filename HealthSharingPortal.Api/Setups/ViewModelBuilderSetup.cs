@@ -1,10 +1,9 @@
-﻿using HealthModels;
-using HealthSharingPortal.Api.Models;
-using HealthSharingPortal.Api.Workflow.ViewModelBuilders;
+﻿using HealthSharingPortal.API.Models;
+using HealthSharingPortal.API.Workflow.ViewModelBuilders;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace HealthSharingPortal.Api.Setups
+namespace HealthSharingPortal.API.Setups
 {
     public class ViewModelBuilderSetup : ISetup
     {

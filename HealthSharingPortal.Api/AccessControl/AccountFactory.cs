@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Security.Cryptography;
-using HealthSharingPortal.Api.Models;
+using HealthSharingPortal.API.Models;
 
-namespace HealthSharingPortal.Api.AccessControl
+namespace HealthSharingPortal.API.AccessControl
 {
     public static class AccountFactory
     {

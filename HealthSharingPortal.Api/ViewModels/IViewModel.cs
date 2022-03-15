@@ -1,4 +1,4 @@
-﻿namespace HealthSharingPortal.Api.ViewModels
+﻿namespace HealthSharingPortal.API.ViewModels
 {
     public interface IViewModel<T>
     {

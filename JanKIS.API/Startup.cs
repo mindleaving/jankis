@@ -26,6 +26,7 @@ namespace JanKIS.API
             {
                 new StoreSetup(),
                 new MiscSetup(),
+                new HubSetup(),
                 new ViewModelBuilderSetup(),
                 new ControllerSetup(),
                 new AccessControlSetup(),

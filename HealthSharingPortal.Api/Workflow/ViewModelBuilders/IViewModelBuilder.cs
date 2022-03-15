@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using HealthSharingPortal.Api.ViewModels;
+using HealthSharingPortal.API.ViewModels;
 
-namespace HealthSharingPortal.Api.Workflow.ViewModelBuilders
+namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
 {
     public interface IViewModelBuilder<T>
     {

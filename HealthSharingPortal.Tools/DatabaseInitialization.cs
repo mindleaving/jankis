@@ -1,7 +1,7 @@
 ﻿using System;
 using HealthModels;
-using HealthSharingPortal.Api.AccessControl;
-using HealthSharingPortal.Api.Models;
+using HealthSharingPortal.API.AccessControl;
+using HealthSharingPortal.API.Models;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;

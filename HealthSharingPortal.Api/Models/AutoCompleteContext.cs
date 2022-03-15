@@ -1,4 +1,4 @@
-﻿namespace HealthSharingPortal.Api.Models
+﻿namespace HealthSharingPortal.API.Models
 {
     public static class AutoCompleteContextGenerator
     {

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using HealthSharingPortal.Api.Models;
+using HealthSharingPortal.API.Models;
 
-namespace HealthSharingPortal.Api.Storage
+namespace HealthSharingPortal.API.Storage
 {
     public interface IAccountStore : IStore<Account>
     {

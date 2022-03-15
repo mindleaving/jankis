@@ -3,10 +3,10 @@ using System.IO;
 using System.Reflection;
 using Commons.Physics;
 using HealthModels;
-using HealthSharingPortal.Api.Models;
+using HealthSharingPortal.API.Models;
 using TypescriptGenerator;
 
-namespace HealthSharingPortal.Api.Setups
+namespace HealthSharingPortal.API.Setups
 {
     public static class TypescriptGeneratorRunner
     {

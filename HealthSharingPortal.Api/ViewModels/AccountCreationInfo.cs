@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using HealthSharingPortal.Api.Models;
+using HealthSharingPortal.API.Models;
 
-namespace HealthSharingPortal.Api.ViewModels
+namespace HealthSharingPortal.API.ViewModels
 {
     public class AccountCreationInfo
     {

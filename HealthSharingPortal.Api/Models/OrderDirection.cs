@@ -1,4 +1,4 @@
-﻿namespace HealthSharingPortal.Api.Models
+﻿namespace HealthSharingPortal.API.Models
 {
     public enum OrderDirection
     {

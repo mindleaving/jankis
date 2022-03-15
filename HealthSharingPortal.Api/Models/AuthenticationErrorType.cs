@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace HealthSharingPortal.Api.Models
+namespace HealthSharingPortal.API.Models
 {
     [JsonConverter(typeof(StringEnumConverter))]
     public enum AuthenticationErrorType

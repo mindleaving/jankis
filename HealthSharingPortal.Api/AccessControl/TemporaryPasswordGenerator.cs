@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Commons;
 
-namespace HealthSharingPortal.Api.AccessControl
+namespace HealthSharingPortal.API.AccessControl
 {
     public static class TemporaryPasswordGenerator
     {

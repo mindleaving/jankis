@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HealthSharingPortal.Api.Helpers
+namespace HealthSharingPortal.API.Helpers
 {
     public static class SearchTermSplitter
     {

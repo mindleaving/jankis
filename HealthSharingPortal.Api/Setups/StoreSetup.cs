@@ -4,8 +4,8 @@ using HealthModels.DiagnosticTestResults;
 using HealthModels.MedicalTextEditor;
 using HealthModels.Medication;
 using HealthModels.Observations;
-using HealthSharingPortal.Api.Models;
-using HealthSharingPortal.Api.Storage;
+using HealthSharingPortal.API.Models;
+using HealthSharingPortal.API.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
@@ -13,7 +13,7 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
 
-namespace HealthSharingPortal.Api.Setups
+namespace HealthSharingPortal.API.Setups
 {
     public class StoreSetup : ISetup
     {
