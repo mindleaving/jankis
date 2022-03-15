@@ -24,7 +24,7 @@ export const StudiesPage = (props: StudiesPageProps) => {
     return (
         <>
             <h1>Studies</h1>
-            <FormGroup>
+            <FormGroup className='mb-2'>
                 <FormLabel>{resolveText("Search")}</FormLabel>
                 <FormControl
                     value={filter.searchText ?? ''}
@@ -33,12 +33,14 @@ export const StudiesPage = (props: StudiesPageProps) => {
                 />
             </FormGroup>
             <PagedTable
+                bordered
                 onPageChanged={studiesLoader.load}
                 hasCreateNewButton={user.accountType === AccountType.Researcher}
                 onCreateNew={() => navigate("/create/study")}
             >
                 <tbody>
-                    {studies.map(study => (
+                    {studies.length > 0
+                    ? studies.map(study => (
                         <tr key={study.id}>
                             <td>
                                 <b>{study.title}</b>
@@ -52,7 +54,10 @@ export const StudiesPage = (props: StudiesPageProps) => {
                                 </ul>
                             </td>
                         </tr>
-                    ))}
+                    ))
+                    : <tr>
+                        <td colSpan={2} className="text-center">{resolveText("NoEntries")}</td>
+                    </tr>}
                 </tbody>
             </PagedTable>
         </>

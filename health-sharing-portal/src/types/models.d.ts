@@ -12,8 +12,7 @@ export namespace Models {
         lastStayDate?: Date | null;
     }
 
-    interface Admission {
-        id: string;
+    interface Admission extends Models.IId {
         patientId: string;
         profileData: Models.Person;
         isReadmission: boolean;
@@ -26,16 +25,14 @@ export namespace Models {
         
     }
 
-    interface Contact {
-        id: string;
+    interface Contact extends Models.IId {
         name: string;
         phoneNumber?: string;
         email?: string;
         note?: string;
     }
 
-    interface Department {
-        id: string;
+    interface Department extends Models.IId {
         name: string;
         institutionId: string;
         parentDepartmentId?: string;
@@ -52,14 +49,13 @@ export namespace Models {
         id: string;
     }
 
-    interface Institution {
-        id: string;
+    interface Institution extends Models.IId {
         name: string;
         roomIds: string[];
         departmentIds: string[];
     }
 
-    interface IPatientEvent {
+    interface IPatientEvent extends Models.IId {
         type: Enums.PatientEventType;
         patientId: string;
         admissionId?: string;
@@ -67,29 +63,16 @@ export namespace Models {
         timestamp: Date;
     }
 
-    interface PatientDocument {
-        id: string;
-        type: Enums.PatientEventType;
-        patientId: string;
-        admissionId?: string;
-        createdBy: string;
-        timestamp: Date;
+    interface PatientDocument extends Models.IPatientEvent {
         note: string;
         fileName: string;
     }
 
-    interface PatientNote {
-        type: Enums.PatientEventType;
-        id: string;
-        patientId: string;
-        admissionId?: string;
-        createdBy: string;
-        timestamp: Date;
+    interface PatientNote extends Models.IPatientEvent {
         message: string;
     }
 
-    interface Person {
-        id: string;
+    interface Person extends Models.IId {
         firstName: string;
         lastName: string;
         birthDate: Date;
@@ -98,8 +81,7 @@ export namespace Models {
         healthInsurance?: Models.HealthInsurance;
     }
 
-    interface Account {
-        id: string;
+    interface Account extends Models.IId {
         personId: string;
         accountType: Enums.AccountType;
         username: string;
@@ -112,16 +94,9 @@ export namespace Models {
         error: Enums.AuthenticationErrorType;
     }
 
-    interface Author {
+    interface Author extends Models.Person {
         orcId: string;
         organizations: string[];
-        id: string;
-        firstName: string;
-        lastName: string;
-        birthDate: Date;
-        sex: Enums.Sex;
-        addresses: Models.Address[];
-        healthInsurance?: Models.HealthInsurance;
     }
 
     interface AutocompleteCacheItem {
@@ -141,8 +116,7 @@ export namespace Models {
         publicationDate: Date;
     }
 
-    interface Study {
-        id: string;
+    interface Study extends Models.IId {
         title: string;
         description: string;
         contactPersons: Models.Contact[];
@@ -154,97 +128,55 @@ export namespace Models {
     }
 
     export namespace Symptoms {
-        interface BodyStructure {
-            id: string;
+        interface BodyStructure extends Models.IId {
             icdCode: string;
             name: string;
             categoryIcdCode: string;
         }
     
-        interface LocalizedSymptom {
+        interface LocalizedSymptom extends Models.Symptoms.Symptom {
             bodyStructures: Models.Symptoms.BodyStructure[];
-            id: string;
+        }
+    
+        interface Symptom extends Models.IId {
             type: Enums.SymptomType;
             name: string;
         }
     
-        interface Symptom {
-            id: string;
-            type: Enums.SymptomType;
-            name: string;
-        }
-    
-        interface SystemicSymptom {
-            id: string;
-            type: Enums.SymptomType;
-            name: string;
+        interface SystemicSymptom extends Models.Symptoms.Symptom {
+            
         }
     }
 
     export namespace Observations {
-        interface BloodPressureObservation {
-            measurementType: string;
+        interface BloodPressureObservation extends Models.Observations.Observation {
             systolic: number;
             diastolic: number;
-            id: string;
-            type: Enums.PatientEventType;
-            patientId: string;
-            admissionId?: string;
-            createdBy: string;
-            timestamp: Date;
         }
     
-        interface GenericObservation {
-            measurementType: string;
+        interface GenericObservation extends Models.Observations.Observation {
             value: string;
             unit: string;
-            id: string;
-            type: Enums.PatientEventType;
-            patientId: string;
-            admissionId?: string;
-            createdBy: string;
-            timestamp: Date;
         }
     
-        interface Observation {
+        interface Observation extends Models.IPatientEvent {
             measurementType: string;
-            id: string;
-            type: Enums.PatientEventType;
-            patientId: string;
-            admissionId?: string;
-            createdBy: string;
-            timestamp: Date;
         }
     
-        interface PulseObservation {
-            measurementType: string;
+        interface PulseObservation extends Models.Observations.Observation {
             bpm: number;
             location: string;
-            id: string;
-            type: Enums.PatientEventType;
-            patientId: string;
-            admissionId?: string;
-            createdBy: string;
-            timestamp: Date;
         }
     
-        interface TemperatureObservation {
-            measurementType: string;
+        interface TemperatureObservation extends Models.Observations.Observation {
             value: number;
             unit: string;
             bodyPart: string;
-            id: string;
-            type: Enums.PatientEventType;
-            patientId: string;
-            admissionId?: string;
-            createdBy: string;
-            timestamp: Date;
         }
     }
 
     export namespace Medication {
-        interface Drug {
-            id: string;
+        interface Drug extends Models.IId {
             brand: string;
             productName: string;
             activeIngredients: string[];
@@ -254,13 +186,7 @@ export namespace Models {
             applicationSite: string;
         }
     
-        interface MedicationDispension {
-            id: string;
-            type: Enums.PatientEventType;
-            patientId: string;
-            admissionId?: string;
-            createdBy: string;
-            timestamp: Date;
+        interface MedicationDispension extends Models.IPatientEvent {
             drug: Models.Medication.Drug;
             unit: string;
             value: number;
@@ -268,8 +194,7 @@ export namespace Models {
             note?: string;
         }
     
-        interface MedicationSchedule {
-            id: string;
+        interface MedicationSchedule extends Models.IId {
             name?: string;
             patientId: string;
             admissionId?: string;
@@ -279,8 +204,7 @@ export namespace Models {
             isDispendedByPatient: boolean;
         }
     
-        interface MedicationScheduleItem {
-            id: string;
+        interface MedicationScheduleItem extends Models.IId {
             drug: Models.Medication.Drug;
             dispensions: Models.Medication.MedicationDispension[];
             note: string;
@@ -290,19 +214,16 @@ export namespace Models {
     }
 
     export namespace MedicalTextEditor {
-        interface AbbreviationMedicalTextPart {
-            type: Enums.MedicalTextPartType;
+        interface AbbreviationMedicalTextPart extends Models.MedicalTextEditor.MedicalTextPart {
             abbreviation: string;
             fullText: string;
         }
     
-        interface DiseaseMedicalTextPart {
-            type: Enums.MedicalTextPartType;
+        interface DiseaseMedicalTextPart extends Models.MedicalTextEditor.MedicalTextPart {
             icd11Code: string;
         }
     
-        interface MedicalText {
-            id: string;
+        interface MedicalText extends Models.IId {
             title: string;
             author: Models.Person;
             recipient: Models.Contact;
@@ -313,15 +234,13 @@ export namespace Models {
             type: Enums.MedicalTextPartType;
         }
     
-        interface PersonalizedAbbreviation {
-            id: string;
+        interface PersonalizedAbbreviation extends Models.IId {
             username: string;
             abbreviation: string;
             fullText: string;
         }
     
-        interface TextMedicalTextPart {
-            type: Enums.MedicalTextPartType;
+        interface TextMedicalTextPart extends Models.MedicalTextEditor.MedicalTextPart {
             text: string;
         }
     }
@@ -336,27 +255,20 @@ export namespace Models {
     }
 
     export namespace Icd {
-        interface IcdBlock {
-            name: string;
-            subEntries: Models.Icd.IcdEntry[];
+        interface IcdBlock extends Models.Icd.IcdEntry {
+            
         }
     
-        interface IcdCategory {
-            id: string;
+        interface IcdCategory extends Models.Icd.IcdEntry, Models.IId {
             code: string;
-            name: string;
-            subEntries: Models.Icd.IcdEntry[];
         }
     
-        interface IcdChapter {
-            id: string;
-            name: string;
-            subEntries: Models.Icd.IcdEntry[];
+        interface IcdChapter extends Models.Icd.IcdEntry, Models.IId {
+            
         }
     
-        interface IcdEntry {
-            name: string;
-            subEntries: Models.Icd.IcdEntry[];
+        interface IcdEntry extends Models.Icd.IIcdEntry {
+            
         }
     
         interface IIcdEntry {
@@ -365,7 +277,7 @@ export namespace Models {
         }
     
         export namespace Annotation {
-            interface Disease {
+            interface Disease extends Models.IId {
                 icdCode: string;
                 name: string;
                 editLock?: Models.Icd.Annotation.DiseaseLock;
@@ -385,20 +297,9 @@ export namespace Models {
                 createdTimestamp: Date;
             }
         
-            interface InfectiousDisease {
+            interface InfectiousDisease extends Models.Icd.Annotation.Disease {
                 pathogens: Models.Icd.Annotation.Epidemiology.Microb[];
                 hosts: Models.Icd.Annotation.Epidemiology.DiseaseHost[];
-                icdCode: string;
-                name: string;
-                editLock?: Models.Icd.Annotation.DiseaseLock;
-                categoryIcdCode: string;
-                affectedBodyStructures: Models.Symptoms.BodyStructure[];
-                symptoms: Models.Symptoms.Symptom[];
-                observations: Models.Icd.Annotation.Diagnostics.Observation[];
-                diagnosticCriteria: Models.Icd.Annotation.Diagnostics.DiagnosticCriteria[];
-                epidemiology: Models.Icd.Annotation.Epidemiology.DiseaseEpidemiology;
-                riskFactors: Models.Icd.Annotation.Epidemiology.RiskFactor[];
-                references: string[];
             }
         
             export namespace Epidemiology {
@@ -408,19 +309,17 @@ export namespace Models {
                     mortalityDataPoints: Models.Icd.Annotation.Epidemiology.MortalityDataPoint[];
                 }
             
-                interface DiseaseHost {
-                    id: string;
+                interface DiseaseHost extends Models.IId {
                     name: string;
                 }
             
-                interface ILocation {
+                interface ILocation extends Models.IId {
                     type: Enums.LocationType;
                     name: string;
                     coordinate: MongoDB.Driver.GeoJsonObjectModel.GeoJson2DGeographicCoordinates;
                 }
             
-                interface IncidenceDataPoint {
-                    id: string;
+                interface IncidenceDataPoint extends Models.IId {
                     incidence: number;
                     location: Models.Icd.Annotation.Epidemiology.Location;
                     timeOfYear?: Enums.TimeOfYear[];
@@ -429,32 +328,26 @@ export namespace Models {
                     preexistingCondition?: string;
                 }
             
-                interface Location {
-                    id: string;
-                    type: Enums.LocationType;
-                    name: string;
+                interface Location extends Models.Icd.Annotation.Epidemiology.ILocation {
                     country: string;
                     countryCode: string;
-                    coordinate: MongoDB.Driver.GeoJsonObjectModel.GeoJson2DGeographicCoordinates;
                 }
             
-                interface Microb {
+                interface Microb extends Models.IId {
                     icdCode: string;
                     type: Enums.MicrobType;
                     name: string;
                     categoryIcdCode: string;
                 }
             
-                interface MortalityDataPoint {
-                    id: string;
+                interface MortalityDataPoint extends Models.IId {
                     mortality: number;
                     yearsAfterDiagnosis: number;
                     sex?: Enums.Sex | null;
                     ageRange?: Commons.Mathematics.Range<number>;
                 }
             
-                interface PrevalenceDataPoint {
-                    id: string;
+                interface PrevalenceDataPoint extends Models.IId {
                     prevalence: number;
                     location: Models.Icd.Annotation.Epidemiology.Location;
                     sex?: Enums.Sex | null;
@@ -468,18 +361,12 @@ export namespace Models {
             }
         
             export namespace Diagnostics {
-                interface DiagnosticCriteria {
-                    diagnosticTestLoincCode: string;
-                    diagnosticTestName: string;
-                    scaleType: Enums.DiagnosticTestScaleType;
+                interface DiagnosticCriteria extends Models.Icd.Annotation.Diagnostics.IDiagnosticCriteria {
+                    
                 }
             
-                interface DiagnosticTest {
-                    id: string;
-                    loincCode: string;
-                    name: string;
+                interface DiagnosticTest extends Models.Icd.Annotation.Diagnostics.IDiagnosticTest {
                     description: string;
-                    scaleType: Enums.DiagnosticTestScaleType;
                     bodyStructure: string;
                     methodType: string;
                     category: string;
@@ -488,16 +375,12 @@ export namespace Models {
                     formula: string;
                 }
             
-                interface DocumentDiagnosticCriteria {
-                    scaleType: Enums.DiagnosticTestScaleType;
-                    diagnosticTestLoincCode: string;
-                    diagnosticTestName: string;
+                interface DocumentDiagnosticCriteria extends Models.Icd.Annotation.Diagnostics.DiagnosticCriteria {
+                    
                 }
             
-                interface FreetextDiagnosticCriteria {
-                    scaleType: Enums.DiagnosticTestScaleType;
-                    diagnosticTestLoincCode: string;
-                    diagnosticTestName: string;
+                interface FreetextDiagnosticCriteria extends Models.Icd.Annotation.Diagnostics.DiagnosticCriteria {
+                    
                 }
             
                 interface IDiagnosticCriteria {
@@ -506,54 +389,38 @@ export namespace Models {
                     scaleType: Enums.DiagnosticTestScaleType;
                 }
             
-                interface IDiagnosticTest {
+                interface IDiagnosticTest extends Models.IId {
                     loincCode: string;
                     name: string;
                     scaleType: Enums.DiagnosticTestScaleType;
                 }
             
-                interface NominalDiagnosticCriteria {
-                    scaleType: Enums.DiagnosticTestScaleType;
+                interface NominalDiagnosticCriteria extends Models.Icd.Annotation.Diagnostics.DiagnosticCriteria {
                     expectedResponses: string[];
-                    diagnosticTestLoincCode: string;
-                    diagnosticTestName: string;
                 }
             
-                interface Observation {
-                    id: string;
+                interface Observation extends Models.IId {
                     name: string;
                     bodyStructure?: Models.Symptoms.BodyStructure;
                 }
             
-                interface OrdinalDiagnosticCriteria {
-                    scaleType: Enums.DiagnosticTestScaleType;
+                interface OrdinalDiagnosticCriteria extends Models.Icd.Annotation.Diagnostics.DiagnosticCriteria {
                     expectedResponses: string[];
-                    diagnosticTestLoincCode: string;
-                    diagnosticTestName: string;
                 }
             
-                interface OrdinalQuantativeDiagnosticCriteria {
-                    scaleType: Enums.DiagnosticTestScaleType;
+                interface OrdinalQuantativeDiagnosticCriteria extends Models.Icd.Annotation.Diagnostics.DiagnosticCriteria {
                     expectedResponses: string[];
                     rangeStart?: math.Unit;
                     rangeEnd?: math.Unit;
-                    diagnosticTestLoincCode: string;
-                    diagnosticTestName: string;
                 }
             
-                interface QuantativeDiagnosticCriteria {
-                    scaleType: Enums.DiagnosticTestScaleType;
+                interface QuantativeDiagnosticCriteria extends Models.Icd.Annotation.Diagnostics.DiagnosticCriteria {
                     rangeStart?: math.Unit;
                     rangeEnd?: math.Unit;
-                    diagnosticTestLoincCode: string;
-                    diagnosticTestName: string;
                 }
             
-                interface SetDiagnosticCriteria {
-                    scaleType: Enums.DiagnosticTestScaleType;
+                interface SetDiagnosticCriteria extends Models.Icd.Annotation.Diagnostics.DiagnosticCriteria {
                     expectedResponses: string[];
-                    diagnosticTestLoincCode: string;
-                    diagnosticTestName: string;
                 }
             }
         }
@@ -566,208 +433,79 @@ export namespace Models {
     }
 
     export namespace DiagnosticTestResults {
-        interface DiagnosticTestResult {
-            id: string;
-            type: Enums.PatientEventType;
-            patientId: string;
-            admissionId?: string;
-            createdBy: string;
-            timestamp: Date;
-            testCodeLoinc: string;
-            testCodeLocal: string;
-            testName: string;
-            scaleType: Enums.DiagnosticTestScaleType;
+        interface DiagnosticTestResult extends Models.DiagnosticTestResults.IDiagnosticTestResult {
+            
         }
     
-        interface DocumentDiagnosticTestResult {
-            scaleType: Enums.DiagnosticTestScaleType;
+        interface DocumentDiagnosticTestResult extends Models.DiagnosticTestResults.DiagnosticTestResult {
             documentId: string;
-            id: string;
-            type: Enums.PatientEventType;
-            patientId: string;
-            admissionId?: string;
-            createdBy: string;
-            timestamp: Date;
-            testCodeLoinc: string;
-            testCodeLocal: string;
-            testName: string;
         }
     
-        interface FreetextDiagnosticTestResult {
-            scaleType: Enums.DiagnosticTestScaleType;
+        interface FreetextDiagnosticTestResult extends Models.DiagnosticTestResults.DiagnosticTestResult {
             text: string;
-            id: string;
-            type: Enums.PatientEventType;
-            patientId: string;
-            admissionId?: string;
-            createdBy: string;
-            timestamp: Date;
-            testCodeLoinc: string;
-            testCodeLocal: string;
-            testName: string;
         }
     
-        interface IDiagnosticTestResult {
+        interface IDiagnosticTestResult extends Models.IPatientEvent {
             testCodeLoinc: string;
             testCodeLocal: string;
             testName: string;
             scaleType: Enums.DiagnosticTestScaleType;
         }
     
-        interface NominalDiagnosticTestResult {
-            scaleType: Enums.DiagnosticTestScaleType;
+        interface NominalDiagnosticTestResult extends Models.DiagnosticTestResults.DiagnosticTestResult {
             value: string;
-            id: string;
-            type: Enums.PatientEventType;
-            patientId: string;
-            admissionId?: string;
-            createdBy: string;
-            timestamp: Date;
-            testCodeLoinc: string;
-            testCodeLocal: string;
-            testName: string;
         }
     
-        interface OrdinalDiagnosticTestResult {
-            scaleType: Enums.DiagnosticTestScaleType;
+        interface OrdinalDiagnosticTestResult extends Models.DiagnosticTestResults.DiagnosticTestResult {
             value: string;
             numericalValue: number;
-            id: string;
-            type: Enums.PatientEventType;
-            patientId: string;
-            admissionId?: string;
-            createdBy: string;
-            timestamp: Date;
-            testCodeLoinc: string;
-            testCodeLocal: string;
-            testName: string;
         }
     
-        interface QuantitativeDiagnosticTestResult {
-            scaleType: Enums.DiagnosticTestScaleType;
+        interface QuantitativeDiagnosticTestResult extends Models.DiagnosticTestResults.DiagnosticTestResult {
             value: number;
             unit: string;
             referenceRangeStart: number;
             referenceRangeEnd: number;
-            id: string;
-            type: Enums.PatientEventType;
-            patientId: string;
-            admissionId?: string;
-            createdBy: string;
-            timestamp: Date;
-            testCodeLoinc: string;
-            testCodeLocal: string;
-            testName: string;
         }
     
-        interface SetDiagnosticTestResult {
-            scaleType: Enums.DiagnosticTestScaleType;
-            id: string;
-            type: Enums.PatientEventType;
-            patientId: string;
-            admissionId?: string;
-            createdBy: string;
-            timestamp: Date;
-            testCodeLoinc: string;
-            testCodeLocal: string;
-            testName: string;
-        }
-    }
-
-    export namespace Converters {
-        interface DiagnosticCriteriaJsonConverter {
-            canWrite: boolean;
-            canRead: boolean;
-        }
-    
-        interface DiagnosticTestResultJsonConverter {
-            canWrite: boolean;
-            canRead: boolean;
-        }
-    
-        interface DiseaseJsonConverter {
-            canWrite: boolean;
-            canRead: boolean;
-        }
-    
-        interface ObservationsJsonConverter {
-            canWrite: boolean;
-            canRead: boolean;
-        }
-    
-        interface SymptomJsonConverter {
-            canWrite: boolean;
-            canRead: boolean;
-        }
-    }
-
-    export namespace Attributes {
-        interface OfferAutocompleteAttribute {
-            context: string;
-            typeId: any;
+        interface SetDiagnosticTestResult extends Models.DiagnosticTestResults.DiagnosticTestResult {
+            
         }
     }
 
     export namespace AccessControl {
-        interface DateAccessFilter {
-            type: Enums.AccessFilterType;
+        interface DateAccessFilter extends Models.AccessControl.IAccessFilter {
             startDate?: Date | null;
             endDate?: Date | null;
         }
     
-        interface EmergencyAccess {
-            id: string;
-            type: Enums.SharedAccessType;
-            requesterId: string;
-            targetPersonId: string;
-            accessGrantedTimestamp: Date;
-            accessEndTimestamp?: Date | null;
-            isRevoked: boolean;
+        interface EmergencyAccess extends Models.AccessControl.ISharedAccess {
+            
         }
     
-        interface EmergencyAccessRequest {
-            id: string;
-            type: Enums.SharedAccessType;
-            requesterId: string;
-            targetPersonId: string;
-            createdTimestamp: Date;
-            isCompleted: boolean;
-            completedTimestamp?: Date | null;
+        interface EmergencyAccessRequest extends Models.AccessControl.IAccessRequest {
             targetPersonFirstName: string;
             targetPersonLastName: string;
             targetPersonBirthdate: Date;
         }
     
-        interface HealthProfessionalAccess {
-            id: string;
-            type: Enums.SharedAccessType;
-            requesterId: string;
-            targetPersonId: string;
-            accessGrantedTimestamp: Date;
-            accessEndTimestamp?: Date | null;
-            isRevoked: boolean;
+        interface HealthProfessionalAccess extends Models.AccessControl.ISharedAccess {
+            
         }
     
-        interface HealthProfessionalAccessRequest {
-            id: string;
-            type: Enums.SharedAccessType;
-            requesterId: string;
-            targetPersonId: string;
-            createdTimestamp: Date;
-            isCompleted: boolean;
-            completedTimestamp?: Date | null;
+        interface HealthProfessionalAccessRequest extends Models.AccessControl.IAccessRequest {
+            
         }
     
         interface IAccessFilter {
             type: Enums.AccessFilterType;
         }
     
-        interface CategoryAccessFilter {
-            type: Enums.AccessFilterType;
+        interface CategoryAccessFilter extends Models.AccessControl.IAccessFilter {
             categories: Enums.PatientInformationCategory[];
         }
     
-        interface IAccessRequest {
+        interface IAccessRequest extends Models.IId {
             type: Enums.SharedAccessType;
             requesterId: string;
             targetPersonId: string;
@@ -776,7 +514,7 @@ export namespace Models {
             completedTimestamp?: Date | null;
         }
     
-        interface ISharedAccess {
+        interface ISharedAccess extends Models.IId {
             type: Enums.SharedAccessType;
             requesterId: string;
             targetPersonId: string;
@@ -785,26 +523,12 @@ export namespace Models {
             isRevoked: boolean;
         }
     
-        interface ResearchAccess {
-            id: string;
-            type: Enums.SharedAccessType;
-            requesterId: string;
-            targetPersonId: string;
+        interface ResearchAccess extends Models.AccessControl.ISharedAccess {
             studyId: string;
             accessFilters: Models.AccessControl.IAccessFilter[];
-            accessGrantedTimestamp: Date;
-            accessEndTimestamp?: Date | null;
-            isRevoked: boolean;
         }
     
-        interface ResearchAccessRequest {
-            id: string;
-            type: Enums.SharedAccessType;
-            requesterId: string;
-            targetPersonId: string;
-            createdTimestamp: Date;
-            isCompleted: boolean;
-            completedTimestamp?: Date | null;
+        interface ResearchAccessRequest extends Models.AccessControl.IAccessRequest {
             studyId: string;
             accessFilters: Models.AccessControl.IAccessFilter[];
         }
@@ -813,10 +537,13 @@ export namespace Models {
 export namespace MongoDB {
     export namespace Driver {
         export namespace GeoJsonObjectModel {
-            interface GeoJson2DGeographicCoordinates {
-                values: number[];
+            interface GeoJson2DGeographicCoordinates extends MongoDB.Driver.GeoJsonObjectModel.GeoJsonCoordinates {
                 longitude: number;
                 latitude: number;
+            }
+        
+            interface GeoJsonCoordinates extends System.IEquatable<MongoDB.Driver.GeoJsonObjectModel.GeoJsonCoordinates> {
+                values: number[];
             }
         }
     }
@@ -827,5 +554,10 @@ export namespace Commons {
             from: T;
             to: T;
         }
+    }
+}
+export namespace System {
+    interface IEquatable<GeoJsonCoordinates> {
+        
     }
 }

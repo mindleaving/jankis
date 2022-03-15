@@ -1,4 +1,4 @@
-import { Models, MongoDB, Commons } from './models.d';
+import { Models, MongoDB, Commons, System } from './models.d';
 import * as Enums from './enums.d';
 
 export namespace ViewModels {
@@ -8,7 +8,7 @@ export namespace ViewModels {
         accountType: Enums.AccountType;
     }
 
-    interface AccountViewModel {
+    interface AccountViewModel extends ViewModels.IViewModel<Models.Account> {
         username: string;
         accountType: Enums.AccountType;
         profileData: Models.Person;
@@ -24,5 +24,9 @@ export namespace ViewModels {
         username: string;
         isPasswordResetRequired: boolean;
         accountType: Enums.AccountType;
+    }
+
+    interface IViewModel<Account> {
+        
     }
 }

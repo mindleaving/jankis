@@ -1,4 +1,4 @@
-import { Models, MongoDB, Commons } from './models.d';
+import { Models, MongoDB, Commons, System } from './models.d';
 import * as Enums from './enums.d';
 
 export namespace ViewModels {
@@ -8,7 +8,7 @@ export namespace ViewModels {
         accountType: Enums.AccountType;
     }
 
-    interface AccountViewModel {
+    interface AccountViewModel extends ViewModels.IViewModel<Models.Account> {
         username: string;
         accountType: Enums.AccountType;
         profileData: Models.Person;
@@ -17,71 +17,36 @@ export namespace ViewModels {
         departments: Models.Department[];
     }
 
-    interface AttachedEquipmentViewModel {
+    interface AttachedEquipmentViewModel extends Models.AttachedEquipment & ViewModels.IViewModel<Models.AttachedEquipment> {
         materialViewModels: ViewModels.MaterialViewModel[];
-        id: string;
-        type: Enums.PatientEventType;
-        patientId: string;
-        admissionId: string;
-        createdBy: string;
-        timestamp: Date;
-        equipmentType: string;
-        materials: Models.MaterialReference[];
-        attachmentTime: Date;
-        detachmentTime?: Date | null;
     }
 
-    interface ConsumableOrderViewModel {
+    interface ConsumableOrderViewModel extends Models.ConsumableOrder & ViewModels.IViewModel<Models.ConsumableOrder> {
         consumable: Models.Consumable;
         stockViewModels: ViewModels.StockViewModel[];
         requesterViewModel: ViewModels.AccountViewModel;
-        id: string;
-        consumableId: string;
-        consumableName: string;
-        requester: string;
-        quantity: number;
-        preferredSources: string[];
-        note: string;
-        state: Enums.OrderState;
-        assignedTo?: string;
-        followUpOrderId?: string;
-        timestamps: Models.ConsumableOrderStateChange[];
     }
 
-    interface ConsumableViewModel {
+    interface ConsumableViewModel extends Models.Consumable & ViewModels.IViewModel<Models.Consumable> {
         stockStateViewModels: ViewModels.StockStateViewModel[];
-        id: string;
-        name: string;
-        stockStates: Models.StockState[];
     }
 
-    interface DepartmentViewModel {
+    interface DepartmentViewModel extends Models.Department & ViewModels.IViewModel<Models.Department> {
         parentDepartment?: ViewModels.DepartmentViewModel;
-        id: string;
-        name: string;
-        institutionId: string;
-        parentDepartmentId?: string;
-        roomIds: string[];
     }
 
-    interface InstitutionViewModel {
+    interface InstitutionViewModel extends Models.Institution & ViewModels.IViewModel<Models.Institution> {
         rooms: Models.Room[];
         departments: ViewModels.DepartmentViewModel[];
-        id: string;
-        name: string;
-        roomIds: string[];
-        departmentIds: string[];
     }
 
     interface IViewModel<T> {
         
     }
 
-    interface LocationViewModel {
+    interface LocationViewModel extends Models.LocationReference & ViewModels.IViewModel<Models.LocationReference> {
         department?: ViewModels.DepartmentViewModel;
         room?: Models.Room;
-        type: Enums.InstitutionLocationType;
-        id: string;
     }
 
     interface LoggedInUserViewModel {
@@ -121,50 +86,75 @@ export namespace ViewModels {
         subscription: Models.Subscriptions.PatientSubscription;
     }
 
-    interface ResourceViewModel {
+    interface ResourceViewModel extends Models.Resource & ViewModels.IViewModel<Models.Resource> {
         locationViewModel?: ViewModels.LocationViewModel;
-        id: string;
-        name: string;
-        location?: Models.LocationReference;
-        groupName?: string;
-        note: string;
     }
 
-    interface ServiceAudienceViewModel {
-        type: Enums.ServiceAudienceType;
+    interface ServiceAudienceViewModel extends Models.ServiceAudience & ViewModels.IViewModel<Models.ServiceAudience> {
         role?: Models.Role;
         person?: Models.Person;
     }
 
-    interface ServiceViewModel {
+    interface ServiceViewModel extends Models.ServiceDefinition & ViewModels.IViewModel<Models.ServiceDefinition> {
         department: ViewModels.DepartmentViewModel;
         audienceViewModels: ViewModels.ServiceAudienceViewModel[];
-        id: string;
-        name: string;
-        description: string;
-        parameters: Models.ServiceParameter[];
-        audience: Models.ServiceAudience[];
-        departmentId: string;
-        autoAcceptRequests: boolean;
-        isAvailable: boolean;
     }
 
-    interface StockStateViewModel {
+    interface StockStateViewModel extends Models.StockState & ViewModels.IViewModel<Models.StockState> {
         stock: ViewModels.StockViewModel;
         audience: ViewModels.ServiceAudienceViewModel[];
-        stockId: string;
-        quantity: number;
-        isOrderable: boolean;
-        isUnlimitedOrderable: boolean;
-        orderableBy: Models.ServiceAudience[];
     }
 
-    interface StockViewModel {
+    interface StockViewModel extends Models.Stock & ViewModels.IViewModel<Models.Stock> {
         department: ViewModels.DepartmentViewModel;
         locationViewModel: ViewModels.LocationViewModel;
-        id: string;
-        name: string;
-        location: Models.LocationReference;
-        departmentId: string;
+    }
+
+    interface IViewModel<Account> {
+        
+    }
+
+    interface IViewModel<AttachedEquipment> {
+        
+    }
+
+    interface IViewModel<ConsumableOrder> {
+        
+    }
+
+    interface IViewModel<Consumable> {
+        
+    }
+
+    interface IViewModel<Department> {
+        
+    }
+
+    interface IViewModel<Institution> {
+        
+    }
+
+    interface IViewModel<LocationReference> {
+        
+    }
+
+    interface IViewModel<Resource> {
+        
+    }
+
+    interface IViewModel<ServiceAudience> {
+        
+    }
+
+    interface IViewModel<ServiceDefinition> {
+        
+    }
+
+    interface IViewModel<StockState> {
+        
+    }
+
+    interface IViewModel<Stock> {
+        
     }
 }

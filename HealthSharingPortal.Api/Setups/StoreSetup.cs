@@ -59,6 +59,7 @@ namespace HealthSharingPortal.API.Setups
             SetupTypeStores<PatientNote>(services);
             SetupTypeStores<Person>(services);
             SetupTypeStores<PersonalizedAbbreviation>(services);
+            SetupTypeStores<Study>(services);
         }
 
         private static void SetupTypeStores<T>(IServiceCollection services) where T: IId

@@ -29,6 +29,7 @@ namespace HealthSharingPortal.API
                 new AccessControlSetup(),
                 new CorsSetup(),
                 new OpenApiSetup(),
+                new SignalRSetup()
             };
             foreach (var setup in setups)
             {

@@ -3,6 +3,8 @@ using System.IO;
 using System.Reflection;
 using Commons.Physics;
 using HealthModels;
+using HealthModels.Attributes;
+using HealthModels.Converters;
 using HealthSharingPortal.API.Models;
 using TypescriptGenerator;
 
@@ -15,12 +17,19 @@ namespace HealthSharingPortal.API.Setups
             var repositoryPath = Constants.GetRepositoryPath();
             TypescriptGenerator.TypescriptGenerator.Builder
                 .IncludeAllInNamespace(Assembly.GetAssembly(typeof(Person)), "HealthModels")
-                .IncludeAllInNamespace(Assembly.GetAssembly(typeof(StudyParticipation)), "HealthSharingPortal.Api.Models")
-                .IncludeAllInNamespace(Assembly.GetAssembly(typeof(StudyParticipation)), "HealthSharingPortal.Api.ViewModels")
+                .IncludeAllInNamespace(Assembly.GetAssembly(typeof(StudyParticipation)), "HealthSharingPortal.API.Models")
+                .IncludeAllInNamespace(Assembly.GetAssembly(typeof(StudyParticipation)), "HealthSharingPortal.API.ViewModels")
+                .Exclude<OfferAutocompleteAttribute>()
+                .Exclude<DiagnosticCriteriaJsonConverter>()
+                .Exclude<DiagnosticTestResultJsonConverter>()
+                .Exclude<DiseaseJsonConverter>()
+                .Exclude<ObservationsJsonConverter>()
+                .Exclude<ObservationsJsonConverter>()
+                .Exclude<SymptomJsonConverter>()
                 .ReactDefaults()
                 .ConfigureNamespace("HealthModels", options => options.Translation = "Models")
-                .ConfigureNamespace("HealthSharingPortal.Api.Models", options => options.Translation = "Models")
-                .ConfigureNamespace("HealthSharingPortal.Api.ViewModels", options =>
+                .ConfigureNamespace("HealthSharingPortal.API.Models", options => options.Translation = "Models")
+                .ConfigureNamespace("HealthSharingPortal.API.ViewModels", options =>
                 {
                     options.Translation = "ViewModels";
                     options.Filename = "viewModels.d.ts";

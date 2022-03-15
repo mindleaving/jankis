@@ -1,8 +1,6 @@
 ﻿using System.Threading.Tasks;
-using HealthModels;
 using HealthModels.AccessControl;
 using HealthSharingPortal.API.Hubs;
-using HealthSharingPortal.API.Storage;
 using Microsoft.AspNetCore.SignalR;
 
 namespace HealthSharingPortal.API.Workflow
@@ -15,14 +13,11 @@ namespace HealthSharingPortal.API.Workflow
     public class AccessRequestDistributor : IAccessRequestDistributor
     {
         private readonly IHubContext<AccessRequestHub, IAccessRequestHubClient> accessRequestHub;
-        private readonly IReadonlyStore<Person> personsStore;
 
         public AccessRequestDistributor(
-            IHubContext<AccessRequestHub, IAccessRequestHubClient> accessRequestHub, 
-            IReadonlyStore<Person> personsStore)
+            IHubContext<AccessRequestHub, IAccessRequestHubClient> accessRequestHub)
         {
             this.accessRequestHub = accessRequestHub;
-            this.personsStore = personsStore;
         }
 
         public async Task NotifyNewHealthProfessionalAccessRequest(HealthProfessionalAccessRequest accessRequest)

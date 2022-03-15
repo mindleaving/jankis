@@ -3,6 +3,8 @@ using System.IO;
 using System.Reflection;
 using Commons.Physics;
 using HealthModels;
+using HealthModels.Attributes;
+using HealthModels.Converters;
 using JanKIS.API.Models;
 using TypescriptGenerator;
 
@@ -18,6 +20,13 @@ namespace JanKIS.API.Workflow
                 .IncludeAllInNamespace(Assembly.GetAssembly(typeof(BedOccupancy)), "JanKIS.API.Models")
                 .IncludeAllInNamespace(Assembly.GetAssembly(typeof(BedOccupancy)), "JanKIS.API.ViewModels")
                 .Exclude<Account>()
+                .Exclude<OfferAutocompleteAttribute>()
+                .Exclude<DiagnosticCriteriaJsonConverter>()
+                .Exclude<DiagnosticTestResultJsonConverter>()
+                .Exclude<DiseaseJsonConverter>()
+                .Exclude<ObservationsJsonConverter>()
+                .Exclude<ObservationsJsonConverter>()
+                .Exclude<SymptomJsonConverter>()
                 .ReactDefaults()
                 .ConfigureNamespace("HealthModels", options => options.Translation = "Models")
                 .ConfigureNamespace("JanKIS.API.Models", options => options.Translation = "Models")
