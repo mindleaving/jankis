@@ -14,3 +14,11 @@
   margin-left: 5px;
   cursor: pointer;
 }
+.registerButton {
+  width: 160px;
+}
+.signUpButton {
+  width: 200px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}

@@ -1,10 +1,11 @@
 import React, { FormEvent, useState } from 'react';
-import { Col, Container, Form, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
+import { Button, Col, Container, Form, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { AsyncButton } from '../components/AsyncButton';
 import { resolveText } from '../helpers/Globalizer';
 import { NotificationManager, NotificationContainer } from 'react-notifications';
 import { apiClient } from '../communication/ApiClient';
 import { ViewModels } from '../types/viewModels';
+import { useNavigate, useParams } from 'react-router-dom';
 
 interface LoginPageProps {
     onLoggedIn: (userViewModel: ViewModels.LoggedInUserViewModel) => void;
@@ -12,6 +13,7 @@ interface LoginPageProps {
 
 export const LoginPage = (props: LoginPageProps) => {
 
+    const { role } = useParams();
     const [ username, setUsername ] = useState<string>('');
     const [ password, setPassword ] = useState<string>('');
     const [ isLoggingIn, setIsLoggingIn ] = useState<boolean>(false);
@@ -30,6 +32,7 @@ export const LoginPage = (props: LoginPageProps) => {
         }
     }
 
+    const navigate = useNavigate();
     return (
         <>
             <NotificationContainer />
@@ -59,12 +62,28 @@ export const LoginPage = (props: LoginPageProps) => {
                         />
                     </Col>
                 </FormGroup>
-                <AsyncButton
-                    type="submit"
-                    activeText={resolveText('Login')}
-                    executingText={resolveText('LoggingIn...')}
-                    isExecuting={isLoggingIn}
-                />
+                <Row>
+                    <Col>
+                        <AsyncButton
+                            type="submit"
+                            activeText={resolveText('Login')}
+                            executingText={resolveText('LoggingIn...')}
+                            isExecuting={isLoggingIn}
+                        />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <hr />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col></Col>
+                    <Col xs="auto">
+                        <Button className='registerButton' onClick={() => navigate(`/register/${role}`)}>{resolveText("Register")}</Button>
+                    </Col>
+                    <Col></Col>
+                </Row>
             </Container>
             </Form>
         </>

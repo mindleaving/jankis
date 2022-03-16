@@ -16,6 +16,7 @@ import { ImagingUploadPage } from './pages/ImagingUploadPage';
 import { LoginPage } from './pages/LoginPage';
 import { PatientPage } from './pages/PatientPage';
 import { PatientsListPage } from './pages/PatientsListPage';
+import { RegisterAccountPage } from './pages/RegisterAccountPage';
 import { ResearcherHomePage } from './pages/ResearcherHomePage';
 import { SharerHomePage } from './pages/SharerHomePage';
 import { StudiesPage } from './pages/StudiesPage';
@@ -35,6 +36,10 @@ function App() {
             navigate("/");
         }
     }
+    const onLogOut = () => {
+        setLoggedInUser(undefined);
+        navigate("/");
+    }
 
     if (!loggedInUser) {
         return (
@@ -43,6 +48,7 @@ function App() {
                     <Col>
                         <Routes>
                             <Route path="/login/:role" element={<LoginPage onLoggedIn={onLoggedIn} />} />
+                            <Route path="/register/:role" element={<RegisterAccountPage />} />
                             <Route path="/" element={<HomePage />} />
                         </Routes>
                     </Col>
@@ -69,7 +75,7 @@ function App() {
 
     return (
         <UserContext.Provider value={loggedInUser}>
-            <Layout onLogOut={() => setLoggedInUser(undefined)}>
+            <Layout onLogOut={onLogOut}>
                 <Routes>
                     <Route path="/create/study" element={<CreateEditStudyPage />} />
                     <Route path="/edit/study/:id" element={<CreateEditStudyPage />} />

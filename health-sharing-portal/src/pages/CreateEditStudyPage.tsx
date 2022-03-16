@@ -46,7 +46,10 @@ export const CreateEditStudyPage = (props: CreateEditStudyPageProps) => {
                 <FormGroup>
                     <FormLabel>{resolveText("Study_ContactPersons")}</FormLabel>
                     <Button onClick={() => setShowContactPersonModal(true)}>{resolveText("Add")}</Button>
-                    <CreateEditContactPersonModal show={showContactPersonModal} />
+                    <CreateEditContactPersonModal 
+                        show={showContactPersonModal} 
+                        onCloseRequested={() => setShowContactPersonModal(false)}
+                    />
                     <ListFormControl
                         items={contactPersons}
                         displayFunc={x => x.name}
@@ -57,7 +60,10 @@ export const CreateEditStudyPage = (props: CreateEditStudyPageProps) => {
                 <FormGroup>
                     <FormLabel>{resolveText("Study_Publications")}</FormLabel>
                     <Button onClick={() => setShowPublicationModal(true)}>{resolveText("Add")}</Button>
-                    <CreateEditPublicationModal show={showPublicationModal} />
+                    <CreateEditPublicationModal 
+                        show={showPublicationModal}
+                        onCloseRequested={() => setShowPublicationModal(false)}
+                    />
                     <ListFormControl
                         items={publications}
                         displayFunc={x => x.title}

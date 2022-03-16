@@ -17,35 +17,28 @@ export const ContactPersonForm = (props: ContactPersonFormProps) => {
         properties: {
             name: {
                 type: "string",
-                title: "Title"
+                title: "Name"
             },
-            abstract: {
+            telephone: {
                 type: "string",
-                title: "Abstract"
+                title: "Telephone"
             },
-            authors: {
-                type: "array",
-                items: {
-                    type: "object",
-                    properties: {
-                        name: {
-                            type: "string",
-                            title: "Name"
-                        },
-                        organization: {
-                            type: "string",
-                            title: "Organization"
-                        }
-                    },
-                    required: [ "name" ]
-                }
+            relation: {
+                type: "string",
+                enum: [ "Family", "Friend", "Guardian" ],
+                title: "Relation"
+            },
+            note: {
+                type: "string",
+                title: "Note"
             }
         },
-        required: [ "name" ]
-    }
+        required: [ "name", "telephone", "relation" ]
+    };
     const [ contactPerson, setContactPerson ] = useState<Models.Contact>({
         id: uuid(),
-        name: ''
+        name: '',
+        note: ''
     });
 
     const onChange = (e: IChangeEvent) => {
