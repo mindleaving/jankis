@@ -22,7 +22,7 @@ export const BodyStructuresList = (props: BodyStructuresListProps) => {
         try {
             let response;
             if(props.filter.searchText) {
-                response = await apiClient.get(
+                response = await apiClient.instance!.get(
                     'api/bodystructures/search',
                     { 
                         searchText: props.filter.searchText,
@@ -30,14 +30,14 @@ export const BodyStructuresList = (props: BodyStructuresListProps) => {
                         skip: (pageIndex * entriesPerPage) + ''
                     });
             } else {
-                response = await apiClient.get('api/bodystructures', {
+                response = await apiClient.instance!.get('api/bodystructures', {
                     count: entriesPerPage + '',
                     skip: (pageIndex * entriesPerPage) + ''
                 });
             }
             const bodyStructures = await response.json() as Models.Symptoms.BodyStructure[];
             setBodyStructures(bodyStructures);
-        } catch(error) {
+        } catch(error: any) {
             NotificationManager.error(error.message, 'Could not load body structures');
         }
     }, [ props.filter ]);

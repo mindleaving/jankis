@@ -27,14 +27,14 @@ import { DiseaseLocks } from '../components/DiseaseEditForm/DiseaseLocks';
 interface DiseaseEditFormPageParams {
     icdCode: string;
 }
-interface DiseaseEditFormPageProps extends RouteComponentProps<DiseaseEditFormPageParams> {
+interface DiseaseEditFormPageProps {
     username?: string;
 }
 
 export const DiseaseEditFormPage = (props: DiseaseEditFormPageProps) => {
 
-    const isNew = props.match.path === "/diseases/new";
-    const matchedIcdCode = props.match.params.icdCode ?? '';
+    const isNew = location.pathname === "/diseases/new";
+    const matchedIcdCode = icdCode ?? '';
     
 
     const [isStoring, setIsStoring] = useState<boolean>(false);
@@ -65,7 +65,7 @@ export const DiseaseEditFormPage = (props: DiseaseEditFormPageProps) => {
         if (isNew) return;
         const loadDisease = async () => {
             try {
-                const response = await apiClient.get(`api/diseases/${matchedIcdCode}`, {});
+                const response = await apiClient.instance!.get(`api/diseases/${matchedIcdCode}`, {});
                 const disease = await response.json() as Models.Icd.Annotation.Disease;
                 setIcdCode(disease.icdCode);
                 setCategoryIcdCode(disease.categoryIcdCode ?? '');
@@ -91,7 +91,7 @@ export const DiseaseEditFormPage = (props: DiseaseEditFormPageProps) => {
         }
         const loadDescendants = async () => {
             try {
-                const response = await apiClient.get('api/diseases/hierarchy', { prefix: matchedIcdCode});
+                const response = await apiClient.instance!.get('api/diseases/hierarchy', { prefix: matchedIcdCode});
                 const items: IcdTreeViewEntry[]  = await response.json();
                 if(items.length > 0 && items[0].subEntries.length > 0) {
                     items[0].isInitiallyExpanded = true;
@@ -99,7 +99,7 @@ export const DiseaseEditFormPage = (props: DiseaseEditFormPageProps) => {
                 } else {
                     setDescendants([]);
                 }
-            } catch(error) {
+            } catch(error: any) {
                 NotificationManager.error(error.message, 'Could not load descendants');
             }
         }
@@ -144,7 +144,7 @@ export const DiseaseEditFormPage = (props: DiseaseEditFormPageProps) => {
         const disease: Models.Icd.Annotation.Disease = buildDisease();
         try {
             setIsStoring(true);
-            await apiClient.put(`/api/diseases/${disease.icdCode}`, {}, disease);
+            await apiClient.instance!.put(`/api/diseases/${disease.icdCode}`, {}, disease);
             NotificationManager.success('Disease was stored :)');
         } catch (error) {
             NotificationManager.error(error.message, 'Could not store disease');

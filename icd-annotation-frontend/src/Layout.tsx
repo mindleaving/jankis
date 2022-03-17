@@ -4,7 +4,7 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Button from 'react-bootstrap/Button';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { NotificationContainer } from 'react-notifications';
 import { Form } from 'react-bootstrap';
 import { FeedbackModal } from './modals/FeedbackModal';
@@ -17,33 +17,33 @@ interface LayoutProps extends React.PropsWithChildren<{}> {
 
 export const Layout = (props: LayoutProps) => {
     const [showFeedbackModal, setShowFeedbackModal] = useState<boolean>(false);
-    const history = useHistory();
+    const navigate = useNavigate();
     return (
         <>
             <NotificationContainer />
             <Navbar bg="light" expand="md" sticky="top">
-                <Navbar.Brand onClick={() => history.push('/')}>Doctor's To-Do</Navbar.Brand>
+                <Navbar.Brand onClick={() => navigate('/')}>Doctor's To-Do</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto">
-                        <Nav.Link onClick={() => history.push('/')}>Home</Nav.Link>
+                        <Nav.Link onClick={() => navigate('/')}>Home</Nav.Link>
                         
                         <NavDropdown title="For patients" id="basic-nav-dropdown">
-                            <NavDropdown.Item onClick={() => history.push('/questionaire')}>Questionaire</NavDropdown.Item>
+                            <NavDropdown.Item onClick={() => navigate('/questionaire')}>Questionaire</NavDropdown.Item>
                         </NavDropdown>
                         <NavDropdown title="For doctors" id="basic-nav-dropdown">
-                            <NavDropdown.Item onClick={() => history.push('/patients')}>Patients</NavDropdown.Item>
+                            <NavDropdown.Item onClick={() => navigate('/patients')}>Patients</NavDropdown.Item>
                         </NavDropdown>
                         <NavDropdown title="For maintainers" id="basic-nav-dropdown">
-                            <NavDropdown.Item onClick={() => history.push('/tutorials')}>Tutorials</NavDropdown.Item>
+                            <NavDropdown.Item onClick={() => navigate('/tutorials')}>Tutorials</NavDropdown.Item>
                             <NavDropdown.Divider />
-                            <NavDropdown.Item onClick={() => history.push('/diseases')}>Diseases</NavDropdown.Item>
-                            <NavDropdown.Item onClick={() => history.push('/symptoms')}>Symptoms</NavDropdown.Item>
-                            <NavDropdown.Item onClick={() => history.push('/observations')}>Observations</NavDropdown.Item>
-                            <NavDropdown.Item onClick={() => history.push('/bodystructures')}>Body structures</NavDropdown.Item>
+                            <NavDropdown.Item onClick={() => navigate('/diseases')}>Diseases</NavDropdown.Item>
+                            <NavDropdown.Item onClick={() => navigate('/symptoms')}>Symptoms</NavDropdown.Item>
+                            <NavDropdown.Item onClick={() => navigate('/observations')}>Observations</NavDropdown.Item>
+                            <NavDropdown.Item onClick={() => navigate('/bodystructures')}>Body structures</NavDropdown.Item>
                         </NavDropdown>
 
-                        <Nav.Link onClick={() => history.push('/legal')}>Legal</Nav.Link>
+                        <Nav.Link onClick={() => navigate('/legal')}>Legal</Nav.Link>
                     </Nav>
                     <Form inline className="mr-3 my-1 my-md-0">
                         {props.username ? <Form.Label className="mr-3">Hello, {props.username}</Form.Label> : null}

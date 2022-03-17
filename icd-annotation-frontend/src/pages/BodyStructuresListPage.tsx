@@ -22,7 +22,7 @@ export const BodyStructuresListPage = (props: BodyStructuresListPageProps) => {
 
     useEffect(() => {
         const loadDiseaseHierarchy = async () => {
-            const response = await apiClient.get('api/diseases/icdchapters', {});
+            const response = await apiClient.instance!.get('api/diseases/icdchapters', {});
             const hierarchy = await response.json() as IcdChapter[];
             setDiseaseHierarchy(hierarchy.filter((item, idx) => idx < 23));
         }
@@ -43,18 +43,18 @@ export const BodyStructuresListPage = (props: BodyStructuresListPageProps) => {
     const assignBodyStructureToDiseases = async () => {
         const selectedDiseases = getSelectedDiseaseCodes(diseaseHierarchy);
         try {
-            await apiClient.post(`api/bodystructures/${selectedBodyStructure?.id}/batchassign`, {}, selectedDiseases);
+            await apiClient.instance!.post(`api/bodystructures/${selectedBodyStructure?.id}/batchassign`, {}, selectedDiseases);
             NotificationManager.success('Body structures assigned to selected diseases');
-        } catch(error) {
+        } catch(error: any) {
             NotificationManager.error(error.message, 'Could not assign body structure');
         }
     }
     const removeBodyStructureFromDiseases = async () => {
         const selectedDiseases = getSelectedDiseaseCodes(diseaseHierarchy);
         try {
-            await apiClient.post(`api/bodystructures/${selectedBodyStructure?.id}/batchremove`, {}, selectedDiseases);
+            await apiClient.instance!.post(`api/bodystructures/${selectedBodyStructure?.id}/batchremove`, {}, selectedDiseases);
             NotificationManager.success('Body structures removed from selected diseases');
-        } catch(error) {
+        } catch(error: any) {
             NotificationManager.error(error.message, 'Could not remove body structure');
         }
     }

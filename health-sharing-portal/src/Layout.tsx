@@ -2,13 +2,13 @@ import React, { PropsWithChildren, useContext } from 'react';
 import { Container, Row, Col, Navbar, Nav } from 'react-bootstrap';
 import { NotificationContainer } from 'react-notifications';
 import { useNavigate } from 'react-router-dom';
-import { AdminMenu } from './components/Menus/AdminMenu';
-import { HealthProfessionalMenu } from './components/Menus/HealthProfessionalMenu';
-import { LoggedInUser } from './components/Menus/LoggedInUser';
-import { ResearcherMenu } from './components/Menus/ResearcherMenu';
-import { SharerMenu } from './components/Menus/SharerMenu';
-import UserContext from './contexts/UserContext';
-import { AccountType } from './types/enums.d';
+import { AdminMenu } from './localComponents/components/Menus/AdminMenu';
+import { HealthProfessionalMenu } from './localComponents/components/Menus/HealthProfessionalMenu';
+import { LoggedInUser } from './localComponents/components/Menus/LoggedInUser';
+import { ResearcherMenu } from './localComponents/components/Menus/ResearcherMenu';
+import { SharerMenu } from './localComponents/components/Menus/SharerMenu';
+import UserContext from './localComponents/contexts/UserContext';
+import { AccountType } from './localComponents/types/enums.d';
 
 interface LayoutProps extends React.PropsWithChildren<{}> {
     onLogOut: () => void;

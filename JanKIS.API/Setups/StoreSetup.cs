@@ -4,6 +4,7 @@ using HealthModels.DiagnosticTestResults;
 using HealthModels.MedicalTextEditor;
 using HealthModels.Medication;
 using HealthModels.Observations;
+using HealthModels.Services;
 using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;

@@ -1,29 +1,37 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import { Route, Routes, useNavigate } from 'react-router-dom';
-import { apiClient } from './communication/ApiClient';
-import UserContext from './contexts/UserContext';
 import { Layout } from './Layout';
-import { AccountsPage } from './pages/AccountsPage';
-import { AdminHomePage } from './pages/AdminHomePage';
-import { CreateEditStudyPage } from './pages/CreateEditStudyPage';
-import { GenomeUploadPage } from './pages/GenomeUploadPage';
-import { GiveHealthProfesionalAccessPage } from './pages/GiveHealthProfesionalAccessPage';
-import { HealthDataOverviewPage } from './pages/HealthDataOverviewPage';
-import { HealthProfessionalHomePage } from './pages/HealthProfessionalHomePage';
-import { HomePage } from './pages/HomePage';
-import { ImagingUploadPage } from './pages/ImagingUploadPage';
-import { LoginPage } from './pages/LoginPage';
-import { PatientPage } from './pages/PatientPage';
-import { PatientsListPage } from './pages/PatientsListPage';
-import { RegisterAccountPage } from './pages/RegisterAccountPage';
-import { ResearcherHomePage } from './pages/ResearcherHomePage';
-import { SharerHomePage } from './pages/SharerHomePage';
-import { StudiesPage } from './pages/StudiesPage';
-import { StudyPage } from './pages/StudyPage';
-import './styles/App.css';
-import { AccountType } from './types/enums.d';
-import { ViewModels } from './types/viewModels';
+import UserContext from './localComponents/contexts/UserContext';
+import { AccountsPage } from './localComponents/pages/AccountsPage';
+import { AdminHomePage } from './localComponents/pages/AdminHomePage';
+import { CreateEditStudyPage } from './localComponents/pages/CreateEditStudyPage';
+import { GenomeUploadPage } from './localComponents/pages/GenomeUploadPage';
+import { GiveHealthProfesionalAccessPage } from './localComponents/pages/GiveHealthProfesionalAccessPage';
+import { HealthDataOverviewPage } from './localComponents/pages/HealthDataOverviewPage';
+import { HealthProfessionalHomePage } from './localComponents/pages/HealthProfessionalHomePage';
+import { HomePage } from './localComponents/pages/HomePage';
+import { ImagingUploadPage } from './localComponents/pages/ImagingUploadPage';
+import { LoginPage } from './localComponents/pages/LoginPage';
+import { PatientPage } from './localComponents/pages/PatientPage';
+import { PatientsListPage } from './localComponents/pages/PatientsListPage';
+import { RegisterAccountPage } from './localComponents/pages/RegisterAccountPage';
+import { ResearcherHomePage } from './localComponents/pages/ResearcherHomePage';
+import { SharerHomePage } from './localComponents/pages/SharerHomePage';
+import { StudiesPage } from './localComponents/pages/StudiesPage';
+import { StudyPage } from './localComponents/pages/StudyPage';
+import { AccountType } from './localComponents/types/enums.d';
+import { ViewModels } from './localComponents/types/viewModels';
+import { ApiClient, apiClient } from './sharedCommonComponents/communication/ApiClient';
+import './localComponents/styles/App.css';
+import { defaultGlobalizer, Globalizer } from './sharedCommonComponents/helpers/Globalizer';
+import germanTranslation from './localComponents/resources/translation.de.json';
+import englishTranslation from './localComponents/resources/translation.en.json';
+
+defaultGlobalizer.instance = new Globalizer("de", "en", [ germanTranslation, englishTranslation ]);
+apiClient.instance = window.location.hostname.toLowerCase() === "localhost"
+    ? new ApiClient(window.location.hostname, 44303)
+    : new ApiClient(window.location.hostname, 443);
 
 function App() {
 
@@ -31,7 +39,7 @@ function App() {
     const navigate = useNavigate();
     const onLoggedIn = (userViewModel: ViewModels.LoggedInUserViewModel) => {
         if (userViewModel.authenticationResult.isAuthenticated) {
-            apiClient.setAccessToken(userViewModel.authenticationResult.accessToken!);
+            apiClient.instance!.setAccessToken(userViewModel.authenticationResult.accessToken!);
             setLoggedInUser(userViewModel);
             navigate("/");
         }

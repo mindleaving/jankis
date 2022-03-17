@@ -22,6 +22,27 @@ export enum SymptomType {
     Localized = "Localized",
     Systemic = "Systemic"
 }
+export enum ServiceAudienceType {
+    All = "All",
+    Role = "Role",
+    Person = "Person"
+}
+export enum ServiceParameterValueType {
+    Text = "Text",
+    Number = "Number",
+    Patient = "Patient",
+    Option = "Option",
+    Boolean = "Boolean"
+}
+export enum ServiceRequestState {
+    Requested = "Requested",
+    CancelledByRequester = "CancelledByRequester",
+    Declined = "Declined",
+    Accepted = "Accepted",
+    ReadyWhenYouAre = "ReadyWhenYouAre",
+    InProgress = "InProgress",
+    Fulfilled = "Fulfilled"
+}
 export enum MeasurementType {
     Pulse = "Pulse",
     BloodPressure = "BloodPressure",

@@ -20,7 +20,7 @@ namespace HealthSharingPortal.Tools
         public void CreateLocalizationIdDictionary()
         {
             
-            var localizationOutputFile = Path.Combine(FrontendDirectory, "src", "resources", "translation.en.json");
+            var localizationOutputFile = Path.Combine(FrontendDirectory, "src", "localComponents", "resources", "translation.en.json");
             var tsFiles = Directory.GetFiles(Path.Combine(FrontendDirectory, "src"), "*.ts?", SearchOption.AllDirectories);
             var existingLocalizations = JObject.Parse(File.ReadAllText(localizationOutputFile));
             var existingResourceIds = existingLocalizations.Properties().Select(x => x.Name);

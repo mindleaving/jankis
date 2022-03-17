@@ -117,6 +117,116 @@ export namespace Models {
         }
     }
 
+    export namespace Services {
+        interface AllServiceAudience extends Models.Services.ServiceAudience {
+            
+        }
+    
+        interface BooleanServiceParameter extends Models.Services.ServiceParameter {
+            
+        }
+    
+        interface BooleanServiceParameterResponse extends Models.Services.ServiceParameterResponse {
+            isTrue: boolean;
+        }
+    
+        interface DiagnosticTestDefinition extends Models.Services.ServiceDefinition {
+            testCodeLoinc: string;
+            testCodeLocal: string;
+            category: string;
+            scaleType: Enums.DiagnosticTestScaleType;
+        }
+    
+        interface QuantitativeDiagnosticTestDefinition extends Models.Services.DiagnosticTestDefinition {
+            unit: string;
+            referenceRangeStart: number;
+            referenceRangeEnd: number;
+        }
+    
+        interface NumberServiceParameter extends Models.Services.ServiceParameter {
+            value: number;
+            lowerLimit?: number | null;
+            upperLimit?: number | null;
+        }
+    
+        interface NumberServiceParameterResponse extends Models.Services.ServiceParameterResponse {
+            value: number;
+        }
+    
+        interface OptionsServiceParameter extends Models.Services.ServiceParameter {
+            options: string[];
+        }
+    
+        interface OptionsServiceParameterResponse extends Models.Services.ServiceParameterResponse {
+            selectedOption: string;
+        }
+    
+        interface PatientServiceParameter extends Models.Services.ServiceParameter {
+            
+        }
+    
+        interface PatientServiceParameterResponse extends Models.Services.ServiceParameterResponse {
+            patient: Models.Person;
+        }
+    
+        interface PersonServiceAudience extends Models.Services.ServiceAudience {
+            personId: string;
+        }
+    
+        interface RoleServiceAudience extends Models.Services.ServiceAudience {
+            roleId: string;
+        }
+    
+        interface ServiceAudience {
+            type: Enums.ServiceAudienceType;
+        }
+    
+        interface ServiceDefinition extends Models.IId {
+            name: string;
+            description: string;
+            parameters: Models.Services.ServiceParameter[];
+            audience: Models.Services.ServiceAudience[];
+            departmentId: string;
+            autoAcceptRequests: boolean;
+            isAvailable: boolean;
+        }
+    
+        interface ServiceParameter {
+            name: string;
+            description: string;
+            valueType: Enums.ServiceParameterValueType;
+        }
+    
+        interface ServiceParameterResponse {
+            parameterName: string;
+            valueType: Enums.ServiceParameterValueType;
+        }
+    
+        interface ServiceRequest extends Models.IId {
+            service: Models.Services.ServiceDefinition;
+            requester: string;
+            parameterResponses: { [key: string]: Models.Services.ServiceParameterResponse };
+            requesterNote: string;
+            state: Enums.ServiceRequestState;
+            timestamps: Models.Services.ServiceRequestStateChange[];
+            assignedTo?: string;
+            handlerNote: string;
+        }
+    
+        interface ServiceRequestStateChange {
+            newState: Enums.ServiceRequestState;
+            timestamp: Date;
+        }
+    
+        interface TextServiceParameter extends Models.Services.ServiceParameter {
+            value: string;
+        }
+    
+        interface TextServiceParameterResponse extends Models.Services.ServiceParameterResponse {
+            value: string;
+        }
+    }
+
     export namespace Observations {
         interface BloodPressureObservation extends Models.Observations.Observation {
             systolic: number;

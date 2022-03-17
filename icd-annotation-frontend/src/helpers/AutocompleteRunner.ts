@@ -18,7 +18,7 @@ export class AutocompleteRunner<T> {
         if(this.maxSuggestions) {
             params['count'] = this.maxSuggestions + '';
         }
-        const response = await apiClient.get(this.url, params);
+        const response = await apiClient.instance!.get(this.url, params);
         const items = await response.json() as T[];
         return items;
     }

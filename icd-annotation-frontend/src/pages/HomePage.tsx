@@ -1,6 +1,6 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { LoginInfo } from '../components/Tutorials/LoginInfo';
 
 interface HomePageProps {
@@ -9,7 +9,7 @@ interface HomePageProps {
 
 export const HomePage = (props: HomePageProps) => {
 
-    const history = useHistory();
+    const navigate = useNavigate();
     const icd11WithExplanation = (
     <span 
         title="Ein von der WHO erstellter Katalog aller Krankheiten" 
@@ -21,7 +21,7 @@ export const HomePage = (props: HomePageProps) => {
     return (
         <>
             <div className="d-flex justify-content-center mb-3">
-                <Button size="lg" className="mx-auto" onClick={() => history.push('/diseases')}>
+                <Button size="lg" className="mx-auto" onClick={() => navigate('/diseases')}>
                     Direkt zu den Daten<br />
                     <small>(Bitte bei Gelegenheit die Projektbeschreibung lesen)</small>
                 </Button>
@@ -65,16 +65,16 @@ export const HomePage = (props: HomePageProps) => {
             <p>Wähle einen Bereich mit dem du helfen möchtest</p>
             <ul style={{ listStyleType: 'none' }}>
                 <li>
-                    <Button variant="link" onClick={() => history.push('/tutorials/icd11')}>Annotiere den ICD-11</Button>
+                    <Button variant="link" onClick={() => navigate('/tutorials/icd11')}>Annotiere den ICD-11</Button>
                 </li>
                 <li>
-                    <Button variant="link" onClick={() => history.push('/tutorials/patientsquestionaire')} disabled>Entwickle den Patientenbogen</Button>
+                    <Button variant="link" onClick={() => navigate('/tutorials/patientsquestionaire')} disabled>Entwickle den Patientenbogen</Button>
                 </li>
                 <li>
-                    <Button variant="link" onClick={() => history.push('/tutorials/docsupport')} disabled>Entwickle den Ärzte-Ratgeber</Button>
+                    <Button variant="link" onClick={() => navigate('/tutorials/docsupport')} disabled>Entwickle den Ärzte-Ratgeber</Button>
                 </li>
                 <li>
-                    <Button variant="link" onClick={() => history.push('/tutorials/app')} disabled>Entwickle die Android-App</Button>
+                    <Button variant="link" onClick={() => navigate('/tutorials/app')} disabled>Entwickle die Android-App</Button>
                 </li>
             </ul>
             <h3>Verfügbarkeit der Seite</h3>

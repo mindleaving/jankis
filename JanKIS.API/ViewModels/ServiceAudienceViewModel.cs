@@ -1,4 +1,5 @@
 ﻿using HealthModels;
+using HealthModels.Services;
 using JanKIS.API.Models;
 using TypescriptGenerator.Attributes;
 

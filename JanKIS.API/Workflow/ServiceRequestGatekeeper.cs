@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using HealthModels.Services;
 using JanKIS.API.Models;
 using JanKIS.API.ViewModels;
 

@@ -26,7 +26,7 @@ export const UnitValueFormControl = (props: UnitValueFormControlProps) => {
             const unit = mathjs.unit!(str.replace(',', '.'));
             setIsValid(true);
             props.onChange(unit);
-        } catch(error) {
+        } catch(error: any) {
             setIsValid(false);
             props.onChange(undefined);
         }

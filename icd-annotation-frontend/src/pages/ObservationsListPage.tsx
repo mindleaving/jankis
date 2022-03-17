@@ -22,7 +22,7 @@ export const ObservationsListPage = (props: ObservationsListPageProps) => {
 
     useEffect(() => {
         const loadDiseaseHierarchy = async () => {
-            const response = await apiClient.get('api/diseases/icdchapters', {});
+            const response = await apiClient.instance!.get('api/diseases/icdchapters', {});
             const hierarchy = await response.json() as IcdChapter[];
             setDiseaseHierarchy(hierarchy.filter((item, idx) => idx < 23));
         }
@@ -39,18 +39,18 @@ export const ObservationsListPage = (props: ObservationsListPageProps) => {
     const assignObservationToDiseases = async () => {
         const selectedDiseases = getSelectedDiseaseCodes(diseaseHierarchy);
         try {
-            await apiClient.post(`api/observations/${selectedObservation?.id}/batchassign`, {}, selectedDiseases);
+            await apiClient.instance!.post(`api/observations/${selectedObservation?.id}/batchassign`, {}, selectedDiseases);
             NotificationManager.success('Observation assigned to selected diseases');
-        } catch(error) {
+        } catch(error: any) {
             NotificationManager.error(error.message, 'Could not assign observations');
         }
     }
     const removeObservationFromDiseases = async () => {
         const selectedDiseases = getSelectedDiseaseCodes(diseaseHierarchy);
         try {
-            await apiClient.post(`api/observations/${selectedObservation?.id}/batchremove`, {}, selectedDiseases);
+            await apiClient.instance!.post(`api/observations/${selectedObservation?.id}/batchremove`, {}, selectedDiseases);
             NotificationManager.success('Observation removed from selected diseases');
-        } catch(error) {
+        } catch(error: any) {
             NotificationManager.error(error.message, 'Could not remove observations');
         }
     }

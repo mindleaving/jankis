@@ -80,10 +80,10 @@ export const TransferControls = (props: TransferControlsProps) => {
             .filter(x => x !== props.icdCode); // Remove current disease
         try {
             for(const item of items) {
-                await apiClient.post(`api/${typeName}s/${idSelector(item)}/batchassign`, {}, selectedDiseases);
+                await apiClient.instance!.post(`api/${typeName}s/${idSelector(item)}/batchassign`, {}, selectedDiseases);
             }
             NotificationManager.success(`${firstLetterToUpper(typeName)}s successfully transferred`);
-        } catch(error) {
+        } catch(error: any) {
             NotificationManager.error(error.message, `Could not transfer ${typeName.toLowerCase()}s`);
         } finally {
             setIsTransferring(false);

@@ -35,11 +35,11 @@ export const DiseaseHostModal = (props: DiseaseHostModalProps) => {
             name: name
         };
         try {
-            await apiClient.put(`api/diseasehosts/${diseaseHost.id}`, {}, diseaseHost);
+            await apiClient.instance!.put(`api/diseasehosts/${diseaseHost.id}`, {}, diseaseHost);
             NotificationManager.success('Disease host created/updated!');
             props.onDiseaseHostCreated(diseaseHost);
             reset();
-        } catch(error){
+        } catch(error: any){
             NotificationManager.error('Could not store disease host: ', error.message);
         }
     }

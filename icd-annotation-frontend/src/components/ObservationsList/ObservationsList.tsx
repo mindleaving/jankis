@@ -27,7 +27,7 @@ export const ObservationsList = (props: ObservationsListProps) => {
         try {
             let response;
             if(props.filter.searchText) {
-                response = await apiClient.get(
+                response = await apiClient.instance!.get(
                     'api/observations/search',
                     { 
                         searchText: props.filter.searchText,
@@ -35,14 +35,14 @@ export const ObservationsList = (props: ObservationsListProps) => {
                         skip: (pageIndex * entriesPerPage) + ''
                     });
             } else {
-                response = await apiClient.get('api/observations', {
+                response = await apiClient.instance!.get('api/observations', {
                     count: entriesPerPage + '',
                     skip: (pageIndex * entriesPerPage) + ''
                 });
             }
             const observations = await response.json() as Models.Icd.Annotation.Diagnostics.Observation[];
             setObservations(observations);
-        } catch(error) {
+        } catch(error: any) {
             NotificationManager.error(error.message, 'Could not load observations');
         }
     }, [ props.filter ]);
@@ -69,10 +69,10 @@ export const ObservationsList = (props: ObservationsListProps) => {
         }
         try {
             const id = observation.id;
-            await apiClient.delete(`api/observations/${id}`, {});
+            await apiClient.instance!.delete(`api/observations/${id}`, {});
             NotificationManager.success('Observation deleted!');
             setObservations(observations.filter(x => x.id !== id));
-        } catch(error) {
+        } catch(error: any) {
             NotificationManager.error('Could not delete observation', error.message);
         }
     }

@@ -28,7 +28,7 @@ export const SymptomsList = (props: SymptomsListProps) => {
         try {
             let response;
             if(props.filter.searchText) {
-                response = await apiClient.get(
+                response = await apiClient.instance!.get(
                     'api/symptoms/search',
                     { 
                         searchText: props.filter.searchText,
@@ -36,14 +36,14 @@ export const SymptomsList = (props: SymptomsListProps) => {
                         skip: (pageIndex * entriesPerPage) + ''
                     });
             } else {
-                response = await apiClient.get('api/symptoms', {
+                response = await apiClient.instance!.get('api/symptoms', {
                     count: entriesPerPage + '',
                     skip: (pageIndex * entriesPerPage) + ''
                 });
             }
             const symptoms = await response.json() as Models.Symptoms.Symptom[];
             setSymptoms(symptoms);
-        } catch(error) {
+        } catch(error: any) {
             NotificationManager.error(error.message, 'Could not load symptoms');
         }
     }, [ props.filter ]);
@@ -78,10 +78,10 @@ export const SymptomsList = (props: SymptomsListProps) => {
         }
         try {
             const id = symptom.id;
-            await apiClient.delete(`api/symptoms/${id}`, {});
+            await apiClient.instance!.delete(`api/symptoms/${id}`, {});
             NotificationManager.success('Symptom deleted!');
             setSymptoms(symptoms.filter(x => x.id !== id));
-        } catch(error) {
+        } catch(error: any) {
             NotificationManager.error('Could not delete symptom', error.message);
         }
     }

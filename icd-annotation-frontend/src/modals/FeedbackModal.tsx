@@ -22,11 +22,11 @@ export const FeedbackModal = (props: FeedbackModalProps) => {
                 url: window.location.href,
                 message: message
             }
-            await apiClient.post('api/feedback', {}, feedback);
+            await apiClient.instance!.post('api/feedback', {}, feedback);
             NotificationManager.success('Thank you for your feedback :)');
             setMessage('');
             props.onCancel();
-        } catch(error) {
+        } catch(error: any) {
             NotificationManager.error(error.message, 'Could not send feedback');
         }
     }

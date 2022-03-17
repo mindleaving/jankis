@@ -2,7 +2,7 @@ import React from 'react';
 import Accordion from 'react-bootstrap/Accordion';
 import Card from 'react-bootstrap/Card';
 import Button from "react-bootstrap/Button";
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { LoginInfo } from '../components/Tutorials/LoginInfo';
 
 interface IcdTutorialPageProps {
@@ -10,7 +10,7 @@ interface IcdTutorialPageProps {
 }
 
 export const IcdTutorialPage = (props: IcdTutorialPageProps) => {
-    const history = useHistory();
+    const navigate = useNavigate();
     return (
         <>
             <h1>Annotiere den ICD-11</h1>
@@ -52,7 +52,7 @@ export const IcdTutorialPage = (props: IcdTutorialPageProps) => {
                             Verschaffe dir erst einen Überblick über die Aufgabe indem du dir die Seiten unter dem Menüpunkt "For maintainers" anguckst. Beginne am besten hier:
                         </p>
                         <ul style={{ listStyleType: 'none' }}>
-                            <li><Button variant="link" onClick={() => history.push('/diseases')}>Liste aller ICD-11 Krankheiten</Button> (&gt; 16.000 Einträge!)</li>
+                            <li><Button variant="link" onClick={() => navigate('/diseases')}>Liste aller ICD-11 Krankheiten</Button> (&gt; 16.000 Einträge!)</li>
                         </ul>
                         <p>
                             Um die Krankheiten des ICD-11 zu annotieren sollte man sich einen von den folgenden Aspekten der Krankheiten aussuchen, 

@@ -19,7 +19,7 @@ export const DiseaseLocks = (props: DiseaseLocksProps) => {
     useEffect(() => {
         const connectToHub = async () => {
             const connection = new HubConnectionBuilder()
-                .withUrl(`http://${apiClient.serverAddress}:${apiClient.port}/hubs/diseaselock`)
+                .withUrl(`http://${apiClient.instance!.serverAddress}:${apiClient.instance!.port}/hubs/diseaselock`)
                 .withAutomaticReconnect()
                 .build();
             try {
@@ -28,7 +28,7 @@ export const DiseaseLocks = (props: DiseaseLocksProps) => {
                     setLock(lock);
                 });
                 connection.send('SubscribeToDisease', props.icdCode);
-            } catch(error) {
+            } catch(error: any) {
                 NotificationManager.error(error.message, 'Could not subscribe to locks. Other users may be editing this disease!');
             }
         }
@@ -49,11 +49,11 @@ export const DiseaseLocks = (props: DiseaseLocksProps) => {
             return;
         }
         try {
-            const response = await apiClient.post(`api/diseases/${props.icdCode}/lock`, { username: props.username}, {}, false);
+            const response = await apiClient.instance!.post(`api/diseases/${props.icdCode}/lock`, { username: props.username}, {}, false);
             if(response.status === 409) {
                 NotificationManager.error("You don't have permission to unlock");
             }
-        } catch(error) {
+        } catch(error: any) {
             NotificationManager.error(error.message, 'Could not obtain lock!');
         }
     }
@@ -62,11 +62,11 @@ export const DiseaseLocks = (props: DiseaseLocksProps) => {
             return;
         }
         try {
-            const response = await apiClient.post(`api/diseases/${props.icdCode}/unlock`, { username: props.username}, {}, false);
+            const response = await apiClient.instance!.post(`api/diseases/${props.icdCode}/unlock`, { username: props.username}, {}, false);
             if(response.status === 409) {
                 NotificationManager.error("You don't have permission to unlock");
             }
-        } catch(error) {
+        } catch(error: any) {
             NotificationManager.error(error.message, 'Could not unlock');
         }
     }

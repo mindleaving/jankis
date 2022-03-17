@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using HealthModels;
 using HealthModels.DiagnosticTestResults;
+using HealthModels.Services;
 using JanKIS.API.Models;
 using MongoDB.Driver;
 using NUnit.Framework;

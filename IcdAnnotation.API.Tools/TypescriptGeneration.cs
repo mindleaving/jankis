@@ -1,4 +1,5 @@
-﻿using IcdAnnotation.API.Workflow;
+﻿using IcdAnnotation.API.Setups;
+using IcdAnnotation.API.Workflow;
 using NUnit.Framework;
 
 namespace IcdAnnotation.API.Tools

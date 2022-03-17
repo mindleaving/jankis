@@ -26,6 +26,9 @@ namespace HealthSharingPortal.API.Setups
                 .Exclude<ObservationsJsonConverter>()
                 .Exclude<ObservationsJsonConverter>()
                 .Exclude<SymptomJsonConverter>()
+                .Exclude<ServiceAudienceJsonConverter>()
+                .Exclude<ServiceParameterJsonConverter>()
+                .Exclude<ServiceParameterResponseJsonConverter>()
                 .ReactDefaults()
                 .ConfigureNamespace("HealthModels", options => options.Translation = "Models")
                 .ConfigureNamespace("HealthSharingPortal.API.Models", options => options.Translation = "Models")
@@ -36,7 +39,7 @@ namespace HealthSharingPortal.API.Setups
                 })
                 .CustomizeType(x => x == typeof(UnitValue), _ => "math.Unit")
                 .CustomizeType(x => x == typeof(Guid), _ => "string")
-                .SetOutputDirectory(Path.Combine(repositoryPath, "health-sharing-portal", "src", "types"))
+                .SetOutputDirectory(Path.Combine(repositoryPath, "health-sharing-portal", "src", "localComponents", "types"))
                 .Generate();
         }
     }

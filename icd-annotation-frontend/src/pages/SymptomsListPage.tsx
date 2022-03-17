@@ -22,7 +22,7 @@ export const SymptomsListPage = (props: SymptomsListPageProps) => {
 
     useEffect(() => {
         const loadDiseaseHierarchy = async () => {
-            const response = await apiClient.get('api/diseases/icdchapters', {});
+            const response = await apiClient.instance!.get('api/diseases/icdchapters', {});
             const hierarchy = await response.json() as IcdChapter[];
             setDiseaseHierarchy(hierarchy.filter((item, idx) => idx < 23));
         }
@@ -39,18 +39,18 @@ export const SymptomsListPage = (props: SymptomsListPageProps) => {
     const assignSymptomToDiseases = async () => {
         const selectedDiseases = getSelectedDiseaseCodes(diseaseHierarchy);
         try {
-            await apiClient.post(`api/symptoms/${selectedSymptom?.id}/batchassign`, {}, selectedDiseases);
+            await apiClient.instance!.post(`api/symptoms/${selectedSymptom?.id}/batchassign`, {}, selectedDiseases);
             NotificationManager.success('Symptom assigned to selected diseases');
-        } catch(error) {
+        } catch(error: any) {
             NotificationManager.error(error.message, 'Could not assign symptoms');
         }
     }
     const removeSymptomFromDiseases = async () => {
         const selectedDiseases = getSelectedDiseaseCodes(diseaseHierarchy);
         try {
-            await apiClient.post(`api/symptoms/${selectedSymptom?.id}/batchremove`, {}, selectedDiseases);
+            await apiClient.instance!.post(`api/symptoms/${selectedSymptom?.id}/batchremove`, {}, selectedDiseases);
             NotificationManager.success('Symptom removed from selected diseases');
-        } catch(error) {
+        } catch(error: any) {
             NotificationManager.error(error.message, 'Could not remove symptoms');
         }
     }

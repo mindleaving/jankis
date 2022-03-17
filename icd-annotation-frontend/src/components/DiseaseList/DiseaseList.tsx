@@ -18,7 +18,7 @@ export const DiseaseList = (props: DiseaseListProps) => {
         try {
             let response;
             if(props.filter.searchText) {
-                response = await apiClient.get(
+                response = await apiClient.instance!.get(
                     'api/diseases/search',
                     { 
                         searchText: props.filter.searchText,
@@ -26,7 +26,7 @@ export const DiseaseList = (props: DiseaseListProps) => {
                         skip: (pageIndex * entriesPerPage) + ''
                     });
             } else {
-                response = await apiClient.post('api/diseases', {
+                response = await apiClient.instance!.post('api/diseases', {
                     count: entriesPerPage + '',
                     skip: (pageIndex * entriesPerPage) + ''
                 },
@@ -34,7 +34,7 @@ export const DiseaseList = (props: DiseaseListProps) => {
             }
             const diseases = await response.json() as Models.Icd.Annotation.Disease[];
             setDiseases(diseases);
-        } catch(error) {
+        } catch(error: any) {
             NotificationManager.error(error.message, 'Could not load diseases');
         }
     }, [ props.filter ]);

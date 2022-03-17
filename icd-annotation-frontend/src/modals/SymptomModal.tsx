@@ -55,11 +55,11 @@ export const SymptomModal = (props: SymptomModalProps) => {
             symptom = localizedSymptom;
         }
         try {
-            await apiClient.put(`api/symptoms/${symptom.id}`, {}, symptom);
+            await apiClient.instance!.put(`api/symptoms/${symptom.id}`, {}, symptom);
             NotificationManager.success('Symptom updated!');
             props.onSymptomCreated(symptom);
             reset();
-        } catch(error){
+        } catch(error: any){
             NotificationManager.error('Could not store symptom: ', error.message);
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using HealthModels;
+using HealthModels.Services;
 using JanKIS.API.Storage;
 
 namespace JanKIS.API.Models

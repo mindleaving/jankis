@@ -42,11 +42,11 @@ export const ObservationModal = (props: ObservationModalProps) => {
             bodyStructure: bodyPart
         };
         try {
-            await apiClient.put(`api/observations/${observation.id}`, {}, observation);
+            await apiClient.instance!.put(`api/observations/${observation.id}`, {}, observation);
             NotificationManager.success('Observation updated!');
             props.onObservationCreated(observation);
             reset();
-        } catch(error){
+        } catch(error: any){
             NotificationManager.error(error.message, 'Could not store observation');
         }
     }
