@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthModels.AccessControl;
 using HealthModels.DiagnosticTestResults;
 using HealthModels.Medication;
 using HealthModels.Observations;
@@ -8,11 +10,13 @@ using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
 using HealthSharingPortal.API.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthSharingPortal.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ViewModelsController : ControllerBase
@@ -27,9 +31,10 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IReadonlyStore<DiagnosticTestResult> testResultsStore;
         private readonly IReadonlyStore<Observation> observationsStore;
         private readonly IReadonlyStore<PatientDocument> documentsStore;
-        private readonly IHealthProfessionalAccessReadonlyStore healthProfessionalAccessStore;
-        private readonly IStudyAssociationReadonlyStore studyAssociationStore;
-        private readonly IStudyEnrollmentReadonlyStore studyEnrollmentStore;
+        private readonly IReadonlyStore<HealthProfessionalAccess> healthProfessionalAccessStore;
+        private readonly IReadonlyStore<StudyAssociation> studyAssociationStore;
+        private readonly IReadonlyStore<StudyEnrollment> studyEnrollmentStore;
+        private readonly IReadonlyStore<Study> studyStore;
 
         public ViewModelsController(
             IHttpContextAccessor httpContextAccessor, 
@@ -42,9 +47,10 @@ namespace HealthSharingPortal.API.Controllers
             IReadonlyStore<DiagnosticTestResult> testResultsStore,
             IReadonlyStore<Observation> observationsStore,
             IReadonlyStore<PatientDocument> documentsStore, 
-            IHealthProfessionalAccessReadonlyStore healthProfessionalAccessStore, 
-            IStudyAssociationReadonlyStore studyAssociationStore,
-            IStudyEnrollmentReadonlyStore studyEnrollmentStore)
+            IReadonlyStore<HealthProfessionalAccess> healthProfessionalAccessStore, 
+            IReadonlyStore<StudyAssociation> studyAssociationStore,
+            IReadonlyStore<StudyEnrollment> studyEnrollmentStore, 
+            IReadonlyStore<Study> studyStore)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.accountStore = accountStore;
@@ -59,6 +65,7 @@ namespace HealthSharingPortal.API.Controllers
             this.healthProfessionalAccessStore = healthProfessionalAccessStore;
             this.studyAssociationStore = studyAssociationStore;
             this.studyEnrollmentStore = studyEnrollmentStore;
+            this.studyStore = studyStore;
         }
 
         [HttpGet("healthdata/{personId}")]
@@ -100,14 +107,38 @@ namespace HealthSharingPortal.API.Controllers
             }
             if (account.AccountType == AccountType.HealthProfessional)
             {
-                return await healthProfessionalAccessStore.HasActiveAccessForPersonAssignedToUser(personId, username);
+                var utcNow = DateTime.UtcNow;
+                var activeAccesses = await healthProfessionalAccessStore
+                    .SearchAsync(x => x.RequesterId == username 
+                                      && x.TargetPersonId == personId 
+                                      && !x.IsRevoked 
+                                      && (x.AccessEndTimestamp == null || x.AccessEndTimestamp > utcNow));
+                return activeAccesses.Any();
             }
             if (account.AccountType == AccountType.Researcher)
             {
-                var associatedStudies = await studyAssociationStore.GetAllStudiesForUser(username);
-                return await studyEnrollmentStore.IsEnrolledInAny(associatedStudies.Select(x => x.StudyId));
+                var associatedStudies = await studyAssociationStore.SearchAsync(x => x.Username == username);
+                var studyIds = associatedStudies.Select(x => x.StudyId).ToList();
+                var studyEnrollments = await studyEnrollmentStore
+                    .SearchAsync(x => studyIds.Contains(x.StudyId) && x.PersonId == personId && x.State == StudyEnrollementState.Enrolled);
+                return studyEnrollments.Any();
             }
             return false;
         }
+
+        [HttpGet("studies/{studyId}")]
+        public async Task<IActionResult> Study([FromRoute] string studyId)
+        {
+            var study = await studyStore.GetByIdAsync(studyId);
+            var enrollments = await studyEnrollmentStore.SearchAsync(x => x.StudyId == studyId);
+            var enrollmentStatistics = new StudyEnrollmentStatistics(enrollments);
+            var viewModel = new StudyViewModel
+            {
+                Study = study,
+                EnrollmentStatistics = enrollmentStatistics
+            };
+            return Ok(viewModel);
+        }
+
     }
 }

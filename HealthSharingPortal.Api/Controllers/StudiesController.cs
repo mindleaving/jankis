@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
-using Commons.Extensions;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
@@ -16,13 +14,13 @@ namespace HealthSharingPortal.API.Controllers
     public class StudiesController : RestControllerBase<Study>
     {
         private readonly IStore<StudyEnrollment> enrollmentStore;
-        private readonly IStudyAssociationStore studyAssociationStore;
+        private readonly IStore<StudyAssociation> studyAssociationStore;
 
         public StudiesController(
             IStore<Study> store, 
             IHttpContextAccessor httpContextAccessor, 
             IStore<StudyEnrollment> enrollmentStore, 
-            IStudyAssociationStore studyAssociationStore)
+            IStore<StudyAssociation> studyAssociationStore)
             : base(store, httpContextAccessor)
         {
             this.enrollmentStore = enrollmentStore;
@@ -32,7 +30,7 @@ namespace HealthSharingPortal.API.Controllers
         [HttpGet("{studyId}/team")]
         public async Task<IActionResult> GetTeam([FromRoute] string studyId)
         {
-            var team = await studyAssociationStore.GetAllForStudy(studyId);
+            var team = await studyAssociationStore.SearchAsync(x => x.StudyId == studyId);
             return Ok(team);
         }
 
@@ -47,11 +45,10 @@ namespace HealthSharingPortal.API.Controllers
             var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
             if (accountType != AccountType.Researcher)
                 return StatusCode((int)HttpStatusCode.Forbidden, "Only researchers associated with the study can see enrollments");
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            var currentUserStudyAssociation = await studyAssociationStore.GetForUserAndStudy(username, studyId);
-            if (currentUserStudyAssociation == null)
+            var isAssociatedWithStudy = await IsCurrentUserAssociatedWithStudy(studyId);
+            if (!isAssociatedWithStudy)
                 return StatusCode((int)HttpStatusCode.Forbidden, "You are not associated with the study");
-            var existingAssociation = await studyAssociationStore.GetForUserAndStudy(newTeamMember.Username, studyId);
+            var existingAssociation = await studyAssociationStore.SearchAsync(x => x.Username == newTeamMember.Username && x.StudyId == studyId);
             if (existingAssociation != null)
                 return Ok();
             await studyAssociationStore.StoreAsync(newTeamMember);
@@ -64,14 +61,19 @@ namespace HealthSharingPortal.API.Controllers
             var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
             if (accountType != AccountType.Researcher)
                 return StatusCode((int)HttpStatusCode.Forbidden, "Only researchers associated with the study can see enrollments");
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            var currentUserStudyAssociation = await studyAssociationStore.GetForUserAndStudy(username, studyId);
-            if (currentUserStudyAssociation == null)
+            var isAssociatedWithStudy = await IsCurrentUserAssociatedWithStudy(studyId);
+            if (!isAssociatedWithStudy)
                 return StatusCode((int)HttpStatusCode.Forbidden, "You are not associated with the study");
-            var existingAssociation = await studyAssociationStore.GetForUserAndStudy(usernameToBeRemoved, studyId);
-            if (existingAssociation == null)
+            var existingAssociations = await studyAssociationStore.SearchAsync(x => x.Username == usernameToBeRemoved && x.StudyId == studyId);
+            if (existingAssociations.Count == 0)
                 return Ok();
-            await studyAssociationStore.DeleteAsync(existingAssociation.Id);
+            var study = await store.GetByIdAsync(studyId);
+            if (study.CreatedBy == usernameToBeRemoved)
+                return StatusCode((int)HttpStatusCode.Forbidden, "Creator of the study cannot be removed");
+            foreach (var existingAssociation in existingAssociations)
+            {
+                await studyAssociationStore.DeleteAsync(existingAssociation.Id);
+            }
             return Ok();
         }
 
@@ -82,9 +84,8 @@ namespace HealthSharingPortal.API.Controllers
             var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
             if (accountType != AccountType.Researcher)
                 return StatusCode((int)HttpStatusCode.Forbidden, "Only researchers associated with the study can see enrollments");
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            var studyAssociation = await studyAssociationStore.GetForUserAndStudy(username, studyId);
-            if (studyAssociation == null)
+            var isAssociatedWithStudy = await IsCurrentUserAssociatedWithStudy(studyId);
+            if (!isAssociatedWithStudy)
                 return StatusCode((int)HttpStatusCode.Forbidden, "You are not associated with the study");
             var enrollments = await enrollmentStore.SearchAsync(x => x.StudyId == studyId);
             return Ok(enrollments);
@@ -94,17 +95,9 @@ namespace HealthSharingPortal.API.Controllers
         public async Task<IActionResult> EnrollmentStatistics([FromRoute] string studyId)
         {
             var enrollments = await enrollmentStore.SearchAsync(x => x.StudyId == studyId);
-            var enrollmentStatistics = new StudyEnrollmentStatistics
-            {
-                OpenOffers = enrollments.Count(x => x.State.InSet(StudyEnrollementState.ParticipationOffered, StudyEnrollementState.Eligible)),
-                Enrolled = enrollments.Count(x => x.State == StudyEnrollementState.Enrolled),
-                Rejected = enrollments.Count(x => x.State == StudyEnrollementState.Rejected),
-                Excluded = enrollments.Count(x => x.State == StudyEnrollementState.Excluded),
-                Left = enrollments.Count(x => x.State == StudyEnrollementState.Left)
-            };
+            var enrollmentStatistics = new StudyEnrollmentStatistics(enrollments);
             return Ok(enrollmentStatistics);
         }
-
 
 
         [HttpPost("{studyId}/offerparticipation")]
@@ -196,9 +189,8 @@ namespace HealthSharingPortal.API.Controllers
             var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
             if (accountType != AccountType.Researcher)
                 return StatusCode((int)HttpStatusCode.Forbidden, "Only researchers associated with the study can invite participants");
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            var studyAssociation = await studyAssociationStore.GetForUserAndStudy(username, enrollment.StudyId);
-            if (studyAssociation == null)
+            var isAssociatedWithStudy = await IsCurrentUserAssociatedWithStudy(enrollment.StudyId);
+            if (!isAssociatedWithStudy)
                 return StatusCode((int)HttpStatusCode.Forbidden, "You are not associated with the study");
             enrollment.SetState(StudyEnrollementState.Eligible, DateTime.UtcNow);
             await enrollmentStore.StoreAsync(enrollment);
@@ -241,9 +233,8 @@ namespace HealthSharingPortal.API.Controllers
             var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
             if (accountType != AccountType.Researcher)
                 return StatusCode((int)HttpStatusCode.Forbidden, "Only researchers associated with the study can exclude participants");
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            var studyAssociation = await studyAssociationStore.GetForUserAndStudy(username, enrollment.StudyId);
-            if (studyAssociation == null)
+            var isAssociatedWithStudy = await IsCurrentUserAssociatedWithStudy(enrollment.StudyId);
+            if (!isAssociatedWithStudy)
                 return StatusCode((int)HttpStatusCode.Forbidden, "You are not associated with the study");
             enrollment.SetState(StudyEnrollementState.Excluded, DateTime.UtcNow);
             await enrollmentStore.StoreAsync(enrollment);
@@ -259,13 +250,19 @@ namespace HealthSharingPortal.API.Controllers
             var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
             if (accountType != AccountType.Researcher)
                 return StatusCode((int)HttpStatusCode.Forbidden, "Only researchers associated with the study can reject participants");
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            var studyAssociation = await studyAssociationStore.GetForUserAndStudy(username, enrollment.StudyId);
-            if (studyAssociation == null)
+            var isAssociatedWithStudy = await IsCurrentUserAssociatedWithStudy(enrollment.StudyId);
+            if (!isAssociatedWithStudy)
                 return StatusCode((int)HttpStatusCode.Forbidden, "You are not associated with the study");
             enrollment.SetState(StudyEnrollementState.Rejected, DateTime.UtcNow);
             await enrollmentStore.StoreAsync(enrollment);
             return Ok();
+        }
+
+        private async Task<bool> IsCurrentUserAssociatedWithStudy(string studyId)
+        {
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var studyAssociation = await studyAssociationStore.SearchAsync(x => x.Username == username && x.StudyId == studyId);
+            return studyAssociation.Count > 0;
         }
 
 

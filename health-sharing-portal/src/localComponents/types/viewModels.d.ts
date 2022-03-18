@@ -26,7 +26,27 @@ export namespace ViewModels {
         accountType: Enums.AccountType;
     }
 
+    interface PatientOverviewViewModel {
+        profileData: Models.Person;
+        admissions: Models.Admission[];
+        notes: Models.PatientNote[];
+        medicationSchedules: Models.Medication.MedicationSchedule[];
+        medicationDispensions: Models.Medication.MedicationDispension[];
+        testResults: Models.DiagnosticTestResults.DiagnosticTestResult[];
+        observations: Models.Observations.Observation[];
+        documents: Models.PatientDocument[];
+    }
+
+    interface StudyViewModel extends ViewModels.IViewModel<Models.Study> {
+        study: Models.Study;
+        enrollmentStatistics: Models.StudyEnrollmentStatistics;
+    }
+
     interface IViewModel<Account> {
+        
+    }
+
+    interface IViewModel<Study> {
         
     }
 }

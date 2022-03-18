@@ -15,6 +15,7 @@ namespace HealthSharingPortal.Tools
     public class LocalizationStringSearcher
     {
         private readonly string FrontendDirectory = Path.Combine(Constants.GetRepositoryPath(), "health-sharing-portal");
+        private readonly string ReferenceTranslation = Path.Combine(Constants.GetRepositoryPath(), "jankis-frontend", "src", "localComponents", "resources", "translation.en.json");
 
         [Test]
         public void CreateLocalizationIdDictionary()
@@ -43,10 +44,17 @@ namespace HealthSharingPortal.Tools
             }
 
             var resourceDictionary = new JObject();
+            var referenceTranslation = JObject.Parse(File.ReadAllText(ReferenceTranslation));
             foreach (var resourceId in resourceIds.Distinct().OrderBy(x => x))
             {
                 var existingValue = existingLocalizations[resourceId]?.Value<string>();
-                resourceDictionary[resourceId] = existingValue ?? "";
+                if(!string.IsNullOrEmpty(existingValue))
+                    resourceDictionary[resourceId] = existingValue;
+                else
+                {
+                    var referenceValue = referenceTranslation[resourceId]?.Value<string>();
+                    resourceDictionary[resourceId] = referenceValue ?? "";
+                }
                 Console.WriteLine($"{resourceId}: {existingValue}");
             }
 

@@ -5,12 +5,12 @@ import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../sharedCommonComponents/helpers/LoadingHelpers';
 import { BasicInformationBox } from '../components/HealthData/BasicInformationBox';
 import { Models } from '../types/models';
-import { PatientDataTabControl } from 'jankis-components/components/Patients/PatientDataTabControl';
 import { NotificationManager } from 'react-notifications';
 import { isAfter, isBefore } from 'date-fns';
 import { v4 as uuid } from 'uuid';
 import { buildAndStoreObject } from '../../sharedCommonComponents/helpers/StoringHelpers';
 import { ViewModels } from '../types/viewModels';
+import { PatientDataTabControl } from '../../sharedHealthComponents/components/Patients/PatientDataTabControl';
 
 interface PatientPageProps {}
 
@@ -30,7 +30,7 @@ export const PatientPage = (props: PatientPageProps) => {
     useEffect(() => {
         if(!patientId) return;
         const loadPatient = buildLoadObjectFunc<ViewModels.PatientOverviewViewModel>(
-            `api/patients/${patientId}/overviewviewmodel`,
+            `api/viewmodels/healthdata/${patientId}`,
             {},
             resolveText('Patient_CouldNotLoad'),
             vm => {

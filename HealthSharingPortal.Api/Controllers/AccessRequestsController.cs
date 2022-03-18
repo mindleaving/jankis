@@ -2,10 +2,12 @@
 using System.Threading.Tasks;
 using HealthModels.AccessControl;
 using HealthSharingPortal.API.Storage;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthSharingPortal.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class AccessRequestsController : ControllerBase

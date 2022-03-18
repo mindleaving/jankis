@@ -1,9 +1,11 @@
 ﻿using Commons.Physics;
 using HealthModels;
+using HealthModels.AccessControl;
 using HealthModels.DiagnosticTestResults;
 using HealthModels.MedicalTextEditor;
 using HealthModels.Medication;
 using HealthModels.Observations;
+using HealthModels.Services;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
 using Microsoft.Extensions.Configuration;
@@ -44,12 +46,17 @@ namespace HealthSharingPortal.API.Setups
         {
             SetupTypeStores<Account>(services);
             services.AddScoped<IAccountStore, AccountStore>();
+            SetupTypeStores<Admission>(services);
             services.AddScoped<IAutocompleteCache, AutocompleteCache>();
+            SetupTypeStores<Contact>(services);
             SetupTypeStores<Department>(services);
+            SetupTypeStores<DiagnosticTestDefinition>(services);
             SetupTypeStores<DiagnosticTestResult>(services);
             SetupTypeStores<Drug>(services);
             services.AddScoped<IFilesStore, FilesStore>();
             SetupTypeStores<Institution>(services);
+            SetupTypeStores<HealthProfessionalAccess>(services);
+            SetupTypeStores<HealthProfessionalAccessRequest>(services);
             SetupTypeStores<MedicationSchedule>(services);
             services.AddScoped<IMedicationScheduleStore, MedicationScheduleStore>();
             SetupTypeStores<MedicationDispension>(services);
@@ -59,7 +66,11 @@ namespace HealthSharingPortal.API.Setups
             SetupTypeStores<PatientNote>(services);
             SetupTypeStores<Person>(services);
             SetupTypeStores<PersonalizedAbbreviation>(services);
+            SetupTypeStores<ServiceDefinition>(services);
+            SetupTypeStores<ServiceRequest>(services);
             SetupTypeStores<Study>(services);
+            SetupTypeStores<StudyAssociation>(services);
+            SetupTypeStores<StudyEnrollment>(services);
         }
 
         private static void SetupTypeStores<T>(IServiceCollection services) where T: IId

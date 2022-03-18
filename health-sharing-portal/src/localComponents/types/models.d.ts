@@ -119,7 +119,36 @@ export namespace Models {
     interface Study extends Models.IId {
         title: string;
         description: string;
+        publications: Models.Publication[];
         contactPersons: Models.Contact[];
+        acceptsEnrollments: boolean;
+        createdBy: string;
+    }
+
+    interface StudyAssociation extends Models.IId {
+        username: string;
+        studyId: string;
+        role: Enums.StudyStaffRole;
+    }
+
+    interface StudyEnrollment extends Models.IId {
+        studyId: string;
+        personId: string;
+        state: Enums.StudyEnrollementState;
+        timestamps: Models.StudyEnrollmentTimestamp[];
+    }
+
+    interface StudyEnrollmentTimestamp {
+        timestamp: Date;
+        newEnrollmentState: Enums.StudyEnrollementState;
+    }
+
+    interface StudyEnrollmentStatistics {
+        openOffers: number;
+        enrolled: number;
+        excluded: number;
+        rejected: number;
+        left: number;
     }
 
     interface StudyParticipation {

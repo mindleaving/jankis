@@ -159,3 +159,16 @@ export enum OrderDirection {
     Ascending = "Ascending",
     Descending = "Descending"
 }
+export enum StudyEnrollementState {
+    Undefined = "Undefined",
+    ParticipationOffered = "ParticipationOffered",
+    Eligible = "Eligible",
+    Enrolled = "Enrolled",
+    Excluded = "Excluded",
+    Rejected = "Rejected",
+    Left = "Left"
+}
+export enum StudyStaffRole {
+    Undefined = "Undefined",
+    Investigator = "Investigator"
+}

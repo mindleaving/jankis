@@ -13,7 +13,7 @@ import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/Loa
 import { buildAndStoreObject } from '../../../sharedCommonComponents/helpers/StoringHelpers';
 import { formatAdmission } from '../../../sharedHealthComponents/helpers/Formatters';
 import { PatientDataTabControl } from '../../../sharedHealthComponents/components/Patients/PatientDataTabControl';
-import { PatientActionsCard } from './PatientActionsCard';
+import { PatientActionsCard } from '../../../sharedHealthComponents/components/Patients/PatientActionsCard';
 
 interface PatientPageProps {}
 

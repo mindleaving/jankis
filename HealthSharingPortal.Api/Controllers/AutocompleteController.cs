@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HealthSharingPortal.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class AutocompleteController : ControllerBase
     {
         private readonly IAutocompleteCache autocompleteCache;

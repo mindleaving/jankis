@@ -50,7 +50,7 @@ export const Layout = (props: PropsWithChildren<LayoutProps>) => {
                     <LoggedInUser user={user} onLogOut={props.onLogOut} />
                 </Navbar.Collapse>
             </Navbar>
-            <Container>
+            <Container style={{ width: '99%' }}>
                 <Row>
                     <Col>
                         {props.children}
