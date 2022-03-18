@@ -22,15 +22,18 @@ namespace HealthSharingPortal.API.AccessControl
             this.expirationTime = expirationTime;
         }
 
+        public const string UsernameClaimName = "username";
         public const string AccountTypeClaimName = "accounttype";
+        public const string PersonIdClaimName = "personId";
 
         public Task<string> BuildForUser(Person person, Account account)
         {
             var claims = new List<Claim>
             {
-                new ("id", account.Id),
+                new (UsernameClaimName, account.Id),
                 new (ClaimTypes.Name, $"{person.FirstName} {person.LastName}"),
-                new (AccountTypeClaimName, account.AccountType.ToString())
+                new (AccountTypeClaimName, account.AccountType.ToString()),
+                new (PersonIdClaimName, account.PersonId)
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();

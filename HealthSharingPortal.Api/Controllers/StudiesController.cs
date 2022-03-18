@@ -1,20 +1,273 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Threading.Tasks;
+using Commons.Extensions;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HealthSharingPortal.API.Controllers
 {
     public class StudiesController : RestControllerBase<Study>
     {
-        public StudiesController(IStore<Study> store, IHttpContextAccessor httpContextAccessor)
+        private readonly IStore<StudyEnrollment> enrollmentStore;
+        private readonly IStudyAssociationStore studyAssociationStore;
+
+        public StudiesController(
+            IStore<Study> store, 
+            IHttpContextAccessor httpContextAccessor, 
+            IStore<StudyEnrollment> enrollmentStore, 
+            IStudyAssociationStore studyAssociationStore)
             : base(store, httpContextAccessor)
         {
+            this.enrollmentStore = enrollmentStore;
+            this.studyAssociationStore = studyAssociationStore;
         }
+
+        [HttpGet("{studyId}/team")]
+        public async Task<IActionResult> GetTeam([FromRoute] string studyId)
+        {
+            var team = await studyAssociationStore.GetAllForStudy(studyId);
+            return Ok(team);
+        }
+
+
+        [HttpPost("{studyId}/team")]
+        public async Task<IActionResult> AddTeamMember([FromRoute] string studyId, StudyAssociation newTeamMember)
+        {
+            if (newTeamMember.StudyId != studyId)
+                return BadRequest("Study ID of route doesn't match body");
+            if (!await store.ExistsAsync(studyId))
+                return NotFound("Study doesn't exist");
+            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
+            if (accountType != AccountType.Researcher)
+                return StatusCode((int)HttpStatusCode.Forbidden, "Only researchers associated with the study can see enrollments");
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var currentUserStudyAssociation = await studyAssociationStore.GetForUserAndStudy(username, studyId);
+            if (currentUserStudyAssociation == null)
+                return StatusCode((int)HttpStatusCode.Forbidden, "You are not associated with the study");
+            var existingAssociation = await studyAssociationStore.GetForUserAndStudy(newTeamMember.Username, studyId);
+            if (existingAssociation != null)
+                return Ok();
+            await studyAssociationStore.StoreAsync(newTeamMember);
+            return Ok();
+        }
+
+        [HttpDelete("{studyId}/team/{usernameToBeRemoved}")]
+        public async Task<IActionResult> RemoveTeamMember([FromRoute] string studyId, [FromRoute] string usernameToBeRemoved)
+        {
+            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
+            if (accountType != AccountType.Researcher)
+                return StatusCode((int)HttpStatusCode.Forbidden, "Only researchers associated with the study can see enrollments");
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var currentUserStudyAssociation = await studyAssociationStore.GetForUserAndStudy(username, studyId);
+            if (currentUserStudyAssociation == null)
+                return StatusCode((int)HttpStatusCode.Forbidden, "You are not associated with the study");
+            var existingAssociation = await studyAssociationStore.GetForUserAndStudy(usernameToBeRemoved, studyId);
+            if (existingAssociation == null)
+                return Ok();
+            await studyAssociationStore.DeleteAsync(existingAssociation.Id);
+            return Ok();
+        }
+
+
+        [HttpGet("{studyId}/enrollments")]
+        public async Task<IActionResult> GetEnrollments([FromRoute] string studyId)
+        {
+            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
+            if (accountType != AccountType.Researcher)
+                return StatusCode((int)HttpStatusCode.Forbidden, "Only researchers associated with the study can see enrollments");
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var studyAssociation = await studyAssociationStore.GetForUserAndStudy(username, studyId);
+            if (studyAssociation == null)
+                return StatusCode((int)HttpStatusCode.Forbidden, "You are not associated with the study");
+            var enrollments = await enrollmentStore.SearchAsync(x => x.StudyId == studyId);
+            return Ok(enrollments);
+        }
+
+        [HttpGet("{studyId}/enrollments/statistics")]
+        public async Task<IActionResult> EnrollmentStatistics([FromRoute] string studyId)
+        {
+            var enrollments = await enrollmentStore.SearchAsync(x => x.StudyId == studyId);
+            var enrollmentStatistics = new StudyEnrollmentStatistics
+            {
+                OpenOffers = enrollments.Count(x => x.State.InSet(StudyEnrollementState.ParticipationOffered, StudyEnrollementState.Eligible)),
+                Enrolled = enrollments.Count(x => x.State == StudyEnrollementState.Enrolled),
+                Rejected = enrollments.Count(x => x.State == StudyEnrollementState.Rejected),
+                Excluded = enrollments.Count(x => x.State == StudyEnrollementState.Excluded),
+                Left = enrollments.Count(x => x.State == StudyEnrollementState.Left)
+            };
+            return Ok(enrollmentStatistics);
+        }
+
+
+
+        [HttpPost("{studyId}/offerparticipation")]
+        public async Task<IActionResult> OfferParticipation([FromRoute] string studyId)
+        {
+            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
+            if (accountType != AccountType.Sharer)
+                return StatusCode((int)HttpStatusCode.Forbidden, "Only data sharers can enroll into a study");
+            var study = await store.GetByIdAsync(studyId);
+            if (study == null)
+                return NotFound("Study does not exist");
+            if (!study.AcceptsEnrollments)
+                return BadRequest("Study does currently not accept enrollments");
+            var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
+            var existingEnrollments = await enrollmentStore.SearchAsync(x => x.StudyId == studyId && x.PersonId == personId);
+            if (existingEnrollments.Count == 1)
+            {
+                var existingEnrollment = existingEnrollments[0];
+                switch (existingEnrollment.State)
+                {
+                    case StudyEnrollementState.Undefined:
+                    case StudyEnrollementState.Left:
+                    {
+                        existingEnrollment.SetState(StudyEnrollementState.ParticipationOffered, DateTime.UtcNow);
+                        await enrollmentStore.StoreAsync(existingEnrollment);
+                        return Ok();
+                    }
+                    case StudyEnrollementState.ParticipationOffered:
+                        return Ok();
+                    case StudyEnrollementState.Eligible:
+                        return Ok($"You are eligible and are invited to enroll. Use api/studies/{studyId}/accept to accept the invitation or api/studies/{studyId}/leave to leave the study.");
+                    case StudyEnrollementState.Enrolled:
+                        return Ok("You are already enrolled");
+                    case StudyEnrollementState.Excluded:
+                        return StatusCode((int)HttpStatusCode.Forbidden, "You dont' meet the incluseion/exclusion criteria");
+                    case StudyEnrollementState.Rejected:
+                        return StatusCode((int)HttpStatusCode.Forbidden, "You have been rejected");
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+            if (existingEnrollments.Count > 1)
+            {
+                await HandleMultipleEnrollments(existingEnrollments);
+            }
+
+            var enrollment = new StudyEnrollment { Id = Guid.NewGuid().ToString(), PersonId = personId, StudyId = studyId };
+            enrollment.SetState(StudyEnrollementState.ParticipationOffered, DateTime.UtcNow);
+            await enrollmentStore.StoreAsync(enrollment);
+            return Ok();
+        }
+
+        private async Task HandleMultipleEnrollments(List<StudyEnrollment> existingEnrollments)
+        {
+            // This should never happen, but if it does:
+            // Delete all enrollments and start over
+            foreach (var existingEnrollment in existingEnrollments)
+            {
+                await enrollmentStore.DeleteAsync(existingEnrollment.Id);
+            }
+        }
+
+        [HttpPost("{studyId}/leave")]
+        public async Task<IActionResult> LeaveStudy([FromRoute] string studyId)
+        {
+            var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
+            var enrollments = await enrollmentStore.SearchAsync(x => x.PersonId == personId && x.StudyId == studyId);
+            var utcNow = DateTime.UtcNow;
+            foreach (var enrollment in enrollments)
+            {
+                enrollment.SetState(StudyEnrollementState.Left, utcNow);
+                await enrollmentStore.StoreAsync(enrollment);
+            }
+            return Ok();
+        }
+
+        [HttpPost("{studyId}/enrollments/{enrollmentId}/invite")]
+        public async Task<IActionResult> InviteCandidate([FromRoute] string enrollmentId)
+        {
+            var enrollment = await enrollmentStore.GetByIdAsync(enrollmentId);
+            if (enrollment == null)
+                return NotFound();
+            if (enrollment.State == StudyEnrollementState.Undefined)
+                return BadRequest("Enrollment is in an invalid state and cannot be changed");
+            if (enrollment.State == StudyEnrollementState.Left)
+                return BadRequest("Candidate has left the study");
+            if (enrollment.State == StudyEnrollementState.Enrolled)
+                return Ok("Candidate is already enrolled");
+            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
+            if (accountType != AccountType.Researcher)
+                return StatusCode((int)HttpStatusCode.Forbidden, "Only researchers associated with the study can invite participants");
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var studyAssociation = await studyAssociationStore.GetForUserAndStudy(username, enrollment.StudyId);
+            if (studyAssociation == null)
+                return StatusCode((int)HttpStatusCode.Forbidden, "You are not associated with the study");
+            enrollment.SetState(StudyEnrollementState.Eligible, DateTime.UtcNow);
+            await enrollmentStore.StoreAsync(enrollment);
+            return Ok();
+        }
+
+        [HttpPost("{studyId}/accept")]
+        public async Task<IActionResult> AcceptInvitation([FromRoute] string studyId)
+        {
+            var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
+            var enrollments = await enrollmentStore.SearchAsync(x => x.StudyId == studyId && x.PersonId == personId);
+            if (enrollments.Count == 0)
+                return NotFound();
+            if (enrollments.Count > 1)
+            {
+                await HandleMultipleEnrollments(enrollments);
+                return StatusCode(
+                    (int)HttpStatusCode.InternalServerError,
+                    "Multiple enrollments matched. To ensure a consistent state all your enrollments to this study were deleted. "
+                    + "You need to offer you participation again and the study team must then send you a new eligibility notice (invitation). "
+                    + "Apologies for the trouble.");
+            }
+            var enrollment = enrollments[0];
+            if (enrollment.State == StudyEnrollementState.Enrolled)
+                return Ok("You are already enrolled");
+            if (enrollment.State != StudyEnrollementState.Eligible)
+                return BadRequest("You have not yet been determined to be eligible");
+
+            enrollment.SetState(StudyEnrollementState.Enrolled, DateTime.UtcNow);
+            await enrollmentStore.StoreAsync(enrollment);
+            return Ok();
+        }
+
+        [HttpPost("{studyId}/enrollments/{enrollmentId}/exclude")]
+        public async Task<IActionResult> ExcludeCandidate([FromRoute] string enrollmentId)
+        {
+            var enrollment = await enrollmentStore.GetByIdAsync(enrollmentId);
+            if (enrollment == null)
+                return NotFound();
+            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
+            if (accountType != AccountType.Researcher)
+                return StatusCode((int)HttpStatusCode.Forbidden, "Only researchers associated with the study can exclude participants");
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var studyAssociation = await studyAssociationStore.GetForUserAndStudy(username, enrollment.StudyId);
+            if (studyAssociation == null)
+                return StatusCode((int)HttpStatusCode.Forbidden, "You are not associated with the study");
+            enrollment.SetState(StudyEnrollementState.Excluded, DateTime.UtcNow);
+            await enrollmentStore.StoreAsync(enrollment);
+            return Ok();
+        }
+
+        [HttpPost("{studyId}/enrollments/{enrollmentId}/reject")]
+        public async Task<IActionResult> RejectCandidate([FromRoute] string enrollmentId)
+        {
+            var enrollment = await enrollmentStore.GetByIdAsync(enrollmentId);
+            if (enrollment == null)
+                return NotFound();
+            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
+            if (accountType != AccountType.Researcher)
+                return StatusCode((int)HttpStatusCode.Forbidden, "Only researchers associated with the study can reject participants");
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var studyAssociation = await studyAssociationStore.GetForUserAndStudy(username, enrollment.StudyId);
+            if (studyAssociation == null)
+                return StatusCode((int)HttpStatusCode.Forbidden, "You are not associated with the study");
+            enrollment.SetState(StudyEnrollementState.Rejected, DateTime.UtcNow);
+            await enrollmentStore.StoreAsync(enrollment);
+            return Ok();
+        }
+
 
         protected override Task<object> TransformItem(Study item)
         {
