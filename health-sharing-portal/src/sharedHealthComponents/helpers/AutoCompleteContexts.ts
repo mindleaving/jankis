@@ -1,2 +1,0 @@
-export const getAutoCompleteContextForDiagnosticTestOptions = (testId: string) => `DiagnosticTest_${testId}_Options`;
-export const getAutoCompleteContextForDiagnosticTestUnit = (testId: string) => `DiagnosticTest_${testId}_Unit`;

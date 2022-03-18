@@ -40,7 +40,8 @@
     "react-scripts": "5.0.0",
     "typescript": "^4.6.2",
     "uuid": "^8.3.2",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "jankis-components": "file:../jankis-frontend/src/sharedHealthComponents"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -94,7 +94,7 @@ function App() {
                     <Route path="/sharer/upload/genome" element={<GenomeUploadPage />} />
                     <Route path="/accounts" element={<AccountsPage />} />
                     <Route path="/patients" element={<PatientsListPage />} />
-                    <Route path="/patient/:id" element={<PatientPage />} />
+                    <Route path="/patient/:patientId" element={<PatientPage />} />
                     <Route path="/giveaccess/healthprofessional" element={<GiveHealthProfesionalAccessPage />} />
                     <Route path="/" element={userTypeHomePage} />
                     <Route path="*" element={userTypeHomePage} />
