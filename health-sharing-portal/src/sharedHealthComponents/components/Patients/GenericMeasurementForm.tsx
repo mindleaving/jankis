@@ -2,14 +2,13 @@ import { FormEvent, useContext, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import { Form, FormGroup, Row, Col, InputGroup, FormControl, Button } from 'react-bootstrap';
 import UserContext from '../../../localComponents/contexts/UserContext';
-import { PatientEventType, AutoCompleteContext } from '../../../localComponents/types/enums.d';
+import { HealthRecordEntryType, AutoCompleteContext } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { MemoryFormControl } from '../../../sharedCommonComponents/components/MemoryFormControl';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 
 interface GenericMeasurementFormProps {
-    patientId: string;
-    admissionId?: string;
+    personId: string;
     onSubmit: (observation: Models.Observations.GenericObservation) => void;
     hasSubmitButton?: boolean;
     submitButtonText?: string;
@@ -28,11 +27,10 @@ export const GenericMeasurementForm = (props: GenericMeasurementFormProps) => {
         e.preventDefault();
         const observation: Models.Observations.GenericObservation = {
             id: uuid(),
-            type: PatientEventType.Observation,
+            type: HealthRecordEntryType.Observation,
             measurementType: measurementType,
             createdBy: user!.username,
-            patientId: props.patientId,
-            admissionId: props.admissionId,
+            personId: props.personId,
             timestamp: new Date(),
             value: value,
             unit: unit

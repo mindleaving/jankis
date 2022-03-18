@@ -1,6 +1,3 @@
-export interface AccountsFilter {
-    searchText?: string;
-}
 export interface DrugsFilter {
     searchText?: string;
 }

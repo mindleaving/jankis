@@ -3,13 +3,13 @@ import { Button } from 'react-bootstrap';
 import { Col, Form, FormControl, FormGroup, FormLabel, InputGroup, Row } from 'react-bootstrap';
 import { v4 as uuid } from 'uuid';
 import UserContext from '../../../localComponents/contexts/UserContext';
-import { PatientEventType, MeasurementType } from '../../../localComponents/types/enums.d';
+import { HealthRecordEntryType, MeasurementType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import FrequencyMeasurer from '../../helpers/FrequencyMeasurer';
 
 interface PulseMeasurementFormProps {
-    patientId: string;
+    personId: string;
     admissionId?: string;
     onSubmit: (observation: Models.Observations.PulseObservation) => void;
     hasSubmitButton?: boolean;
@@ -28,11 +28,10 @@ export const PulseMeasurementForm = (props: PulseMeasurementFormProps) => {
         e.preventDefault();
         const observation: Models.Observations.PulseObservation = {
             id: uuid(),
-            type: PatientEventType.Observation,
+            type: HealthRecordEntryType.Observation,
             measurementType: MeasurementType.Pulse,
             createdBy: user!.username,
-            patientId: props.patientId,
-            admissionId: props.admissionId,
+            personId: props.personId,
             timestamp: new Date(),
             bpm: bpm,
             location: pulseLocation

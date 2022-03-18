@@ -6,7 +6,7 @@ import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/Loa
 import { ServiceRequestsFilter } from '../../types/frontendTypes';
 import { Models } from '../../types/models';
 import { DepartmentAutocomplete } from '../Autocompletes/DepartmentAutocomplete';
-import { ServiceAutocomplete } from '../Autocompletes/ServiceAutocomplete';
+import { ServiceAutocomplete } from '../../../sharedHealthComponents/components/Autocompletes/ServiceAutocomplete';
 
 interface ServiceRequestsFilterViewProps {
     filter?: ServiceRequestsFilter;

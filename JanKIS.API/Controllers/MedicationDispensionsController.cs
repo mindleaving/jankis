@@ -44,7 +44,7 @@ namespace JanKIS.API.Controllers
         {
             return orderBy?.ToLower() switch
             {
-                "patient" => x => x.PatientId,
+                "patient" => x => x.PersonId,
                 "drug" => x => x.Drug.ProductName,
                 "time" => x => x.Timestamp,
                 _ => x => x.Timestamp

@@ -7,7 +7,7 @@ namespace JanKIS.API.Storage
 {
     public interface ISubscriptionsStore : IStore<SubscriptionBase>
     {
-        Task<List<PatientSubscription>> GetPatientSubscriptions(string patientId);
+        Task<List<PatientSubscription>> GetPatientSubscriptions(string personId);
         Task<List<ServiceSubscription>> GetServiceSubscriptions(string serviceId);
         Task<List<ServiceRequestSubscription>> GetServiceRequestSubscriptions(string requestId);
         Task<List<DepartmentSubscription>> GetDepartmentSubscriptions(string departmentId);
@@ -16,7 +16,7 @@ namespace JanKIS.API.Storage
         Task<List<StockSubscription>> GetStockSubscription(string stockId);
         Task<List<ConsumableOrderSubscription>> GetConsumableOrderSubscriptions(string orderId);
 
-        Task<PatientSubscription> GetPatientSubscription(string patientId, string username);
+        Task<PatientSubscription> GetPatientSubscription(string personId, string username);
         Task<ServiceSubscription> GetServiceSubscription(string serviceId, string username);
         Task<ServiceRequestSubscription> GetServiceRequestSubscription(string requestId, string username);
         Task<DepartmentSubscription> GetDepartmentSubscription(string departmentId, string username);
@@ -33,9 +33,9 @@ namespace JanKIS.API.Storage
         {
         }
 
-        public Task<List<PatientSubscription>> GetPatientSubscriptions(string patientId)
+        public Task<List<PatientSubscription>> GetPatientSubscriptions(string personId)
         {
-            return collection.OfType<PatientSubscription>().Find(x => x.PatientId == patientId).ToListAsync();
+            return collection.OfType<PatientSubscription>().Find(x => x.PersonId == personId).ToListAsync();
         }
 
         public Task<List<ServiceSubscription>> GetServiceSubscriptions(string serviceId)
@@ -74,10 +74,10 @@ namespace JanKIS.API.Storage
         }
 
         public Task<PatientSubscription> GetPatientSubscription(
-            string patientId,
+            string personId,
             string username)
         {
-            return collection.OfType<PatientSubscription>().Find(x => x.PatientId == patientId && x.Username == username).FirstOrDefaultAsync();
+            return collection.OfType<PatientSubscription>().Find(x => x.PersonId == personId && x.Username == username).FirstOrDefaultAsync();
         }
 
         public Task<ServiceSubscription> GetServiceSubscription(

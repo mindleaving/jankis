@@ -18,8 +18,7 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
 
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
     const [ isStoring, setIsStoring ] = useState<boolean>(false);
-    const [ patientId, setPatientId ] = useState<string>();
-    const [ admissionId, setAdmissionId ] = useState<string>();
+    const [ personId, setPersonId ] = useState<string>();
     const [ name, setName ] = useState<string>('');
     const [ medications, setMedications ] = useState<Models.Medication.MedicationScheduleItem[]>([]);
     const [ note, setNote ] = useState<string>('');
@@ -35,8 +34,7 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
             {},
             resolveText('MedicationSchedule_CouldNotLoad'),
             medicationSchedule => {
-                setPatientId(medicationSchedule.patientId);
-                setAdmissionId(medicationSchedule.admissionId);
+                setPersonId(medicationSchedule.personId);
                 setName(medicationSchedule.name ?? '');
                 setMedications(medicationSchedule.items);
                 setNote(medicationSchedule.note);
@@ -66,8 +64,7 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
             name: name,
             note: note,
             items: medications,
-            patientId: patientId!,
-            admissionId: admissionId,
+            personId: personId!,
             isPaused: isPaused,
             isDispendedByPatient: isDispendedByPatient
         }
@@ -96,6 +93,10 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
     }
     const deleteMedication = (medicationId: string) => {
         setMedications(medications.filter(x => x.id !== medicationId));
+    }
+
+    if(isLoading) {
+        return (<h3>{resolveText("Loading...")}</h3>);
     }
     
     return (
@@ -146,8 +147,7 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
                     {medications.map(medication => (
                         <MedicationScheduleItemEditTableRow
                             medication={medication}
-                            patientId={patientId!}
-                            admissionId={admissionId}
+                            personId={personId!}
                             isSelected={selectedScheduleItemIds.includes(medication.id)}
                             onSelectionChanged={(isSelected) => updateSelection(isSelected, medication.id)}
                             onChange={updateMedication}

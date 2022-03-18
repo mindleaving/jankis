@@ -3,7 +3,7 @@ import { Alert, FormControl, InputGroup } from 'react-bootstrap';
 import { getAutoCompleteContextForDiagnosticTestOptions, getAutoCompleteContextForDiagnosticTestUnit } from '../../helpers/AutoCompleteContexts';
 import { v4 as uuid } from 'uuid';
 import { NotificationManager } from 'react-notifications';
-import { DiagnosticTestScaleType, PatientEventType } from '../../../localComponents/types/enums.d';
+import { DiagnosticTestScaleType, HealthRecordEntryType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { AsyncButton } from '../../../sharedCommonComponents/components/AsyncButton';
@@ -179,13 +179,12 @@ const DocumentValueEditor = (props: DiagnosticTestValueEditorProps) => {
         try {
             const document: Models.PatientDocument = {
                 id: uuid(),
-                type: PatientEventType.Document,
+                type: HealthRecordEntryType.Document,
                 fileName: file.name,
                 createdBy: '',
                 timestamp: new Date(),
                 note: '',
-                patientId: props.testResult.patientId,
-                admissionId: props.testResult.admissionId
+                personId: props.testResult.personId
             }
             await apiClient.instance!.put(`api/documents/${document.id}`, {}, document);
             await apiClient.instance!.put(`api/documents/${document.id}/upload`, {}, file, { stringifyBody: false });

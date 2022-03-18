@@ -4,11 +4,11 @@ import { compareDesc } from 'date-fns';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { Models } from '../../../localComponents/types/models';
 
-interface PatientEventsOverviewProps {
-    events: Models.IPatientEvent[];
+interface HealthRecordOverviewProps {
+    events: Models.IHealthRecordEntry[];
 }
 
-export const PatientEventsOverview = (props: PatientEventsOverviewProps) => {
+export const HealthRecordOverview = (props: HealthRecordOverviewProps) => {
 
     return (
         <div className="mt-3">

@@ -13,7 +13,6 @@ export namespace Models {
     }
 
     interface Admission extends Models.IId {
-        patientId: string;
         profileData: Models.Person;
         isReadmission: boolean;
         admissionTime: Date;
@@ -45,6 +44,13 @@ export namespace Models {
         insuranceNumber: string;
     }
 
+    interface IHealthRecordEntry extends Models.IId {
+        type: Enums.HealthRecordEntryType;
+        personId: string;
+        createdBy: string;
+        timestamp: Date;
+    }
+
     interface IId {
         id: string;
     }
@@ -55,20 +61,12 @@ export namespace Models {
         departmentIds: string[];
     }
 
-    interface IPatientEvent extends Models.IId {
-        type: Enums.PatientEventType;
-        patientId: string;
-        admissionId?: string;
-        createdBy: string;
-        timestamp: Date;
-    }
-
-    interface PatientDocument extends Models.IPatientEvent {
+    interface PatientDocument extends Models.IHealthRecordEntry {
         note: string;
         fileName: string;
     }
 
-    interface PatientNote extends Models.IPatientEvent {
+    interface PatientNote extends Models.IHealthRecordEntry {
         message: string;
     }
 
@@ -298,7 +296,7 @@ export namespace Models {
             unit: string;
         }
     
-        interface Observation extends Models.IPatientEvent {
+        interface Observation extends Models.IHealthRecordEntry {
             measurementType: string;
         }
     
@@ -325,7 +323,7 @@ export namespace Models {
             applicationSite: string;
         }
     
-        interface MedicationDispension extends Models.IPatientEvent {
+        interface MedicationDispension extends Models.IHealthRecordEntry {
             drug: Models.Medication.Drug;
             unit: string;
             value: number;
@@ -335,8 +333,7 @@ export namespace Models {
     
         interface MedicationSchedule extends Models.IId {
             name?: string;
-            patientId: string;
-            admissionId?: string;
+            personId: string;
             items: Models.Medication.MedicationScheduleItem[];
             note: string;
             isPaused: boolean;
@@ -584,7 +581,7 @@ export namespace Models {
             text: string;
         }
     
-        interface IDiagnosticTestResult extends Models.IPatientEvent {
+        interface IDiagnosticTestResult extends Models.IHealthRecordEntry {
             testCodeLoinc: string;
             testCodeLocal: string;
             testName: string;

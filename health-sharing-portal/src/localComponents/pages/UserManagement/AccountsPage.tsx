@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { Button, FormControl, FormGroup, FormLabel } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { PagedTable } from '../../sharedCommonComponents/components/PagedTable';
-import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
-import PagedTableLoader from '../../sharedCommonComponents/helpers/PagedTableLoader';
-import { Models } from '../types/models';
+import { PagedTable } from '../../../sharedCommonComponents/components/PagedTable';
+import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
+import PagedTableLoader from '../../../sharedCommonComponents/helpers/PagedTableLoader';
+import { Models } from '../../types/models';
 
 interface AccountsPageProps {}
 interface AccountFilter {

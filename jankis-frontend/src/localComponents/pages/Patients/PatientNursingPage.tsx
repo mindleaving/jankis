@@ -19,11 +19,10 @@ enum BodyViewType {
 }
 export const PatientNursingPage = (props: PatientNursingPageProps) => {
 
-    const { patientId } = useParams();
+    const { personId } = useParams();
 
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
     const [ profileData, setProfileData ] = useState<Models.Person>();
-    const [ currentAdmission, setCurrentAdmission ] = useState<Models.Admission>();
     const [ equipments, setEquipments ] = useState<ViewModels.AttachedEquipmentViewModel[]>([]);
     const [ observations, setObservations ] = useState<Models.Observations.Observation[]>([]);
     const [ bodyViewType, setBodyViewType ] = useState<BodyViewType>(BodyViewType.Front);
@@ -32,29 +31,28 @@ export const PatientNursingPage = (props: PatientNursingPageProps) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if(!patientId) return;
+        if(!personId) return;
         setIsLoading(true);
         const loadPatient = buildLoadObjectFunc<ViewModels.PatientNursingViewModel>(
-            `api/patients/${patientId}/nursingviewmodel`,
+            `api/patients/${personId}/nursingviewmodel`,
             {},
             resolveText('Patient_CouldNotLoad'),
             patient => {
                 setProfileData(patient.profileData);
-                setCurrentAdmission(patient.currentAdmission);
                 setEquipments(patient.equipments);
                 setObservations(patient.observations);
             },
             () => setIsLoading(false)
         );
         loadPatient();
-    }, [ patientId ]);
+    }, [ personId ]);
 
     const onObservationsAdded = (newObservations: Models.Observations.Observation[]) => {
         setObservations(observations.concat(newObservations).sort((a,b) => compareDesc(new Date(a.timestamp), new Date(b.timestamp))));
         setShowObservationForm(false);
     }
 
-    if(isLoading || !patientId || !profileData) {
+    if(isLoading || !personId || !profileData) {
         return (<h1>{resolveText('Loading...')}</h1>);
     }
 
@@ -63,7 +61,7 @@ export const PatientNursingPage = (props: PatientNursingPageProps) => {
             <Row>
                 <Col>
                     <Alert variant="info">
-                        <Button variant="info" size="sm" className="mr-3" onClick={() => navigate(`/patients/${patientId}`)}>&lt; {resolveText('BackToOverview')}</Button>
+                        <Button variant="info" size="sm" className="mr-3" onClick={() => navigate(`/patients/${personId}`)}>&lt; {resolveText('BackToOverview')}</Button>
                         <b>{formatPerson(profileData)}</b>
                     </Alert>
                 </Col>
@@ -127,8 +125,7 @@ export const PatientNursingPage = (props: PatientNursingPageProps) => {
                         </Card.Header>
                         <Card.Body>
                             <ObservationsForm
-                                patientId={patientId}
-                                admissionId={currentAdmission?.id}
+                                personId={personId}
                                 onStore={onObservationsAdded}
                             />
                         </Card.Body>

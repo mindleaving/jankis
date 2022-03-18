@@ -9,10 +9,10 @@ interface TimelineAdmissionViewProps {
 
 export const TimelineAdmissionView = (props: TimelineAdmissionViewProps) => {
 
-    const events: Models.IPatientEvent[] = (props.admission.notes as Models.IPatientEvent[])
-        .concat(props.admission.observations as Models.IPatientEvent[])
-        .concat(props.admission.testResults as Models.IPatientEvent[])
-        .concat(props.admission.documents as Models.IPatientEvent[]);
+    const events: Models.IHealthRecordEntry[] = (props.admission.notes as Models.IHealthRecordEntry[])
+        .concat(props.admission.observations as Models.IHealthRecordEntry[])
+        .concat(props.admission.testResults as Models.IHealthRecordEntry[])
+        .concat(props.admission.documents as Models.IHealthRecordEntry[]);
     return (
         <>
             {events.map(x => (

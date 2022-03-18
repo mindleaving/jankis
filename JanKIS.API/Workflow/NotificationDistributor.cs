@@ -12,7 +12,7 @@ namespace JanKIS.API.Workflow
 {
     public interface INotificationDistributor
     {
-        Task NotifyNewPatientEvent(IPatientEvent patientEvent, StorageOperation storageOperation, string submitterUsername);
+        Task NotifyNewPatientEvent(IHealthRecordEntry healthRecordEntry, StorageOperation storageOperation, string submitterUsername);
         Task NotifyNewAdmission(Admission admission, StorageOperation storageOperation, string submitterUsername);
         Task NotifyNewBedOccupancy(BedOccupancy bedOccupancy, StorageOperation storageOperation, string submitterUsername);
         Task NotifyNewServiceRequest(ServiceRequest serviceRequest, StorageOperation storageOperation, string submitterUsername); 
@@ -39,13 +39,13 @@ namespace JanKIS.API.Workflow
         }
 
         public async Task NotifyNewPatientEvent(
-            IPatientEvent patientEvent,
+            IHealthRecordEntry healthRecordEntry,
             StorageOperation storageOperation,
             string submitterUsername)
         {
             var now = DateTime.UtcNow;
-            var patient = await personsStore.GetByIdAsync(patientEvent.PatientId);
-            var matchingSubscriptions = await subscriptionsStore.GetPatientSubscriptions(patientEvent.PatientId);
+            var patient = await personsStore.GetByIdAsync(healthRecordEntry.PersonId);
+            var matchingSubscriptions = await subscriptionsStore.GetPatientSubscriptions(healthRecordEntry.PersonId);
             foreach (var subscription in matchingSubscriptions)
             {
                 var notification = new PatientEventNotification(
@@ -55,8 +55,8 @@ namespace JanKIS.API.Workflow
                     now,
                     submitterUsername,
                     patient,
-                    patientEvent.Type,
-                    patientEvent.Id,
+                    healthRecordEntry.Type,
+                    healthRecordEntry.Id,
                     storageOperation
                 );
                 await notificationsStore.StoreAsync(notification);
@@ -70,7 +70,7 @@ namespace JanKIS.API.Workflow
             string submitterUsername)
         {
             var now = DateTime.UtcNow;
-            var matchingSubscriptions = await subscriptionsStore.GetPatientSubscriptions(admission.PatientId);
+            var matchingSubscriptions = await subscriptionsStore.GetPatientSubscriptions(admission.ProfileData.Id);
             foreach (var subscription in matchingSubscriptions)
             {
                 var notification = new AdmissionNotification(

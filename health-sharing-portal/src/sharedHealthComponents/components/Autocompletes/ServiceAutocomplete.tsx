@@ -3,7 +3,7 @@ import { Alert } from 'react-bootstrap';
 import { Autocomplete } from '../../../sharedCommonComponents/components/Autocompletes/Autocomplete';
 import { AutocompleteRunner } from '../../../sharedCommonComponents/helpers/AutocompleteRunner';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { Models } from '../../types/models';
+import { Models } from '../../../localComponents/types/models';
 
 interface ServiceAutocompleteProps {
     isLoading?: boolean;

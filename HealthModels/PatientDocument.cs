@@ -1,15 +1,12 @@
 ﻿using System;
-using TypescriptGenerator.Attributes;
 
 namespace HealthModels
 {
-    public class PatientDocument : IPatientEvent
+    public class PatientDocument : IHealthRecordEntry
     {
         public string Id { get; set; }
-        public PatientEventType Type => PatientEventType.Document;
-        public string PatientId { get; set; }
-        [TypescriptIsOptional]
-        public string AdmissionId { get; set; }
+        public HealthRecordEntryType Type => HealthRecordEntryType.Document;
+        public string PersonId { get; set; }
         public string CreatedBy { get; set; }
         public DateTime Timestamp { get; set; }
         public string Note { get; set; }

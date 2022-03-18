@@ -3,7 +3,7 @@ import { Tabs, Tab } from 'react-bootstrap';
 import { Models } from '../../../localComponents/types/models';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { PatientDocumentsView } from './PatientDocumentsView';
-import { PatientEventsOverview } from './PatientEventsOverview';
+import { HealthRecordOverview } from './HealthRecordOverview';
 import { PatientMedicationView } from './PatientMedicationView';
 import { PatientNotesView } from './PatientNotesView';
 import { PatientObservationsView } from './PatientObservationsView';
@@ -26,8 +26,8 @@ export const PatientDataTabControl = (props: PatientDataTabControlProps) => {
     return (
         <Tabs defaultActiveKey="overview">
             <Tab eventKey="overview" title={resolveText('Patient_Overview')}>
-                <PatientEventsOverview
-                    events={(notes as Models.IPatientEvent[]).concat(observations).concat(documents).concat(testResults)}
+                <HealthRecordOverview
+                    events={(notes as Models.IHealthRecordEntry[]).concat(observations).concat(documents).concat(testResults)}
                 />
             </Tab>
             <Tab eventKey="notes" title={resolveText('Patient_Notes')}>

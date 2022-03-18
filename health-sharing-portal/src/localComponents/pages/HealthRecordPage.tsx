@@ -1,4 +1,3 @@
-import { isAfter, isBefore } from 'date-fns';
 import { useState, useEffect, useContext } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
@@ -13,9 +12,9 @@ import { v4 as uuid } from 'uuid';
 import { PatientDataTabControl } from '../../sharedHealthComponents/components/Patients/PatientDataTabControl';
 import { PatientActionsCard } from '../../sharedHealthComponents/components/Patients/PatientActionsCard';
 
-interface HealthDataOverviewPageProps {}
+interface HealthRecordPageProps {}
 
-export const HealthDataOverviewPage = (props: HealthDataOverviewPageProps) => {
+export const HealthRecordPage = (props: HealthRecordPageProps) => {
 
     const user = useContext(UserContext);
     const personId = user!.profileData.id;
@@ -59,19 +58,16 @@ export const HealthDataOverviewPage = (props: HealthDataOverviewPageProps) => {
 
     const createNewMedicationSchedule = async () => {
         NotificationManager.info(resolveText('MedicationSchedule_Creating...'));
-        const now = new Date();
-        const currentAdmission = admissions.find(x => isAfter(now, new Date(x.admissionTime)) && (!x.dischargeTime || isBefore(now, x.dischargeTime)));
         const medicationSchedule: Models.Medication.MedicationSchedule = {
             id: uuid(),
-            patientId: personId!,
+            personId: personId!,
             note: '',
             isPaused: false,
             isDispendedByPatient: false,
-            items: [],
-            admissionId: currentAdmission?.patientId
+            items: []
         };
         await buildAndStoreObject<Models.Medication.MedicationSchedule>(
-            `api/medicationschedules/${medicationSchedule.patientId}`,
+            `api/medicationschedules/${medicationSchedule.personId}`,
             resolveText('MedicationSchedule_SuccessfullyStored'),
             resolveText('MedicationSchedule_CouldNotStore'),
             () => medicationSchedule,
@@ -93,7 +89,7 @@ export const HealthDataOverviewPage = (props: HealthDataOverviewPageProps) => {
                     <BasicInformationBox />
                 </Col>
                 <Col xl={6}>
-                    <PatientActionsCard patientId={personId} />
+                    <PatientActionsCard personId={personId} />
                 </Col>
             </Row>
             <Row className='mt-3'>

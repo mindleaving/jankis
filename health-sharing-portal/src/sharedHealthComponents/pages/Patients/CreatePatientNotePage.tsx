@@ -1,9 +1,6 @@
 import { FormEvent, useContext, useEffect, useMemo, useState } from 'react';
 import { Col, Form, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router';
-import UserContext from '../../contexts/UserContext';
-import { PatientEventType } from '../../types/enums.d';
-import { Models } from '../../types/models';
 import { NotificationManager } from 'react-notifications';
 import { v4 as uuid} from 'uuid';
 import { StoreButton } from '../../../sharedCommonComponents/components/StoreButton';
@@ -12,46 +9,33 @@ import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/Loa
 import { buildAndStoreObject } from '../../../sharedCommonComponents/helpers/StoringHelpers';
 import { PatientAutocomplete } from '../../../sharedHealthComponents/components/Autocompletes/PatientAutocomplete';
 import { MedicalTextEditor } from '../../../sharedHealthComponents/components/MedicalTextEditor/MedicalTextEditor';
-import { formatAdmission } from '../../../sharedHealthComponents/helpers/Formatters';
+import UserContext from '../../../localComponents/contexts/UserContext';
+import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
+import { Models } from '../../../localComponents/types/models';
 
 interface CreatePatientNotePageProps {}
 
 export const CreatePatientNotePage = (props: CreatePatientNotePageProps) => {
 
-    const { patientId } = useParams();
+    const { personId } = useParams();
     const user = useContext(UserContext);
 
     const [ profileData, setProfileData ] = useState<Models.Person>();
-    const [ admissions, setAdmissions ] = useState<Models.Admission[]>([]);
-    const [ admissionId, setAdmissionId ] = useState<string>();
     const [ message, setMessage ] = useState<string>('');
     const [ isStoring, setIsStoring ] = useState<boolean>(false);
     const navigate = useNavigate();
     const id = useMemo(() => uuid(), []);
 
     useEffect(() => {
-        if(!patientId) return;
+        if(!personId) return;
         const loadProfileData = buildLoadObjectFunc<Models.Person>(
-            `api/persons/${patientId}`,
+            `api/persons/${personId}`,
             {},
             resolveText('Patient_CouldNotLoad'),
             setProfileData
         );
         loadProfileData();
-    }, [ patientId ]);
-    useEffect(() => {
-        if(!profileData) {
-            setAdmissions([]);
-            return;
-        }
-        const loadAdmissions = buildLoadObjectFunc<Models.Admission[]>(
-            `api/patients/${profileData.id}/admissions`,
-            {},
-            resolveText('Admissions_CouldNotLoad'),
-            setAdmissions
-        );
-        loadAdmissions();
-    }, [ profileData]);
+    }, [ personId ]);
 
     const store = async (e: FormEvent) => {
         e.preventDefault();
@@ -65,18 +49,17 @@ export const CreatePatientNotePage = (props: CreatePatientNotePageProps) => {
             resolveText('Patient_Note_SuccessfullyStored'),
             resolveText('Patient_Note_CouldNotStore'),
             buildNote,
-            () => navigate(-1), //push(`/patients/${patientId}`),
+            () => navigate(-1), //push(`/patients/${personId}`),
             () => setIsStoring(false)
         );
     }
     const buildNote = (): Models.PatientNote => {
         return {
             id: id,
-            patientId: profileData!.id,
-            admissionId: admissionId,
+            personId: profileData!.id,
             createdBy: user!.username,
             timestamp: new Date(),
-            type: PatientEventType.Note,
+            type: HealthRecordEntryType.Note,
             message: message
         };
     }
@@ -94,22 +77,6 @@ export const CreatePatientNotePage = (props: CreatePatientNotePageProps) => {
                         />
                     </Col>
                 </FormGroup>
-                {admissions.length > 0
-                ? <FormGroup as={Row}>
-                    <FormLabel column>{resolveText('Admission')}</FormLabel>
-                    <Col>
-                        <FormControl
-                            as="select"
-                            value={admissionId}
-                            onChange={(e:any) => setAdmissionId(e.target.value)}
-                        >
-                            {admissions.map(admission => (
-                                <option value={admission.id} key={admission.id}>{formatAdmission(admission)}</option>
-                            ))}
-                        </FormControl>
-                    </Col>
-                </FormGroup>
-                : null}
                 <FormGroup>
                     <FormLabel>{resolveText('Patient_Note_Message')}</FormLabel>
                     <FormControl required

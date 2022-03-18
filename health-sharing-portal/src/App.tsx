@@ -1,19 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { Layout } from './Layout';
 import UserContext from './localComponents/contexts/UserContext';
-import { AccountsPage } from './localComponents/pages/AccountsPage';
+import { AccountsPage } from './localComponents/pages/UserManagement/AccountsPage';
 import { AdminHomePage } from './localComponents/pages/AdminHomePage';
 import { CreateEditStudyPage } from './localComponents/pages/CreateEditStudyPage';
 import { GenomeUploadPage } from './localComponents/pages/GenomeUploadPage';
 import { GiveHealthProfesionalAccessPage } from './localComponents/pages/GiveHealthProfesionalAccessPage';
-import { HealthDataOverviewPage } from './localComponents/pages/HealthDataOverviewPage';
+import { HealthRecordPage } from './localComponents/pages/HealthRecordPage';
 import { HealthProfessionalHomePage } from './localComponents/pages/HealthProfessionalHomePage';
 import { HomePage } from './localComponents/pages/HomePage';
 import { ImagingUploadPage } from './localComponents/pages/ImagingUploadPage';
 import { LoginPage } from './localComponents/pages/LoginPage';
-import { PatientPage } from './localComponents/pages/PatientPage';
 import { PatientsListPage } from './localComponents/pages/PatientsListPage';
 import { RegisterAccountPage } from './localComponents/pages/RegisterAccountPage';
 import { ResearcherHomePage } from './localComponents/pages/ResearcherHomePage';
@@ -27,25 +26,48 @@ import './localComponents/styles/App.css';
 import { defaultGlobalizer, Globalizer } from './sharedCommonComponents/helpers/Globalizer';
 import germanTranslation from './localComponents/resources/translation.de.json';
 import englishTranslation from './localComponents/resources/translation.en.json';
+import { NotFoundPage } from './localComponents/pages/NotFoundPage';
+import { CreatePatientDocumentPage } from './sharedHealthComponents/pages/Patients/CreatePatientDocumentPage';
+import { CreatePatientNotePage } from './sharedHealthComponents/pages/Patients/CreatePatientNotePage';
+import { CreatePatientObservationPage } from './sharedHealthComponents/pages/Patients/CreatePatientObservationPage';
+import { CreatePatientTestResultPage } from './sharedHealthComponents/pages/Patients/CreatePatientTestResultPage';
+import { EditMedicationSchedulePage } from './sharedHealthComponents/pages/Patients/EditMedicationSchedulePage';
+import { PatientMedicationsPage } from './sharedHealthComponents/pages/Patients/PatientMedicationsPage';
+import { PatientTimelinePage } from './sharedHealthComponents/pages/Patients/PatientTimelinePage';
+import { AccountEditPage } from './localComponents/pages/UserManagement/AccountEditPage';
+import { PersonsListPage } from './sharedHealthComponents/pages/Patients/PersonsListPage';
 
+const accessTokenSessionStorageKey = "accessToken";
+const userSessionStorageKey = "loggedInUser";
 defaultGlobalizer.instance = new Globalizer("de", "en", [ germanTranslation, englishTranslation ]);
 apiClient.instance = window.location.hostname.toLowerCase() === "localhost"
     ? new ApiClient(window.location.hostname, 44303)
     : new ApiClient(window.location.hostname, 443);
+if(!!sessionStorage.getItem(accessTokenSessionStorageKey)) {
+    apiClient.instance!.setAccessToken(sessionStorage.getItem(accessTokenSessionStorageKey)!);
+}
 
 function App() {
 
-    const [loggedInUser, setLoggedInUser] = useState<ViewModels.LoggedInUserViewModel>();
+    const [loggedInUser, setLoggedInUser] = useState<ViewModels.LoggedInUserViewModel | undefined>(
+        !!sessionStorage.getItem(userSessionStorageKey) 
+            ? JSON.parse(sessionStorage.getItem(userSessionStorageKey)!)
+            : undefined
+        );
     const navigate = useNavigate();
     const onLoggedIn = (userViewModel: ViewModels.LoggedInUserViewModel) => {
         if (userViewModel.authenticationResult.isAuthenticated) {
             apiClient.instance!.setAccessToken(userViewModel.authenticationResult.accessToken!);
+            sessionStorage.setItem(accessTokenSessionStorageKey, userViewModel.authenticationResult.accessToken!);
+            sessionStorage.setItem(userSessionStorageKey, JSON.stringify(userViewModel));
             setLoggedInUser(userViewModel);
             navigate("/");
         }
     }
     const onLogOut = () => {
         setLoggedInUser(undefined);
+        sessionStorage.removeItem(accessTokenSessionStorageKey);
+        sessionStorage.removeItem(userSessionStorageKey);
         navigate("/");
     }
 
@@ -89,15 +111,27 @@ function App() {
                     <Route path="/edit/study/:id" element={<CreateEditStudyPage />} />
                     <Route path="/study/:id" element={<StudyPage />} />
                     <Route path="/studies" element={<StudiesPage />} />
-                    <Route path="/sharer" element={<HealthDataOverviewPage />} />
-                    <Route path="/sharer/upload/imaging" element={<ImagingUploadPage />} />
-                    <Route path="/sharer/upload/genome" element={<GenomeUploadPage />} />
-                    <Route path="/accounts" element={<AccountsPage />} />
-                    <Route path="/patients" element={<PatientsListPage />} />
-                    <Route path="/patient/:patientId" element={<PatientPage />} />
                     <Route path="/giveaccess/healthprofessional" element={<GiveHealthProfesionalAccessPage />} />
+
+                    <Route path="/accounts" element={<AccountsPage />} />
+                    <Route path="/create/account" element={<AccountEditPage />} />
+                    <Route path="/accounts/:username/edit" element={<AccountEditPage />} />
+
+                    <Route path="/patients" element={<PersonsListPage />} />
+
+                    <Route path="/healthrecord/:personId" element={<HealthRecordPage />} />
+                    <Route path="/healthrecord/:personId/timeline" element={<PatientTimelinePage />} />
+                    <Route path="/healthrecord/:personId/medications" element={<PatientMedicationsPage />} />
+                    <Route path="/healthrecord/:personId/create/testresult" element={<CreatePatientTestResultPage />} />
+                    <Route path="/healthrecord/:personId/create/observation" element={<CreatePatientObservationPage />} />
+                    <Route path="/healthrecord/:personId/create/document" element={<CreatePatientDocumentPage />} />
+                    <Route path="/healthrecord/:personId/create/note" element={<CreatePatientNotePage />} />
+                    <Route path="/medicationschedules/:scheduleId/edit" element={<EditMedicationSchedulePage />} />
+                    <Route path="/healthrecord/upload/imaging" element={<ImagingUploadPage />} />
+                    <Route path="/healthrecord/upload/genome" element={<GenomeUploadPage />} />
+
                     <Route path="/" element={userTypeHomePage} />
-                    <Route path="*" element={userTypeHomePage} />
+                    <Route path="*" element={<NotFoundPage />} />
                 </Routes>
             </Layout>
         </UserContext.Provider>

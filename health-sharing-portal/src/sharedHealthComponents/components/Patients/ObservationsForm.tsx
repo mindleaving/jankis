@@ -14,8 +14,7 @@ import { StoreButton } from '../../../sharedCommonComponents/components/StoreBut
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 
 interface ObservationsFormProps {
-    patientId: string;
-    admissionId?: string;
+    personId: string;
     onStore?: (observations: Models.Observations.Observation[]) => void;
 }
 interface MeasurementForm {
@@ -89,8 +88,7 @@ export const ObservationsForm = (props: ObservationsFormProps) => {
                 if(measurementForm.measurementType === MeasurementType.Pulse) {
                     headingText = resolveText('MeasurementType_Pulse');
                     formControl =(<PulseMeasurementForm
-                            patientId={props.patientId}
-                            admissionId={props.admissionId}
+                            personId={props.personId}
                             onSubmit={(observation) => addObservation(observation, measurementForm.id)}
                             hasSubmitButton
                             submitButtonText={resolveText('Create')}
@@ -99,8 +97,7 @@ export const ObservationsForm = (props: ObservationsFormProps) => {
                 else if(measurementForm.measurementType === MeasurementType.BloodPressure) {
                     headingText = resolveText('MeasurementType_BloodPressure');
                     formControl = (<BloodPressureMeasurementForm
-                            patientId={props.patientId}
-                            admissionId={props.admissionId}
+                            personId={props.personId}
                             onSubmit={(observation) => addObservation(observation, measurementForm.id)}
                             hasSubmitButton
                             submitButtonText={resolveText('Create')}
@@ -109,16 +106,14 @@ export const ObservationsForm = (props: ObservationsFormProps) => {
                 else if(measurementForm.measurementType === MeasurementType.Temperature) {
                     headingText = resolveText('MeasurementType_Temperature');
                     formControl = (<TemperatureMeasurementForm
-                            patientId={props.patientId}
-                            admissionId={props.admissionId}
+                            personId={props.personId}
                             onSubmit={(observation) => addObservation(observation, measurementForm.id)}
                             hasSubmitButton
                             submitButtonText={resolveText('Create')}
                         />);
                 } else {
                     formControl = (<GenericMeasurementForm
-                        patientId={props.patientId}
-                        admissionId={props.admissionId}
+                        personId={props.personId}
                         onSubmit={(observation) => addObservation(observation, measurementForm.id)}
                         hasSubmitButton
                         submitButtonText={resolveText('Create')}

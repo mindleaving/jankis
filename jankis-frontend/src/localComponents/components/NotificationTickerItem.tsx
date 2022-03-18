@@ -34,10 +34,10 @@ export const NotificationTickerItem = (props: NotificationTickerItemProps) => {
             onClose={() => dismiss(props.item.id)}
         >
             <div><small>{new Date(props.item.timestamp).toLocaleString()} {resolveText('by')} {props.item.submitter}</small></div>
-            {resolveText('Notification_NewPatientEvent_Text')
+            {resolveText('Notification_NewHealthRecordEntry_Text')
                 .replace('{username}', patientEventNotification.submitter.toLowerCase())
                 .replace('{storageOperation}', patientEventNotification.storageOperation.toLowerCase())
-                .replace('{eventType}', resolveText(`PatientEventType_${patientEventNotification.eventType}`).toLowerCase())
+                .replace('{eventType}', resolveText(`HealthRecordEntryType_${patientEventNotification.eventType}`).toLowerCase())
                 .replace('{patient}', formatPerson(patientEventNotification.patient))
             } <Button variant="link" onClick={() => navigate(`/patients/${patientEventNotification.patient.id}`)}>{resolveText('Open')}</Button>
         </Alert>);

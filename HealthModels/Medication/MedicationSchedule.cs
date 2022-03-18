@@ -7,10 +7,10 @@ namespace HealthModels.Medication
     public class MedicationSchedule : IId
     {
         public MedicationSchedule(
-            string patientId,
+            string personId,
             string name = null)
         {
-            PatientId = patientId;
+            PersonId = personId;
             Name = name;
             Items = new List<MedicationScheduleItem>();
         }
@@ -19,9 +19,7 @@ namespace HealthModels.Medication
         [TypescriptIsOptional]
         public string Name { get; set; }
         [Required]
-        public string PatientId { get; set; }
-        [TypescriptIsOptional]
-        public string AdmissionId { get; set; }
+        public string PersonId { get; set; }
         public List<MedicationScheduleItem> Items { get; set; }
         public string Note { get; set; }
         public bool IsPaused { get; set; }

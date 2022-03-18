@@ -8,7 +8,7 @@ namespace JanKIS.API.Storage
 {
     public interface IAdmissionsStore : IStore<Admission>
     {
-        Task<Admission> GetCurrentAdmissionAsync(string patientId);
+        Task<Admission> GetCurrentAdmissionAsync(string personId);
     }
 
     public class AdmissionsStore : GenericStore<Admission>, IAdmissionsStore
@@ -18,7 +18,7 @@ namespace JanKIS.API.Storage
         {
         }
 
-        public async Task<Admission> GetCurrentAdmissionAsync(string patientId)
+        public async Task<Admission> GetCurrentAdmissionAsync(string personId)
         {
             var utcNow = DateTime.UtcNow;
             return await collection

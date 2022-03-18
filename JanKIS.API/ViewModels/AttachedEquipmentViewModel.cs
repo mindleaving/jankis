@@ -8,13 +8,12 @@ namespace JanKIS.API.ViewModels
         public AttachedEquipmentViewModel(AttachedEquipment model)
             : base(
                 model.Id,
-                model.PatientId,
+                model.PersonId,
                 model.CreatedBy,
                 model.EquipmentType,
                 model.Materials,
                 model.AttachmentTime,
-                model.DetachmentTime,
-                model.AdmissionId)
+                model.DetachmentTime)
         {
         }
 

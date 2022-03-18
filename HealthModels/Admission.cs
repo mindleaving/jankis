@@ -7,14 +7,12 @@ namespace HealthModels
     {
         public Admission(
             string id,
-            string patientId,
             Person profileData,
             DateTime admissionTime,
             DateTime dischargeTime,
             List<Contact> contactPersons)
         {
             Id = id;
-            PatientId = patientId;
             ProfileData = profileData;
             AdmissionTime = admissionTime;
             DischargeTime = dischargeTime;
@@ -22,7 +20,6 @@ namespace HealthModels
         }
 
         public string Id { get; set; }
-        public string PatientId { get; set; }
         public Person ProfileData { get; set; }
         public bool IsReadmission { get; set; }
         public DateTime AdmissionTime { get; set; }

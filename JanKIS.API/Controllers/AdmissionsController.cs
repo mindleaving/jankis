@@ -35,7 +35,7 @@ namespace JanKIS.API.Controllers
             return orderBy?.ToLower() switch
             {
                 "id" => x => x.Id,
-                "patientid" => x => x.PatientId,
+                "personid" => x => x.ProfileData.Id,
                 _ => x => x.Id
             };
         }

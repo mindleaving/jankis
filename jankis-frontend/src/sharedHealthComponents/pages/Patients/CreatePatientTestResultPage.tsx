@@ -1,32 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { Col, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { Models } from '../../../localComponents/types/models';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { PatientAutocomplete } from '../../../sharedHealthComponents/components/Autocompletes/PatientAutocomplete';
 import { formatAdmission } from '../../../sharedHealthComponents/helpers/Formatters';
-import { Models } from '../../types/models';
 
 interface CreatePatientTestResultPageProps {}
 
 export const CreatePatientTestResultPage = (props: CreatePatientTestResultPageProps) => {
 
-    const { patientId } = useParams();
+    const { personId } = useParams();
     const [ profileData, setProfileData ] = useState<Models.Person>();
     const [admissions, setAdmissions] = useState<Models.Admission[]>([]);
     const [admissionId, setAdmissionId] = useState<string>();
-    const navigate = useNavigate();
 
     useEffect(() => {
-        if(!patientId) return;
+        if(!personId) return;
         const loadProfileData = buildLoadObjectFunc<Models.Person>(
-            `api/persons/${patientId}`,
+            `api/persons/${personId}`,
             {},
             resolveText('Patient_CouldNotLoad'),
             setProfileData
         );
         loadProfileData();
-    }, [ patientId ]);
+    }, [ personId ]);
     useEffect(() => {
         if(!profileData) {
             setAdmissions([]);
@@ -71,7 +70,7 @@ export const CreatePatientTestResultPage = (props: CreatePatientTestResultPagePr
             : null}
             {/* {profileData 
             ? <TestResultsForm 
-                patientId={profileData.id} 
+                personId={profileData.id} 
                 admissionId={admissionId} 
                 onStore={() => navigate(-1)}
             /> : null} */}

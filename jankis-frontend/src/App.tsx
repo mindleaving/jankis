@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { Layout } from './localComponents/components/Layout';
 import UserContext from './localComponents/contexts/UserContext';
 import { InstitutionEditPage } from './localComponents/pages/Config/InstitutionEditPage';
@@ -21,19 +21,12 @@ import { LoginPage } from './localComponents/pages/LoginPage';
 import { NewsPage } from './localComponents/pages/NewsPage';
 import { AdmissionsListPage } from './localComponents/pages/Patients/AdmissionsListPage';
 import { CreateEditPatientPage } from './localComponents/pages/Patients/CreateEditPatientPage';
-import { CreatePatientDocumentPage } from './localComponents/pages/Patients/CreatePatientDocumentPage';
-import { CreatePatientNotePage } from './localComponents/pages/Patients/CreatePatientNotePage';
-import { CreatePatientObservationPage } from './localComponents/pages/Patients/CreatePatientObservationPage';
-import { CreatePatientTestResultPage } from './localComponents/pages/Patients/CreatePatientTestResultPage';
-import { EditMedicationSchedulePage } from './localComponents/pages/Patients/EditMedicationSchedulePage';
+import { CreatePatientDocumentPage } from './sharedHealthComponents/pages/Patients/CreatePatientDocumentPage';
 import { MyPatientsPage } from './localComponents/pages/Patients/MyPatientsPage';
-import { OrderServiceForPatientPage } from './localComponents/pages/Patients/OrderServiceForPatientPage';
 import { PatientEquipmentPage } from './localComponents/pages/Patients/PatientEquipmentPage';
-import { PatientMedicationsPage } from './localComponents/pages/Patients/PatientMedicationsPage';
 import { PatientNursingPage } from './localComponents/pages/Patients/PatientNursingPage';
 import { PatientPage } from './localComponents/pages/Patients/PatientPage';
-import { PatientTimelinePage } from './localComponents/pages/Patients/PatientTimelinePage';
-import { PersonsListPage } from './localComponents/pages/Patients/PersonsListPage';
+import { PersonsListPage } from './sharedHealthComponents/pages/Patients/PersonsListPage';
 import { ResourceEditPage } from './localComponents/pages/Resources/ResourceEditPage';
 import { ResourcePage } from './localComponents/pages/Resources/ResourcePage';
 import { ResourcesListPage } from './localComponents/pages/Resources/ResourcesListPage';
@@ -47,7 +40,6 @@ import { StockEditPage } from './localComponents/pages/Stocks/StockEditPage';
 import { StockPage } from './localComponents/pages/Stocks/StockPage';
 import { StocksListPage } from './localComponents/pages/Stocks/StocksListPage';
 import { AccountEditPage } from './localComponents/pages/UserManagement/AccountEditPage';
-import { AccountsListPage } from './localComponents/pages/UserManagement/AccountsListPage';
 import { RoleEditPage } from './localComponents/pages/UserManagement/RoleEditPage';
 import { RolePage } from './localComponents/pages/UserManagement/RolePage';
 import { RolesListPage } from './localComponents/pages/UserManagement/RolesListPage';
@@ -57,20 +49,47 @@ import { defaultGlobalizer, Globalizer } from './sharedCommonComponents/helpers/
 import germanTranslation from './localComponents/resources/translation.de.json';
 import danishTranslation from './localComponents/resources/translation.dk.json';
 import englishTranslation from './localComponents/resources/translation.en.json';
+import { CreatePatientNotePage } from './sharedHealthComponents/pages/Patients/CreatePatientNotePage';
+import { CreatePatientObservationPage } from './sharedHealthComponents/pages/Patients/CreatePatientObservationPage';
+import { CreatePatientTestResultPage } from './sharedHealthComponents/pages/Patients/CreatePatientTestResultPage';
+import { EditMedicationSchedulePage } from './sharedHealthComponents/pages/Patients/EditMedicationSchedulePage';
+import { OrderServiceForPatientPage } from './localComponents/pages/Patients/OrderServiceForPatientPage';
+import { PatientMedicationsPage } from './sharedHealthComponents/pages/Patients/PatientMedicationsPage';
+import { PatientTimelinePage } from './sharedHealthComponents/pages/Patients/PatientTimelinePage';
+import { AccountsListPage } from './localComponents/pages/UserManagement/AccountsListPage';
 
+const accessTokenSessionStorageKey = "accessToken";
+const userSessionStorageKey = "loggedInUser";
 defaultGlobalizer.instance = new Globalizer("de", "en", [ germanTranslation, danishTranslation, englishTranslation ]);
 apiClient.instance = window.location.hostname.toLowerCase() === "localhost"
     ? new ApiClient(window.location.hostname, 44301)
     : new ApiClient(window.location.hostname, 443);
+if(!!sessionStorage.getItem(accessTokenSessionStorageKey)) {
+    apiClient.instance!.setAccessToken(sessionStorage.getItem(accessTokenSessionStorageKey)!);
+}
 
 function App() {
 
-    const [loggedInUser, setLoggedInUser] = useState<ViewModels.LoggedInUserViewModel>();
+    const [loggedInUser, setLoggedInUser] = useState<ViewModels.LoggedInUserViewModel | undefined>(
+        !!sessionStorage.getItem(userSessionStorageKey) 
+            ? JSON.parse(sessionStorage.getItem(userSessionStorageKey)!)
+            : undefined
+        );
+    const navigate = useNavigate();
     const onLoggedIn = (userViewModel: ViewModels.LoggedInUserViewModel) => {
         if (userViewModel.authenticationResult.isAuthenticated) {
             apiClient.instance!.setAccessToken(userViewModel.authenticationResult.accessToken!);
+            sessionStorage.setItem(accessTokenSessionStorageKey, userViewModel.authenticationResult.accessToken!);
+            sessionStorage.setItem(userSessionStorageKey, JSON.stringify(userViewModel));
             setLoggedInUser(userViewModel);
+            navigate("/");
         }
+    }
+    const onLogOut = () => {
+        setLoggedInUser(undefined);
+        sessionStorage.removeItem(accessTokenSessionStorageKey);
+        sessionStorage.removeItem(userSessionStorageKey);
+        navigate("/");
     }
 
     if (!loggedInUser) {
@@ -79,281 +98,83 @@ function App() {
 
     return (
         <UserContext.Provider value={loggedInUser}>
-            <Layout onLogOut={() => setLoggedInUser(undefined)}>
+            <Layout onLogOut={onLogOut}>
                 <Routes>
-                    <Route 
-                        path="/"
-                        element={<NewsPage />}
-                    />
+                    <Route path="/" element={<NewsPage />} />
 
-                    <Route
-                        path="/admissions"
-                        element={<AdmissionsListPage />}
-                    />
-                    <Route
-                        path="/create/(patient|person)"
-                        element={<CreateEditPatientPage />}
-                    />
-                    <Route
-                        path="/(patients|persons)/:patientId/edit"
-                        element={<CreateEditPatientPage />}
-                    />
-                    <Route
-                        path="/mypatients"
-                        element={<MyPatientsPage />}
-                    />
-                    <Route
-                        path="/persons"
-                        element={<PersonsListPage filter={{}} />}
-                    />
-                    <Route
-                        path="/patients/:patientId"
-                        element={<PatientPage />}
-                    />
-                    <Route
-                        path="/patients/:patientId/nursing"
-                        element={<PatientNursingPage />}
-                    />
-                    <Route
-                        path="/patients/:patientId/timeline"
-                        element={<PatientTimelinePage />}
-                    />
-                    <Route
-                        path="/patients/:patientId/medications"
-                        element={<PatientMedicationsPage />}
-                    />
-                    <Route
-                        path="/patients/:patientId/create/testresult"
-                        element={<CreatePatientTestResultPage />}
-                    />
-                    <Route
-                        path="/patients/:patientId/create/observation"
-                        element={<CreatePatientObservationPage />}
-                    />
-                    <Route
-                        path="/patients/:patientId/create/document"
-                        element={<CreatePatientDocumentPage />}
-                    />
-                    <Route
-                        path="/patients/:patientId/create/note"
-                        element={<CreatePatientNotePage />}
-                    />
-                    <Route
-                        path="/patients/:patientId/equipment"
-                        element={<PatientEquipmentPage />}
-                    />
-                    <Route
-                        path="/patients/:patientId/order/service"
-                        element={<OrderServiceForPatientPage />}
-                    />
-                    <Route
-                        path="/medicationschedules/:scheduleId/edit"
-                        element={<EditMedicationSchedulePage />}
-                    />
+                    <Route path="/admissions" element={<AdmissionsListPage />} />
+                    <Route path="/create/(patient|person)" element={<CreateEditPatientPage />} />
+                    <Route path="/(patients|persons)/:personId/edit" element={<CreateEditPatientPage />} />
+                    <Route path="/mypatients" element={<MyPatientsPage />} />
+                    <Route path="/persons" element={<PersonsListPage filter={{}} />} />
+                    <Route path="/patients/:personId" element={<PatientPage />} />
+                    <Route path="/patients/:personId/nursing" element={<PatientNursingPage />} />
+                    <Route path="/patients/:personId/timeline" element={<PatientTimelinePage />} />
+                    <Route path="/patients/:personId/medications" element={<PatientMedicationsPage />} />
+                    <Route path="/patients/:personId/create/testresult" element={<CreatePatientTestResultPage />} />
+                    <Route path="/patients/:personId/create/observation" element={<CreatePatientObservationPage />} />
+                    <Route path="/patients/:personId/create/document" element={<CreatePatientDocumentPage />} />
+                    <Route path="/patients/:personId/create/note" element={<CreatePatientNotePage />} />
+                    <Route path="/patients/:personId/equipment" element={<PatientEquipmentPage />} />
+                    <Route path="/patients/:personId/order/service" element={<OrderServiceForPatientPage />} />
+                    <Route path="/medicationschedules/:scheduleId/edit" element={<EditMedicationSchedulePage />} />
 
-                    <Route
-                        path="/services"
-                        element={<ServicesListPage />}
-                    />
-                    <Route
-                        path="/create/service"
-                        element={<ServiceEditPage />}
-                    />
-                    <Route
-                        path="/services/:serviceId"
-                        element={<ServicePage />}
-                    />
-                    <Route
-                        path="/services/:serviceId/edit"
-                        element={<ServiceEditPage />}
-                    />
-                    <Route
-                        path="/services/:serviceId/request"
-                        element={<RequestServicePage />}
-                    />
-                    <Route
-                        path="/services/:serviceId/requests"
-                        element={<ServiceRequestsListPage />}
-                    />
-                    <Route
-                        path="/servicerequests"
-                        element={<ServiceRequestsListPage />}
-                    />
-                    <Route
-                        path="/servicerequests/:requestId"
-                        element={<ServiceRequestPage />}
-                    />
-                    <Route
-                        path="/create/servicerequest"
-                        element={<RequestServicePage />}
-                    />
+                    <Route path="/services" element={<ServicesListPage />} />
+                    <Route path="/create/service" element={<ServiceEditPage />} />
+                    <Route path="/services/:serviceId" element={<ServicePage />} />
+                    <Route path="/services/:serviceId/edit" element={<ServiceEditPage />} />
+                    <Route path="/services/:serviceId/request" element={<RequestServicePage />} />
+                    <Route path="/services/:serviceId/requests" element={<ServiceRequestsListPage />} />
+                    <Route path="/servicerequests" element={<ServiceRequestsListPage />} />
+                    <Route path="/servicerequests/:requestId" element={<ServiceRequestPage />} />
+                    <Route path="/create/servicerequest" element={<RequestServicePage />} />
 
-                    <Route
-                        path="/departments"
-                        element={<DepartmentsListPage />}
-                    />
-                    <Route
-                        path="/create/department"
-                        element={<DepartmentEditPage />}
-                    />
-                    <Route
-                        path="/departments/:departmentId"
-                        element={<DepartmentPage />}
-                    />
-                    <Route
-                        path="/departments/:departmentId/edit"
-                        element={<DepartmentEditPage />}
-                    />
-                    <Route
-                        path="/departments/:departmentId/services"
-                        element={<ServicesListPage />}
-                    />
-                    <Route
-                        path="/departments/:departmentId/requests"
-                        element={<ServiceRequestsListPage />}
-                    />
-                    <Route
-                        path="/departments/:departmentId/resources"
-                        element={<ResourcesListPage />}
-                    />
-                    <Route
-                        path="/departments/:departmentId/stocks"
-                        element={<StocksListPage />}
-                    />
+                    <Route path="/departments" element={<DepartmentsListPage />} />
+                    <Route path="/create/department" element={<DepartmentEditPage />} />
+                    <Route path="/departments/:departmentId" element={<DepartmentPage />} />
+                    <Route path="/departments/:departmentId/edit" element={<DepartmentEditPage />} />
+                    <Route path="/departments/:departmentId/services" element={<ServicesListPage />} />
+                    <Route path="/departments/:departmentId/requests" element={<ServiceRequestsListPage />} />
+                    <Route path="/departments/:departmentId/resources" element={<ResourcesListPage />} />
+                    <Route path="/departments/:departmentId/stocks" element={<StocksListPage />} />
 
-                    <Route
-                        path="/resources"
-                        element={<ResourcesListPage />}
-                    />
-                    <Route
-                        path="/create/resource"
-                        element={<ResourceEditPage />}
-                    />
-                    <Route
-                        path="/resources/:resourceId"
-                        element={<ResourcePage />}
-                    />
-                    <Route
-                        path="/resources/:resourceId/edit"
-                        element={<ResourceEditPage />}
-                    />
-                    <Route
-                        path="/consumables"
-                        element={<ConsumablesListPage />}
-                    />
-                    <Route
-                        path="/create/consumable"
-                        element={<ConsumableEditPage />}
-                    />
-                    <Route
-                        path="/consumables/:consumableId"
-                        element={<ConsumablePage />}
-                    />
-                    <Route
-                        path="/consumables/:consumableId/edit"
-                        element={<ConsumableEditPage />}
-                    />
-                    <Route
-                        path="/stocks"
-                        element={<StocksListPage />}
-                    />
-                    <Route
-                        path="/create/stock"
-                        element={<StockEditPage />}
-                    />
-                    <Route
-                        path="/stocks/:stockId"
-                        element={<StockPage />}
-                    />
-                    <Route
-                        path="/stocks/:stockId/edit"
-                        element={<StockEditPage />}
-                    />
-                    <Route
-                        path="/drugs"
-                        element={<DrugsListPage />}
-                    />
-                    <Route
-                        path="/drugs/:drugId/edit"
-                        element={<CreateEditDrugPage />}
-                    />
-                    <Route
-                        path="/create/drug"
-                        element={<CreateEditDrugPage />}
-                    />
+                    <Route path="/resources" element={<ResourcesListPage />} />
+                    <Route path="/create/resource" element={<ResourceEditPage />} />
+                    <Route path="/resources/:resourceId" element={<ResourcePage />} />
+                    <Route path="/resources/:resourceId/edit" element={<ResourceEditPage />} />
+                    <Route path="/consumables" element={<ConsumablesListPage />} />
+                    <Route path="/create/consumable" element={<ConsumableEditPage />} />
+                    <Route path="/consumables/:consumableId" element={<ConsumablePage />} />
+                    <Route path="/consumables/:consumableId/edit" element={<ConsumableEditPage />} />
+                    <Route path="/stocks" element={<StocksListPage />} />
+                    <Route path="/create/stock" element={<StockEditPage />} />
+                    <Route path="/stocks/:stockId" element={<StockPage />} />
+                    <Route path="/stocks/:stockId/edit" element={<StockEditPage />} />
+                    <Route path="/drugs" element={<DrugsListPage />} />
+                    <Route path="/drugs/:drugId/edit" element={<CreateEditDrugPage />} />
+                    <Route path="/create/drug" element={<CreateEditDrugPage />} />
 
-                    <Route
-                        path="/accounts"
-                        element={<AccountsListPage />}
-                    />
-                    <Route
-                        path="/create/account"
-                        element={<AccountEditPage />}
-                    />
-                    <Route
-                        path="/accounts/:username/edit"
-                        element={<AccountEditPage />}
-                    />
+                    <Route path="/accounts" element={<AccountsListPage />} />
+                    <Route path="/create/account" element={<AccountEditPage />} />
+                    <Route path="/accounts/:username/edit" element={<AccountEditPage />} />
 
-                    <Route
-                        path="/roles"
-                        element={<RolesListPage />}
-                    />
-                    <Route
-                        path="/create/role"
-                        element={<RoleEditPage />}
-                    />
-                    <Route
-                        path="/roles/:roleId"
-                        element={<RolePage />}
-                    />
-                    <Route
-                        path="/roles/:roleId/edit"
-                        element={<RoleEditPage />}
-                    />
+                    <Route path="/roles" element={<RolesListPage />} />
+                    <Route path="/create/role" element={<RoleEditPage />} />
+                    <Route path="/roles/:roleId" element={<RolePage />} />
+                    <Route path="/roles/:roleId/edit" element={<RoleEditPage />} />
 
-                    <Route
-                        path="/contacts"
-                        element={<ContactsListPage />}
-                    />
-                    <Route
-                        path="/create/contact"
-                        element={<ContactEditPage />}
-                    />
-                    <Route
-                        path="/contacts/:contactId"
-                        element={<ContactPage />}
-                    />
-                    <Route
-                        path="/contacts/:contactId/edit"
-                        element={<ContactEditPage />}
-                    />
+                    <Route path="/contacts" element={<ContactsListPage />} />
+                    <Route path="/create/contact" element={<ContactEditPage />} />
+                    <Route path="/contacts/:contactId" element={<ContactPage />} />
+                    <Route path="/contacts/:contactId/edit" element={<ContactEditPage />} />
 
-                    <Route
-                        path="/institutions"
-                        element={<InstitutionsListPage />}
-                    />
-                    <Route
-                        path="/institutions/:institutionId/edit"
-                        element={<InstitutionEditPage />}
-                    />
-                    <Route
-                        path="/create/institution"
-                        element={<InstitutionEditPage />}
-                    />
+                    <Route path="/institutions" element={<InstitutionsListPage />} />
+                    <Route path="/institutions/:institutionId/edit" element={<InstitutionEditPage />} />
+                    <Route path="/create/institution" element={<InstitutionEditPage />} />
 
-                    <Route
-                        path="/rooms"
-                        element={<RoomsPage />}
-                    />
-                    <Route
-                        path="/create/bedoccupancy/department/:departmentId/room/:roomId/bed/:bedPosition"
-                        element={<BedOccupancyEditPage />}
-                    />
-                    <Route
-                        path="/bedoccupancies/:occupancyId/edit"
-                        element={<BedOccupancyEditPage />}
-                    />
+                    <Route path="/rooms" element={<RoomsPage />} />
+                    <Route path="/create/bedoccupancy/department/:departmentId/room/:roomId/bed/:bedPosition" element={<BedOccupancyEditPage />} />
+                    <Route path="/bedoccupancies/:occupancyId/edit" element={<BedOccupancyEditPage />} />
                 </Routes>
             </Layout>
         </UserContext.Provider>

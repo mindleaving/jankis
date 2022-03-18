@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { AccountsFilterView } from '../../../sharedHealthComponents/components/Accounts/AccountsFilterView';
-import { AccountsList } from '../../../sharedHealthComponents/components/Accounts/AccountsList';
-import { AccountsFilter } from '../../../sharedHealthComponents/types/frontendTypes';
+import { AccountsFilterView } from '../../components/UserManagement/AccountsFilterView';
+import { AccountsList } from '../../components/UserManagement/AccountsList';
+import { AccountsFilter } from '../../types/frontendTypes';
 
 interface AccountsListPageProps {
     

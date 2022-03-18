@@ -5,21 +5,19 @@ using TypescriptGenerator.Attributes;
 
 namespace JanKIS.API.Models
 {
-    public class AttachedEquipment : IPatientEvent
+    public class AttachedEquipment : IHealthRecordEntry
     {
         public AttachedEquipment(
             string id,
-            string patientId,
+            string personId,
             string createdBy,
             string equipmentType,
             List<MaterialReference> materials,
             DateTime attachmentTime,
-            DateTime? detachmentTime,
-            string admissionId = null)
+            DateTime? detachmentTime)
         {
             Id = id;
-            PatientId = patientId;
-            AdmissionId = admissionId;
+            PersonId = personId;
             CreatedBy = createdBy;
             Timestamp = attachmentTime;
             EquipmentType = equipmentType;
@@ -28,9 +26,8 @@ namespace JanKIS.API.Models
         }
 
         public string Id { get; set; }
-        public PatientEventType Type => PatientEventType.Equipment;
-        public string PatientId { get; set; }
-        public string AdmissionId { get; set; }
+        public HealthRecordEntryType Type => HealthRecordEntryType.Equipment;
+        public string PersonId { get; set; }
         public string CreatedBy { get; set; }
         public DateTime Timestamp { get; set; }
 

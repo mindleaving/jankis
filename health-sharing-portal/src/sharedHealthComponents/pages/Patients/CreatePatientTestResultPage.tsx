@@ -1,36 +1,31 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
-import { useParams } from 'react-router';
-import { useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { Models } from '../../../localComponents/types/models';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { PatientAutocomplete } from '../../../sharedHealthComponents/components/Autocompletes/PatientAutocomplete';
-import { ObservationsForm } from '../../../sharedHealthComponents/components/Patients/ObservationsForm';
 import { formatAdmission } from '../../../sharedHealthComponents/helpers/Formatters';
-import { Models } from '../../types/models';
 
-interface CreatePatientObservationPageProps { }
+interface CreatePatientTestResultPageProps {}
 
-export const CreatePatientObservationPage = (props: CreatePatientObservationPageProps) => {
+export const CreatePatientTestResultPage = (props: CreatePatientTestResultPageProps) => {
 
-    const { patientId } = useParams();
-
+    const { personId } = useParams();
     const [ profileData, setProfileData ] = useState<Models.Person>();
     const [admissions, setAdmissions] = useState<Models.Admission[]>([]);
     const [admissionId, setAdmissionId] = useState<string>();
-    
-    const navigate = useNavigate();
 
     useEffect(() => {
-        if(!patientId) return;
+        if(!personId) return;
         const loadProfileData = buildLoadObjectFunc<Models.Person>(
-            `api/persons/${patientId}`,
+            `api/persons/${personId}`,
             {},
             resolveText('Patient_CouldNotLoad'),
             setProfileData
         );
         loadProfileData();
-    }, [ patientId ]);
+    }, [ personId ]);
     useEffect(() => {
         if(!profileData) {
             setAdmissions([]);
@@ -47,7 +42,7 @@ export const CreatePatientObservationPage = (props: CreatePatientObservationPage
 
     return (
         <>
-            <h1>{resolveText('Observation')}</h1>
+            <h1>{resolveText('TestResult')}</h1>
             <FormGroup as={Row}>
                 <FormLabel column>{resolveText('Patient')}</FormLabel>
                 <Col>
@@ -73,12 +68,13 @@ export const CreatePatientObservationPage = (props: CreatePatientObservationPage
                 </Col>
             </FormGroup>
             : null}
-            {profileData 
-            ? <ObservationsForm 
-                patientId={profileData.id} 
+            {/* {profileData 
+            ? <TestResultsForm 
+                personId={profileData.id} 
                 admissionId={admissionId} 
                 onStore={() => navigate(-1)}
-            /> : null}
-    </>);
+            /> : null} */}
+        </>
+    );
 
 }

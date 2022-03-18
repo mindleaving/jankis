@@ -1,6 +1,6 @@
 ﻿namespace HealthModels
 {
-    public enum PatientEventType
+    public enum HealthRecordEntryType
     {
         Observation,
         Note,

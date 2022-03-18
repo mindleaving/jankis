@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { Models } from '../../../localComponents/types/models';
 import { RowFormGroup } from '../../../sharedCommonComponents/components/RowFormGroup';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { MedicationScheduleEditor } from '../../../sharedHealthComponents/components/Patients/MedicationScheduleEditor';
-import { Models } from '../../types/models';
 
 interface PatientMedicationsPageProps {}
 
 export const PatientMedicationsPage = (props: PatientMedicationsPageProps) => {
 
-    const { patientId } = useParams();
+    const { personId } = useParams();
 
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
     const [ medicationSchedules, setMedicationSchedules ] = useState<Models.Medication.MedicationSchedule[]>([]);
@@ -19,16 +19,16 @@ export const PatientMedicationsPage = (props: PatientMedicationsPageProps) => {
     useEffect(() => {
         setIsLoading(true);
         const loadMedicationSchedules = buildLoadObjectFunc<Models.Medication.MedicationSchedule[]>(
-            `api/patients/${patientId}/medicationschedules`,
+            `api/patients/${personId}/medicationschedules`,
             {},
             resolveText('MedicationSchedules_CouldNotLoad'),
             setMedicationSchedules,
             () => setIsLoading(false)
         );
         loadMedicationSchedules();
-    }, [ patientId ]);
+    }, [ personId ]);
 
-    if(!patientId) {
+    if(!personId) {
         return (<h1>{resolveText('MissingID')}</h1>);
     }
 

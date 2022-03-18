@@ -3,13 +3,12 @@ import { Button, Col, Form, FormControl, FormGroup, FormLabel, Row } from 'react
 import { v4 as uuid } from 'uuid';
 import { InputGroup } from 'react-bootstrap';
 import UserContext from '../../../localComponents/contexts/UserContext';
-import { PatientEventType, MeasurementType } from '../../../localComponents/types/enums.d';
+import { HealthRecordEntryType, MeasurementType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 
 interface BloodPressureMeasurementFormProps {
-    patientId: string;
-    admissionId?: string;
+    personId: string;
     onSubmit: (observation: Models.Observations.BloodPressureObservation) => void;
     hasSubmitButton?: boolean;
     submitButtonText?: string;
@@ -25,10 +24,9 @@ export const BloodPressureMeasurementForm = (props: BloodPressureMeasurementForm
         e.preventDefault();
         const observation: Models.Observations.BloodPressureObservation = {
             id: uuid(),
-            type: PatientEventType.Observation,
+            type: HealthRecordEntryType.Observation,
             measurementType: MeasurementType.BloodPressure,
-            patientId: props.patientId,
-            admissionId: props.admissionId,
+            personId: props.personId,
             timestamp: new Date(),
             createdBy: user!.username,
             systolic: systolic,

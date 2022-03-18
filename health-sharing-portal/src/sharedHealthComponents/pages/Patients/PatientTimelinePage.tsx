@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { Models } from '../../../localComponents/types/models';
+import { ViewModels } from '../../../localComponents/types/viewModels';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { PatientTimelineItem } from '../../../sharedHealthComponents/components/Patients/PatientTimelineItem';
-import { Models } from '../../types/models';
-import { ViewModels } from '../../types/viewModels';
 
 interface PatientTimelinePageProps {}
 
@@ -12,21 +12,21 @@ export const PatientTimelinePage = (props: PatientTimelinePageProps) => {
 
     // TODO: Group events by admission
 
-    const { patientId } = useParams();
+    const { personId } = useParams();
 
-    const [ events, setEvents ] = useState<Models.IPatientEvent[]>([]);
+    const [ events, setEvents ] = useState<Models.IHealthRecordEntry[]>([]);
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
 
     useEffect(() => {
-        if(!patientId) return;
+        if(!personId) return;
         setIsLoading(true);
-        const loadPatientEvents = buildLoadObjectFunc<ViewModels.PatientOverviewViewModel>(
-            `api/patients/${patientId}/overviewviewmodel`,
+        const loadHealthRecordEntrys = buildLoadObjectFunc<ViewModels.PatientOverviewViewModel>(
+            `api/patients/${personId}/overviewviewmodel`,
             {},
             resolveText('Patient_CouldNotLoad'),
             data => {
                 setEvents(
-                    (data.notes as Models.IPatientEvent[])
+                    (data.notes as Models.IHealthRecordEntry[])
                     .concat(data.observations)
                     .concat(data.testResults)
                     .concat(data.documents)
@@ -34,10 +34,10 @@ export const PatientTimelinePage = (props: PatientTimelinePageProps) => {
             },
             () => setIsLoading(false)
         );
-        loadPatientEvents();
-    }, [ patientId ]);
+        loadHealthRecordEntrys();
+    }, [ personId ]);
 
-    if(!patientId) {
+    if(!personId) {
         return (<h1>{resolveText('MissingID')}</h1>);
     }
     if(isLoading) {

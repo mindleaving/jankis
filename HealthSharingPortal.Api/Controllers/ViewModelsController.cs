@@ -75,13 +75,13 @@ namespace HealthSharingPortal.API.Controllers
             if (!await HasPermissionForPerson(personId, username))
                 return Forbid();
             var profileData = await personStore.GetByIdAsync(personId);
-            var admissions = await admissionsStore.SearchAsync(x => x.PatientId == personId);
-            var notes = await patientNotesStore.SearchAsync(x => x.PatientId == personId);
-            var medicationSchedules = await medicationSchedulesStore.GetForPatient(personId);
-            var medicationDispensions = await medicationDispensionsStore.SearchAsync(x => x.PatientId == personId);
-            var testResults = await testResultsStore.SearchAsync(x => x.PatientId == personId);
-            var observations = await observationsStore.SearchAsync(x => x.PatientId == personId);
-            var documents = await documentsStore.SearchAsync(x => x.PatientId == personId);
+            var admissions = await admissionsStore.SearchAsync(x => x.ProfileData.Id == personId);
+            var notes = await patientNotesStore.SearchAsync(x => x.PersonId == personId);
+            var medicationSchedules = await medicationSchedulesStore.GetForPerson(personId);
+            var medicationDispensions = await medicationDispensionsStore.SearchAsync(x => x.PersonId == personId);
+            var testResults = await testResultsStore.SearchAsync(x => x.PersonId == personId);
+            var observations = await observationsStore.SearchAsync(x => x.PersonId == personId);
+            var documents = await documentsStore.SearchAsync(x => x.PersonId == personId);
             var viewModel = new PatientOverviewViewModel(
                 profileData,
                 admissions,

@@ -5,14 +5,13 @@ import { isToday, isTomorrow, startOfToday, startOfTomorrow } from 'date-fns';
 import { MedicationDispensionEditor } from './MedicationDispensionEditor';
 import { v4 as uuid } from 'uuid';
 import UserContext from '../../../localComponents/contexts/UserContext';
-import { MedicationDispensionState, PatientEventType } from '../../../localComponents/types/enums.d';
+import { MedicationDispensionState, HealthRecordEntryType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 
 interface MedicationScheduleItemEditTableRowProps {
     medication: Models.Medication.MedicationScheduleItem;
-    patientId: string;
-    admissionId?: string;
+    personId: string;
     isSelected: boolean;
     onSelectionChanged: (isSelected: boolean) => void;
     onChange: (item: Models.Medication.MedicationScheduleItem) => void;
@@ -44,11 +43,10 @@ export const MedicationScheduleItemEditTableRow = (props: MedicationScheduleItem
     const addDispension = (timestamp: Date) => {
         const dispension: Models.Medication.MedicationDispension = {
             id: uuid(),
-            patientId: props.patientId,
-            admissionId: props.admissionId,
+            personId: props.personId,
             drug: medication.drug,
             state: MedicationDispensionState.Scheduled,
-            type: PatientEventType.MedicationDispension,
+            type: HealthRecordEntryType.MedicationDispension,
             value: 0,
             unit: medication.drug.amountUnit,
             timestamp: timestamp,

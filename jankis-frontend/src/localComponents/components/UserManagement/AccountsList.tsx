@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { confirmAlert } from 'react-confirm-alert';
 import { useNavigate } from 'react-router';
-import { ViewModels } from '../../../localComponents/types/viewModels';
+import { ViewModels } from '../../types/viewModels';
 import { PagedTable } from '../../../sharedCommonComponents/components/PagedTable';
 import { deleteObject } from '../../../sharedCommonComponents/helpers/DeleteHelpers';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';

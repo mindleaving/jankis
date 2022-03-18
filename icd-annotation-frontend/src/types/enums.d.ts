@@ -3,7 +3,7 @@ export enum AddressRole {
     Secondary = "Secondary",
     Temporary = "Temporary"
 }
-export enum PatientEventType {
+export enum HealthRecordEntryType {
     Observation = "Observation",
     Note = "Note",
     TestResult = "TestResult",

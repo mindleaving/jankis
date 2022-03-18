@@ -18,10 +18,8 @@ namespace HealthModels.DiagnosticTestResults
     public abstract class DiagnosticTestResult : IDiagnosticTestResult
     {
         public string Id { get; set; }
-        public PatientEventType Type => PatientEventType.TestResult;
-        public string PatientId { get; set; }
-        [TypescriptIsOptional]
-        public string AdmissionId { get; set; }
+        public HealthRecordEntryType Type => HealthRecordEntryType.TestResult;
+        public string PersonId { get; set; }
         public string CreatedBy { get; set; }
         public DateTime Timestamp { get; set; }
         public string TestCodeLoinc { get; set; }

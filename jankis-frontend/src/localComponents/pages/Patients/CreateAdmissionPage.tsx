@@ -49,7 +49,6 @@ export const CreateAdmissionPage = (props: CreateAdmissionPageProps) => {
             id: id,
             admissionTime: admissionDate!,
             isReadmission: isReadmission,
-            patientId: person!.id,
             profileData: person!,
             contactPersons: contactPersons
         };

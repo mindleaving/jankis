@@ -1,31 +1,26 @@
 ﻿using System;
-using TypescriptGenerator.Attributes;
 
 namespace HealthModels
 {
-    public class PatientNote : IPatientEvent
+    public class PatientNote : IHealthRecordEntry
     {
         public PatientNote(
             string id,
-            string patientId,
+            string personId,
             string createdBy,
             DateTime timestamp,
-            string message,
-            string admissionId = null)
+            string message)
         {
             Id = id;
-            PatientId = patientId;
+            PersonId = personId;
             CreatedBy = createdBy;
             Timestamp = timestamp;
             Message = message;
-            AdmissionId = admissionId;
         }
 
-        public PatientEventType Type => PatientEventType.Note;
+        public HealthRecordEntryType Type => HealthRecordEntryType.Note;
         public string Id { get; set; }
-        public string PatientId { get; set; }
-        [TypescriptIsOptional]
-        public string AdmissionId { get; set; }
+        public string PersonId { get; set; }
         public string CreatedBy { get; set; }
         public DateTime Timestamp { get; set; }
         public string Message { get; set; }

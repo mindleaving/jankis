@@ -67,23 +67,23 @@ namespace JanKIS.API.Controllers
             this.attachedEquipmentViewModelBuilder = attachedEquipmentViewModelBuilder;
         }
 
-        [HttpGet("{patientId}/" + nameof(OverviewViewModel))]
-        public async Task<IActionResult> OverviewViewModel([FromRoute] string patientId)
+        [HttpGet("{personId}/" + nameof(OverviewViewModel))]
+        public async Task<IActionResult> OverviewViewModel([FromRoute] string personId)
         {
-            var profileData = await personsStore.GetByIdAsync(patientId);
+            var profileData = await personsStore.GetByIdAsync(personId);
             if (profileData == null)
                 return NotFound();
             var now = DateTime.UtcNow;
             var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            var currentBedOccupancy = (await bedOccupanciesStore.SearchAsync(x => x.Patient.Id == patientId && x.StartTime <= now && (x.EndTime == null || x.EndTime > now))).FirstOrDefault();
-            var admissions = await admissionsStore.SearchAsync(x => x.PatientId == patientId);
-            var notes = await patientNotesStore.SearchAsync(x => x.PatientId == patientId);
-            var medicationSchedules = await medicationSchedulesStore.GetForPatient(patientId);
-            var medicationDispensions = await medicationDispensionsStore.SearchAsync(x => x.PatientId == patientId);
-            var testResults = await testResultsStore.SearchAsync(x => x.PatientId == patientId);
-            var observations = await observationsStore.SearchAsync(x => x.PatientId == patientId);
-            var documents = await documentsStore.SearchAsync(x => x.PatientId == patientId);
-            var subscription = await subscriptionsStore.GetPatientSubscription(patientId, username);
+            var currentBedOccupancy = (await bedOccupanciesStore.SearchAsync(x => x.Patient.Id == personId && x.StartTime <= now && (x.EndTime == null || x.EndTime > now))).FirstOrDefault();
+            var admissions = await admissionsStore.SearchAsync(x => x.ProfileData.Id == personId);
+            var notes = await patientNotesStore.SearchAsync(x => x.PersonId == personId);
+            var medicationSchedules = await medicationSchedulesStore.GetForPatient(personId);
+            var medicationDispensions = await medicationDispensionsStore.SearchAsync(x => x.PersonId == personId);
+            var testResults = await testResultsStore.SearchAsync(x => x.PersonId == personId);
+            var observations = await observationsStore.SearchAsync(x => x.PersonId == personId);
+            var documents = await documentsStore.SearchAsync(x => x.PersonId == personId);
+            var subscription = await subscriptionsStore.GetPatientSubscription(personId, username);
             var viewModel = new PatientOverviewViewModel(
                 profileData,
                 currentBedOccupancy,
@@ -98,14 +98,14 @@ namespace JanKIS.API.Controllers
             return Ok(viewModel);
         }
 
-        [HttpGet("{patientId}/" + nameof(NursingViewModel))]
-        public async Task<IActionResult> NursingViewModel([FromRoute] string patientId)
+        [HttpGet("{personId}/" + nameof(NursingViewModel))]
+        public async Task<IActionResult> NursingViewModel([FromRoute] string personId)
         {
-            var profileData = await personsStore.GetByIdAsync(patientId);
+            var profileData = await personsStore.GetByIdAsync(personId);
             if (profileData == null)
                 return NotFound();
-            var currentAdmission = await admissionsStore.GetCurrentAdmissionAsync(patientId);
-            var equipments = await patientEquipmentStore.SearchAsync(x => x.PatientId == patientId);
+            var currentAdmission = await admissionsStore.GetCurrentAdmissionAsync(personId);
+            var equipments = await patientEquipmentStore.SearchAsync(x => x.PersonId == personId);
             var equipmentViewModels = new List<AttachedEquipmentViewModel>();
             foreach (var equipment in equipments)
             {
@@ -114,7 +114,7 @@ namespace JanKIS.API.Controllers
             }
 
             var threeDaysAgo = DateTime.Today.AddDays(-3);
-            var observations = await observationsStore.SearchAsync(x => x.PatientId == patientId && x.Timestamp > threeDaysAgo);
+            var observations = await observationsStore.SearchAsync(x => x.PersonId == personId && x.Timestamp > threeDaysAgo);
             var viewModel = new PatientNursingViewModel(
                 profileData,
                 currentAdmission,
@@ -124,57 +124,57 @@ namespace JanKIS.API.Controllers
         }
 
 
-        [HttpGet("{patientId}/admissions")]
-        public async Task<IActionResult> GetAdmissions([FromRoute] string patientId)
+        [HttpGet("{personId}/admissions")]
+        public async Task<IActionResult> GetAdmissions([FromRoute] string personId)
         {
-            if (!await personsStore.ExistsAsync(patientId))
+            if (!await personsStore.ExistsAsync(personId))
                 return NotFound();
-            var notes = await admissionsStore.SearchAsync(x => x.PatientId == patientId);
+            var notes = await admissionsStore.SearchAsync(x => x.ProfileData.Id == personId);
             return Ok(notes);
         }
 
-        [HttpGet("{patientId}/notes")]
-        public async Task<IActionResult> GetPatientNotes([FromRoute] string patientId)
+        [HttpGet("{personId}/notes")]
+        public async Task<IActionResult> GetPatientNotes([FromRoute] string personId)
         {
-            if (!await personsStore.ExistsAsync(patientId))
+            if (!await personsStore.ExistsAsync(personId))
                 return NotFound();
-            var notes = await patientNotesStore.SearchAsync(x => x.PatientId == patientId);
+            var notes = await patientNotesStore.SearchAsync(x => x.PersonId == personId);
             return Ok(notes);
         }
 
-        [HttpGet("{patientId}/observations")]
-        public async Task<IActionResult> GetObservations([FromRoute] string patientId)
+        [HttpGet("{personId}/observations")]
+        public async Task<IActionResult> GetObservations([FromRoute] string personId)
         {
-            if (!await personsStore.ExistsAsync(patientId))
+            if (!await personsStore.ExistsAsync(personId))
                 return NotFound();
-            var observations = await observationsStore.SearchAsync(x => x.PatientId == patientId);
+            var observations = await observationsStore.SearchAsync(x => x.PersonId == personId);
             return Ok(observations);
         }
 
-        [HttpGet("{patientId}/testresults")]
-        public async Task<IActionResult> GetTestResults([FromRoute] string patientId)
+        [HttpGet("{personId}/testresults")]
+        public async Task<IActionResult> GetTestResults([FromRoute] string personId)
         {
-            if (!await personsStore.ExistsAsync(patientId))
+            if (!await personsStore.ExistsAsync(personId))
                 return NotFound();
-            var testResults = await testResultsStore.SearchAsync(x => x.PatientId == patientId);
+            var testResults = await testResultsStore.SearchAsync(x => x.PersonId == personId);
             return Ok(testResults);
         }
 
-        [HttpGet("{patientId}/documents")]
-        public async Task<IActionResult> GetDocuments([FromRoute] string patientId)
+        [HttpGet("{personId}/documents")]
+        public async Task<IActionResult> GetDocuments([FromRoute] string personId)
         {
-            if (!await personsStore.ExistsAsync(patientId))
+            if (!await personsStore.ExistsAsync(personId))
                 return NotFound();
-            var documents = await documentsStore.SearchAsync(x => x.PatientId == patientId);
+            var documents = await documentsStore.SearchAsync(x => x.PersonId == personId);
             return Ok(documents);
         }
 
-        [HttpGet("{patientId}/equipment")]
-        public async Task<IActionResult> GetAttachedEquipment([FromRoute] string patientId)
+        [HttpGet("{personId}/equipment")]
+        public async Task<IActionResult> GetAttachedEquipment([FromRoute] string personId)
         {
-            if (!await personsStore.ExistsAsync(patientId))
+            if (!await personsStore.ExistsAsync(personId))
                 return NotFound();
-            var equipments = await patientEquipmentStore.SearchAsync(x => x.PatientId == patientId);
+            var equipments = await patientEquipmentStore.SearchAsync(x => x.PersonId == personId);
             var equipmentViewModels = new List<AttachedEquipmentViewModel>();
             foreach (var equipment in equipments)
             {
@@ -184,27 +184,27 @@ namespace JanKIS.API.Controllers
             return Ok(equipmentViewModels);
         }
 
-        [HttpPost("{patientId}/subscribe")]
-        public async Task<IActionResult> SubscribeToPatient([FromRoute] string patientId)
+        [HttpPost("{personId}/subscribe")]
+        public async Task<IActionResult> SubscribeToPatient([FromRoute] string personId)
         {
-            var patient = await personsStore.GetByIdAsync(patientId);
+            var patient = await personsStore.GetByIdAsync(personId);
             if (patient == null)
                 return NotFound();
             var username = ControllerHelpers.GetUsername(httpContextAccessor);
             var subscription = new PatientSubscription(
                 Guid.NewGuid().ToString(),
                 username,
-                patientId,
+                personId,
                 true);
             await subscriptionsStore.StoreAsync(subscription);
             return Ok(subscription.Id);
         }
 
-        [HttpPost("{patientId}/unsubscribe")]
-        public async Task<IActionResult> Unsubscribe([FromRoute] string patientId)
+        [HttpPost("{personId}/unsubscribe")]
+        public async Task<IActionResult> Unsubscribe([FromRoute] string personId)
         {
             var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            var existingSubscription = await subscriptionsStore.GetPatientSubscription(patientId, username);
+            var existingSubscription = await subscriptionsStore.GetPatientSubscription(personId, username);
             if (existingSubscription == null)
                 return Ok();
             await subscriptionsStore.DeleteAsync(existingSubscription.Id);

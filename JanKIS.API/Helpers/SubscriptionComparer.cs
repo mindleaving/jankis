@@ -38,7 +38,7 @@ namespace JanKIS.API.Helpers
             PatientSubscription a,
             PatientSubscription b)
         {
-            if (a.PatientId != b.PatientId)
+            if (a.PersonId != b.PersonId)
                 return false;
             return true;
         }

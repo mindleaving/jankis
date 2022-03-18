@@ -4,7 +4,7 @@ import { NotificationManager } from 'react-notifications';
 import { Models } from '../../types/models';
 import { RequestServiceForm } from '../../components/Services/RequestServiceForm';
 import { Col, FormGroup, FormLabel, Row } from 'react-bootstrap';
-import { ServiceAutocomplete } from '../../components/Autocompletes/ServiceAutocomplete';
+import { ServiceAutocomplete } from '../../../sharedHealthComponents/components/Autocompletes/ServiceAutocomplete';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 

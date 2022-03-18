@@ -16,12 +16,12 @@ interface CreateEditPatientPageProps {}
 export const CreateEditPatientPage = (props: CreateEditPatientPageProps) => {
 
     const location = useLocation();
-    const { patientId } = useParams();
+    const { personId } = useParams();
     const isNew = location.pathname.toLowerCase().startsWith('/create');
-    if(!isNew && !patientId) {
+    if(!isNew && !personId) {
         throw new Error('Invalid link');
     }
-    const id = patientId ?? uuid();
+    const id = personId ?? uuid();
 
     const [ firstName, setFirstName ] = useState<string>('');
     const [ lastName, setLastName ] = useState<string>('');

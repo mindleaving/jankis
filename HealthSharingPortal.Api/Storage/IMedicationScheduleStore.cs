@@ -7,7 +7,7 @@ namespace HealthSharingPortal.API.Storage
 {
     public interface IMedicationScheduleStore : IStore<MedicationSchedule>
     {
-        Task<List<MedicationSchedule>> GetForPatient(string patientId);
+        Task<List<MedicationSchedule>> GetForPerson(string personId);
     }
 
     public class MedicationScheduleStore : GenericStore<MedicationSchedule>, IMedicationScheduleStore
@@ -17,9 +17,9 @@ namespace HealthSharingPortal.API.Storage
         {
         }
 
-        public Task<List<MedicationSchedule>> GetForPatient(string patientId)
+        public Task<List<MedicationSchedule>> GetForPerson(string personId)
         {
-            return collection.Find(x => x.PatientId == patientId).ToListAsync();
+            return collection.Find(x => x.PersonId == personId).ToListAsync();
         }
     }
 }

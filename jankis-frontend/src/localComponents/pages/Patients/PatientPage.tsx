@@ -19,7 +19,7 @@ interface PatientPageProps {}
 
 export const PatientPage = (props: PatientPageProps) => {
 
-    const { patientId } = useParams();
+    const { personId } = useParams();
 
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
     const [ profileData, setProfileData ] = useState<Models.Person>();
@@ -33,19 +33,19 @@ export const PatientPage = (props: PatientPageProps) => {
     const [ testResults, setTestResults ] = useState<Models.DiagnosticTestResults.DiagnosticTestResult[]>([]);
     const [ documents, setDocuments ] = useState<Models.PatientDocument[]>([]);
     const [ subscription, setSubscription ] = useState<Models.Subscriptions.PatientSubscription>();
-    const isHistoricAdmission = selectedAdmissionId && admissions.find(x => x.patientId === selectedAdmissionId)?.dischargeTime;
+    const isHistoricAdmission = selectedAdmissionId && admissions.find(x => x.id === selectedAdmissionId)?.dischargeTime;
 
     useEffect(() => {
-        if(!patientId) return;
+        if(!personId) return;
         const loadPatient = buildLoadObjectFunc<ViewModels.PatientOverviewViewModel>(
-            `api/patients/${patientId}/overviewviewmodel`,
+            `api/patients/${personId}/overviewviewmodel`,
             {},
             resolveText('Patient_CouldNotLoad'),
             vm => {
                 setProfileData(vm.profileData);
                 setBedOccupancy(vm.currentBedOccupancy);
                 setAdmissions(vm.admissions);
-                setSelectedAdmissionId(vm.admissions.length > 0 ? vm.admissions[vm.admissions.length-1].patientId : undefined);
+                setSelectedAdmissionId(vm.admissions.length > 0 ? vm.admissions[vm.admissions.length-1].id : undefined);
                 setNotes(vm.notes);
                 setMedicationSchedules(vm.medicationSchedules);
                 setMedicationDispensions(vm.medicationDispensions);
@@ -57,23 +57,21 @@ export const PatientPage = (props: PatientPageProps) => {
             () => setIsLoading(false)
         );
         loadPatient();
-    }, [ patientId ]);
+    }, [ personId ]);
 
     const createNewMedicationSchedule = async () => {
         NotificationManager.info(resolveText('MedicationSchedule_Creating...'));
         const now = new Date();
-        const currentAdmission = admissions.find(x => isAfter(now, new Date(x.admissionTime)) && (!x.dischargeTime || isBefore(now, x.dischargeTime)));
         const medicationSchedule: Models.Medication.MedicationSchedule = {
             id: uuid(),
-            patientId: patientId!,
+            personId: personId!,
             note: '',
             isPaused: false,
             isDispendedByPatient: false,
-            items: [],
-            admissionId: currentAdmission?.patientId
+            items: []
         };
         await buildAndStoreObject<Models.Medication.MedicationSchedule>(
-            `api/medicationschedules/${medicationSchedule.patientId}`,
+            `api/medicationschedules/${medicationSchedule.personId}`,
             resolveText('MedicationSchedule_SuccessfullyStored'),
             resolveText('MedicationSchedule_CouldNotStore'),
             () => medicationSchedule,
@@ -81,7 +79,7 @@ export const PatientPage = (props: PatientPageProps) => {
         );
     }
 
-    if(!patientId) {
+    if(!personId) {
         return (<h1>{resolveText('MissingID')}</h1>);
     }
     if(isLoading || !profileData) {
@@ -101,7 +99,7 @@ export const PatientPage = (props: PatientPageProps) => {
                         >
                             {admissions.length > 0 
                             ? admissions.map(admission => (
-                                <option key={admission.patientId} value={admission.patientId}>{formatAdmission(admission)}</option>
+                                <option key={admission.id} value={admission.id}>{formatAdmission(admission)}</option>
                             ))
                             : <option value="" disabled>{resolveText('NoAdmissions')}</option>}
                         </FormControl>
@@ -112,7 +110,7 @@ export const PatientPage = (props: PatientPageProps) => {
             {isHistoricAdmission
             ? <Alert style={{ position: 'sticky' }} variant="danger">
                 {resolveText('HistoricAdmissionAlert')}
-                <Button className="mx-1" variant="link" onClick={() => setSelectedAdmissionId(admissions[admissions.length-1].patientId)}>{resolveText('GoToLatestAdmission')}</Button>
+                <Button className="mx-1" variant="link" onClick={() => setSelectedAdmissionId(admissions[admissions.length-1].id)}>{resolveText('GoToLatestAdmission')}</Button>
             </Alert>
             : null}
             <Row>
@@ -126,7 +124,7 @@ export const PatientPage = (props: PatientPageProps) => {
                     />
                 </Col>
                 <Col lg={6}>
-                    <PatientActionsCard patientId={patientId} />
+                    <PatientActionsCard personId={personId} />
                 </Col>
             </Row>
             <PatientDataTabControl

@@ -2,7 +2,6 @@
 using HealthModels.Converters;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
-using TypescriptGenerator.Attributes;
 
 namespace HealthModels.Observations
 {
@@ -13,13 +12,11 @@ namespace HealthModels.Observations
         typeof(GenericObservation)
     )]
     [JsonConverter(typeof(ObservationsJsonConverter))]
-    public abstract class Observation : IPatientEvent
+    public abstract class Observation : IHealthRecordEntry
     {
         public string Id { get; set; }
-        public PatientEventType Type => PatientEventType.Observation;
-        public string PatientId { get; set; }
-        [TypescriptIsOptional]
-        public string AdmissionId { get; set; }
+        public HealthRecordEntryType Type => HealthRecordEntryType.Observation;
+        public string PersonId { get; set; }
         public string CreatedBy { get; set; }
         public DateTime Timestamp { get; set; }
         public abstract string MeasurementType { get; set; }

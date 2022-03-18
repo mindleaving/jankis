@@ -12,7 +12,7 @@ namespace JanKIS.API.Models.Subscriptions
             DateTime timestamp,
             string submitter,
             Person patient,
-            PatientEventType eventType,
+            HealthRecordEntryType eventType,
             string objectId,
             StorageOperation storageOperation)
             : base(id,
@@ -29,7 +29,7 @@ namespace JanKIS.API.Models.Subscriptions
 
         public override NotificationType NotificationType => NotificationType.NewPatientEvent;
         public Person Patient { get; set; }
-        public PatientEventType EventType { get; set; }
+        public HealthRecordEntryType EventType { get; set; }
         public string ObjectId { get; set; }
         public StorageOperation StorageOperation { get; set; }
     }

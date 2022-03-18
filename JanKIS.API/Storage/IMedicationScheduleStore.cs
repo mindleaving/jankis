@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using HealthModels;
 using HealthModels.Medication;
-using JanKIS.API.Models;
 using MongoDB.Driver;
 
 namespace JanKIS.API.Storage
 {
     public interface IMedicationScheduleStore : IStore<MedicationSchedule>
     {
-        Task<List<MedicationSchedule>> GetForPatient(string patientId);
+        Task<List<MedicationSchedule>> GetForPatient(string personId);
     }
 
     public class MedicationScheduleStore : GenericStore<MedicationSchedule>, IMedicationScheduleStore
@@ -19,9 +17,9 @@ namespace JanKIS.API.Storage
         {
         }
 
-        public Task<List<MedicationSchedule>> GetForPatient(string patientId)
+        public Task<List<MedicationSchedule>> GetForPatient(string personId)
         {
-            return collection.Find(x => x.PatientId == patientId).ToListAsync();
+            return collection.Find(x => x.PersonId == personId).ToListAsync();
         }
     }
 }

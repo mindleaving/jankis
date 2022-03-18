@@ -24,3 +24,6 @@ export interface ConsumableOrdersFilter {
     searchText?: string;
     consumableId?: string;
 }
+export interface AccountsFilter {
+    searchText?: string;
+}

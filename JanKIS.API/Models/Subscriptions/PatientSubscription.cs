@@ -5,16 +5,16 @@
         public PatientSubscription() {}
         public PatientSubscription(string id,
             string username,
-            string patientId,
+            string personId,
             bool cancelSubscriptionOnDischarge)
             : base(id, username)
         {
-            PatientId = patientId;
+            PersonId = personId;
             CancelSubscriptionOnDischarge = cancelSubscriptionOnDischarge;
         }
 
         public override SubscriptionObjectType Type => SubscriptionObjectType.Patient;
-        public string PatientId { get; set; }
+        public string PersonId { get; set; }
         public bool CancelSubscriptionOnDischarge { get; set; }
     }
 }
