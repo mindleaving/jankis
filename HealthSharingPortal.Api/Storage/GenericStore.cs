@@ -6,8 +6,8 @@ namespace HealthSharingPortal.API.Storage
 {
     public class GenericStore<T> : GenericReadonlyStore<T>, IStore<T> where T : IId
     {
-        public GenericStore(IMongoDatabase mongoDatabase)
-            : base(mongoDatabase)
+        public GenericStore(IMongoDatabase mongoDatabase, string collectionName = null)
+            : base(mongoDatabase, collectionName)
         {
         }
 

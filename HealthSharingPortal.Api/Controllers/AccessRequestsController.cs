@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using HealthModels.AccessControl;
+using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Storage;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthSharingPortal.API.Controllers
@@ -14,12 +16,34 @@ namespace HealthSharingPortal.API.Controllers
     {
         private readonly IStore<IAccessRequest> requestStore;
         private readonly IStore<ISharedAccess> accessStore;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
-        public AccessRequestsController(IStore<IAccessRequest> requestStore, IStore<ISharedAccess> accessStore)
+        public AccessRequestsController(
+            IStore<IAccessRequest> requestStore, 
+            IStore<ISharedAccess> accessStore, 
+            IHttpContextAccessor httpContextAccessor)
         {
             this.requestStore = requestStore;
             this.accessStore = accessStore;
+            this.httpContextAccessor = httpContextAccessor;
         }
+
+        [HttpGet("outgoing")]
+        public async Task<IActionResult> GetAllMyOutgoingAccessRequests()
+        {
+            var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
+            var outgoingRequests = await requestStore.SearchAsync(x => !x.IsCompleted && x.RequesterId == personId);
+            return Ok(outgoingRequests);
+        }
+
+        [HttpGet("incoming")]
+        public async Task<IActionResult> GetAllMyIncomingAccessRequests()
+        {
+            var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
+            var incomingRequests = await requestStore.SearchAsync(x => !x.IsCompleted && x.TargetPersonId == personId);
+            return Ok(incomingRequests);
+        }
+
 
         [HttpPost("create/emergency")]
         public async Task<IActionResult> CreateEmergency(EmergencyAccessRequest accessRequest)
@@ -49,8 +73,8 @@ namespace HealthSharingPortal.API.Controllers
         }
 
 
-        [HttpPost("access/emergency")]
-        public async Task<IActionResult> RequestEmergencyAccess(EmergencyAccessRequest accessRequest)
+        [HttpPost("accept/emergency")]
+        public async Task<IActionResult> AcceptEmergencyAccess(EmergencyAccessRequest accessRequest)
         {
             // TODO: Check all necessary information (validate requesterId)
             // TODO: Check permissions to access the requested person
@@ -66,8 +90,8 @@ namespace HealthSharingPortal.API.Controllers
             return Ok(emergencyAccess);
         }
 
-        [HttpPost("access/healthprofessional")]
-        public async Task<IActionResult> RequestHealthProfessionalAccess(HealthProfessionalAccessRequest accessRequest)
+        [HttpPost("accept/healthprofessional")]
+        public async Task<IActionResult> AcceptHealthProfessionalAccess(HealthProfessionalAccessRequest accessRequest)
         {
             // TODO: Check all necessary information (validate requesterId)
             // TODO: Check permissions to access the requested person
@@ -83,8 +107,8 @@ namespace HealthSharingPortal.API.Controllers
             return Ok(healthProfessionalAccess);
         }
 
-        [HttpPost("access/research")]
-        public async Task<IActionResult> RequestResearchAccess(ResearchAccessRequest accessRequest)
+        [HttpPost("accept/research")]
+        public async Task<IActionResult> AcceptResearchAccess(ResearchAccessRequest accessRequest)
         {
             // TODO: Check all necessary information (validate requesterId)
             // TODO: Check permissions to access the requested person

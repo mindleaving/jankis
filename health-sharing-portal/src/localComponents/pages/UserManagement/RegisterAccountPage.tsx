@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Col, Form, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
-import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
+import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 
 interface RegisterAccountPageProps {}
 

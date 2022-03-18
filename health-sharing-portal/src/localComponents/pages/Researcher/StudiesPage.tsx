@@ -1,12 +1,12 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { FormControl, FormGroup, FormLabel } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { PagedTable } from '../../sharedCommonComponents/components/PagedTable';
-import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
-import PagedTableLoader from '../../sharedCommonComponents/helpers/PagedTableLoader';
-import UserContext from '../contexts/UserContext';
-import { AccountType } from '../types/enums.d';
-import { Models } from '../types/models';
+import { PagedTable } from '../../../sharedCommonComponents/components/PagedTable';
+import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
+import PagedTableLoader from '../../../sharedCommonComponents/helpers/PagedTableLoader';
+import UserContext from '../../contexts/UserContext';
+import { AccountType } from '../../types/enums.d';
+import { Models } from '../../types/models';
 
 interface StudiesPageProps {}
 interface StudyFilter {

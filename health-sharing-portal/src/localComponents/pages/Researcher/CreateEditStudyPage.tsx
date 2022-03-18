@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Button, Form, FormControl, FormGroup, FormLabel } from 'react-bootstrap';
-import { ListFormControl } from '../../sharedCommonComponents/components/ListFormControl';
-import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
-import { CreateEditContactPersonModal } from '../modals/CreateEditContactPersonModal';
-import { CreateEditPublicationModal } from '../modals/CreateEditPublicationModal';
-import { Models } from '../types/models';
+import { ListFormControl } from '../../../sharedCommonComponents/components/ListFormControl';
+import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
+import { CreateEditContactPersonModal } from '../../modals/CreateEditContactPersonModal';
+import { CreateEditPublicationModal } from '../../modals/CreateEditPublicationModal';
+import { Models } from '../../types/models';
 
 interface CreateEditStudyPageProps {}
 

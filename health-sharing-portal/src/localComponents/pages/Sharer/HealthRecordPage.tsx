@@ -1,16 +1,16 @@
 import { useState, useEffect, useContext } from 'react';
 import { Col, Row } from 'react-bootstrap';
-import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
-import { buildLoadObjectFunc } from '../../sharedCommonComponents/helpers/LoadingHelpers';
-import { buildAndStoreObject } from '../../sharedCommonComponents/helpers/StoringHelpers';
-import { BasicInformationBox } from '../components/HealthData/BasicInformationBox';
-import UserContext from '../contexts/UserContext';
-import { Models } from '../types/models';
-import { ViewModels } from '../types/viewModels';
+import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
+import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
+import { buildAndStoreObject } from '../../../sharedCommonComponents/helpers/StoringHelpers';
+import { BasicInformationBox } from '../../components/HealthData/BasicInformationBox';
+import UserContext from '../../contexts/UserContext';
+import { Models } from '../../types/models';
+import { ViewModels } from '../../types/viewModels';
 import { NotificationManager } from 'react-notifications';
 import { v4 as uuid } from 'uuid';
-import { PatientDataTabControl } from '../../sharedHealthComponents/components/Patients/PatientDataTabControl';
-import { PatientActionsCard } from '../../sharedHealthComponents/components/Patients/PatientActionsCard';
+import { PatientDataTabControl } from '../../../sharedHealthComponents/components/Patients/PatientDataTabControl';
+import { PatientActionsCard } from '../../../sharedHealthComponents/components/Patients/PatientActionsCard';
 
 interface HealthRecordPageProps {}
 

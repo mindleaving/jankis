@@ -6,6 +6,7 @@ import { Button, Table } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../sharedCommonComponents/communication/ApiClient';
 import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
+import { buildLoadObjectFunc } from '../../sharedCommonComponents/helpers/LoadingHelpers';
 
 interface AccessRequestListProps {}
 
@@ -26,6 +27,7 @@ export const AccessRequestList = (props: AccessRequestListProps) => {
             await hubConnection.start();
             hubConnection.on('ReceiveAccessRequest', (accessRequest: Models.AccessControl.IAccessRequest) => {
                 setAccessRequests([accessRequest].concat(accessRequests));
+                NotificationManager.info(resolveText("NewAccessInvite"));
             });
             setIsConnected(true);
         } catch(error: any) {
@@ -37,6 +39,16 @@ export const AccessRequestList = (props: AccessRequestListProps) => {
     }
     useEffect(() => {
         connectToHub();
+    }, []);
+    useEffect(() => {
+        const loadAccessRequests = buildLoadObjectFunc(
+            `api/accessrequests/incoming`,
+            {},
+            resolveText("AccessRequests_CouldNotLoad"),
+            setAccessRequests,
+            () => {}
+        );
+        loadAccessRequests();
     }, []);
 
     const navigate = useNavigate();
@@ -59,7 +71,7 @@ export const AccessRequestList = (props: AccessRequestListProps) => {
                             <td>{accessRequest.requesterId}</td>
                             <td>{accessRequest.targetPersonId}</td>
                             <td>
-                                <Button onClick={() => navigate(`/accessrequest/${id}`)}>{resolveText("Open")}</Button>
+                                <Button onClick={() => navigate(`/accessrequests/${id}`)}>{resolveText("Open")}</Button>
                             </td>
                         </tr>
                     );

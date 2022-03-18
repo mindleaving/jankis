@@ -13,10 +13,10 @@ namespace HealthSharingPortal.API.Storage
         protected readonly IMongoDatabase database;
         protected readonly IMongoCollection<T> collection;
 
-        public GenericReadonlyStore(IMongoDatabase mongoDatabase)
+        public GenericReadonlyStore(IMongoDatabase mongoDatabase, string collectionName = null)
         {
             database = mongoDatabase;
-            collection = mongoDatabase.GetCollection<T>(typeof(T).Name);
+            collection = mongoDatabase.GetCollection<T>(collectionName ?? typeof(T).Name);
         }
 
         public Task<List<T>> GetAllAsync()

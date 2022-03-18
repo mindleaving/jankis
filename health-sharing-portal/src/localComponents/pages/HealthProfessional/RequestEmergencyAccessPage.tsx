@@ -3,9 +3,9 @@ import { Button, Col, Form, FormCheck, FormControl, FormGroup, FormLabel, Row } 
 import { NotificationManager } from 'react-notifications';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
-import { apiClient } from '../../sharedCommonComponents/communication/ApiClient';
-import { AsyncButton } from '../../sharedCommonComponents/components/AsyncButton';
-import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
+import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
+import { AsyncButton } from '../../../sharedCommonComponents/components/AsyncButton';
+import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 
 interface RequestEmergencyAccessPageProps {
     userId: string;

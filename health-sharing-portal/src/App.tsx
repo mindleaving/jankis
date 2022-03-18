@@ -4,21 +4,13 @@ import { Route, Routes, useNavigate } from 'react-router-dom';
 import { Layout } from './Layout';
 import UserContext from './localComponents/contexts/UserContext';
 import { AccountsPage } from './localComponents/pages/UserManagement/AccountsPage';
-import { AdminHomePage } from './localComponents/pages/AdminHomePage';
-import { CreateEditStudyPage } from './localComponents/pages/CreateEditStudyPage';
-import { GenomeUploadPage } from './localComponents/pages/GenomeUploadPage';
-import { GiveHealthProfesionalAccessPage } from './localComponents/pages/GiveHealthProfesionalAccessPage';
-import { HealthRecordPage } from './localComponents/pages/HealthRecordPage';
-import { HealthProfessionalHomePage } from './localComponents/pages/HealthProfessionalHomePage';
-import { HomePage } from './localComponents/pages/HomePage';
-import { ImagingUploadPage } from './localComponents/pages/ImagingUploadPage';
+import { AdminHomePage } from './localComponents/pages/Admin/AdminHomePage';
+import { CreateEditStudyPage } from './localComponents/pages/Researcher/CreateEditStudyPage';
 import { LoginPage } from './localComponents/pages/LoginPage';
-import { PatientsListPage } from './localComponents/pages/PatientsListPage';
-import { RegisterAccountPage } from './localComponents/pages/RegisterAccountPage';
-import { ResearcherHomePage } from './localComponents/pages/ResearcherHomePage';
-import { SharerHomePage } from './localComponents/pages/SharerHomePage';
-import { StudiesPage } from './localComponents/pages/StudiesPage';
-import { StudyPage } from './localComponents/pages/StudyPage';
+import { PatientsListPage } from './localComponents/pages/HealthProfessional/PatientsListPage';
+import { RegisterAccountPage } from './localComponents/pages/UserManagement/RegisterAccountPage';
+import { ResearcherHomePage } from './localComponents/pages/Researcher/ResearcherHomePage';
+import { SharerHomePage } from './localComponents/pages/Sharer/SharerHomePage';
 import { AccountType } from './localComponents/types/enums.d';
 import { ViewModels } from './localComponents/types/viewModels';
 import { ApiClient, apiClient } from './sharedCommonComponents/communication/ApiClient';
@@ -35,7 +27,15 @@ import { EditMedicationSchedulePage } from './sharedHealthComponents/pages/Patie
 import { PatientMedicationsPage } from './sharedHealthComponents/pages/Patients/PatientMedicationsPage';
 import { PatientTimelinePage } from './sharedHealthComponents/pages/Patients/PatientTimelinePage';
 import { AccountEditPage } from './localComponents/pages/UserManagement/AccountEditPage';
-import { PersonsListPage } from './sharedHealthComponents/pages/Patients/PersonsListPage';
+import { HealthProfessionalHomePage } from './localComponents/pages/HealthProfessional/HealthProfessionalHomePage';
+import { HomePage } from './localComponents/pages/HomePage';
+import { StudiesPage } from './localComponents/pages/Researcher/StudiesPage';
+import { StudyPage } from './localComponents/pages/Researcher/StudyPage';
+import { GenomeUploadPage } from './localComponents/pages/Sharer/GenomeUploadPage';
+import { GiveHealthProfesionalAccessPage } from './localComponents/pages/Sharer/GiveHealthProfesionalAccessPage';
+import { HealthRecordPage } from './localComponents/pages/Sharer/HealthRecordPage';
+import { ImagingUploadPage } from './localComponents/pages/Sharer/ImagingUploadPage';
+import { ReceiveHealthProfessionalAccessPage } from './localComponents/pages/HealthProfessional/ReceiveHealthProfessionalAccessPage';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";
@@ -112,12 +112,13 @@ function App() {
                     <Route path="/study/:id" element={<StudyPage />} />
                     <Route path="/studies" element={<StudiesPage />} />
                     <Route path="/giveaccess/healthprofessional" element={<GiveHealthProfesionalAccessPage />} />
+                    <Route path="/accessrequests/:requestId" element={<ReceiveHealthProfessionalAccessPage />} />
 
                     <Route path="/accounts" element={<AccountsPage />} />
                     <Route path="/create/account" element={<AccountEditPage />} />
                     <Route path="/accounts/:username/edit" element={<AccountEditPage />} />
 
-                    <Route path="/patients" element={<PersonsListPage />} />
+                    <Route path="/patients" element={<PatientsListPage />} />
 
                     <Route path="/healthrecord/:personId" element={<HealthRecordPage />} />
                     <Route path="/healthrecord/:personId/timeline" element={<PatientTimelinePage />} />

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import {  Button, Card, Col, Row } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AccordionCard } from '../../sharedCommonComponents/components/AccordionCard';
-import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
-import { buildLoadObjectFunc } from '../../sharedCommonComponents/helpers/LoadingHelpers';
-import { Models } from '../types/models';
-import { ViewModels } from '../types/viewModels';
+import { AccordionCard } from '../../../sharedCommonComponents/components/AccordionCard';
+import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
+import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
+import { Models } from '../../types/models';
+import { ViewModels } from '../../types/viewModels';
 
 interface StudyPageProps {}
 

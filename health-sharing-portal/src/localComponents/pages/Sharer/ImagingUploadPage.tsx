@@ -1,10 +1,10 @@
 import React, { FormEvent, useState } from 'react';
 import { Form, FormGroup } from 'react-bootstrap';
 import { NotificationManager } from 'react-notifications';
-import { apiClient } from '../../sharedCommonComponents/communication/ApiClient';
-import { AsyncButton } from '../../sharedCommonComponents/components/AsyncButton';
-import { FileUpload } from '../../sharedCommonComponents/components/FileUpload';
-import { ListFormControl } from '../../sharedCommonComponents/components/ListFormControl';
+import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
+import { AsyncButton } from '../../../sharedCommonComponents/components/AsyncButton';
+import { FileUpload } from '../../../sharedCommonComponents/components/FileUpload';
+import { ListFormControl } from '../../../sharedCommonComponents/components/ListFormControl';
 
 interface ImagingUploadPageProps {}
 

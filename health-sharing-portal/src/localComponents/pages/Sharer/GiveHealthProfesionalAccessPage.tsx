@@ -1,13 +1,13 @@
 import React, { FormEvent, useContext, useState } from 'react';
 import { Form, FormControl, FormGroup, FormLabel } from 'react-bootstrap';
-import { Models } from '../types/models';
+import { Models } from '../../types/models';
 import { NotificationManager } from 'react-notifications';
 import { v4 as uuid } from 'uuid';
-import { SharedAccessType } from '../types/enums.d';
-import UserContext from '../contexts/UserContext';
-import { apiClient } from '../../sharedCommonComponents/communication/ApiClient';
-import { AsyncButton } from '../../sharedCommonComponents/components/AsyncButton';
-import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
+import { SharedAccessType } from '../../types/enums.d';
+import UserContext from '../../contexts/UserContext';
+import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
+import { AsyncButton } from '../../../sharedCommonComponents/components/AsyncButton';
+import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 
 interface GiveHealthProfesionalAccessPageProps {}
 

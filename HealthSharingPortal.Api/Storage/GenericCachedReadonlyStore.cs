@@ -12,8 +12,8 @@ namespace HealthSharingPortal.API.Storage
         private readonly ConcurrentDictionary<string, T> cachedItems = new();
         private bool hasAllItems = false;
 
-        public GenericCachedReadonlyStore(IMongoDatabase mongoDatabase)
-            : base(mongoDatabase)
+        public GenericCachedReadonlyStore(IMongoDatabase mongoDatabase, string collectionName = null)
+            : base(mongoDatabase, collectionName)
         {
         }
 

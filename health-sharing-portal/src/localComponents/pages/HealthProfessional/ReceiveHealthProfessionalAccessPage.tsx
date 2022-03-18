@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { FormControl, FormGroup, FormLabel } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
-import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
-import { buildLoadObjectFunc } from '../../sharedCommonComponents/helpers/LoadingHelpers';
-import { Models } from '../types/models';
+import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
+import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
+import { Models } from '../../types/models';
 
 interface ReceiveHealthProfessionalAccessPageProps {}
 

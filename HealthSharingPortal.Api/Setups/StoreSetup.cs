@@ -55,8 +55,8 @@ namespace HealthSharingPortal.API.Setups
             SetupTypeStores<Drug>(services);
             services.AddScoped<IFilesStore, FilesStore>();
             SetupTypeStores<Institution>(services);
-            SetupTypeStores<HealthProfessionalAccess>(services);
-            SetupTypeStores<HealthProfessionalAccessRequest>(services);
+            SetupInterfaceStores<ISharedAccess>(services, "SharedAccess");
+            SetupInterfaceStores<IAccessRequest>(services, "AccessRequest");
             SetupTypeStores<MedicationSchedule>(services);
             services.AddScoped<IMedicationScheduleStore, MedicationScheduleStore>();
             SetupTypeStores<MedicationDispension>(services);
@@ -78,6 +78,13 @@ namespace HealthSharingPortal.API.Setups
             services.AddScoped<IReadonlyStore<T>, GenericReadonlyStore<T>>();
             services.AddSingleton<ICachedReadonlyStore<T>, GenericCachedReadonlyStore<T>>();
             services.AddScoped<IStore<T>, GenericStore<T>>();
+        }
+
+        private static void SetupInterfaceStores<T>(IServiceCollection services, string collectionName) where T: IId
+        {
+            services.AddScoped<IReadonlyStore<T>>(provider => new GenericReadonlyStore<T>(provider.GetService<IMongoDatabase>(), collectionName));
+            services.AddSingleton<ICachedReadonlyStore<T>>(provider => new GenericCachedReadonlyStore<T>(provider.GetService<IMongoDatabase>(), collectionName));
+            services.AddScoped<IStore<T>>(provider => new GenericStore<T>(provider.GetService<IMongoDatabase>(), collectionName));
         }
     }
 }
