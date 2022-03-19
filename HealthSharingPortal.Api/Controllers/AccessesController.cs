@@ -96,6 +96,7 @@ namespace HealthSharingPortal.API.Controllers
                 "type" => x => x.Type,
                 "receiver" => x => x.AccessReceiverUsername,
                 "starttime" => x => x.AccessGrantedTimestamp,
+                "endtime" => x => x.AccessEndTimestamp,
                 _ => x => x.AccessGrantedTimestamp
             };
         }

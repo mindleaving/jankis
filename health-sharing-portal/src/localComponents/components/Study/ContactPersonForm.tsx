@@ -5,14 +5,21 @@ import { AsyncButton } from '../../../sharedCommonComponents/components/AsyncBut
 import { Models } from '../../types/models';
 import { v4 as uuid } from 'uuid';
 
-interface ContactPersonFormProps {}
+interface ContactPersonFormProps {
+    contactPerson?: Models.Contact;
+    onSubmit: (contactPerson: Models.Contact) => void;
+}
 
 export const ContactPersonForm = (props: ContactPersonFormProps) => {
 
     const [ isSubmitting, setIsSubmitting ] = useState<boolean>(false);
+    const [ contactPerson, setContactPerson ] = useState<Models.Contact>(props.contactPerson ?? {
+        id: uuid(),
+        name: '',
+        note: ''
+    });
 
     const schema: any = {
-        title: "Contact person",
         type: "object",
         properties: {
             name: {
@@ -35,11 +42,7 @@ export const ContactPersonForm = (props: ContactPersonFormProps) => {
         },
         required: [ "name", "telephone", "relation" ]
     };
-    const [ contactPerson, setContactPerson ] = useState<Models.Contact>({
-        id: uuid(),
-        name: '',
-        note: ''
-    });
+    
 
     const onChange = (e: IChangeEvent) => {
         setContactPerson(e.formData);
@@ -47,7 +50,7 @@ export const ContactPersonForm = (props: ContactPersonFormProps) => {
     const onSubmit = async () => {
         setIsSubmitting(true);
         try {
-
+            props.onSubmit(contactPerson as Models.Contact);
         } catch(error: any) {
 
         } finally {
@@ -57,6 +60,7 @@ export const ContactPersonForm = (props: ContactPersonFormProps) => {
 
     return (
         <Form
+            id='contactPersonForm'
             schema={schema}
             formData={contactPerson}
             onChange={onChange}
@@ -65,6 +69,7 @@ export const ContactPersonForm = (props: ContactPersonFormProps) => {
         >
             <AsyncButton
                 type='submit'
+                form='contactPersonForm'
                 activeText='Submit'
                 executingText='Submitting...'
                 isExecuting={isSubmitting}

@@ -33,6 +33,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IReadonlyStore<PatientDocument> documentsStore;
         private readonly IReadonlyStore<StudyEnrollment> studyEnrollmentStore;
         private readonly IReadonlyStore<Study> studyStore;
+        private readonly IReadonlyStore<StudyAssociation> studyAssociationStore;
         private readonly IAuthorizationModule authorizationModule;
 
         public ViewModelsController(
@@ -47,6 +48,7 @@ namespace HealthSharingPortal.API.Controllers
             IReadonlyStore<PatientDocument> documentsStore,
             IReadonlyStore<StudyEnrollment> studyEnrollmentStore, 
             IReadonlyStore<Study> studyStore,
+            IReadonlyStore<StudyAssociation> studyAssociationStore,
             IAuthorizationModule authorizationModule)
         {
             this.httpContextAccessor = httpContextAccessor;
@@ -60,6 +62,7 @@ namespace HealthSharingPortal.API.Controllers
             this.documentsStore = documentsStore;
             this.studyEnrollmentStore = studyEnrollmentStore;
             this.studyStore = studyStore;
+            this.studyAssociationStore = studyAssociationStore;
             this.authorizationModule = authorizationModule;
         }
 
@@ -95,10 +98,14 @@ namespace HealthSharingPortal.API.Controllers
             var study = await studyStore.GetByIdAsync(studyId);
             var enrollments = await studyEnrollmentStore.SearchAsync(x => x.StudyId == studyId);
             var enrollmentStatistics = new StudyEnrollmentStatistics(enrollments);
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var myAssociations = await studyAssociationStore.SearchAsync(x => x.StudyId == studyId && x.Username == username);
+            var myAssociation = myAssociations.FirstOrDefault();
             var viewModel = new StudyViewModel
             {
                 Study = study,
-                EnrollmentStatistics = enrollmentStatistics
+                EnrollmentStatistics = enrollmentStatistics,
+                MyAssociation = myAssociation
             };
             return Ok(viewModel);
         }

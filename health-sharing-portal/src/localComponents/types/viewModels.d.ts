@@ -40,6 +40,7 @@ export namespace ViewModels {
     interface StudyViewModel extends ViewModels.IViewModel<Models.Study> {
         study: Models.Study;
         enrollmentStatistics: Models.StudyEnrollmentStatistics;
+        myAssociation: Models.StudyAssociation;
     }
 
     interface IViewModel<Account> {

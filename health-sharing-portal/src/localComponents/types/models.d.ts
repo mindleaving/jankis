@@ -111,7 +111,7 @@ export namespace Models {
         canRequestEmergencyAccess: boolean;
     }
 
-    interface Publication {
+    interface Publication extends Models.IId {
         title: string;
         abstract: string;
         authors: Models.Author[];
@@ -124,7 +124,7 @@ export namespace Models {
         description: string;
         publications: Models.Publication[];
         contactPersons: Models.Contact[];
-        acceptsEnrollments: boolean;
+        isAcceptingEnrollments: boolean;
         createdBy: string;
     }
 

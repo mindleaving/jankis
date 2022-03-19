@@ -2,10 +2,13 @@ import React from 'react';
 import { Modal } from 'react-bootstrap';
 import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
 import { ContactPersonForm } from '../components/Study/ContactPersonForm';
+import { Models } from '../types/models';
 
 interface CreateEditContactPersonModalProps {
     show?: boolean;
     onCloseRequested: () => void;
+    contactPerson?: Models.Contact;
+    onContactPersonCreated: (contactPerson: Models.Contact) => void;
 }
 
 export const CreateEditContactPersonModal = (props: CreateEditContactPersonModalProps) => {
@@ -14,7 +17,10 @@ export const CreateEditContactPersonModal = (props: CreateEditContactPersonModal
         <Modal show={props.show} onHide={props.onCloseRequested}>
             <Modal.Header closeButton>{resolveText("AddContactPerson")}</Modal.Header>
             <Modal.Body>
-                <ContactPersonForm />
+                <ContactPersonForm
+                    contactPerson={props.contactPerson}
+                    onSubmit={props.onContactPersonCreated}
+                />
             </Modal.Body>
         </Modal>
     );

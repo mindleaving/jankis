@@ -2,15 +2,22 @@ import React, { useState } from 'react';
 import { Form } from '@rjsf/bootstrap-4';
 import { IChangeEvent } from '@rjsf/core';
 import { AsyncButton } from '../../../sharedCommonComponents/components/AsyncButton';
+import { Models } from '../../types/models';
+import { v4 as uuid } from 'uuid';
 
-interface PublicationFormProps {}
+interface PublicationFormProps {
+    publication?: Models.Publication;
+    onSubmit: (publication: Models.Publication) => void;
+}
 
 export const PublicationForm = (props: PublicationFormProps) => {
 
     const [ isSubmitting, setIsSubmitting ] = useState<boolean>(false);
+    const [ publication, setPublication ] = useState<{}>(props.publication ?? {
+        id: uuid()
+    });
 
     const schema: any = {
-        title: "Publication",
         type: "object",
         properties: {
             title: {
@@ -41,17 +48,19 @@ export const PublicationForm = (props: PublicationFormProps) => {
         },
         required: [ "title", "authors" ]
     }
-    const [ publication, setPublication ] = useState<{}>({});
 
     const onChange = (e: IChangeEvent) => {
         setPublication(e.formData);
     }
     const onSubmit = async () => {
-
+        setIsSubmitting(true);
+        props.onSubmit(publication as Models.Publication);
+        setIsSubmitting(false);
     }
 
     return (
         <Form
+            id='publicationForm'
             schema={schema}
             formData={publication}
             onChange={onChange}
@@ -60,6 +69,7 @@ export const PublicationForm = (props: PublicationFormProps) => {
         >
             <AsyncButton
                 type='submit'
+                form='publicationForm'
                 activeText='Submit'
                 executingText='Submitting...'
                 isExecuting={isSubmitting}

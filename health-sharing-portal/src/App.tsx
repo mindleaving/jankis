@@ -109,8 +109,8 @@ function App() {
             <Layout onLogOut={onLogOut}>
                 <Routes>
                     <Route path="/create/study" element={<CreateEditStudyPage />} />
-                    <Route path="/edit/study/:id" element={<CreateEditStudyPage />} />
-                    <Route path="/study/:id" element={<StudyPage />} />
+                    <Route path="/edit/study/:studyId" element={<CreateEditStudyPage />} />
+                    <Route path="/study/:studyId" element={<StudyPage />} />
                     <Route path="/studies" element={<StudiesPage />} />
                     <Route path="/giveaccess/healthprofessional/:accessInviteId" element={<GiveHealthProfesionalAccessPage />} />
                     <Route path="/giveaccess/healthprofessional" element={<GiveHealthProfesionalAccessPage />} />

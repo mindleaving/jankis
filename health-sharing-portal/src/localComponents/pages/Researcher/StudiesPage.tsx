@@ -37,11 +37,12 @@ export const StudiesPage = (props: StudiesPageProps) => {
                 onPageChanged={studiesLoader.load}
                 hasCreateNewButton={user.accountType === AccountType.Researcher}
                 onCreateNew={() => navigate("/create/study")}
+                enableHighlighting
             >
                 <tbody>
                     {studies.length > 0
                     ? studies.map(study => (
-                        <tr key={study.id}>
+                        <tr key={study.id} onClick={() => navigate(`/study/${study.id}`)} className="clickable">
                             <td>
                                 <b>{study.title}</b>
                                 <div><small>{study.description}</small></div>

@@ -27,6 +27,27 @@ namespace HealthSharingPortal.API.Controllers
             this.studyAssociationStore = studyAssociationStore;
         }
 
+        public override async Task<IActionResult> CreateOrReplace(
+            string id,
+            Study item)
+        {
+            var result = await base.CreateOrReplace(id, item);
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var existingAssociationsForUser = await studyAssociationStore.SearchAsync(x => x.StudyId == id && x.Username == username);
+            if(existingAssociationsForUser.Count == 0)
+            {
+                var studyAssociation = new StudyAssociation
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Role = StudyStaffRole.Investigator,
+                    StudyId = id,
+                    Username = username
+                };
+                await studyAssociationStore.StoreAsync(studyAssociation);
+            }
+            return result;
+        }
+
         [HttpGet("{studyId}/team")]
         public async Task<IActionResult> GetTeam([FromRoute] string studyId)
         {
@@ -109,7 +130,7 @@ namespace HealthSharingPortal.API.Controllers
             var study = await store.GetByIdAsync(studyId);
             if (study == null)
                 return NotFound("Study does not exist");
-            if (!study.AcceptsEnrollments)
+            if (!study.IsAcceptingEnrollments)
                 return BadRequest("Study does currently not accept enrollments");
             var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
             var existingEnrollments = await enrollmentStore.SearchAsync(x => x.StudyId == studyId && x.PersonId == personId);
