@@ -115,7 +115,7 @@ namespace HealthSharingPortal.API.Controllers
         {
             if (!await personsStore.ExistsAsync(creationInfo.PersonId))
                 return BadRequest($"Person with ID '{creationInfo.PersonId}' doesn't exist");
-            var password = TemporaryPasswordGenerator.Generate();
+            var password = new TemporaryPasswordGenerator().Generate();
             var account = AccountFactory.Create(creationInfo.PersonId, creationInfo.Username, creationInfo.AccountType, password);
             await accountsStore.StoreAsync(account);
             return Ok(password);
@@ -148,7 +148,7 @@ namespace HealthSharingPortal.API.Controllers
         [Authorize(Policy = AdminRequirement.PolicyName)]
         public async Task<IActionResult> ResetPassword([FromRoute] string username)
         {
-            var password = TemporaryPasswordGenerator.Generate();
+            var password = new TemporaryPasswordGenerator().Generate();
             await authenticationModule.ChangePasswordAsync(username, password, true);
             return Ok(password);
         }

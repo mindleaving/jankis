@@ -8,7 +8,7 @@ import { apiClient } from '../../sharedCommonComponents/communication/ApiClient'
 import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../sharedCommonComponents/helpers/LoadingHelpers';
 
-interface AccessRequestListProps {}
+interface AccessRequestListProps { }
 
 export const AccessRequestList = (props: AccessRequestListProps) => {
 
@@ -25,9 +25,12 @@ export const AccessRequestList = (props: AccessRequestListProps) => {
                 .withAutomaticReconnect()
                 .build();
             await hubConnection.start();
-            hubConnection.on('ReceiveAccessRequest', (accessRequest: Models.AccessControl.IAccessRequest) => {
+            hubConnection.on('ReceiveAccessInvite', (accessRequest: Models.AccessControl.IAccessRequest) => {
                 setAccessRequests([accessRequest].concat(accessRequests));
                 NotificationManager.info(resolveText("NewAccessInvite"));
+            });
+            hubConnection.on('ReceiveGrantedAccess', (access: Models.AccessControl.ISharedAccess) => {
+                NotificationManager.info(resolveText("AccessGranted"));
             });
             setIsConnected(true);
         } catch(error: any) {
@@ -42,7 +45,7 @@ export const AccessRequestList = (props: AccessRequestListProps) => {
     }, []);
     useEffect(() => {
         const loadAccessRequests = buildLoadObjectFunc(
-            `api/accessrequests/incoming`,
+            `api/accessrequests/outgoing`,
             {},
             resolveText("AccessRequests_CouldNotLoad"),
             setAccessRequests,
@@ -68,8 +71,8 @@ export const AccessRequestList = (props: AccessRequestListProps) => {
                     return (
                         <tr key={id}>
                             <td>{accessRequest.type}</td>
-                            <td>{accessRequest.requesterId}</td>
-                            <td>{accessRequest.targetPersonId}</td>
+                            <td>{accessRequest.accessReceiverUsername}</td>
+                            <td>{accessRequest.sharerPersonId}</td>
                             <td>
                                 <Button onClick={() => navigate(`/accessrequests/${id}`)}>{resolveText("Open")}</Button>
                             </td>

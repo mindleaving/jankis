@@ -1,0 +1,11 @@
+Sharer: Send HealthProfessionalAccessRequest to POST api/accessrequests
+- Controller generated codes
+- Controller sends back HealthProfessionalAccessRequest with CodeForHealthProfessional set and CodeForSharer set to null
+- Controller sets CodeForSharer to null when queried by sharer
+- Controller sets CodeForHealthProfessional to null when queried by health professional
+Sharer or Health Professional send an HealthProfessionalAccessRequest with both codes to POST api/accessrequests
+- Controller checks HealthProfessionalAccessRequest against database
+- If match: 
+- - Controller sets HealthProfessionalAccessRequest.IsCompleted and .CompletedTimestamp
+- - Controller creates HealthProfessionalAccess object and stores it in database
+- - Hub distributes HealthProfessionalAccess to both users (if they listen)

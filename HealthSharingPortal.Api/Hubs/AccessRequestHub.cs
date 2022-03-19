@@ -13,6 +13,7 @@ namespace HealthSharingPortal.API.Hubs
 
     public interface IAccessRequestHubClient
     {
-        Task ReceiveAccessRequest(IAccessRequest accessRequest);
+        Task ReceiveAccessInvite(IAccessRequest accessRequest);
+        Task ReceiveGrantedAccess(HealthProfessionalAccess access);
     }
 }

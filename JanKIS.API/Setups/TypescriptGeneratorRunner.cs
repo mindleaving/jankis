@@ -25,7 +25,6 @@ namespace JanKIS.API.Setups
                 .Exclude<DiagnosticTestResultJsonConverter>()
                 .Exclude<DiseaseJsonConverter>()
                 .Exclude<ObservationsJsonConverter>()
-                .Exclude<ObservationsJsonConverter>()
                 .Exclude<SymptomJsonConverter>()
                 .Exclude<ServiceAudienceJsonConverter>()
                 .Exclude<ServiceParameterJsonConverter>()

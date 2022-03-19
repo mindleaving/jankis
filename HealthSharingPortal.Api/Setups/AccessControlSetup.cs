@@ -22,6 +22,7 @@ namespace HealthSharingPortal.API.Setups
             services.AddScoped<IAuthorizationHandler, SameUserRequirementHandler>();
             services.AddScoped<IAuthorizationHandler, AdminRequirementHandler>();
             services.AddAuthorization();
+            services.AddScoped<IAuthorizationModule, AuthorizationModule>();
         }
 
         private void SetupJwtTokenAuthentication(IServiceCollection services, IConfiguration configuration)

@@ -1,8 +1,12 @@
 ﻿using HealthModels;
+using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
 namespace HealthSharingPortal.API.Models
 {
+    [BsonKnownTypes(
+        typeof(HealthProfessionalAccount)
+    )]
     public class Account : IId
     {
         public Account(

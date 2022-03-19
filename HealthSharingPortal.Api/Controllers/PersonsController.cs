@@ -19,6 +19,8 @@ namespace HealthSharingPortal.API.Controllers
         {
         }
 
+        // TODO: Restrict access to person data
+
         protected override Task<object> TransformItem(Person item)
         {
             return Task.FromResult<object>(item);

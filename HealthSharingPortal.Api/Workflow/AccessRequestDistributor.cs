@@ -7,7 +7,8 @@ namespace HealthSharingPortal.API.Workflow
 {
     public interface IAccessRequestDistributor
     {
-        Task NotifyNewHealthProfessionalAccessRequest(HealthProfessionalAccessRequest accessRequest);
+        Task NotifyHealthProfessionalAboutNewHealthProfessionalAccessInvite(HealthProfessionalAccessInvite accessInvite);
+        Task NotifyAccessGranted(HealthProfessionalAccess access);
     }
 
     public class AccessRequestDistributor : IAccessRequestDistributor
@@ -20,9 +21,14 @@ namespace HealthSharingPortal.API.Workflow
             this.accessRequestHub = accessRequestHub;
         }
 
-        public async Task NotifyNewHealthProfessionalAccessRequest(HealthProfessionalAccessRequest accessRequest)
+        public async Task NotifyHealthProfessionalAboutNewHealthProfessionalAccessInvite(HealthProfessionalAccessInvite accessInvite)
         {
-            await accessRequestHub.Clients.User(accessRequest.RequesterId).ReceiveAccessRequest(accessRequest);
+            await accessRequestHub.Clients.User(accessInvite.AccessReceiverUsername).ReceiveAccessInvite(accessInvite);
+        }
+
+        public async Task NotifyAccessGranted(HealthProfessionalAccess access)
+        {
+            await accessRequestHub.Clients.Users(access.AccessReceiverUsername, access.SharerPersonId).ReceiveGrantedAccess(access);
         }
     }
 }

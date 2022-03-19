@@ -129,7 +129,6 @@ export enum PatientInformationCategory {
 }
 export enum SharedAccessType {
     Unknonw = "Unknonw",
-    Research = "Research",
     HealthProfessional = "HealthProfessional",
     Emergency = "Emergency"
 }

@@ -30,7 +30,8 @@ namespace HealthSharingPortal.API.AccessControl
         {
             var claims = new List<Claim>
             {
-                new (UsernameClaimName, account.Id),
+                new ("id", account.Id),
+                new (UsernameClaimName, account.Username),
                 new (ClaimTypes.Name, $"{person.FirstName} {person.LastName}"),
                 new (AccountTypeClaimName, account.AccountType.ToString()),
                 new (PersonIdClaimName, account.PersonId)

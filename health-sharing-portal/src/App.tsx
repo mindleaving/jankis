@@ -36,6 +36,7 @@ import { GiveHealthProfesionalAccessPage } from './localComponents/pages/Sharer/
 import { HealthRecordPage } from './localComponents/pages/Sharer/HealthRecordPage';
 import { ImagingUploadPage } from './localComponents/pages/Sharer/ImagingUploadPage';
 import { ReceiveHealthProfessionalAccessPage } from './localComponents/pages/HealthProfessional/ReceiveHealthProfessionalAccessPage';
+import { SharedAccessList } from './localComponents/pages/Sharer/SharedAccessList';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";
@@ -111,8 +112,10 @@ function App() {
                     <Route path="/edit/study/:id" element={<CreateEditStudyPage />} />
                     <Route path="/study/:id" element={<StudyPage />} />
                     <Route path="/studies" element={<StudiesPage />} />
+                    <Route path="/giveaccess/healthprofessional/:accessInviteId" element={<GiveHealthProfesionalAccessPage />} />
                     <Route path="/giveaccess/healthprofessional" element={<GiveHealthProfesionalAccessPage />} />
-                    <Route path="/accessrequests/:requestId" element={<ReceiveHealthProfessionalAccessPage />} />
+                    <Route path="/accessrequests/:accessInviteId" element={<ReceiveHealthProfessionalAccessPage />} />
+                    <Route path="/sharedaccess" element={<SharedAccessList />} />
 
                     <Route path="/accounts" element={<AccountsPage />} />
                     <Route path="/create/account" element={<AccountEditPage />} />

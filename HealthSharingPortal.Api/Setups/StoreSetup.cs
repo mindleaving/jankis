@@ -53,10 +53,12 @@ namespace HealthSharingPortal.API.Setups
             SetupTypeStores<DiagnosticTestDefinition>(services);
             SetupTypeStores<DiagnosticTestResult>(services);
             SetupTypeStores<Drug>(services);
+            SetupTypeStores<EmergencyAccess>(services);
+            SetupTypeStores<EmergencyAccessRequest>(services);
             services.AddScoped<IFilesStore, FilesStore>();
             SetupTypeStores<Institution>(services);
-            SetupInterfaceStores<ISharedAccess>(services, "SharedAccess");
-            SetupInterfaceStores<IAccessRequest>(services, "AccessRequest");
+            SetupTypeStores<HealthProfessionalAccess>(services);
+            services.AddScoped<IHealthProfessionalAccessInviteStore, HealthProfessionalAccessInviteStore>();
             SetupTypeStores<MedicationSchedule>(services);
             services.AddScoped<IMedicationScheduleStore, MedicationScheduleStore>();
             SetupTypeStores<MedicationDispension>(services);

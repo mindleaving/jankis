@@ -3,8 +3,7 @@
     public enum SharedAccessType
     {
         Unknonw = 0, // For validation only
-        Research,
-        HealthProfessional,
-        Emergency
+        HealthProfessional = 1,
+        Emergency = 2
     }
 }

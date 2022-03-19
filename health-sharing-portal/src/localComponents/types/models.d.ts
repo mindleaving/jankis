@@ -106,6 +106,11 @@ export namespace Models {
         
     }
 
+    interface HealthProfessionalAccount extends Models.Account {
+        workAddress: Models.Address;
+        canRequestEmergencyAccess: boolean;
+    }
+
     interface Publication {
         title: string;
         abstract: string;
@@ -619,7 +624,13 @@ export namespace Models {
             
         }
     
-        interface EmergencyAccessRequest extends Models.AccessControl.IAccessRequest {
+        interface EmergencyAccessRequest extends Models.IId {
+            type: Enums.SharedAccessType;
+            accessReceiverUsername: string;
+            sharerPersonId: string;
+            createdTimestamp: Date;
+            isCompleted: boolean;
+            completedTimestamp?: Date | null;
             targetPersonFirstName: string;
             targetPersonLastName: string;
             targetPersonBirthdate: Date;
@@ -629,8 +640,15 @@ export namespace Models {
             
         }
     
-        interface HealthProfessionalAccessRequest extends Models.AccessControl.IAccessRequest {
-            
+        interface HealthProfessionalAccessInvite extends Models.AccessControl.IAccessRequest {
+            codeForSharer: string;
+            codeForHealthProfessional: string;
+            sharerHasAccepted: boolean;
+            sharerHasAcceptedTimestamp?: Date | null;
+            healthProfessionalHasAccepted: boolean;
+            healthProfessionalHasAcceptedTimestamp?: Date | null;
+            isRejected: boolean;
+            rejectedTimestamp?: Date | null;
         }
     
         interface IAccessFilter {
@@ -643,30 +661,22 @@ export namespace Models {
     
         interface IAccessRequest extends Models.IId {
             type: Enums.SharedAccessType;
-            requesterId: string;
-            targetPersonId: string;
+            accessReceiverUsername: string;
+            sharerPersonId: string;
             createdTimestamp: Date;
             isCompleted: boolean;
             completedTimestamp?: Date | null;
+            isRevoked: boolean;
+            revokedTimestamp?: Date | null;
         }
     
         interface ISharedAccess extends Models.IId {
             type: Enums.SharedAccessType;
-            requesterId: string;
-            targetPersonId: string;
+            accessReceiverUsername: string;
+            sharerPersonId: string;
             accessGrantedTimestamp: Date;
             accessEndTimestamp?: Date | null;
             isRevoked: boolean;
-        }
-    
-        interface ResearchAccess extends Models.AccessControl.ISharedAccess {
-            studyId: string;
-            accessFilters: Models.AccessControl.IAccessFilter[];
-        }
-    
-        interface ResearchAccessRequest extends Models.AccessControl.IAccessRequest {
-            studyId: string;
-            accessFilters: Models.AccessControl.IAccessFilter[];
         }
     }
 }
