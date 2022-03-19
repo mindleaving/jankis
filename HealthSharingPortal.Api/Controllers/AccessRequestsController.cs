@@ -59,8 +59,15 @@ namespace HealthSharingPortal.API.Controllers
                 return Ok(new List<IAccessRequest>());
 
             var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            var emergencyRequsts = await emergencyRequestStore.SearchAsync(x => !x.IsCompleted && x.AccessReceiverUsername == username);
-            var ordinaryRequests = await healthProfessionalRequestStore.SearchAsync(x => !x.IsCompleted && x.AccessReceiverUsername == username, AccountType.HealthProfessional);
+            var emergencyRequsts = await emergencyRequestStore.SearchAsync(x => 
+                !x.IsCompleted
+                && x.AccessReceiverUsername == username);
+            var ordinaryRequests = await healthProfessionalRequestStore.SearchAsync(x => 
+                !x.IsCompleted 
+                && !x.IsRejected
+                && !x.IsRevoked
+                && x.AccessReceiverUsername == username, 
+                AccountType.HealthProfessional);
             return Ok(emergencyRequsts.Cast<IAccessRequest>().Concat(ordinaryRequests));
         }
 
@@ -72,8 +79,15 @@ namespace HealthSharingPortal.API.Controllers
                 return Ok(new List<IAccessRequest>());
 
             var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
-            var emergencyRequsts = await emergencyRequestStore.SearchAsync(x => !x.IsCompleted && x.SharerPersonId == personId);
-            var healthProfessionalRequests = await healthProfessionalRequestStore.SearchAsync(x => !x.IsCompleted && x.SharerPersonId == personId, AccountType.Sharer);
+            var emergencyRequsts = await emergencyRequestStore.SearchAsync(x => 
+                !x.IsCompleted 
+                && x.SharerPersonId == personId);
+            var healthProfessionalRequests = await healthProfessionalRequestStore.SearchAsync(x => 
+                !x.IsCompleted 
+                && !x.IsRejected
+                && !x.IsRevoked
+                && x.SharerPersonId == personId, 
+                AccountType.Sharer);
             return Ok(emergencyRequsts.Cast<IAccessRequest>().Concat(healthProfessionalRequests));
         }
 

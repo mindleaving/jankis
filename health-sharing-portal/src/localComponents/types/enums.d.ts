@@ -128,7 +128,7 @@ export enum PatientInformationCategory {
     Genome = "Genome"
 }
 export enum SharedAccessType {
-    Unknonw = "Unknonw",
+    Unknown = "Unknown",
     HealthProfessional = "HealthProfessional",
     Emergency = "Emergency"
 }

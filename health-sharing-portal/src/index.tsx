@@ -7,6 +7,8 @@ import App from './App';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-notifications/dist/react-notifications.css';
+import 'react-confirm-alert/src/react-confirm-alert.css';
+import "flatpickr/dist/themes/material_green.css";
 
 ReactDOM.render(
   <React.StrictMode>

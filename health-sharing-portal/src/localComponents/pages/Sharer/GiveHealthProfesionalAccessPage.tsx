@@ -54,9 +54,13 @@ export const GiveHealthProfesionalAccessPage = (props: GiveHealthProfesionalAcce
         try {
             const accessInviteWithCodes = {
                 ...accessInvite,
-                codeForSharer: codeForSharer
+                codeForSharer: codeForSharer,
             };
             await apiClient.instance!.post(`api/accessrequests/handshake/healthprofessional`, {}, accessInviteWithCodes);
+            setAccessInvite(state => ({
+                ...state!,
+                sharerHasAccepted: true
+            }));
         } catch(error: any) {
             NotificationManager.error(error.message, resolveText("GiveAccess_CouldNotSend"));
         } finally {
@@ -157,7 +161,8 @@ export const GiveHealthProfesionalAccessPage = (props: GiveHealthProfesionalAcce
                         ? <h3>{resolveText("GiveAccess_YouHaveConfirmedTheInvite")}</h3>
                         : <AsyncButton
                             type='submit'
-                            activeText={resolveText("Submit")}
+                            variant='success'
+                            activeText={resolveText("Accept")}
                             executingText={resolveText("Submitting...")}
                             isExecuting={isSubmitting}
                         />}

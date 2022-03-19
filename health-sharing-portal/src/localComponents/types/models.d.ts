@@ -679,6 +679,15 @@ export namespace Models {
             isRevoked: boolean;
         }
     }
+
+    export namespace Filters {
+        interface SharedAccessFilter {
+            searchText?: string;
+            onlyActive?: boolean;
+            startTime?: Date | null;
+            endTime?: Date | null;
+        }
+    }
 }
 export namespace MongoDB {
     export namespace Driver {

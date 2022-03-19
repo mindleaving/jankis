@@ -16,6 +16,9 @@ export const SharerMenu = (props: SharerMenuProps) => {
                 <NavLink onClick={() => navigate(`/healthrecord/${user.profileData.id}`)}>{resolveText("Menu_MyData")}</NavLink>
             </NavItem>
             <NavItem>
+                <NavLink onClick={() => navigate(`/sharedaccess`)}>{resolveText("Menu_SharedAccess")}</NavLink>
+            </NavItem>
+            <NavItem>
                 <NavLink onClick={() => navigate("/studies")}>{resolveText("Menu_Studies")}</NavLink>
             </NavItem>
         </Nav>

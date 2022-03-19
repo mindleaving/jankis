@@ -15,8 +15,10 @@ export const PatientsListPage = (props: PatientsListPageProps) => {
         <>
             <h1>{resolveText("Patients")}</h1>
 
+            <h2>{resolveText("AccessInvites")}</h2>
             <AccessRequestList />
             <hr />
+            <h2>{resolveText("ActiveAccess")}</h2>
             <PersonsFilterView filter={filter} setFilter={setFilter} />
             <PersonsList filter={filter} />
         </>
