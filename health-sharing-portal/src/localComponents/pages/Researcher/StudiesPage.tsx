@@ -49,9 +49,11 @@ export const StudiesPage = (props: StudiesPageProps) => {
                             </td>
                             <td>
                                 <ul>
-                                    {study.contactPersons.map(contactPerson => (
-                                        <li key={contactPerson.id}>{contactPerson.name}</li>
-                                    ))}
+                                    {study.contactPersons.map(contactPerson => {
+                                        const name = `${contactPerson.firstName} ${contactPerson.lastName}`;
+                                        return (
+                                        <li key={name}>{name}</li>
+                                    )})}
                                 </ul>
                             </td>
                         </tr>

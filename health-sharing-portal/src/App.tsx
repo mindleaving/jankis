@@ -5,7 +5,6 @@ import { Layout } from './Layout';
 import UserContext from './localComponents/contexts/UserContext';
 import { AccountsPage } from './localComponents/pages/UserManagement/AccountsPage';
 import { AdminHomePage } from './localComponents/pages/Admin/AdminHomePage';
-import { CreateEditStudyPage } from './localComponents/pages/Researcher/CreateEditStudyPage';
 import { LoginPage } from './localComponents/pages/LoginPage';
 import { PatientsListPage } from './localComponents/pages/HealthProfessional/PatientsListPage';
 import { RegisterAccountPage } from './localComponents/pages/UserManagement/RegisterAccountPage';
@@ -37,6 +36,8 @@ import { HealthRecordPage } from './localComponents/pages/Sharer/HealthRecordPag
 import { ImagingUploadPage } from './localComponents/pages/Sharer/ImagingUploadPage';
 import { ReceiveHealthProfessionalAccessPage } from './localComponents/pages/HealthProfessional/ReceiveHealthProfessionalAccessPage';
 import { SharedAccessList } from './localComponents/pages/Sharer/SharedAccessList';
+import { GenericTypeCreateEditPage } from './sharedCommonComponents/pages/GenericTypeCreateEditPage';
+import { Models } from './localComponents/types/models';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";
@@ -47,8 +48,8 @@ apiClient.instance = window.location.hostname.toLowerCase() === "localhost"
 if(!!sessionStorage.getItem(accessTokenSessionStorageKey)) {
     apiClient.instance!.setAccessToken(sessionStorage.getItem(accessTokenSessionStorageKey)!);
 }
-
-function App() {
+interface AppProps {}
+export const App = (props: AppProps) => {
 
     const [loggedInUser, setLoggedInUser] = useState<ViewModels.LoggedInUserViewModel | undefined>(
         !!sessionStorage.getItem(userSessionStorageKey) 
@@ -104,12 +105,25 @@ function App() {
             break;
     }
 
+    const studyLoad = async (id: string) => {
+        const response = await apiClient.instance!.get(`api/studies/${id}`, {})
+        return await response.json();
+    };
+    const studySubmitter = async (study: Models.Study) => {
+        await apiClient.instance!.put(`api/studies/${study.id}`, {}, study);
+        navigate(`/study/${study.id}`);
+    };
+
     return (
         <UserContext.Provider value={loggedInUser}>
             <Layout onLogOut={onLogOut}>
                 <Routes>
-                    <Route path="/create/study" element={<CreateEditStudyPage />} />
-                    <Route path="/edit/study/:studyId" element={<CreateEditStudyPage />} />
+                    <Route path="/create/study" element={<GenericTypeCreateEditPage<Models.Study> typeName='study' onSubmit={studySubmitter} />} />
+                    <Route path="/edit/study/:id" element={<GenericTypeCreateEditPage<Models.Study>
+                        typeName='study'
+                        itemLoader={studyLoad}
+                        onSubmit={studySubmitter}
+                    />} />
                     <Route path="/study/:studyId" element={<StudyPage />} />
                     <Route path="/studies" element={<StudiesPage />} />
                     <Route path="/giveaccess/healthprofessional/:accessInviteId" element={<GiveHealthProfesionalAccessPage />} />
@@ -141,6 +155,4 @@ function App() {
         </UserContext.Provider>
     );
 }
-
-export default App;
  

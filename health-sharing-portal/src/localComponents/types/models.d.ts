@@ -92,11 +92,6 @@ export namespace Models {
         error: Enums.AuthenticationErrorType;
     }
 
-    interface Author extends Models.Person {
-        orcId: string;
-        organizations: string[];
-    }
-
     interface AutocompleteCacheItem {
         context: string;
         value: string;
@@ -111,19 +106,26 @@ export namespace Models {
         canRequestEmergencyAccess: boolean;
     }
 
-    interface Publication extends Models.IId {
+    interface Publication {
         title: string;
         abstract: string;
-        authors: Models.Author[];
+        authors: Models.ResearchStaff[];
         journal: string;
         publicationDate: Date;
+    }
+
+    interface ResearchStaff {
+        firstName: string;
+        lastName: string;
+        orcId: string;
+        organizations: string[];
     }
 
     interface Study extends Models.IId {
         title: string;
         description: string;
         publications: Models.Publication[];
-        contactPersons: Models.Contact[];
+        contactPersons: Models.ResearchStaff[];
         isAcceptingEnrollments: boolean;
         createdBy: string;
     }

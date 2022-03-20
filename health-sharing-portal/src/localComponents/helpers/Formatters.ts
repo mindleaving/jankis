@@ -1,5 +1,6 @@
 import { resolveText } from "../../sharedCommonComponents/helpers/Globalizer";
 import { SharedAccessType } from "../types/enums.d"
+import { Models } from "../types/models";
 
 export const formatAccessType = (accessType: SharedAccessType) => {
     switch(accessType) {
@@ -10,4 +11,7 @@ export const formatAccessType = (accessType: SharedAccessType) => {
         default:
             return resolveText(`SharedAccessType_${SharedAccessType.Unknown}`);
     }
+}
+export const formatResearchStaff = (person: Models.ResearchStaff) => {
+    return `${person.firstName} ${person.lastName}`;
 }

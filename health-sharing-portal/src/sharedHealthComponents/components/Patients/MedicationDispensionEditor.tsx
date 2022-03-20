@@ -41,7 +41,6 @@ export const MedicationDispensionEditor = (props: MedicationDispensionEditorProp
                     if(selectedDates.length === 0) {
                         return;
                     }
-                    console.log(selectedDates); 
                     setTimestamp(selectedDates[0]);
                 }}
                 disabled={props.disabled}

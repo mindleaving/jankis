@@ -303,7 +303,7 @@ namespace HealthSharingPortal.API.Controllers
 
         protected override Expression<Func<Study, bool>> BuildSearchExpression(string[] searchTerms)
         {
-            return SearchExpressionBuilder.And(
+            return SearchExpressionBuilder.Or(
                 SearchExpressionBuilder.ContainsAny<Study>(x => x.Title.ToLower(), searchTerms),
                 SearchExpressionBuilder.ContainsAny<Study>(x => x.Description.ToLower(), searchTerms)
             );

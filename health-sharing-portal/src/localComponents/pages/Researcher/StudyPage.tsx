@@ -114,7 +114,7 @@ export const StudyPage = (props: StudyPageProps) => {
                     <Card>
                         <Card.Header>{resolveText("Study_Publications")}</Card.Header>
                         <Card.Body>
-                            {study.publications.length > 0
+                            {study.publications?.length > 0
                             ? study.publications.map(publication => (
                                 <AccordionCard 
                                     eventKey={study.id}

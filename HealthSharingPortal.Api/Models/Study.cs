@@ -9,7 +9,7 @@ namespace HealthSharingPortal.API.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public List<Publication> Publications { get; set; }
-        public List<Contact> ContactPersons { get; set; }
+        public List<ResearchStaff> ContactPersons { get; set; }
         public bool IsAcceptingEnrollments { get; set; }
         public string CreatedBy { get; set; }
     }
