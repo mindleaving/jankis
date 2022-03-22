@@ -128,6 +128,8 @@ export namespace Models {
         contactPersons: Models.ResearchStaff[];
         isAcceptingEnrollments: boolean;
         createdBy: string;
+        inclusionCriteriaQuestionaireIds: string[];
+        exclusionCriteriaQuestionaireIds: string[];
     }
 
     interface StudyAssociation extends Models.IId {
@@ -141,6 +143,8 @@ export namespace Models {
         personId: string;
         state: Enums.StudyEnrollementState;
         timestamps: Models.StudyEnrollmentTimestamp[];
+        inclusionCriteriaQuestionnaireAnswers: Models.Interview.QuestionnaireAnswers[];
+        exclusionCriteriaQuestionnaireAnswers: Models.Interview.QuestionnaireAnswers[];
     }
 
     interface StudyEnrollmentTimestamp {
@@ -389,11 +393,33 @@ export namespace Models {
     }
 
     export namespace Interview {
-        interface Question {
+        interface Question extends Models.IId {
+            language: string;
+            isRequired: boolean;
+            title: string;
             text: string;
             responseType: Enums.QuestionResponseType;
             options: string[];
             unit: string;
+        }
+    
+        interface QuestionAnswer {
+            question: Models.Interview.Question;
+            answer: string;
+        }
+    
+        interface Questionnaire extends Models.IId {
+            language: Enums.Language;
+            title: string;
+            description: string;
+            questions: Models.Interview.Question[];
+        }
+    
+        interface QuestionnaireAnswers extends Models.IId {
+            questionnaireId: string;
+            personId: string;
+            timestamp: Date;
+            answers: Models.Interview.QuestionAnswer[];
         }
     }
 

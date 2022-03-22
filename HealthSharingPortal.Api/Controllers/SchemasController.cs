@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using HealthModels;
+using HealthModels.Interview;
 using HealthSharingPortal.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using NJsonSchema;
 using NJsonSchema.Generation;
@@ -22,7 +24,8 @@ namespace HealthSharingPortal.API.Controllers
                 typeof(Contact),
                 typeof(Account),
                 typeof(HealthProfessionalAccount),
-                typeof(Person)
+                typeof(Person),
+                typeof(Questionnaire)
             }.ToDictionary(x => x.Name.ToLower(), x => x);
 
         [HttpGet("{typeName}")]
@@ -36,7 +39,8 @@ namespace HealthSharingPortal.API.Controllers
             {
                 SerializerSettings = new JsonSerializerSettings
                 {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                    Converters = { new StringEnumConverter() }
                 }
             });
             var serializedSchema = jsonSchema.ToJson(Formatting.Indented);

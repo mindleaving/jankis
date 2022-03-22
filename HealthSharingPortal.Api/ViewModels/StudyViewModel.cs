@@ -7,5 +7,6 @@ namespace HealthSharingPortal.API.ViewModels
         public Study Study { get; set; }
         public StudyEnrollmentStatistics EnrollmentStatistics { get; set; }
         public StudyAssociation MyAssociation { get; set; }
+        public StudyEnrollment MyEnrollment { get; set; }
     }
 }

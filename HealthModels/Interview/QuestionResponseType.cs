@@ -8,6 +8,7 @@
         Number = 4,
         Date = 5,
         Time = 6,
-        DateTime = 7
+        DateTime = 7,
+        TrueFalse = 8
     }
 }

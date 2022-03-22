@@ -122,7 +122,7 @@ namespace HealthSharingPortal.API.Controllers
 
 
         [HttpPost("{studyId}/offerparticipation")]
-        public async Task<IActionResult> OfferParticipation([FromRoute] string studyId)
+        public async Task<IActionResult> OfferParticipation([FromRoute] string studyId, [FromBody] StudyEnrollment body)
         {
             var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
             if (accountType != AccountType.Sharer)
@@ -133,6 +133,7 @@ namespace HealthSharingPortal.API.Controllers
             if (!study.IsAcceptingEnrollments)
                 return BadRequest("Study does currently not accept enrollments");
             var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
+            CorrectQuestionnaireAnswers(body, personId);
             var existingEnrollments = await enrollmentStore.SearchAsync(x => x.StudyId == studyId && x.PersonId == personId);
             if (existingEnrollments.Count == 1)
             {
@@ -143,6 +144,8 @@ namespace HealthSharingPortal.API.Controllers
                     case StudyEnrollementState.Left:
                     {
                         existingEnrollment.SetState(StudyEnrollementState.ParticipationOffered, DateTime.UtcNow);
+                        existingEnrollment.InclusionCriteriaQuestionnaireAnswers = body.InclusionCriteriaQuestionnaireAnswers;
+                        existingEnrollment.ExclusionCriteriaQuestionnaireAnswers = body.ExclusionCriteriaQuestionnaireAnswers;
                         await enrollmentStore.StoreAsync(existingEnrollment);
                         return Ok();
                     }
@@ -162,16 +165,44 @@ namespace HealthSharingPortal.API.Controllers
             }
             if (existingEnrollments.Count > 1)
             {
-                await HandleMultipleEnrollments(existingEnrollments);
+                await DeleteEnrollments(existingEnrollments);
             }
 
-            var enrollment = new StudyEnrollment { Id = Guid.NewGuid().ToString(), PersonId = personId, StudyId = studyId };
-            enrollment.SetState(StudyEnrollementState.ParticipationOffered, DateTime.UtcNow);
-            await enrollmentStore.StoreAsync(enrollment);
+            var newEnrollment = new StudyEnrollment
+                {
+                    Id = Guid.NewGuid().ToString(), 
+                    PersonId = personId, 
+                    StudyId = studyId, 
+                    InclusionCriteriaQuestionnaireAnswers = body.InclusionCriteriaQuestionnaireAnswers,
+                    ExclusionCriteriaQuestionnaireAnswers = body.ExclusionCriteriaQuestionnaireAnswers
+                };
+            newEnrollment.SetState(StudyEnrollementState.ParticipationOffered, DateTime.UtcNow);
+            await enrollmentStore.StoreAsync(newEnrollment);
             return Ok();
         }
 
-        private async Task HandleMultipleEnrollments(List<StudyEnrollment> existingEnrollments)
+        private void CorrectQuestionnaireAnswers(
+            StudyEnrollment studyEnrollment,
+            string personId)
+        {
+            var utcNow = DateTime.UtcNow;
+            studyEnrollment.InclusionCriteriaQuestionnaireAnswers
+                .ForEach(
+                    questionnaireAnswer =>
+                    {
+                        questionnaireAnswer.PersonId = personId;
+                        questionnaireAnswer.Timestamp = utcNow;
+                    });
+            studyEnrollment.ExclusionCriteriaQuestionnaireAnswers
+                .ForEach(
+                    questionnaireAnswer =>
+                    {
+                        questionnaireAnswer.PersonId = personId;
+                        questionnaireAnswer.Timestamp = utcNow;
+                    });
+        }
+
+        private async Task DeleteEnrollments(List<StudyEnrollment> existingEnrollments)
         {
             // This should never happen, but if it does:
             // Delete all enrollments and start over
@@ -227,7 +258,7 @@ namespace HealthSharingPortal.API.Controllers
                 return NotFound();
             if (enrollments.Count > 1)
             {
-                await HandleMultipleEnrollments(enrollments);
+                await DeleteEnrollments(enrollments);
                 return StatusCode(
                     (int)HttpStatusCode.InternalServerError,
                     "Multiple enrollments matched. To ensure a consistent state all your enrollments to this study were deleted. "

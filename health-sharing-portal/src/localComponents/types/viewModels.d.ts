@@ -37,10 +37,26 @@ export namespace ViewModels {
         documents: Models.PatientDocument[];
     }
 
+    interface StudyParticipationOfferViewModel {
+        study: Models.Study;
+        inclusionCriteriaQuestionnaires: Models.Interview.Questionnaire[];
+        inclusionCriteriaSchemas: ViewModels.QuestionnaireSchema[];
+        inclusionCriteriaAnswers: Models.Interview.QuestionnaireAnswers[];
+        exclusionCriteriaQuestionnaires: Models.Interview.Questionnaire[];
+        exclusionCriteriaSchemas: ViewModels.QuestionnaireSchema[];
+        exclusionCriteriaAnswers: Models.Interview.QuestionnaireAnswers[];
+    }
+
+    interface QuestionnaireSchema {
+        questionnaireId: string;
+        schema: any;
+    }
+
     interface StudyViewModel extends ViewModels.IViewModel<Models.Study> {
         study: Models.Study;
         enrollmentStatistics: Models.StudyEnrollmentStatistics;
         myAssociation: Models.StudyAssociation;
+        myEnrollment: Models.StudyEnrollment;
     }
 
     interface IViewModel<Account> {

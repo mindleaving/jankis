@@ -2,6 +2,7 @@
 using HealthModels;
 using HealthModels.AccessControl;
 using HealthModels.DiagnosticTestResults;
+using HealthModels.Interview;
 using HealthModels.MedicalTextEditor;
 using HealthModels.Medication;
 using HealthModels.Observations;
@@ -68,6 +69,8 @@ namespace HealthSharingPortal.API.Setups
             SetupTypeStores<PatientNote>(services);
             SetupTypeStores<Person>(services);
             SetupTypeStores<PersonalizedAbbreviation>(services);
+            SetupTypeStores<Questionnaire>(services);
+            SetupTypeStores<QuestionnaireAnswers>(services);
             SetupTypeStores<ServiceDefinition>(services);
             SetupTypeStores<ServiceRequest>(services);
             SetupTypeStores<Study>(services);

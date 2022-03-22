@@ -1,9 +1,10 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HealthModels;
 using HealthModels.AccessControl;
 using HealthModels.DiagnosticTestResults;
+using HealthModels.Interview;
 using HealthModels.Medication;
 using HealthModels.Observations;
 using HealthSharingPortal.API.AccessControl;
@@ -11,9 +12,12 @@ using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
 using HealthSharingPortal.API.ViewModels;
+using HealthSharingPortal.API.Workflow;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
+using Newtonsoft.Json.Linq;
 
 namespace HealthSharingPortal.API.Controllers
 {
@@ -35,6 +39,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IReadonlyStore<Study> studyStore;
         private readonly IReadonlyStore<StudyAssociation> studyAssociationStore;
         private readonly IAuthorizationModule authorizationModule;
+        private readonly IReadonlyStore<Questionnaire> questionaireStore;
 
         public ViewModelsController(
             IHttpContextAccessor httpContextAccessor,
@@ -49,7 +54,8 @@ namespace HealthSharingPortal.API.Controllers
             IReadonlyStore<StudyEnrollment> studyEnrollmentStore, 
             IReadonlyStore<Study> studyStore,
             IReadonlyStore<StudyAssociation> studyAssociationStore,
-            IAuthorizationModule authorizationModule)
+            IAuthorizationModule authorizationModule,
+            IReadonlyStore<Questionnaire> questionaireStore)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.personStore = personStore;
@@ -64,6 +70,7 @@ namespace HealthSharingPortal.API.Controllers
             this.studyStore = studyStore;
             this.studyAssociationStore = studyAssociationStore;
             this.authorizationModule = authorizationModule;
+            this.questionaireStore = questionaireStore;
         }
 
         [HttpGet("healthdata/{personId}")]
@@ -96,19 +103,90 @@ namespace HealthSharingPortal.API.Controllers
         public async Task<IActionResult> Study([FromRoute] string studyId)
         {
             var study = await studyStore.GetByIdAsync(studyId);
+            if (study == null)
+                return NotFound();
             var enrollments = await studyEnrollmentStore.SearchAsync(x => x.StudyId == studyId);
             var enrollmentStatistics = new StudyEnrollmentStatistics(enrollments);
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            var myAssociations = await studyAssociationStore.SearchAsync(x => x.StudyId == studyId && x.Username == username);
-            var myAssociation = myAssociations.FirstOrDefault();
+            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
+            StudyAssociation myAssociation = null;
+            if (accountType == AccountType.Researcher)
+            {
+                var username = ControllerHelpers.GetUsername(httpContextAccessor);
+                var myAssociations = await studyAssociationStore.SearchAsync(x => x.StudyId == studyId && x.Username == username);
+                myAssociation = myAssociations.FirstOrDefault();
+            }
+
+            StudyEnrollment myEnrollment = null;
+            if (accountType == AccountType.Sharer)
+            {
+                var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
+                var myEnrollments = await studyEnrollmentStore.SearchAsync(x => x.StudyId == studyId && x.PersonId == personId);
+                myEnrollment = myEnrollments.FirstOrDefault();
+            }
             var viewModel = new StudyViewModel
             {
                 Study = study,
                 EnrollmentStatistics = enrollmentStatistics,
-                MyAssociation = myAssociation
+                MyAssociation = myAssociation,
+                MyEnrollment = myEnrollment
             };
             return Ok(viewModel);
         }
 
+        [HttpGet("studies/{studyId}/offerparticipation")]
+        public async Task<IActionResult> OfferParticipationInStudy([FromRoute] string studyId, [FromQuery] Language language = Language.en)
+        {
+            var study = await studyStore.GetByIdAsync(studyId);
+            var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
+            var myEnrollments = await studyEnrollmentStore.SearchAsync(x => x.StudyId == studyId && x.PersonId == personId);
+            var myEnrollment = myEnrollments.FirstOrDefault();
+            var questionaireToSchemaConverter = new QuestionaireToSchemaConverter();
+            var inclusionCriteriaQuestionnaires = new List<Questionnaire>();
+            var inclusionCriteriaSchemas = new List<QuestionnaireSchema>();
+            foreach (var questionaireId in study.InclusionCriteriaQuestionaireIds ?? Enumerable.Empty<string>())
+            {
+                var questionnaire = await questionaireStore.GetByIdAsync(questionaireId);
+                if(questionnaire.Language != language)
+                    continue;
+                inclusionCriteriaQuestionnaires.Add(questionnaire);
+                var schema = questionaireToSchemaConverter.Convert(questionnaire);
+                inclusionCriteriaSchemas.Add(new QuestionnaireSchema
+                {
+                    QuestionnaireId = questionaireId,
+                    Schema = schema
+                });
+            }
+
+            var exclusionCriteriaQuestionnaires = new List<Questionnaire>();
+            var exclusionCriteriaSchemas = new List<QuestionnaireSchema>();
+            foreach (var questionaireId in study.ExclusionCriteriaQuestionaireIds ?? Enumerable.Empty<string>())
+            {
+                var questionnaire = await questionaireStore.GetByIdAsync(questionaireId);
+                if(questionnaire.Language != language)
+                    continue;
+                exclusionCriteriaQuestionnaires.Add(questionnaire);
+                var schema = questionaireToSchemaConverter.Convert(questionnaire);
+                exclusionCriteriaSchemas.Add(new QuestionnaireSchema
+                {
+                    QuestionnaireId = questionaireId,
+                    Schema = schema
+                });
+            }
+            var viewModel = new StudyParticipationOfferViewModel
+            {
+                Study = study,
+                InclusionCriteriaQuestionnaires = inclusionCriteriaQuestionnaires,
+                InclusionCriteriaSchemas = inclusionCriteriaSchemas,
+                InclusionCriteriaAnswers = inclusionCriteriaSchemas
+                    .Select(schema => myEnrollment?.InclusionCriteriaQuestionnaireAnswers?.Find(x => x.QuestionnaireId == schema.QuestionnaireId))
+                    .ToList(),
+                ExclusionCriteriaQuestionnaires = exclusionCriteriaQuestionnaires,
+                ExclusionCriteriaSchemas = exclusionCriteriaSchemas,
+                ExclusionCriteriaAnswers = exclusionCriteriaSchemas
+                    .Select(schema => myEnrollment?.ExclusionCriteriaQuestionnaireAnswers?.Find(x => x.QuestionnaireId == schema.QuestionnaireId))
+                    .ToList()
+            };
+            return Ok(viewModel);
+        }
     }
 }

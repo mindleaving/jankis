@@ -6,6 +6,8 @@ using HealthModels;
 using HealthModels.Attributes;
 using HealthModels.Converters;
 using HealthSharingPortal.API.Models;
+using MongoDB.Bson;
+using Newtonsoft.Json.Linq;
 using TypescriptGenerator;
 
 namespace HealthSharingPortal.API.Setups
@@ -38,6 +40,8 @@ namespace HealthSharingPortal.API.Setups
                 })
                 .CustomizeType(x => x == typeof(UnitValue), _ => "math.Unit")
                 .CustomizeType(x => x == typeof(Guid), _ => "string")
+                .CustomizeType(x => x == typeof(BsonDocument), _ => "{}")
+                .CustomizeType(x => x == typeof(JObject), _ => "{}")
                 .SetOutputDirectory(Path.Combine(repositoryPath, "health-sharing-portal", "src", "localComponents", "types"))
                 .Generate();
         }

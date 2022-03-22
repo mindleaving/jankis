@@ -36,8 +36,9 @@ import { HealthRecordPage } from './localComponents/pages/Sharer/HealthRecordPag
 import { ImagingUploadPage } from './localComponents/pages/Sharer/ImagingUploadPage';
 import { ReceiveHealthProfessionalAccessPage } from './localComponents/pages/HealthProfessional/ReceiveHealthProfessionalAccessPage';
 import { SharedAccessList } from './localComponents/pages/Sharer/SharedAccessList';
-import { GenericTypeCreateEditPage } from './sharedCommonComponents/pages/GenericTypeCreateEditPage';
-import { Models } from './localComponents/types/models';
+import { OfferStudyParticipationPage } from './localComponents/pages/Sharer/OfferStudyParticipationPage';
+import { CreateEditStudyPage } from './localComponents/pages/Researcher/CreateEditStudyPage';
+import { CreateEditQuestionnairePage } from './localComponents/pages/Researcher/CreateEditQuestionnairePage';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";
@@ -105,27 +106,17 @@ export const App = (props: AppProps) => {
             break;
     }
 
-    const studyLoad = async (id: string) => {
-        const response = await apiClient.instance!.get(`api/studies/${id}`, {})
-        return await response.json();
-    };
-    const studySubmitter = async (study: Models.Study) => {
-        await apiClient.instance!.put(`api/studies/${study.id}`, {}, study);
-        navigate(`/study/${study.id}`);
-    };
-
     return (
         <UserContext.Provider value={loggedInUser}>
             <Layout onLogOut={onLogOut}>
                 <Routes>
-                    <Route path="/create/study" element={<GenericTypeCreateEditPage<Models.Study> typeName='study' onSubmit={studySubmitter} />} />
-                    <Route path="/edit/study/:id" element={<GenericTypeCreateEditPage<Models.Study>
-                        typeName='study'
-                        itemLoader={studyLoad}
-                        onSubmit={studySubmitter}
-                    />} />
+                    <Route path="/create/study" element={<CreateEditStudyPage />} />
+                    <Route path="/edit/study/:id" element={<CreateEditStudyPage />} />
                     <Route path="/study/:studyId" element={<StudyPage />} />
+                    <Route path="/study/:studyId/offerparticipation" element={<OfferStudyParticipationPage />} />
                     <Route path="/studies" element={<StudiesPage />} />
+                    <Route path="/create/questionnaire" element={<CreateEditQuestionnairePage />} />
+                    <Route path="/edit/questionnaire/:id" element={<CreateEditQuestionnairePage />} />
                     <Route path="/giveaccess/healthprofessional/:accessInviteId" element={<GiveHealthProfesionalAccessPage />} />
                     <Route path="/giveaccess/healthprofessional" element={<GiveHealthProfesionalAccessPage />} />
                     <Route path="/accessrequests/:accessInviteId" element={<ReceiveHealthProfessionalAccessPage />} />

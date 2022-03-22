@@ -25,8 +25,8 @@ namespace HealthSharingPortal.Tools
             var tsFiles = Directory.GetFiles(Path.Combine(FrontendDirectory, "src"), "*.ts?", SearchOption.AllDirectories);
             var existingLocalizations = JObject.Parse(File.ReadAllText(localizationOutputFile));
             var existingResourceIds = existingLocalizations.Properties().Select(x => x.Name);
-            var enumResourceIds = GetEnumResourceIds();
-            var resourceIds = new List<string>(existingResourceIds.Concat(enumResourceIds));
+            var enumResources = GetEnumResourceIds();
+            var resourceIds = new List<string>(existingResourceIds.Concat(enumResources.Keys));
             foreach (var tsFile in tsFiles)
             {
                 var fileContent = File.ReadAllLines(tsFile);
@@ -53,9 +53,12 @@ namespace HealthSharingPortal.Tools
                 else
                 {
                     var referenceValue = referenceTranslation[resourceId]?.Value<string>();
-                    resourceDictionary[resourceId] = referenceValue ?? "";
+                    if(referenceValue != null)
+                        resourceDictionary[resourceId] = referenceValue;
+                    if(enumResources.ContainsKey(resourceId))
+                        resourceDictionary[resourceId] = enumResources[resourceId];
                 }
-                Console.WriteLine($"{resourceId}: {existingValue}");
+                Console.WriteLine($"{resourceId}: {resourceDictionary[resourceId]}");
             }
 
             File.WriteAllText(localizationOutputFile, JsonConvert.SerializeObject(resourceDictionary, Formatting.Indented));
@@ -87,14 +90,19 @@ namespace HealthSharingPortal.Tools
 
         }
 
-        private static IEnumerable<string> GetEnumResourceIds()
+        private static Dictionary<string,string> GetEnumResourceIds()
         {
-            var enumResourceIds = Assembly.GetAssembly(typeof(AccountType)).GetExportedTypes()
+            var enumResources = Assembly.GetAssembly(typeof(AccountType)).GetExportedTypes()
                 .Where(t => t.Namespace.StartsWith(typeof(AccountType).Namespace) && t.IsEnum)
                 .Concat(Assembly.GetAssembly(typeof(Person)).GetExportedTypes()
                     .Where(t => t.Namespace.StartsWith(typeof(Person).Namespace) && t.IsEnum))
-                .SelectMany(t => Enum.GetNames(t).Select(x => $"{t.Name}_{x}"));
-            return enumResourceIds;
+                .SelectMany(t => Enum.GetNames(t).Select(x => new
+                {
+                    ResourceId = $"{t.Name}_{x}",
+                    Value = x
+                }))
+                .ToDictionary(kvp => kvp.ResourceId, kvp => kvp.Value);
+            return enumResources;
         }
     }
 }

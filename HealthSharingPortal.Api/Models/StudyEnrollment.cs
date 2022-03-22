@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using HealthModels;
+using HealthModels.Interview;
 
 namespace HealthSharingPortal.API.Models
 {
@@ -11,6 +12,8 @@ namespace HealthSharingPortal.API.Models
         public string PersonId { get; set; }
         public StudyEnrollementState State { get; set; }
         public List<StudyEnrollmentTimestamp> Timestamps { get; set; }
+        public List<QuestionnaireAnswers> InclusionCriteriaQuestionnaireAnswers { get; set; }
+        public List<QuestionnaireAnswers> ExclusionCriteriaQuestionnaireAnswers { get; set; }
 
         public void SetState(StudyEnrollementState state, DateTime timestamp)
         {

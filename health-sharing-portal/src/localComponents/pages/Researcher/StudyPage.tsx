@@ -1,13 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {  Button, Card, Col, Row } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
+import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { AccordionCard } from '../../../sharedCommonComponents/components/AccordionCard';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import UserContext from '../../contexts/UserContext';
-import { AccountType } from '../../types/enums.d';
+import { AccountType, StudyEnrollementState } from '../../types/enums.d';
 import { Models } from '../../types/models';
 import { ViewModels } from '../../types/viewModels';
+import { NotificationManager } from 'react-notifications';
 
 interface StudyPageProps {}
 
@@ -19,6 +21,8 @@ export const StudyPage = (props: StudyPageProps) => {
     const [ study, setStudy ] = useState<Models.Study>();
     const [ enrollmentStatistics, setEnrollmentStatistics ] = useState<Models.StudyEnrollmentStatistics>();
     const [ myAssociation, setMyAssociation ] = useState<Models.StudyAssociation>();
+    const [ myEnrollment, setMyEnrollment ] = useState<Models.StudyEnrollment>();
+    const [ isPerformingAction, setIsPerformingAction] = useState<boolean>(false);
 
     const navigate = useNavigate();
 
@@ -32,12 +36,46 @@ export const StudyPage = (props: StudyPageProps) => {
                 setStudy(vm.study);
                 setEnrollmentStatistics(vm.enrollmentStatistics);
                 setMyAssociation(vm.myAssociation);
+                setMyEnrollment(vm.myEnrollment);
             },
             () => setIsLoading(false)
         );
         loadStudyData();
     }, [ studyId ]);
+    const setEnrollmentState = (newState: StudyEnrollementState) => {
+        setMyEnrollment(enrollment => !enrollment 
+            ? enrollment
+            : ({
+                ...enrollment!,
+                state: newState
+            }));
+    }
 
+    const offerParticipation = () => {
+        navigate(`/study/${studyId}/offerparticipation`);
+    }
+    const leaveStudy = async () => {
+        setIsPerformingAction(true);
+        try {
+            await apiClient.instance!.post(`api/studies/${studyId}/leave`, {}, null);
+            setEnrollmentState(StudyEnrollementState.Left);
+        } catch(error: any) {
+            NotificationManager.error(error.message, resolveText("Study_SuccessfulLeft"));
+        } finally {
+            setIsPerformingAction(false);
+        }
+    }
+    const acceptEnrollment = async () => {
+        setIsPerformingAction(true);
+        try {
+            await apiClient.instance!.post(`api/studies/${studyId}/accept`, {}, null);
+            setEnrollmentState(StudyEnrollementState.Enrolled);
+        } catch(error: any) {
+            NotificationManager.error(error.message, resolveText("Study_EnrollmentSuccessful"));
+        } finally {
+            setIsPerformingAction(false);
+        }
+    }
 
     if(isLoading) {
         return (<h3>{resolveText("Loading...")}</h3>);
@@ -52,16 +90,48 @@ export const StudyPage = (props: StudyPageProps) => {
             buttons = (<Button onClick={() => navigate(`/edit/study/${studyId}`)}>{resolveText("Edit")}</Button>);
         }
     } else if(user!.accountType === AccountType.Sharer) {
-        buttons = (
-            <>
-                <Button className='m-2' onClick={() => navigate(`/study/${studyId}/offerparticipation`)}>{resolveText("Study_OfferParticipation")}</Button>
-            </>
-        );
+        if(!myEnrollment) {
+            buttons = (<Button className='m-2' onClick={offerParticipation}>{resolveText("Study_OfferParticipation")}</Button>);
+        } else {
+            switch(myEnrollment.state) {
+                case StudyEnrollementState.ParticipationOffered:
+                    buttons = (<>
+                        <span className='me-2 text-dark'><strong>{resolveText("Study_YouHaveOfferedParticipation")}</strong></span>
+                        <Button className='m-2' variant='danger' onClick={leaveStudy}>{resolveText("Study_Leave")}</Button>
+                    </>);
+                    break;
+                case StudyEnrollementState.Enrolled:
+                    buttons = (<>
+                        <span className='me-2 text-success'><strong>{resolveText("Study_YouAreEnrolled")}</strong></span>
+                        <Button className='m-2' variant='danger' onClick={leaveStudy}>{resolveText("Study_Leave")}</Button>
+                    </>);
+                    break;
+                case StudyEnrollementState.Eligible:
+                    buttons = (<>
+                        <span className='me-2 text-dark'><strong>{resolveText("Study_YouAreEligible")}</strong></span>
+                        <Button className='m-2' variant='success' onClick={acceptEnrollment}>{resolveText("Study_AcceptEnrollment")}</Button>
+                        <Button className='m-2' variant='danger' onClick={leaveStudy}>{resolveText("Study_Leave")}</Button>
+                    </>);
+                    break;
+                case StudyEnrollementState.Excluded:
+                case StudyEnrollementState.Rejected:
+                    buttons = (<>
+                        <span className='me-2 text-danger'><strong>{resolveText("Study_YouAreNotEligible")}</strong></span>
+                    </>);
+                    break;
+                case StudyEnrollementState.Left:
+                    buttons = (<>
+                        <span className='me-2 text-dark'><strong>{resolveText("Study_YouHaveWithdrawn")}</strong></span>
+                        <Button className='m-2' onClick={offerParticipation}>{resolveText("Study_OfferParticipation")}</Button>
+                    </>);
+                    break;
+            }
+        }
     }
 
     return (
         <>
-            <h1>Study - {study.title}</h1>
+            <h1>{resolveText("Study")} - {study.title}</h1>
             <Row className='mb-2'>
                 <Col></Col>
                 <Col xs="auto">
@@ -117,6 +187,7 @@ export const StudyPage = (props: StudyPageProps) => {
                             {study.publications?.length > 0
                             ? study.publications.map(publication => (
                                 <AccordionCard 
+                                    key={publication.title}
                                     eventKey={study.id}
                                     title={<>
                                         {publication.title}
