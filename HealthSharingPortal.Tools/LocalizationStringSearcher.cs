@@ -55,8 +55,10 @@ namespace HealthSharingPortal.Tools
                     var referenceValue = referenceTranslation[resourceId]?.Value<string>();
                     if(referenceValue != null)
                         resourceDictionary[resourceId] = referenceValue;
-                    if(enumResources.ContainsKey(resourceId))
+                    else if (enumResources.ContainsKey(resourceId))
                         resourceDictionary[resourceId] = enumResources[resourceId];
+                    else
+                        resourceDictionary[resourceId] = string.Empty;
                 }
                 Console.WriteLine($"{resourceId}: {resourceDictionary[resourceId]}");
             }

@@ -39,6 +39,7 @@ import { SharedAccessList } from './localComponents/pages/Sharer/SharedAccessLis
 import { OfferStudyParticipationPage } from './localComponents/pages/Sharer/OfferStudyParticipationPage';
 import { CreateEditStudyPage } from './localComponents/pages/Researcher/CreateEditStudyPage';
 import { CreateEditQuestionnairePage } from './localComponents/pages/Researcher/CreateEditQuestionnairePage';
+import { StudyEnrollmentReviewPage } from './localComponents/pages/Researcher/StudyEnrollmentReviewPage';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";
@@ -114,6 +115,7 @@ export const App = (props: AppProps) => {
                     <Route path="/edit/study/:id" element={<CreateEditStudyPage />} />
                     <Route path="/study/:studyId" element={<StudyPage />} />
                     <Route path="/study/:studyId/offerparticipation" element={<OfferStudyParticipationPage />} />
+                    <Route path="/study/:studyId/enrollment/:enrollmentId/review" element={<StudyEnrollmentReviewPage />} />
                     <Route path="/studies" element={<StudiesPage />} />
                     <Route path="/create/questionnaire" element={<CreateEditQuestionnairePage />} />
                     <Route path="/edit/questionnaire/:id" element={<CreateEditQuestionnairePage />} />

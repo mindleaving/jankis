@@ -37,6 +37,11 @@ export namespace ViewModels {
         documents: Models.PatientDocument[];
     }
 
+    interface StudyEnrollmentViewModel extends ViewModels.IViewModel<Models.StudyEnrollment> {
+        enrollment: Models.StudyEnrollment;
+        person: Models.Person;
+    }
+
     interface StudyParticipationOfferViewModel {
         study: Models.Study;
         inclusionCriteriaQuestionnaires: Models.Interview.Questionnaire[];
@@ -60,6 +65,10 @@ export namespace ViewModels {
     }
 
     interface IViewModel<Account> {
+        
+    }
+
+    interface IViewModel<StudyEnrollment> {
         
     }
 

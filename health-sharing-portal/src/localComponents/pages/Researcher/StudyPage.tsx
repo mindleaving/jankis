@@ -10,6 +10,8 @@ import { AccountType, StudyEnrollementState } from '../../types/enums.d';
 import { Models } from '../../types/models';
 import { ViewModels } from '../../types/viewModels';
 import { NotificationManager } from 'react-notifications';
+import { StudyEnrollmentsList } from '../../components/Researcher/StudyEnrollmentsList';
+import { confirmAlert } from 'react-confirm-alert';
 
 interface StudyPageProps {}
 
@@ -65,7 +67,25 @@ export const StudyPage = (props: StudyPageProps) => {
             setIsPerformingAction(false);
         }
     }
-    const acceptEnrollment = async () => {
+    const acceptEnrollment = async (force: boolean = false) => {
+        if(!force) {
+            confirmAlert({
+                title: resolveText("Study_ConfirmEnroll_Title"),
+                message: resolveText("Study_ConfirmEnroll_Message"),
+                closeOnClickOutside: true,
+                buttons: [
+                    {
+                        label: resolveText("Study_ConfirmEnroll_Yes"),
+                        onClick: () => acceptEnrollment(true)
+                    },
+                    {
+                        label: resolveText("Study_ConfirmEnroll_No"),
+                        onClick: () => {}
+                    }
+                ]
+            })
+            return;
+        }
         setIsPerformingAction(true);
         try {
             await apiClient.instance!.post(`api/studies/${studyId}/accept`, {}, null);
@@ -109,7 +129,7 @@ export const StudyPage = (props: StudyPageProps) => {
                 case StudyEnrollementState.Eligible:
                     buttons = (<>
                         <span className='me-2 text-dark'><strong>{resolveText("Study_YouAreEligible")}</strong></span>
-                        <Button className='m-2' variant='success' onClick={acceptEnrollment}>{resolveText("Study_AcceptEnrollment")}</Button>
+                        <Button className='m-2' variant='success' onClick={() => acceptEnrollment(false)}>{resolveText("Study_AcceptEnrollment")}</Button>
                         <Button className='m-2' variant='danger' onClick={leaveStudy}>{resolveText("Study_Leave")}</Button>
                     </>);
                     break;
@@ -203,6 +223,18 @@ export const StudyPage = (props: StudyPageProps) => {
                     </Card>
                 </Col>
             </Row>
+            {!!myAssociation
+            ? <>
+                <h3 className='mt-3'>{resolveText("Study_Enrollments")}</h3>
+                <Row>
+                    <Col>
+                        <StudyEnrollmentsList
+                            studyId={studyId!}
+                        />
+                    </Col>
+                </Row>
+            </>
+            : null}
         </>
     );
 

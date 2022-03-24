@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
+using HealthModels;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
+using HealthSharingPortal.API.ViewModels;
+using HealthSharingPortal.API.Workflow.ViewModelBuilders;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,16 +19,22 @@ namespace HealthSharingPortal.API.Controllers
     {
         private readonly IStore<StudyEnrollment> enrollmentStore;
         private readonly IStore<StudyAssociation> studyAssociationStore;
+        private readonly IReadonlyStore<Person> personStore;
+        private readonly IViewModelBuilder<StudyEnrollment> studEnrollmentViewModelBuilder;
 
         public StudiesController(
             IStore<Study> store, 
             IHttpContextAccessor httpContextAccessor, 
             IStore<StudyEnrollment> enrollmentStore, 
-            IStore<StudyAssociation> studyAssociationStore)
+            IStore<StudyAssociation> studyAssociationStore,
+            IReadonlyStore<Person> personStore,
+            IViewModelBuilder<StudyEnrollment> studEnrollmentViewModelBuilder)
             : base(store, httpContextAccessor)
         {
             this.enrollmentStore = enrollmentStore;
             this.studyAssociationStore = studyAssociationStore;
+            this.personStore = personStore;
+            this.studEnrollmentViewModelBuilder = studEnrollmentViewModelBuilder;
         }
 
         public override async Task<IActionResult> CreateOrReplace(
@@ -47,6 +57,88 @@ namespace HealthSharingPortal.API.Controllers
             }
             return result;
         }
+
+        [HttpGet("{studyId}/enrollments")]
+        [HttpGet("{studyId}/enrollments/search")]
+        public async Task<IActionResult> Enrollments(
+            [FromRoute] string studyId,
+            [FromQuery] DataRepresentationType mode = DataRepresentationType.Model, 
+            [FromQuery] int? count = null,
+            [FromQuery] int? skip = 0,
+            [FromQuery] string searchText = null,
+            [FromQuery] StudyEnrollementState? state = null)
+        {
+            if (state == StudyEnrollementState.Undefined)
+                state = null;
+            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
+            if (accountType != AccountType.Researcher)
+                return Forbid("Only researchers associated with the study can access enrollments");
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var myAssociations = await studyAssociationStore.SearchAsync(x => x.StudyId == studyId && x.Username == username);
+            if (!myAssociations.Any())
+                return Forbid("You are not associated with study");
+            var filterExpressions = new List<Expression<Func<StudyEnrollment, bool>>>
+            {
+                x => x.StudyId == studyId
+            };
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                var personFilter = SearchExpressionBuilder.Or(
+                    SearchExpressionBuilder.ContainsAny<Person>(x => x.FirstName.ToLower(), searchText),
+                    SearchExpressionBuilder.ContainsAny<Person>(x => x.LastName.ToLower(), searchText)
+                );
+                var matchingPersons = await personStore.SearchAsync(personFilter);
+                var personIds = matchingPersons.Select(x => x.Id).ToList();
+                filterExpressions.Add(x => personIds.Contains(x.PersonId));
+            }
+            if (state.HasValue)
+            {
+                filterExpressions.Add(x => x.State == state.Value);
+            }
+
+            var combinedFilter = SearchExpressionBuilder.And(filterExpressions.ToArray());
+            var enrollments = await enrollmentStore.SearchAsync(combinedFilter, count, skip);
+            enrollments = enrollments.OrderBy(x => x.State).ToList();
+            if (mode == DataRepresentationType.Model)
+                return Ok(enrollments);
+            var viewModels = await studEnrollmentViewModelBuilder.BatchBuild(enrollments);
+            return Ok(viewModels);
+        }
+
+        [HttpGet("{studyId}/enrollments/{enrollmentId}")]
+        public async Task<IActionResult> GetEnrollment(
+            [FromRoute] string studyId,
+            [FromRoute] string enrollmentId)
+        {
+            var enrollment = await enrollmentStore.GetByIdAsync(enrollmentId);
+            if (enrollment == null)
+                return NotFound();
+            if (enrollment.StudyId != studyId)
+                return NotFound();
+            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
+            if (accountType == AccountType.Sharer)
+            {
+                var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
+                if (enrollment.PersonId == personId)
+                {
+                    var viewModel = await studEnrollmentViewModelBuilder.Build(enrollment);
+                    return Ok(viewModel);
+                }
+            }
+            if (accountType == AccountType.Researcher)
+            {
+                var username = ControllerHelpers.GetUsername(httpContextAccessor);
+                var myAssociations = await studyAssociationStore.SearchAsync(x => x.StudyId == studyId && x.Username == username);
+                if (myAssociations.Any())
+                {
+                    var viewModel = await studEnrollmentViewModelBuilder.Build(enrollment);
+                    return Ok(viewModel);
+                }
+            }
+            return Forbid();
+        }
+
+
 
         [HttpGet("{studyId}/team")]
         public async Task<IActionResult> GetTeam([FromRoute] string studyId)
@@ -96,20 +188,6 @@ namespace HealthSharingPortal.API.Controllers
                 await studyAssociationStore.DeleteAsync(existingAssociation.Id);
             }
             return Ok();
-        }
-
-
-        [HttpGet("{studyId}/enrollments")]
-        public async Task<IActionResult> GetEnrollments([FromRoute] string studyId)
-        {
-            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
-            if (accountType != AccountType.Researcher)
-                return StatusCode((int)HttpStatusCode.Forbidden, "Only researchers associated with the study can see enrollments");
-            var isAssociatedWithStudy = await IsCurrentUserAssociatedWithStudy(studyId);
-            if (!isAssociatedWithStudy)
-                return StatusCode((int)HttpStatusCode.Forbidden, "You are not associated with the study");
-            var enrollments = await enrollmentStore.SearchAsync(x => x.StudyId == studyId);
-            return Ok(enrollments);
         }
 
         [HttpGet("{studyId}/enrollments/statistics")]
@@ -227,10 +305,12 @@ namespace HealthSharingPortal.API.Controllers
         }
 
         [HttpPost("{studyId}/enrollments/{enrollmentId}/invite")]
-        public async Task<IActionResult> InviteCandidate([FromRoute] string enrollmentId)
+        public async Task<IActionResult> InviteCandidate([FromRoute] string studyId, [FromRoute] string enrollmentId)
         {
             var enrollment = await enrollmentStore.GetByIdAsync(enrollmentId);
             if (enrollment == null)
+                return NotFound();
+            if (enrollment.StudyId != studyId)
                 return NotFound();
             if (enrollment.State == StudyEnrollementState.Undefined)
                 return BadRequest("Enrollment is in an invalid state and cannot be changed");
@@ -277,10 +357,12 @@ namespace HealthSharingPortal.API.Controllers
         }
 
         [HttpPost("{studyId}/enrollments/{enrollmentId}/exclude")]
-        public async Task<IActionResult> ExcludeCandidate([FromRoute] string enrollmentId)
+        public async Task<IActionResult> ExcludeCandidate([FromRoute] string studyId, [FromRoute] string enrollmentId)
         {
             var enrollment = await enrollmentStore.GetByIdAsync(enrollmentId);
             if (enrollment == null)
+                return NotFound();
+            if (enrollment.StudyId != studyId)
                 return NotFound();
             var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
             if (accountType != AccountType.Researcher)
@@ -294,10 +376,12 @@ namespace HealthSharingPortal.API.Controllers
         }
 
         [HttpPost("{studyId}/enrollments/{enrollmentId}/reject")]
-        public async Task<IActionResult> RejectCandidate([FromRoute] string enrollmentId)
+        public async Task<IActionResult> RejectCandidate([FromRoute] string studyId, [FromRoute] string enrollmentId)
         {
             var enrollment = await enrollmentStore.GetByIdAsync(enrollmentId);
             if (enrollment == null)
+                return NotFound();
+            if (enrollment.StudyId != studyId)
                 return NotFound();
             var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
             if (accountType != AccountType.Researcher)

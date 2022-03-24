@@ -10,6 +10,7 @@ namespace HealthSharingPortal.API.Setups
         public void Run(IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<IViewModelBuilder<Account>, AccountViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<StudyEnrollment>, StudyEnrollmentViewModelBuilder>();
         }
     }
 }

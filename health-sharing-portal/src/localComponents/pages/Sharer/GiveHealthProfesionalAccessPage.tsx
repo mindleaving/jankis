@@ -6,6 +6,7 @@ import { apiClient } from '../../../sharedCommonComponents/communication/ApiClie
 import { AsyncButton } from '../../../sharedCommonComponents/components/AsyncButton';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
+import { HealthProfessionalAutocomplete } from '../../components/Autocompletes/HealthProfessionalAutocomplete';
 import { Models } from '../../types/models';
 
 interface GiveHealthProfesionalAccessPageProps {}
@@ -14,7 +15,7 @@ export const GiveHealthProfesionalAccessPage = (props: GiveHealthProfesionalAcce
 
     const { accessInviteId } = useParams();
     const [ isLoading, setIsLoading ] = useState<boolean>(!!accessInviteId);
-    const [ healthProfessionalUsername, setHealthProfessionalUsername ] = useState<string>();
+    const [ healthProfessional, setHealthProfessional ] = useState<Models.HealthProfessionalAccount>();
     const [ isSubmitting, setIsSubmitting ] = useState<boolean>(false);
     const [ accessInvite, setAccessInvite ] = useState<Models.AccessControl.HealthProfessionalAccessInvite>();
     const [ codeForSharer, setCodeForSharer ] = useState<string>('');
@@ -35,11 +36,15 @@ export const GiveHealthProfesionalAccessPage = (props: GiveHealthProfesionalAcce
     }, [ accessInviteId ]);
 
     const createAccessRequest = async (e: FormEvent) => {
+        if(!healthProfessional) {
+            return;
+        }
         e.preventDefault();
         try {
-            const response = await apiClient.instance!.post(`api/accessrequests/create/healthprofessional/${healthProfessionalUsername}`, {}, null);
+            const response = await apiClient.instance!.post(`api/accessrequests/create/healthprofessional/${healthProfessional!.username}`, {}, null);
             const item = await response.json() as Models.AccessControl.HealthProfessionalAccessInvite;
             setAccessInvite(item);
+            //navigate(`/giveaccess/healthprofessional/${item.id}`);
         } catch(error: any) {
             NotificationManager.error(error.message, resolveText("GiveAccess_CouldNotSend"));
         } finally {
@@ -91,9 +96,9 @@ export const GiveHealthProfesionalAccessPage = (props: GiveHealthProfesionalAcce
                 <Form onSubmit={createAccessRequest}>
                     <FormGroup>
                         <FormLabel>{resolveText("GiveAccess_SearchHealthProfessional")}</FormLabel>
-                        <FormControl
-                            value={healthProfessionalUsername}
-                            onChange={(e:any) => setHealthProfessionalUsername(e.target.value)}
+                        <HealthProfessionalAutocomplete
+                            value={healthProfessional}
+                            onChange={setHealthProfessional}
                         />
                     </FormGroup>
                     <Row className='m-3'>

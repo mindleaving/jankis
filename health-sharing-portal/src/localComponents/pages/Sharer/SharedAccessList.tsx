@@ -9,7 +9,7 @@ import { OrderDirection } from '../../../sharedCommonComponents/types/enums.d';
 import { RevokeButton } from '../../components/RevokeButton';
 import { SharedAccessesFilterView } from '../../components/Sharer/SharedAccessesFilterView';
 import { formatAccessType } from '../../helpers/Formatters';
-import { SharedAccessType } from '../../types/enums';
+import { SharedAccessType } from '../../types/enums.d';
 import { Models } from '../../types/models';
 
 interface SharedAccessListProps {}

@@ -357,3 +357,7 @@ export enum StudyStaffRole {
     Undefined = "Undefined",
     Investigator = "Investigator"
 }
+export enum DataRepresentationType {
+    Model = "Model",
+    ViewModel = "ViewModel"
+}

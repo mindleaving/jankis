@@ -51,7 +51,7 @@ export const Layout = (props: PropsWithChildren<LayoutProps>) => {
                 </Navbar.Collapse>
             </Navbar>
             <Container style={{ width: '99%' }}>
-                <Row>
+                <Row className='mt-2'>
                     <Col>
                         {props.children}
                     </Col>
