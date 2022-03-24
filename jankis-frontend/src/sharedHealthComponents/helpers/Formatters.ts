@@ -1,5 +1,5 @@
 import { differenceInYears, differenceInMonths, differenceInDays } from 'date-fns';
-import { Sex, MeasurementType } from '../../localComponents/types/enums.d';
+import { Sex, MeasurementType, DiagnosticTestScaleType } from '../../localComponents/types/enums.d';
 import { Models } from '../../localComponents/types/models';
 import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
 
@@ -95,4 +95,11 @@ export const formatDiagnosticTestNameOfResult = (testResult: Models.DiagnosticTe
         code += `${resolveText('Local')}:${testResult.testCodeLocal}`;
     }
     return `${testResult.testName} (${code})`;
+}
+export const formatDiagnosticTestValue = (testResult: Models.DiagnosticTestResults.DiagnosticTestResult) => {
+    switch(testResult.scaleType) {
+        case DiagnosticTestScaleType.Quantitative:
+            const quantitativeTestResult = testResult as Models.DiagnosticTestResults.QuantitativeDiagnosticTestResult;
+            return `${quantitativeTestResult.value} ${quantitativeTestResult.unit}`;
+    }
 }

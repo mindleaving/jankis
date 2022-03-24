@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using HealthModels;
 using HealthModels.DiagnosticTestResults;
 using HealthModels.Services;
-using JanKIS.API.Models;
+using HealthSharingPortal.API.Models;
 using MongoDB.Driver;
 using NUnit.Framework;
 
-namespace JanKIS.Tools
+namespace HealthSharingPortal.Tools
 {
     public class LoincImporter : DatabaseAccess
     {
@@ -63,7 +62,7 @@ namespace JanKIS.Tools
                     DepartmentId = "",
                     Audience = new List<ServiceAudience>
                     {
-                        new RoleServiceAudience { RoleId = SystemRoles.Doctor.Id }
+                        new RoleServiceAudience { RoleId = AccountType.HealthProfessional.ToString() }
                     },
                     Parameters = new List<ServiceParameter>
                     {
