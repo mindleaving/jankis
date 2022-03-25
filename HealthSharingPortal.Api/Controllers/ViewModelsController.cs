@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using HealthModels;
-using HealthModels.AccessControl;
 using HealthModels.DiagnosticTestResults;
 using HealthModels.Interview;
 using HealthModels.Medication;
@@ -16,8 +15,6 @@ using HealthSharingPortal.API.Workflow;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
-using Newtonsoft.Json.Linq;
 
 namespace HealthSharingPortal.API.Controllers
 {

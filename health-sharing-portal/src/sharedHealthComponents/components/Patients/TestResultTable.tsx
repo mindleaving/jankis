@@ -1,11 +1,11 @@
-import { differenceInSeconds } from "date-fns";
 import { Table } from "react-bootstrap";
 import { Models } from "../../../localComponents/types/models";
-import { groupBy } from "../../../sharedCommonComponents/helpers/CollectionHelpers";
-import Chart from 'react-apexcharts';
-import { ApexOptions } from 'apexcharts';
-import { formatDiagnosticTestValue } from "../../helpers/Formatters";
-import { DiagnosticTestValueView } from "./DiagnosticTestValueView";
+import { groupBy, mostCommonValue } from "../../../sharedCommonComponents/helpers/CollectionHelpers";
+import { canConvertTo } from "../../../sharedCommonComponents/helpers/mathjs";
+import { DiagnosticTestScaleType } from "../../../localComponents/types/enums.d";
+import { NonQuantitativeTestResultRow } from "./NonQuantitativeTestResultRow";
+import { QuantitativeTestResultRow } from "./QuantitativeTestResultRow";
+import { differenceInSeconds } from "date-fns";
 
 interface TestResultTableProps {
     items: Models.DiagnosticTestResults.DiagnosticTestResult[];
@@ -13,86 +13,40 @@ interface TestResultTableProps {
 
 export const TestResultTable = (props: TestResultTableProps) => {
 
-    const groupedTestResults = groupBy(props.items, x => x.testCodeLoinc);
+    const inverseTimeOrderedTests = props.items.sort((a,b) => -differenceInSeconds(new Date(a.timestamp), new Date(b.timestamp)));
+    const groupedTestResults = groupBy(inverseTimeOrderedTests, x => x.testCodeLoinc);
     return (
         <Table>
             <tbody>
                 {groupedTestResults.map(testGroup => {
-                    const testLoincCode = testGroup.key;
-                    if(testGroup.items.length > 1) {
-                        const timeOrderedTests = testGroup.items.sort((a,b) => differenceInSeconds(new Date(b.timestamp),new Date(a.timestamp)));
-                        const firstTest = timeOrderedTests[0];
-                        const lastTest = timeOrderedTests[timeOrderedTests.length-1];
-                        const startTime = new Date(firstTest.timestamp).getTime();
-                        const endTime = new Date(lastTest.timestamp).getTime();
-                        const testName = firstTest.testName;
-                        const chartOptions: ApexOptions = {
-                            chart: {
-                                sparkline: {
-                                    enabled: true
-                                },
-                                toolbar: {
-                                    show: false
-                                },
-                                events: {
-                                    beforeResetZoom: () => {
-                                        return {
-                                            xaxis: {
-                                                min: startTime,
-                                                max: endTime
-                                            }
-                                        };
-                                    }
-                                }
-                            },
-                            grid: {
-                                padding: {
-                                    left: 0,
-                                    right: 0,
-                                    top: 0,
-                                    bottom: 0
-                                }
-                            },
-                            xaxis: {
-                                type: "datetime",
-                                min: startTime,
-                                max: endTime,
-                                tooltip: {
-                                    enabled: false
-                                }
-                            },
-                            yaxis: {
-                                show: false
-                            }
-                        }
-                        return (<tr>
-                            <td>
-                                <strong>{`${testName} (${testLoincCode})`}</strong>
-                                <div><small>{lastTest.timestamp}</small></div>
-                            </td>
-                            <td>
-                                <Chart
-                                    options={chartOptions}
-                                    height="80px"
-                                />
-                            </td>
-                        </tr>);
+                    if(testGroup.items.length === 1) {
+                        return (<NonQuantitativeTestResultRow
+                            testResults={testGroup.items}
+                        />);
                     }
-                    const testResult = testGroup.items[0];
-                    return (<tr>
-                        <td>
-                            {testResult.testName}
-                            <div><small>{testResult.timestamp}</small></div>
-                        </td>
-                        <td>
-                            <DiagnosticTestValueView
-                                testResult={testResult}
-                            />
-                        </td>
-                    </tr>);
+                    const isQuantitativeTest = testGroup.items.every(x => x.scaleType === DiagnosticTestScaleType.Quantitative);
+                    if(!isQuantitativeTest) {
+                        return (<NonQuantitativeTestResultRow
+                            testResults={testGroup.items}
+                        />);
+                    }
+                    const quantitativeTestResults = testGroup.items.map(x => x as Models.DiagnosticTestResults.QuantitativeDiagnosticTestResult);
+                    const units = quantitativeTestResults.map(x => x.unit);
+                    const commonUnit = mostCommonValue(units)!;
+                    const hasSharedUnit = quantitativeTestResults.every(x => canConvertTo(x.value, x.unit, commonUnit));
+                    if(!hasSharedUnit) {
+                        <NonQuantitativeTestResultRow
+                            testResults={quantitativeTestResults}
+                        />
+                    }
+                    return (<QuantitativeTestResultRow
+                        commonUnit={commonUnit}
+                        testResults={quantitativeTestResults}
+                    />);
                 })}
             </tbody>
         </Table>
     );
 
 }
+

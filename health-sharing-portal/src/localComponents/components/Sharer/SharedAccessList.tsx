@@ -40,7 +40,6 @@ export const SharedAccessList = (props: SharedAccessListProps) => {
     }
     return (
         <>
-            <h1>Shared access</h1>
             <SharedAccessesFilterView onFilterChanged={setFilter} />
             <div className='mt-3' />
             <PagedTable

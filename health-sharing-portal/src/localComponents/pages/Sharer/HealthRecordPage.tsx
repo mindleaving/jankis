@@ -67,7 +67,7 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
             items: []
         };
         await buildAndStoreObject<Models.Medication.MedicationSchedule>(
-            `api/medicationschedules/${medicationSchedule.personId}`,
+            `api/medicationschedules/${medicationSchedule.id}`,
             resolveText('MedicationSchedule_SuccessfullyStored'),
             resolveText('MedicationSchedule_CouldNotStore'),
             () => medicationSchedule,

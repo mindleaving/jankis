@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Models } from '../types/models';
 import { NotificationManager } from 'react-notifications';
 import { HubConnectionBuilder } from '@microsoft/signalr';
@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../sharedCommonComponents/communication/ApiClient';
 import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../sharedCommonComponents/helpers/LoadingHelpers';
+import UserContext from '../contexts/UserContext';
 
 interface AccessRequestListProps { }
 
@@ -43,9 +44,10 @@ export const AccessRequestList = (props: AccessRequestListProps) => {
     useEffect(() => {
         connectToHub();
     }, []);
+
     useEffect(() => {
         const loadAccessRequests = buildLoadObjectFunc(
-            `api/accessrequests/outgoing`,
+            `api/accessrequests`,
             {},
             resolveText("AccessRequests_CouldNotLoad"),
             setAccessRequests,
@@ -66,7 +68,8 @@ export const AccessRequestList = (props: AccessRequestListProps) => {
                 </tr>
             </thead>
             <tbody>
-                {accessRequests.map(accessRequest => {
+                {accessRequests.length > 0
+                ? accessRequests.map(accessRequest => {
                     const id = accessRequest.id;
                     return (
                         <tr key={id}>
@@ -74,11 +77,14 @@ export const AccessRequestList = (props: AccessRequestListProps) => {
                             <td>{accessRequest.accessReceiverUsername}</td>
                             <td>{accessRequest.sharerPersonId}</td>
                             <td>
-                                <Button onClick={() => navigate(`/accessrequests/${id}`)}>{resolveText("Open")}</Button>
+                                <Button onClick={() => navigate(`/accessinvites/${id}`)}>{resolveText("Open")}</Button>
                             </td>
                         </tr>
                     );
-                })}
+                })
+                : <tr>
+                    <td colSpan={4} className="text-center">{resolveText("NoEntries")}</td>
+                </tr>}
             </tbody>
         </Table>
     );

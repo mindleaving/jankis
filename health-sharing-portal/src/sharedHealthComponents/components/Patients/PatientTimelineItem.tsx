@@ -47,7 +47,7 @@ export const PatientTimelineItem = (props: PatientTimelineItemProps) => {
     }
 
     return (
-        <Alert variant={colorVariant}>
+        <Alert variant={colorVariant} className="px-2 py-1">
             <Row>
                 <Col xs="auto">
                     <i className={`fa ${symbol} timelineItemSymbol`} />

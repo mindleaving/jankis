@@ -84,7 +84,7 @@ export const PersonsList = (props: PersonsListProps) => {
                         <td>{new Date(person.birthDate).toLocaleDateString()}</td>
                         <td>{person.healthInsurance?.insurerName}</td>
                         <td>
-                            <Button variant="primary" onClick={() => navigate(`/patients/${person.id}`)}>{resolveText('Open')}</Button>
+                            <Button variant="primary" onClick={() => navigate(`/healthrecord/${person.id}`)}>{resolveText('Open')}</Button>
                         </td>
                         <td><Button variant="link" onClick={() => navigate(`/persons/${person.id}/edit`)}>{resolveText('Edit...')}</Button></td>
                     </tr>

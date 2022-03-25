@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { Layout } from './Layout';
@@ -13,7 +13,6 @@ import { SharerHomePage } from './localComponents/pages/Sharer/SharerHomePage';
 import { AccountType } from './localComponents/types/enums.d';
 import { ViewModels } from './localComponents/types/viewModels';
 import { ApiClient, apiClient } from './sharedCommonComponents/communication/ApiClient';
-import './localComponents/styles/App.css';
 import { defaultGlobalizer, Globalizer } from './sharedCommonComponents/helpers/Globalizer';
 import germanTranslation from './localComponents/resources/translation.de.json';
 import englishTranslation from './localComponents/resources/translation.en.json';
@@ -35,11 +34,15 @@ import { GiveHealthProfesionalAccessPage } from './localComponents/pages/Sharer/
 import { HealthRecordPage } from './localComponents/pages/Sharer/HealthRecordPage';
 import { ImagingUploadPage } from './localComponents/pages/Sharer/ImagingUploadPage';
 import { ReceiveHealthProfessionalAccessPage } from './localComponents/pages/HealthProfessional/ReceiveHealthProfessionalAccessPage';
-import { SharedAccessList } from './localComponents/pages/Sharer/SharedAccessList';
+import { SharedAccessListPage } from './localComponents/pages/Sharer/SharedAccessListPage';
 import { OfferStudyParticipationPage } from './localComponents/pages/Sharer/OfferStudyParticipationPage';
 import { CreateEditStudyPage } from './localComponents/pages/Researcher/CreateEditStudyPage';
 import { CreateEditQuestionnairePage } from './localComponents/pages/Researcher/CreateEditQuestionnairePage';
 import { StudyEnrollmentReviewPage } from './localComponents/pages/Researcher/StudyEnrollmentReviewPage';
+
+import './localComponents/styles/App.css';
+import './sharedCommonComponents/styles/common.css';
+import './sharedHealthComponents/styles/healthrecord.css';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";
@@ -83,6 +86,7 @@ export const App = (props: AppProps) => {
                         <Routes>
                             <Route path="/login/:role" element={<LoginPage onLoggedIn={onLoggedIn} />} />
                             <Route path="/register/:role" element={<RegisterAccountPage />} />
+                            <Route path="/create/account" element={<AccountEditPage />} />
                             <Route path="/" element={<HomePage />} />
                         </Routes>
                     </Col>
@@ -107,39 +111,52 @@ export const App = (props: AppProps) => {
             break;
     }
 
+    interface Route {
+        path: string;
+        element: ReactNode;
+        audience: AccountType[];
+    };
+    const routes: Route[] = [
+        { path: '/create/study', element: <CreateEditStudyPage />, audience: [ AccountType.Researcher ]},
+        { path: '/edit/study/:id', element: <CreateEditStudyPage />, audience: [ AccountType.Researcher ]},
+        { path: '/study/:studyId', element: <StudyPage />, audience: [ AccountType.Researcher, AccountType.Sharer, AccountType.Admin ]},
+        { path: '/study/:studyId/offerparticipation', element: <OfferStudyParticipationPage />, audience: [ AccountType.Sharer ]},
+        { path: '/study/:studyId/enrollment/:enrollmentId/review', element: <StudyEnrollmentReviewPage />, audience: [ AccountType.Researcher ]},
+        { path: '/studies', element: <StudiesPage />, audience: [ AccountType.Researcher, AccountType.Sharer, AccountType.Admin ]},
+        { path: '/create/questionnaire', element: <CreateEditQuestionnairePage />, audience: [ AccountType.Researcher, AccountType.HealthProfessional ]},
+        { path: '/edit/questionnaire/:id', element: <CreateEditQuestionnairePage />, audience: [ AccountType.Researcher, AccountType.HealthProfessional ]},
+        { path: '/giveaccess/healthprofessional/:accessInviteId', element: <GiveHealthProfesionalAccessPage />, audience: [ AccountType.Sharer ]},
+        { path: '/giveaccess/healthprofessional', element: <GiveHealthProfesionalAccessPage />, audience: [ AccountType.Sharer ]},
+        { 
+            path: '/accessinvites/:accessInviteId', 
+            element: loggedInUser.accountType === AccountType.Sharer ? <GiveHealthProfesionalAccessPage /> : <ReceiveHealthProfessionalAccessPage />, 
+            audience: [ AccountType.Sharer, AccountType.HealthProfessional ]
+        },
+        { path: '/sharedaccess', element: <SharedAccessListPage />, audience: [ AccountType.Sharer ]},
+
+        { path: '/accounts', element: <AccountsPage />, audience: [ AccountType.Admin ]},
+        { path: '/create/account', element: <AccountEditPage />, audience: [ AccountType.Admin ]},
+        { path: '/edit/account/:username', element: <AccountEditPage />, audience: [ AccountType.Researcher, AccountType.Sharer, AccountType.HealthProfessional, AccountType.Admin ]},
+
+        { path: '/patients', element: <PatientsListPage />, audience: [ AccountType.HealthProfessional ]},
+
+        { path: '/healthrecord/:personId', element: <HealthRecordPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/timeline', element: <PatientTimelinePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/medications', element: <PatientMedicationsPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/create/testresult', element: <CreatePatientTestResultPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/create/observation', element: <CreatePatientObservationPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/create/document', element: <CreatePatientDocumentPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/create/note', element: <CreatePatientNotePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
+        { path: '/medicationschedules/:scheduleId/edit', element: <EditMedicationSchedulePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
+        { path: '/healthrecord/upload/imaging', element: <ImagingUploadPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
+        { path: '/healthrecord/upload/genome', element: <GenomeUploadPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]}
+    ]
+
     return (
         <UserContext.Provider value={loggedInUser}>
             <Layout onLogOut={onLogOut}>
                 <Routes>
-                    <Route path="/create/study" element={<CreateEditStudyPage />} />
-                    <Route path="/edit/study/:id" element={<CreateEditStudyPage />} />
-                    <Route path="/study/:studyId" element={<StudyPage />} />
-                    <Route path="/study/:studyId/offerparticipation" element={<OfferStudyParticipationPage />} />
-                    <Route path="/study/:studyId/enrollment/:enrollmentId/review" element={<StudyEnrollmentReviewPage />} />
-                    <Route path="/studies" element={<StudiesPage />} />
-                    <Route path="/create/questionnaire" element={<CreateEditQuestionnairePage />} />
-                    <Route path="/edit/questionnaire/:id" element={<CreateEditQuestionnairePage />} />
-                    <Route path="/giveaccess/healthprofessional/:accessInviteId" element={<GiveHealthProfesionalAccessPage />} />
-                    <Route path="/giveaccess/healthprofessional" element={<GiveHealthProfesionalAccessPage />} />
-                    <Route path="/accessrequests/:accessInviteId" element={<ReceiveHealthProfessionalAccessPage />} />
-                    <Route path="/sharedaccess" element={<SharedAccessList />} />
-
-                    <Route path="/accounts" element={<AccountsPage />} />
-                    <Route path="/create/account" element={<AccountEditPage />} />
-                    <Route path="/accounts/:username/edit" element={<AccountEditPage />} />
-
-                    <Route path="/patients" element={<PatientsListPage />} />
-
-                    <Route path="/healthrecord/:personId" element={<HealthRecordPage />} />
-                    <Route path="/healthrecord/:personId/timeline" element={<PatientTimelinePage />} />
-                    <Route path="/healthrecord/:personId/medications" element={<PatientMedicationsPage />} />
-                    <Route path="/healthrecord/:personId/create/testresult" element={<CreatePatientTestResultPage />} />
-                    <Route path="/healthrecord/:personId/create/observation" element={<CreatePatientObservationPage />} />
-                    <Route path="/healthrecord/:personId/create/document" element={<CreatePatientDocumentPage />} />
-                    <Route path="/healthrecord/:personId/create/note" element={<CreatePatientNotePage />} />
-                    <Route path="/medicationschedules/:scheduleId/edit" element={<EditMedicationSchedulePage />} />
-                    <Route path="/healthrecord/upload/imaging" element={<ImagingUploadPage />} />
-                    <Route path="/healthrecord/upload/genome" element={<GenomeUploadPage />} />
+                    {routes.filter(x => x.audience.includes(loggedInUser.accountType)).map(route => <Route path={route.path} element={route.element} />)}
 
                     <Route path="/" element={userTypeHomePage} />
                     <Route path="*" element={<NotFoundPage />} />

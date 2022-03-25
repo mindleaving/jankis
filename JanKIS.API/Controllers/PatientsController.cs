@@ -67,7 +67,7 @@ namespace JanKIS.API.Controllers
             this.attachedEquipmentViewModelBuilder = attachedEquipmentViewModelBuilder;
         }
 
-        [HttpGet("{personId}/" + nameof(OverviewViewModel))]
+        [HttpGet("/api/viewmodels/healthdata/{personId}")]
         public async Task<IActionResult> OverviewViewModel([FromRoute] string personId)
         {
             var profileData = await personsStore.GetByIdAsync(personId);

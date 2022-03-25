@@ -1,26 +1,4 @@
-.red {
-  color: red
-}
-
-.clickable {
-  cursor: pointer;
-}
-
-.listFormControl {
-  
-}
-
-.itemListBadge {
-  padding: 5px 10px;
-  margin: 2px 5px;
-}
-.itemListBadge a {
-  color: white;
-  text-decoration: underline;
-}
-.itemListBadge .badge {
-  margin-left: 5px;
-  cursor: pointer;
+.listFormControl {  
 }
 
 .treeview {
@@ -29,20 +7,4 @@
 
 .bulletFreeList {
   list-style-type: none;
-}
-
-.timelineSeparator { 
-  width:100%; 
-  text-align:center; 
-  border-bottom: 1px solid #000; 
-  line-height:0.1em; 
-  margin:10px 0 20px; 
-}
-.timelineSeparator span { 
-  background:#fff; 
-  padding:0 10px; 
-}
-
-.timelineItemSymbol {
-  font-size: 24px;
 }

@@ -78,6 +78,11 @@ export const GiveHealthProfesionalAccessPage = (props: GiveHealthProfesionalAcce
             return;
         try {
             await apiClient.instance!.post(`api/accessrequests/healthprofessional/${accessInvite.id}/revoke`, {}, null);
+            setAccessInvite(state => state ? {
+                ...state,
+                isRevoked: true,
+                revokedTimestamp: new Date()
+            } : state);
         } catch(error: any) {
             NotificationManager.error(error.message, resolveText("GiveAccess_CouldNotRevokeInvite"));
         } finally {
@@ -174,6 +179,7 @@ export const GiveHealthProfesionalAccessPage = (props: GiveHealthProfesionalAcce
                     </Col>
                     <Col xs="auto">
                         <AsyncButton
+                            type='button'
                             onClick={revokeAccessInvite}
                             variant="danger"
                             activeText={resolveText("Revoke")}

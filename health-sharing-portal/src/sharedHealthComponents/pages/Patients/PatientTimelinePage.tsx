@@ -21,7 +21,7 @@ export const PatientTimelinePage = (props: PatientTimelinePageProps) => {
         if(!personId) return;
         setIsLoading(true);
         const loadHealthRecordEntrys = buildLoadObjectFunc<ViewModels.PatientOverviewViewModel>(
-            `api/patients/${personId}/overviewviewmodel`,
+            `api/viewmodels/healthdata/${personId}`,
             {},
             resolveText('Patient_CouldNotLoad'),
             data => {
