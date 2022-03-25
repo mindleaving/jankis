@@ -1,8 +1,8 @@
-import { differenceInSeconds, format } from "date-fns";
+import { differenceInSeconds } from "date-fns";
 import { Table } from "react-bootstrap";
 import { Models } from "../../../localComponents/types/models";
 import { AccordionCard } from "../../../sharedCommonComponents/components/AccordionCard";
-import { formatDiagnosticTestNameOfResult } from "../../helpers/Formatters";
+import { formatDate, formatDiagnosticTestNameOfResult } from "../../helpers/Formatters";
 import { DiagnosticTestValueView } from "./DiagnosticTestValueView";
 
 interface NonQuantitativeTestResultRowProps {
@@ -17,7 +17,7 @@ export const NonQuantitativeTestResultRow = (props: NonQuantitativeTestResultRow
         return (<tr>
             <td>
                 <strong>{formatDiagnosticTestNameOfResult(testResult)}</strong>
-                <div><small>{format(new Date(testResult.timestamp), 'yyyy-MM-dd HH:mm')}</small></div>
+                <div><small>{formatDate(new Date(testResult.timestamp))}</small></div>
             </td>
             <td>
                 <DiagnosticTestValueView
@@ -31,10 +31,10 @@ export const NonQuantitativeTestResultRow = (props: NonQuantitativeTestResultRow
     return (<tr>
         <td>
             <strong>{formatDiagnosticTestNameOfResult(lastTest)}</strong>
-            <div><small>{format(new Date(lastTest.timestamp), 'yyyy-MM-dd HH:mm')}</small></div>
+            <div><small>{formatDate(new Date(lastTest.timestamp))}</small></div>
         </td>
         <td>
-            <AccordionCard
+            <AccordionCard standalone
                 eventKey={lastTest.testCodeLoinc}
                 title={<DiagnosticTestValueView
                     testResult={lastTest}
@@ -45,7 +45,7 @@ export const NonQuantitativeTestResultRow = (props: NonQuantitativeTestResultRow
                         {inverseTimeOrderedTests.map(testResult => (
                             <tr>
                                 <td>
-                                    {format(new Date(testResult.timestamp), 'yyyy-MM-dd HH:mm')}
+                                    {formatDate(new Date(testResult.timestamp))}
                                 </td>
                                 <td>
                                     <DiagnosticTestValueView

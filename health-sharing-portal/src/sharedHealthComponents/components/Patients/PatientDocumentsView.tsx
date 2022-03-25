@@ -4,6 +4,7 @@ import { Alert, Col, Row } from 'react-bootstrap';
 import { Models } from '../../../localComponents/types/models';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
+import { formatDate } from '../../helpers/Formatters';
 
 interface PatientDocumentsViewProps {
     documents: Models.PatientDocument[];
@@ -39,7 +40,7 @@ const PatientDocumentView = (props: PatientDocumentViewProps) => {
             <Col>
                 <Row>
                     <Col lg="4" className="mr-3">
-                        <div><small>{new Date(props.document.timestamp).toLocaleString()} {resolveText('by')} {props.document.createdBy}</small></div>
+                        <div><small>{formatDate(new Date(props.document.timestamp))} {resolveText('by')} {props.document.createdBy}</small></div>
                         {props.document.fileName}
                     </Col>
                     <Col lg="7">

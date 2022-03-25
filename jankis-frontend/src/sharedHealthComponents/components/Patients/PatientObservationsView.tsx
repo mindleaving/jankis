@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table } from 'react-bootstrap';
-import { formatMeasurementType, formatObservationValue } from '../../helpers/Formatters';
+import { formatDate, formatMeasurementType, formatObservationValue } from '../../helpers/Formatters';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { MeasurementType } from '../../../localComponents/types/enums.d';
@@ -189,7 +189,7 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
             <tbody>
                 {props.observations.map(observation => (
                     <tr key={observation.id}>
-                        <td>{new Date(observation.timestamp).toLocaleString()}</td>
+                        <td>{formatDate(new Date(observation.timestamp))}</td>
                         <td>{formatMeasurementType(observation.measurementType)}</td>
                         <td>{formatObservationValue(observation)}</td>
                         <td>{observation.createdBy}</td>

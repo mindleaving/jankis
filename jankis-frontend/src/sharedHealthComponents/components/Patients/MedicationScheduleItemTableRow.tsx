@@ -1,5 +1,5 @@
 import { Badge, FormCheck } from 'react-bootstrap';
-import { formatDrug } from '../../helpers/Formatters';
+import { formatDate, formatDrug } from '../../helpers/Formatters';
 import { isToday, isTomorrow } from 'date-fns';
 import { Models } from '../../../localComponents/types/models';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
@@ -49,7 +49,7 @@ export const MedicationScheduleItemTableRow = (props: MedicationScheduleItemTabl
             {dispensionsToday.length > 0
             ? dispensionsToday.map(dispension => (
                 <div>
-                    <Badge bg="primary">{new Date(dispension.timestamp).toLocaleTimeString()}{dispension.note ? ` (${dispension.note})` : ''}</Badge>
+                    <Badge bg="primary">{formatDate(new Date(dispension.timestamp))}{dispension.note ? ` (${dispension.note})` : ''}</Badge>
                 </div>
             ))
             : resolveText('None')}
@@ -58,7 +58,7 @@ export const MedicationScheduleItemTableRow = (props: MedicationScheduleItemTabl
             {dispensionsTomorrow.length > 0
             ? dispensionsTomorrow.map(dispension => (
                 <div>
-                    <Badge bg="primary">{new Date(dispension.timestamp).toLocaleTimeString()}{dispension.note ? ` (${dispension.note})` : ''}</Badge>
+                    <Badge bg="primary">{formatDate(new Date(dispension.timestamp))}{dispension.note ? ` (${dispension.note})` : ''}</Badge>
                 </div>
             ))
             : resolveText('None')}

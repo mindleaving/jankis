@@ -1,10 +1,10 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
-import { differenceInSeconds, format } from 'date-fns';
+import { differenceInSeconds } from 'date-fns';
 import { Models } from '../../../localComponents/types/models';
 import { mathjs } from '../../../sharedCommonComponents/helpers/mathjs';
-import { formatDiagnosticTestNameOfResult } from '../../helpers/Formatters';
+import { formatDate, formatDiagnosticTestNameOfResult } from '../../helpers/Formatters';
 
 interface QuantitativeTestResultRowProps {
     commonUnit: string;
@@ -97,7 +97,7 @@ export const QuantitativeTestResultRow = (props: QuantitativeTestResultRowProps)
     return (<tr>
         <td>
             <strong>{formatDiagnosticTestNameOfResult(lastTest)}</strong>
-            <div><small>{format(new Date(lastTest.timestamp), 'yyyy-MM-dd HH:mm')}</small></div>
+            <div><small>{formatDate(new Date(lastTest.timestamp))}</small></div>
         </td>
         <td>
             <Chart

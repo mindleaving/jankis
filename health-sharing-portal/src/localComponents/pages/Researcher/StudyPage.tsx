@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import {  Button, Card, Col, Row } from 'react-bootstrap';
+import {  Accordion, Button, Card, Col, Row } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { AccordionCard } from '../../../sharedCommonComponents/components/AccordionCard';
@@ -205,19 +205,21 @@ export const StudyPage = (props: StudyPageProps) => {
                         <Card.Header>{resolveText("Study_Publications")}</Card.Header>
                         <Card.Body>
                             {study.publications?.length > 0
-                            ? study.publications.map(publication => (
-                                <AccordionCard 
-                                    key={publication.title}
-                                    eventKey={study.id}
-                                    title={<>
-                                        {publication.title}
-                                        <div className='ms-2'><small>{publication.authors.map(author => `${author.lastName}, ${author.firstName}`).join(", ")}</small></div>
-                                    </>}
-                                >
-                                    <b>{resolveText("Publication_Abstract")}</b>
-                                    <div>{publication.abstract}</div>
-                                </AccordionCard>
-                            ))
+                            ? <Accordion>
+                                {study.publications.map(publication => (
+                                    <AccordionCard
+                                        key={publication.title}
+                                        eventKey={study.id}
+                                        title={<>
+                                            {publication.title}
+                                            <div className='ms-2'><small>{publication.authors.map(author => `${author.lastName}, ${author.firstName}`).join(", ")}</small></div>
+                                        </>}
+                                    >
+                                        <b>{resolveText("Publication_Abstract")}</b>
+                                        <div>{publication.abstract}</div>
+                                    </AccordionCard>
+                                ))}
+                            </Accordion>
                             : resolveText("NoPublications")}
                         </Card.Body>
                     </Card>

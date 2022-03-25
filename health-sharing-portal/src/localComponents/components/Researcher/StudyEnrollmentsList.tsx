@@ -44,7 +44,7 @@ export const StudyEnrollmentsList = (props: StudyEnrollmentsListProps) => {
 
     return (
         <>
-            <AccordionCard
+            <AccordionCard standalone
                 title={resolveText("Filters")}
                 eventKey='studyEnrollments'
                 className='mb-3'

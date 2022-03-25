@@ -6,6 +6,7 @@ import { PagedTable } from '../../../sharedCommonComponents/components/PagedTabl
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import PagedTableLoader from '../../../sharedCommonComponents/helpers/PagedTableLoader';
 import { OrderDirection } from '../../../sharedCommonComponents/types/enums.d';
+import { formatDate } from '../../../sharedHealthComponents/helpers/Formatters';
 import { RevokeButton } from '../../components/RevokeButton';
 import { SharedAccessesFilterView } from '../../components/Sharer/SharedAccessesFilterView';
 import { formatAccessType } from '../../helpers/Formatters';
@@ -63,11 +64,11 @@ export const SharedAccessList = (props: SharedAccessListProps) => {
                         const isExpired = !!endTime ? isAfter(now, endTime) : false;
                         const remainingTimeInMinutes = !isExpired ? differenceInMinutes(endTime!, now) : 0;
                         return (
-                        <tr>
+                        <tr key={access.id}>
                             <td>{formatAccessType(access.type)}</td>
                             <td>{access.accessReceiverUsername}</td>
                             <td>
-                                {!access.accessEndTimestamp ? resolveText("SharedAccess_NoExpiration") : new Date(access.accessEndTimestamp).toLocaleString("de")}
+                                {!access.accessEndTimestamp ? resolveText("SharedAccess_NoExpiration") : formatDate(new Date(access.accessEndTimestamp))}
                                 <div>
                                     {access.isRevoked   ? <Badge pill bg="danger">{resolveText("Revoked")}</Badge> 
                                     : isExpired         ? <Badge pill bg="danger">{resolveText("Expired")}</Badge> 

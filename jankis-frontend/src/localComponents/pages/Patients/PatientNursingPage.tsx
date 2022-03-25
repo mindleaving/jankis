@@ -148,7 +148,7 @@ export const PatientNursingPage = (props: PatientNursingPageProps) => {
                                     {observations.length > 0
                                         ? observations.map(observation => (
                                             <tr key={observation.id}>
-                                                <td>{new Date(observation.timestamp).toLocaleString()}</td>
+                                                <td>{new Date(observation.timestamp), 'yyyy-MM-dd HH:mm')}</td>
                                                 <td>{formatMeasurementType(observation.measurementType)}</td>
                                                 <td>{formatObservationValue(observation)}</td>
                                             </tr>

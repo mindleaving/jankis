@@ -1,8 +1,11 @@
-import { differenceInYears, differenceInMonths, differenceInDays } from 'date-fns';
+import { differenceInYears, differenceInMonths, differenceInDays, format } from 'date-fns';
 import { Sex, MeasurementType, DiagnosticTestScaleType } from '../../localComponents/types/enums.d';
 import { Models } from '../../localComponents/types/models';
 import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
 
+export const formatDate = (date: Date) => {
+    return format(date, 'yyyy-MM-dd HH:mm');
+}
 export const formatPerson = (person: Models.Person) => {
     const genderSymbol = person.sex === Sex.Male ? '♂'
         : person.sex === Sex.Female ? '♀'

@@ -45,7 +45,7 @@ export const ServiceRequestsList = (props: ServiceRequestsListProps) => {
                 {requests.length > 0
                 ? requests.map(request => (
                     <tr>
-                        <td>{new Date(request.timestamps.find(x => x.newState === ServiceRequestState.Requested)!.timestamp).toLocaleString()}</td>
+                        <td>{new Date(request.timestamps.find(x => x.newState === ServiceRequestState.Requested)!.timestamp), 'yyyy-MM-dd HH:mm')}</td>
                         <td>{request.service.name}</td>
                         <td>{request.requester}</td>
                         <td>

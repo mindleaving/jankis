@@ -33,7 +33,7 @@ export const NotificationTickerItem = (props: NotificationTickerItemProps) => {
             dismissible
             onClose={() => dismiss(props.item.id)}
         >
-            <div><small>{new Date(props.item.timestamp).toLocaleString()} {resolveText('by')} {props.item.submitter}</small></div>
+            <div><small>{formatDate(new Date(props.item.timestamp))} {resolveText('by')} {props.item.submitter}</small></div>
             {resolveText('Notification_NewHealthRecordEntry_Text')
                 .replace('{username}', patientEventNotification.submitter.toLowerCase())
                 .replace('{storageOperation}', patientEventNotification.storageOperation.toLowerCase())
@@ -47,7 +47,7 @@ export const NotificationTickerItem = (props: NotificationTickerItemProps) => {
         dismissible
         onClose={dismiss}
     >
-        <div><small>{new Date(props.item.timestamp).toLocaleString()} {resolveText('by')} {props.item.submitter}</small></div>
+        <div><small>{formatDate(new Date(props.item.timestamp))} {resolveText('by')} {props.item.submitter}</small></div>
         {props.item.notificationType}: {resolveText('Loading...')}
     </Alert>);
 

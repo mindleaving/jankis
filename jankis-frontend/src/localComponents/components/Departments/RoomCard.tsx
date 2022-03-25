@@ -27,7 +27,7 @@ export const RoomCard = (props: RoomCardProps) => {
         <Card className="m-2">
             <Card.Header>{resolveText('Room')} {room.name}</Card.Header>
             <Card.Body>
-                <Accordion defaultActiveKey="0">
+                <Accordion>
                 {room.bedPositions.map(bedPosition => {
                     const occupancies = bedOccupancies
                         .filter(x => 

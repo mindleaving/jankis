@@ -156,7 +156,9 @@ export const App = (props: AppProps) => {
         <UserContext.Provider value={loggedInUser}>
             <Layout onLogOut={onLogOut}>
                 <Routes>
-                    {routes.filter(x => x.audience.includes(loggedInUser.accountType)).map(route => <Route path={route.path} element={route.element} />)}
+                    {routes
+                        .filter(x => x.audience.includes(loggedInUser.accountType))
+                        .map(route => <Route key={route.path} path={route.path} element={route.element} />)}
 
                     <Route path="/" element={userTypeHomePage} />
                     <Route path="*" element={<NotFoundPage />} />

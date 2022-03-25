@@ -3,6 +3,7 @@ import { Alert } from 'react-bootstrap';
 import { compareDesc } from 'date-fns';
 import { Models } from '../../../localComponents/types/models';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
+import { formatDate } from '../../helpers/Formatters';
 
 interface PatientNotesViewProps {
     notes: Models.PatientNote[];
@@ -26,7 +27,7 @@ interface PatientNoteViewProps {
 }
 const PatientNoteView = (props: PatientNoteViewProps) => {
     return (<Alert variant="primary">
-        <div><small>{new Date(props.note.timestamp).toLocaleString()} {resolveText('by')} {props.note.createdBy}</small></div>
+        <div><small>{formatDate(new Date(props.note.timestamp))} {resolveText('by')} {props.note.createdBy}</small></div>
         {props.note.message}
     </Alert>);
 }

@@ -23,7 +23,7 @@ export const SharedAccessesFilterView = (props: SharedAccessesFilterViewProps) =
     }, [ searchText, onlyActive, startTime, endTime ]);
 
     return (
-        <AccordionCard
+        <AccordionCard standalone
             title={resolveText("Filters")}
             eventKey='accessesFilter'
         >

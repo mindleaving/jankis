@@ -5,7 +5,7 @@ import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { formatDiagnosticTestNameOfResult } from '../../helpers/Formatters';
+import { formatDate, formatDiagnosticTestNameOfResult } from '../../helpers/Formatters';
 import { DiagnosticTestValueView } from './DiagnosticTestValueView';
 
 interface PatientTimelineItemProps {
@@ -53,7 +53,7 @@ export const PatientTimelineItem = (props: PatientTimelineItemProps) => {
                     <i className={`fa ${symbol} timelineItemSymbol`} />
                 </Col>
                 <Col>
-                    <div><small>{new Date(props.event.timestamp).toLocaleString()} {resolveText('by')} {props.event.createdBy}</small></div>
+                    <div><small>{formatDate(new Date(props.event.timestamp))} {resolveText('by')} {props.event.createdBy}</small></div>
                     {body}
                 </Col>
             </Row>
