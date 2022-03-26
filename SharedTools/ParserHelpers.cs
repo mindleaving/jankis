@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace JanKIS.Tools
+namespace SharedTools
 {
     public static class ParserHelpers
     {

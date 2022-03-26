@@ -58,7 +58,7 @@ namespace IcdAnnotation.API.Controllers
             if (diseaseHost == null)
                 return NotFound();
             await diseaseStore.BatchAssign<InfectiousDisease,DiseaseHost>(
-                disease => diseaseIcdCodes.Contains(disease.IcdCode) && !disease.Hosts.Any(x => x.Id == hostId), 
+                disease => diseaseIcdCodes.Contains(disease.Icd11Code) && !disease.Hosts.Any(x => x.Id == hostId), 
                 disease => disease.Hosts, 
                 diseaseHost);
             return Ok();

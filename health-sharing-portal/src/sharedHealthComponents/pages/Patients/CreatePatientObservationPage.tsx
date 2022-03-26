@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Col, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
+import { Col, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import { Models } from '../../../localComponents/types/models';
@@ -7,7 +7,6 @@ import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer'
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { PatientAutocomplete } from '../../../sharedHealthComponents/components/Autocompletes/PatientAutocomplete';
 import { ObservationsForm } from '../../../sharedHealthComponents/components/Patients/ObservationsForm';
-import { formatAdmission } from '../../../sharedHealthComponents/helpers/Formatters';
 
 interface CreatePatientObservationPageProps { }
 

@@ -5,8 +5,10 @@ namespace HealthModels.Icd
 {
     public class IcdChapter : IcdEntry, IId
     {
-        public IcdChapter(string name)
-            : base(name)
+        public IcdChapter(
+            string version,
+            string name)
+            : base(version, name)
         {
             Id = Guid.NewGuid().ToString();
         }

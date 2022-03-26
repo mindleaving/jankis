@@ -441,13 +441,16 @@ export namespace Models {
         }
     
         interface IIcdEntry {
+            version: string;
             name: string;
+            translations: { [key: Enums.Language]: string };
             subEntries: Models.Icd.IcdEntry[];
         }
     
         export namespace Annotation {
             interface Disease extends Models.IId {
-                icdCode: string;
+                icd11Code: string;
+                icd10Code: string;
                 name: string;
                 editLock?: Models.Icd.Annotation.DiseaseLock;
                 categoryIcdCode: string;
@@ -639,6 +642,15 @@ export namespace Models {
     
         interface SetDiagnosticTestResult extends Models.DiagnosticTestResults.DiagnosticTestResult {
             
+        }
+    }
+
+    export namespace Diagnoses {
+        interface Diagnosis extends Models.IHealthRecordEntry {
+            icd10Code?: string;
+            icd11Code: string;
+            hasResolved: boolean;
+            resolvedTimestamp?: Date | null;
         }
     }
 

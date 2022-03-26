@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JanKIS.API\JanKIS.API.csproj" />
+    <ProjectReference Include="..\SharedTools\SharedTools.csproj" />
   </ItemGroup>
 
 </Project>

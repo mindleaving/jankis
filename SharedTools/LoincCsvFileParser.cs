@@ -1,27 +1,15 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using HealthModels.DiagnosticTestResults;
-using HealthModels.Icd.Annotation.Diagnostics;
-using MongoDB.Driver;
-using NUnit.Framework;
-using SharedTools;
+using HealthModels.Services;
 
-namespace IcdAnnotation.API.Tools
+namespace SharedTools
 {
-    public class LoincImporter : DatabaseAccess
+    public class LoincCsvFileParser
     {
-        private IMongoCollection<DiagnosticTest> diagnosticTestCollection;
-
-        [OneTimeSetUp]
-        public void Setup()
+        public IEnumerable<DiagnosticTestDefinition> Parse(string filePath)
         {
-            diagnosticTestCollection = GetCollection<DiagnosticTest>(nameof(DiagnosticTest));
-        }
-
-        [Test]
-        public void ImportLoincCodes()
-        {
-            var filePath = @"G:\Projects\DoctorsTodo\Loinc.csv";
             foreach (var line in File.ReadLines(filePath).Skip(1))
             {
                 var splittedLine = ParserHelpers.QuoteAwareSplit(line, ',');
@@ -49,20 +37,24 @@ namespace IcdAnnotation.API.Tools
                 var longName = splittedLine[27];
                 var displayName = splittedLine[44];
 
-                var diagnosticTest = new DiagnosticTest
+                var diagnosticTest = new DiagnosticTestDefinition
                 {
-                    LoincCode = loincNumber,
+                    Id = loincNumber,
+                    TestCodeLoinc = loincNumber,
                     Name = longName,
                     Description = description,
-                    ScaleType = scaleType,
-                    BodyStructure = system,
-                    MethodType = methodType,
                     Category = category,
-                    TimeAspect = timeAspect,
-                    MeasuredProperty = measuredProperty,
-                    Formula = formula
+                    ScaleType = scaleType,
+                    IsAvailable = true,
+                    DepartmentId = "",
+                    Audience = new List<ServiceAudience>(),
+                    Parameters = new List<ServiceParameter>
+                    {
+                        new PatientServiceParameter { Name = "Patient", Description = ""}
+                    },
+                    AutoAcceptRequests = true
                 };
-                diagnosticTestCollection.InsertOne(diagnosticTest);
+                yield return diagnosticTest;
             }
         }
 

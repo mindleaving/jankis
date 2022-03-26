@@ -74,7 +74,7 @@ namespace IcdAnnotation.API.Controllers
             if (observation == null)
                 return NotFound();
             await diseaseStore.BatchAssign<Disease,Observation>(
-                disease => diseaseIcdCodes.Contains(disease.IcdCode) && !disease.Observations.Any(x => x.Id == observationId), 
+                disease => diseaseIcdCodes.Contains(disease.Icd11Code) && !disease.Observations.Any(x => x.Id == observationId), 
                 disease => disease.Observations, 
                 observation);
             return Ok();

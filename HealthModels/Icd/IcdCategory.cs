@@ -2,8 +2,11 @@
 {
     public class IcdCategory : IcdEntry, IId
     {
-        public IcdCategory(string code, string name)
-            : base(name)
+        public IcdCategory(
+            string code,
+            string version,
+            string name)
+            : base(version, name)
         {
             Code = code;
         }

@@ -8,9 +8,11 @@ import { PatientMedicationView } from './PatientMedicationView';
 import { PatientNotesView } from './PatientNotesView';
 import { PatientObservationsView } from './PatientObservationsView';
 import { PatientTestResultsView } from './PatientTestResultsView';
+import { PatientDiagnosesView } from './PatientDiagnosesView';
 
 interface PatientDataTabControlProps {
     notes: Models.PatientNote[];
+    diagnoses: Models.Diagnoses.Diagnosis[];
     observations: Models.Observations.Observation[];
     documents: Models.PatientDocument[];
     testResults: Models.DiagnosticTestResults.DiagnosticTestResult[];
@@ -21,17 +23,20 @@ interface PatientDataTabControlProps {
 
 export const PatientDataTabControl = (props: PatientDataTabControlProps) => {
 
-    const { notes, observations, documents, testResults, medicationSchedules, medicationDispensions }  = props;
+    const { notes, diagnoses, observations, documents, testResults, medicationSchedules, medicationDispensions }  = props;
 
     return (
         <Tabs defaultActiveKey="overview">
             <Tab eventKey="overview" title={resolveText('Patient_Overview')}>
                 <HealthRecordOverview
-                    events={(notes as Models.IHealthRecordEntry[]).concat(observations).concat(documents).concat(testResults)}
+                    events={(notes as Models.IHealthRecordEntry[]).concat(diagnoses).concat(observations).concat(documents).concat(testResults)}
                 />
             </Tab>
             <Tab eventKey="notes" title={resolveText('Patient_Notes')}>
                 <PatientNotesView notes={notes} />
+            </Tab>
+            <Tab eventKey="diagnosis" title={resolveText("Patient_Diagnosis")}>
+                <PatientDiagnosesView diagnoses={diagnoses} />
             </Tab>
             <Tab eventKey="observations" title={resolveText('Patient_Observations')}>
                 <PatientObservationsView observations={observations} />

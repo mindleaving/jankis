@@ -30,6 +30,7 @@ export namespace ViewModels {
         profileData: Models.Person;
         admissions: Models.Admission[];
         notes: Models.PatientNote[];
+        diagnoses: Models.Diagnoses.Diagnosis[];
         medicationSchedules: Models.Medication.MedicationSchedule[];
         medicationDispensions: Models.Medication.MedicationDispension[];
         testResults: Models.DiagnosticTestResults.DiagnosticTestResult[];

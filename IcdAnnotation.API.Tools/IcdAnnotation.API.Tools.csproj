@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IcdAnnotation.API\IcdAnnotation.API.csproj" />
+    <ProjectReference Include="..\SharedTools\SharedTools.csproj" />
   </ItemGroup>
 
 </Project>

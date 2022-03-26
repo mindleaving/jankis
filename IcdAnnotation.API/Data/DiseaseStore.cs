@@ -77,17 +77,17 @@ namespace IcdAnnotation.API.Data
             return Task.Run(() =>
                 {
                     var filter = prefix != null
-                        ? Builders<Disease>.Filter.Regex(x => x.IcdCode, new BsonRegularExpression($"/^{prefix}.*/i"))
+                        ? Builders<Disease>.Filter.Regex(x => x.Icd11Code, new BsonRegularExpression($"/^{prefix}.*/i"))
                         : FilterDefinition<Disease>.Empty;
                     var diseases = collection.Find(filter)
-                        .SortBy(x => x.IcdCode)
-                        .Project(x => new {x.IcdCode, x.Name})
+                        .SortBy(x => x.Icd11Code)
+                        .Project(x => new { x.Icd11Code, x.Name})
                         .ToEnumerable();
                     var hierarchy = new List<IcdCategory>();
                     var stack = new Stack<IcdCategory>();
                     foreach (var disease in diseases)
                     {
-                        var hierarchyItem = new IcdCategory(disease.IcdCode, disease.Name);
+                        var hierarchyItem = new IcdCategory(disease.Icd11Code, "11", disease.Name);
                         while (stack.Any() && !hierarchyItem.Code.StartsWith(stack.Peek().Code))
                         {
                             stack.Pop();
@@ -113,7 +113,7 @@ namespace IcdAnnotation.API.Data
 
         public async Task<DiseaseLock> GetLock(string icdCode)
         {
-            return await collection.Find(x => x.IcdCode == icdCode).Project(x => x.EditLock).FirstOrDefaultAsync();
+            return await collection.Find(x => x.Icd11Code == icdCode).Project(x => x.EditLock).FirstOrDefaultAsync();
         }
 
         public async Task<bool> TryLock(
@@ -122,7 +122,7 @@ namespace IcdAnnotation.API.Data
         {
             var filterBuilder = Builders<Disease>.Filter;
             var filter = filterBuilder.And(
-                filterBuilder.Eq(x => x.IcdCode, icdCode),
+                filterBuilder.Eq(x => x.Icd11Code, icdCode),
                 filterBuilder.Or(
                     filterBuilder.Exists(x => x.EditLock, false),
                     filterBuilder.Eq(x => x.EditLock, null),
@@ -142,7 +142,7 @@ namespace IcdAnnotation.API.Data
         {
             var filterBuilder = Builders<Disease>.Filter;
             var filter = filterBuilder.And(
-                filterBuilder.Eq(x => x.IcdCode, icdCode),
+                filterBuilder.Eq(x => x.Icd11Code, icdCode),
                 filterBuilder.Or(
                     filterBuilder.Exists(x => x.EditLock, false),
                     filterBuilder.Eq(x => x.EditLock, null),
@@ -176,7 +176,7 @@ namespace IcdAnnotation.API.Data
         {
             var collection = database.GetCollection<TDisease>(nameof(Disease));
             var filter = diseaseIcdCodes != null 
-                ? Builders<TDisease>.Filter.Where(disease => diseaseIcdCodes.Contains(disease.IcdCode)) 
+                ? Builders<TDisease>.Filter.Where(disease => diseaseIcdCodes.Contains(disease.Icd11Code)) 
                 : FilterDefinition<TDisease>.Empty;
             var listSelector2 = new ExpressionFieldDefinition<TDisease>(listSelector);
             var itemFilter2 = new ExpressionFilterDefinition<TItem>(itemFilter);

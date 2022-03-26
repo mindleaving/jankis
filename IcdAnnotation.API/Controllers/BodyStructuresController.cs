@@ -48,7 +48,7 @@ namespace IcdAnnotation.API.Controllers
             if (bodyStructure == null)
                 return NotFound();
             await diseaseStore.BatchAssign<Disease,BodyStructure>(
-                disease => diseaseIcdCodes.Contains(disease.IcdCode) && !disease.AffectedBodyStructures.Any(x => x.Id == bodyStructureId), 
+                disease => diseaseIcdCodes.Contains(disease.Icd11Code) && !disease.AffectedBodyStructures.Any(x => x.Id == bodyStructureId), 
                 disease => disease.AffectedBodyStructures, 
                 bodyStructure);
             return Ok();

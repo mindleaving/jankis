@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthModels.Diagnoses;
 using HealthModels.DiagnosticTestResults;
 using HealthModels.Interview;
 using HealthModels.Medication;
@@ -37,6 +38,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IReadonlyStore<StudyAssociation> studyAssociationStore;
         private readonly IAuthorizationModule authorizationModule;
         private readonly IReadonlyStore<Questionnaire> questionaireStore;
+        private readonly IReadonlyStore<Diagnosis> diagnosesStore;
 
         public ViewModelsController(
             IHttpContextAccessor httpContextAccessor,
@@ -52,7 +54,8 @@ namespace HealthSharingPortal.API.Controllers
             IReadonlyStore<Study> studyStore,
             IReadonlyStore<StudyAssociation> studyAssociationStore,
             IAuthorizationModule authorizationModule,
-            IReadonlyStore<Questionnaire> questionaireStore)
+            IReadonlyStore<Questionnaire> questionaireStore,
+            IReadonlyStore<Diagnosis> diagnosesStore)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.personStore = personStore;
@@ -68,6 +71,7 @@ namespace HealthSharingPortal.API.Controllers
             this.studyAssociationStore = studyAssociationStore;
             this.authorizationModule = authorizationModule;
             this.questionaireStore = questionaireStore;
+            this.diagnosesStore = diagnosesStore;
         }
 
         [HttpGet("healthdata/{personId}")]
@@ -79,6 +83,7 @@ namespace HealthSharingPortal.API.Controllers
             var profileData = await personStore.GetByIdAsync(personId);
             var admissions = await admissionsStore.SearchAsync(x => x.ProfileData.Id == personId);
             var notes = await patientNotesStore.SearchAsync(x => x.PersonId == personId);
+            var diagnoses = await diagnosesStore.SearchAsync(x => x.PersonId == personId);
             var medicationSchedules = await medicationSchedulesStore.GetForPerson(personId);
             var medicationDispensions = await medicationDispensionsStore.SearchAsync(x => x.PersonId == personId);
             var testResults = await testResultsStore.SearchAsync(x => x.PersonId == personId);
@@ -88,6 +93,7 @@ namespace HealthSharingPortal.API.Controllers
                 profileData,
                 admissions,
                 notes,
+                diagnoses,
                 medicationSchedules,
                 medicationDispensions,
                 testResults,

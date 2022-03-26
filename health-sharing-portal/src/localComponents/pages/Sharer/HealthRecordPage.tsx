@@ -22,6 +22,7 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
     const [ profileData, setProfileData ] = useState<Models.Person>();
     const [ admissions, setAdmissions ] = useState<Models.Admission[]>([]);
     const [ notes, setNotes ] = useState<Models.PatientNote[]>([]);
+    const [ diagnoses, setDiagnoses ] = useState<Models.Diagnoses.Diagnosis[]>([]);
     const [ medicationSchedules, setMedicationSchedules ] = useState<Models.Medication.MedicationSchedule[]>([]);
     const [ medicationDispensions, setMedicationDispensions ] = useState<Models.Medication.MedicationDispension[]>([]);
     const [ observations, setObservations ] = useState<Models.Observations.Observation[]>([]);
@@ -38,6 +39,7 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
                 setProfileData(vm.profileData);
                 setAdmissions(vm.admissions);
                 setNotes(vm.notes);
+                setDiagnoses(vm.diagnoses);
                 setMedicationSchedules(vm.medicationSchedules);
                 setMedicationDispensions(vm.medicationDispensions);
                 setObservations(vm.observations);
@@ -97,6 +99,7 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
                     <PatientDataTabControl
                         notes={notes}
                         documents={documents}
+                        diagnoses={diagnoses}
                         observations={observations}
                         testResults={testResults}
                         medicationSchedules={medicationSchedules}

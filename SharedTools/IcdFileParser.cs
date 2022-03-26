@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using HealthModels.Icd;
 
-namespace IcdAnnotation.API.Tools
+namespace SharedTools
 {
     public class IcdFileParser
     {
@@ -15,7 +15,7 @@ namespace IcdAnnotation.API.Tools
             this.filePath = filePath;
         }
 
-        public List<IcdChapter> Parse()
+        public List<IcdChapter> Parse(string version)
         {
             var chapters = new List<IcdChapter>();
             var hierarchy = new Stack<IIcdEntry>();
@@ -37,16 +37,16 @@ namespace IcdAnnotation.API.Tools
                 {
                     case IcdSectionType.Chapter:
                     {
-                        var chapter = new IcdChapter(name);
+                        var chapter = new IcdChapter(version, name);
                         chapters.Add(chapter);
                         icdEntry = chapter;
                         break;
                     }
                     case IcdSectionType.Block:
-                        icdEntry = new IcdBlock(name);
+                        icdEntry = new IcdBlock(version, name);
                         break;
                     case IcdSectionType.Category:
-                        icdEntry = new IcdCategory(icdCode, name);
+                        icdEntry = new IcdCategory(icdCode, version, name);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

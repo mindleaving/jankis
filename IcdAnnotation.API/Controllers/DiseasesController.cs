@@ -37,7 +37,7 @@ namespace IcdAnnotation.API.Controllers
         [HttpPost]
         public async Task<IActionResult> GetMany([FromQuery] int? count, [FromQuery] int skip = 0, [FromBody] DiseaseFilter filter = null)
         {
-            var items = await diseaseStore.GetMany(filter, count, skip, x => x.IcdCode);
+            var items = await diseaseStore.GetMany(filter, count, skip, x => x.Icd11Code);
             return Ok(items);
         }
 
@@ -70,7 +70,7 @@ namespace IcdAnnotation.API.Controllers
         [HttpGet(nameof(Search))]
         public async Task<IActionResult> Search(string searchText, int? count = 30, int? skip = 0)
         {
-            var items = await diseaseStore.SearchAsync(x => x.IcdCode.Contains(searchText.ToUpper()), count);
+            var items = await diseaseStore.SearchAsync(x => x.Icd11Code.Contains(searchText.ToUpper()), count);
             if (items.Any())
                 return Ok(items);
             var searchTerms = SearchTermSplitter.SplitAndToLower(searchText);
@@ -85,9 +85,9 @@ namespace IcdAnnotation.API.Controllers
         public async Task<IActionResult> Store(string icdCode, [FromQuery] string username, [FromBody] Disease disease)
         {
             icdCode = icdCode.ToUpper();
-            disease.IcdCode = disease.IcdCode.ToUpper();
+            disease.Icd11Code = disease.Icd11Code.ToUpper();
             disease.CategoryIcdCode = disease.CategoryIcdCode.ToUpper();
-            if (disease.IcdCode != icdCode)
+            if (disease.Icd11Code != icdCode)
                 return BadRequest("ICD-Code from URL doesn't match ICD-code in body");
             var diseaseLock = await diseaseStore.GetLock(icdCode);
             if (diseaseLock != null && diseaseLock.User != username)

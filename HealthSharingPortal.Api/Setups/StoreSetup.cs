@@ -1,7 +1,9 @@
 ﻿using Commons.Physics;
 using HealthModels;
 using HealthModels.AccessControl;
+using HealthModels.Diagnoses;
 using HealthModels.DiagnosticTestResults;
+using HealthModels.Icd;
 using HealthModels.Interview;
 using HealthModels.MedicalTextEditor;
 using HealthModels.Medication;
@@ -51,12 +53,14 @@ namespace HealthSharingPortal.API.Setups
             services.AddScoped<IAutocompleteCache, AutocompleteCache>();
             SetupTypeStores<Contact>(services);
             SetupTypeStores<Department>(services);
+            SetupTypeStores<Diagnosis>(services);
             SetupTypeStores<DiagnosticTestDefinition>(services);
             SetupTypeStores<DiagnosticTestResult>(services);
             SetupTypeStores<Drug>(services);
             SetupTypeStores<EmergencyAccess>(services);
             SetupTypeStores<EmergencyAccessRequest>(services);
             services.AddScoped<IFilesStore, FilesStore>();
+            SetupTypeStores<IcdCategory>(services);
             SetupTypeStores<Institution>(services);
             SetupTypeStores<HealthProfessionalAccess>(services);
             services.AddScoped<IHealthProfessionalAccessInviteStore, HealthProfessionalAccessInviteStore>();

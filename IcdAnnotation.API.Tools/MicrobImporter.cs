@@ -3,6 +3,7 @@ using HealthModels.Icd.Annotation.Epidemiology;
 using IcdAnnotation.API.Tools.Extensions;
 using MongoDB.Driver;
 using NUnit.Framework;
+using SharedTools;
 
 namespace IcdAnnotation.API.Tools
 {
@@ -18,9 +19,10 @@ namespace IcdAnnotation.API.Tools
         [TestCase("Other Pathogens", MicrobType.Other)]
         public void ImportMicrobs(string sectionName, MicrobType microbType)
         {
+            const string Version = "11";
             var icdFilePath = @"G:\Projects\DoctorsTodo\icd11.csv";
             var icdFileParser = new IcdFileParser(icdFilePath);
-            var icdChapters = icdFileParser.Parse();
+            var icdChapters = icdFileParser.Parse(Version);
 
             var microbCollection = GetCollection<Microb>(nameof(Microb));
             var microbSection = icdChapters.FindSection(sectionName);

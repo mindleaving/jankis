@@ -41,7 +41,7 @@ namespace IcdAnnotation.API.Controllers
             if (microb == null)
                 return NotFound();
             await diseaseStore.BatchAssign<InfectiousDisease,Microb>(
-                disease => diseaseIcdCodes.Contains(disease.IcdCode) && !disease.Pathogens.Any(x => x.IcdCode == microbIcdCode), 
+                disease => diseaseIcdCodes.Contains(disease.Icd11Code) && !disease.Pathogens.Any(x => x.IcdCode == microbIcdCode), 
                 disease => disease.Pathogens, 
                 microb);
             return Ok();

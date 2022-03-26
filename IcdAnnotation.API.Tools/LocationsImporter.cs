@@ -6,6 +6,7 @@ using IcdAnnotation.API.Models;
 using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
 using NUnit.Framework;
+using SharedTools;
 
 namespace IcdAnnotation.API.Tools
 {

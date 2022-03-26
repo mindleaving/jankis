@@ -74,7 +74,7 @@ namespace IcdAnnotation.API.Controllers
             if (symptom == null)
                 return NotFound();
             await diseaseStore.BatchAssign<Disease,Symptom>(
-                disease => diseaseIcdCodes.Contains(disease.IcdCode) && !disease.Symptoms.Any(x => x.Id == symptomId), 
+                disease => diseaseIcdCodes.Contains(disease.Icd11Code) && !disease.Symptoms.Any(x => x.Id == symptomId), 
                 disease => disease.Symptoms, 
                 symptom);
             return Ok();

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using HealthModels;
+using HealthModels.Diagnoses;
 using HealthModels.Interview;
 using HealthSharingPortal.API.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,8 @@ namespace HealthSharingPortal.API.Controllers
                 typeof(Account),
                 typeof(HealthProfessionalAccount),
                 typeof(Person),
-                typeof(Questionnaire)
+                typeof(Questionnaire),
+                typeof(Diagnosis)
             }.ToDictionary(x => x.Name.ToLower(), x => x);
 
         [HttpGet("{typeName}")]

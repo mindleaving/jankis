@@ -16,6 +16,7 @@ export const PatientActionsCard = (props: PatientActionsCardProps) => {
             <Card.Body>
                 <Button className="m-1" onClick={() => navigate(`/healthrecord/${props.personId}/create/note`)}>{resolveText('Action_AddNote')}</Button>
                 <Button className="m-1" onClick={() => navigate(`/healthrecord/${props.personId}/create/observation`)}>{resolveText('Action_AddObservation')}</Button>
+                <Button className="m-1" onClick={() => navigate(`/healthrecord/${props.personId}/create/diagnosis`)}>{resolveText('Action_AddDiagnosis')}</Button>
                 <Button className="m-1" onClick={() => navigate(`/healthrecord/${props.personId}/add/medication`)}>{resolveText('Action_AddMedication')}</Button>
                 <Button className="m-1" onClick={() => navigate(`/healthrecord/${props.personId}/nursing`)}>{resolveText('Action_AddEquipment')}</Button>
                 <Button className="m-1" onClick={() => navigate(`/healthrecord/${props.personId}/create/testresult`)}>{resolveText('Action_AddTestResult')}</Button>

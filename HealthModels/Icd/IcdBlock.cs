@@ -2,8 +2,8 @@
 {
     public class IcdBlock : IcdEntry
     {
-        public IcdBlock(string name)
-            : base(name)
+        public IcdBlock(string version, string name)
+            : base(version, name)
         {
         }
 

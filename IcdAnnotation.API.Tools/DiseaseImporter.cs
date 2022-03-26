@@ -5,6 +5,7 @@ using HealthModels.Icd;
 using HealthModels.Icd.Annotation;
 using MongoDB.Driver;
 using NUnit.Framework;
+using SharedTools;
 
 namespace IcdAnnotation.API.Tools
 {
@@ -16,9 +17,10 @@ namespace IcdAnnotation.API.Tools
         [OneTimeSetUp]
         public void LoadIcdChapters()
         {
+            const string Version = "11";
             var icdFilePath = @"G:\Projects\DoctorsTodo\icd11.csv";
             var icdFileParser = new IcdFileParser(icdFilePath);
-            icdChapters = icdFileParser.Parse();
+            icdChapters = icdFileParser.Parse(Version);
             diseaseCollection = GetCollection<Disease>(nameof(Disease));
         }
 
@@ -38,7 +40,7 @@ namespace IcdAnnotation.API.Tools
             {
                 return new InfectiousDisease
                 {
-                    IcdCode = icdCategory.Code,
+                    Icd11Code = icdCategory.Code,
                     Name = icdCategory.Name,
                     CategoryIcdCode = parentIcdCode
                 };
@@ -56,7 +58,7 @@ namespace IcdAnnotation.API.Tools
             {
                 return new Disease
                 {
-                    IcdCode = icdCategory.Code,
+                    Icd11Code = icdCategory.Code,
                     Name = icdCategory.Name,
                     CategoryIcdCode = parentIcdCode
                 };
