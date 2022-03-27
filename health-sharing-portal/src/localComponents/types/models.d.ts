@@ -318,13 +318,13 @@ export namespace Models {
     
         interface PulseObservation extends Models.Observations.Observation {
             bpm: number;
-            location: string;
+            location?: string;
         }
     
         interface TemperatureObservation extends Models.Observations.Observation {
             value: number;
             unit: string;
-            bodyPart: string;
+            bodyPart?: string;
         }
     }
 
