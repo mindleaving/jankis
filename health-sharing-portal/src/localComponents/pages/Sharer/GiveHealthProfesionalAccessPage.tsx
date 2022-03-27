@@ -16,6 +16,7 @@ export const GiveHealthProfesionalAccessPage = (props: GiveHealthProfesionalAcce
     const { accessInviteId } = useParams();
     const [ isLoading, setIsLoading ] = useState<boolean>(!!accessInviteId);
     const [ healthProfessional, setHealthProfessional ] = useState<Models.HealthProfessionalAccount>();
+    const [ expirationTime, setExpirationTime ] = useState<string>('PT1H');
     const [ isSubmitting, setIsSubmitting ] = useState<boolean>(false);
     const [ accessInvite, setAccessInvite ] = useState<Models.AccessControl.HealthProfessionalAccessInvite>();
     const [ codeForSharer, setCodeForSharer ] = useState<string>('');
@@ -41,7 +42,11 @@ export const GiveHealthProfesionalAccessPage = (props: GiveHealthProfesionalAcce
         }
         e.preventDefault();
         try {
-            const response = await apiClient.instance!.post(`api/accessrequests/create/healthprofessional/${healthProfessional!.username}`, {}, null);
+            const body: Models.CreateAccessInviteBody = {
+                healthProfessionalUsername: healthProfessional!.username,
+                expirationDuration: expirationTime
+            };
+            const response = await apiClient.instance!.post(`api/accessrequests/create/healthprofessional`, {}, body);
             const item = await response.json() as Models.AccessControl.HealthProfessionalAccessInvite;
             setAccessInvite(item);
             //navigate(`/giveaccess/healthprofessional/${item.id}`);
@@ -105,6 +110,26 @@ export const GiveHealthProfesionalAccessPage = (props: GiveHealthProfesionalAcce
                             value={healthProfessional}
                             onChange={setHealthProfessional}
                         />
+                    </FormGroup>
+                    <FormGroup>
+                        <FormLabel>{resolveText("GiveAccess_ExpirationTime")}</FormLabel>
+                        <FormControl
+                            as="select"
+                            value={expirationTime}
+                            onChange={(e:any) => setExpirationTime(e.target.value)}
+                        >
+                            <option value="PT15M">15 {resolveText("Minutes")}</option>
+                            <option value="PT30M">30 {resolveText("Minutes")}</option>
+                            <option value="PT1H">1 {resolveText("Hours")}</option>
+                            <option value="PT3H">3 {resolveText("Hours")}</option>
+                            <option value="PT12H">12 {resolveText("Hours")}</option>
+                            <option value="P1D">1 {resolveText("Days")}</option>
+                            <option value="P3D">3 {resolveText("Days")}</option>
+                            <option value="P7D">7 {resolveText("Days")}</option>
+                            <option value="P1M">1 {resolveText("Months")}</option>
+                            <option value="P3M">3 {resolveText("Months")}</option>
+                            <option value="P6M">6 {resolveText("Months")}</option>
+                        </FormControl>
                     </FormGroup>
                     <Row className='m-3'>
                         <Col>

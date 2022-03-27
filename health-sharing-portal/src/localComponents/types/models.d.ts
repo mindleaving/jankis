@@ -101,6 +101,11 @@ export namespace Models {
         
     }
 
+    interface CreateAccessInviteBody {
+        healthProfessionalUsername: string;
+        expirationDuration: string;
+    }
+
     interface HealthProfessionalAccount extends Models.Account {
         workAddress: Models.Address;
         canRequestEmergencyAccess: boolean;
@@ -680,6 +685,7 @@ export namespace Models {
         }
     
         interface HealthProfessionalAccessInvite extends Models.AccessControl.IAccessRequest {
+            expirationDuration: string;
             codeForSharer: string;
             codeForHealthProfessional: string;
             sharerHasAccepted: boolean;

@@ -106,6 +106,8 @@ namespace HealthSharingPortal.API.Controllers
             return transformedItems;
         }
 
+        
+
         protected abstract Task<object> TransformItem(T item);
         protected abstract Expression<Func<T, object>> BuildOrderByExpression(string orderBy);
         protected abstract Expression<Func<T,bool>> BuildSearchExpression(string[] searchTerms);

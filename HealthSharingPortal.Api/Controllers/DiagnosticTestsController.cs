@@ -4,16 +4,20 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels.Services;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Storage;
 using Microsoft.AspNetCore.Http;
 
 namespace HealthSharingPortal.API.Controllers
 {
-    public class DiagnosticTestsController : RestControllerBase<DiagnosticTestDefinition>
+    public class DiagnosticTestsController : PersonDataRestControllerBase<DiagnosticTestDefinition>
     {
-        public DiagnosticTestsController(IStore<DiagnosticTestDefinition> store, IHttpContextAccessor httpContextAccessor)
-            : base(store, httpContextAccessor)
+        public DiagnosticTestsController(
+            IStore<DiagnosticTestDefinition> store, 
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationModule authorizationModule)
+            : base(store, httpContextAccessor, authorizationModule)
         {
         }
 

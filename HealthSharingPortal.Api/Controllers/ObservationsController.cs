@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels.Observations;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
@@ -11,15 +12,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HealthSharingPortal.API.Controllers
 {
-    public class ObservationsController : RestControllerBase<Observation>
+    public class ObservationsController : PersonDataRestControllerBase<Observation>
     {
         private readonly IAutocompleteCache autocompleteCache;
 
         public ObservationsController(
             IStore<Observation> store,
             IAutocompleteCache autocompleteCache,
-            IHttpContextAccessor httpContextAccessor)
-            : base(store, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationModule authorizationModule)
+            : base(store, httpContextAccessor, authorizationModule)
         {
             this.autocompleteCache = autocompleteCache;
         }

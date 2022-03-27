@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels.DiagnosticTestResults;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Storage;
 using Microsoft.AspNetCore.Http;
@@ -10,15 +11,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HealthSharingPortal.API.Controllers
 {
-    public class TestResultsController : RestControllerBase<DiagnosticTestResult>
+    public class TestResultsController : PersonDataRestControllerBase<DiagnosticTestResult>
     {
         private readonly IAutocompleteCache autocompleteCache;
 
         public TestResultsController(
             IStore<DiagnosticTestResult> store,
             IAutocompleteCache autocompleteCache,
-            IHttpContextAccessor httpContextAccessor)
-            : base(store, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationModule authorizationModule)
+            : base(store, httpContextAccessor, authorizationModule)
         {
             this.autocompleteCache = autocompleteCache;
         }

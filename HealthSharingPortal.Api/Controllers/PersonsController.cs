@@ -4,18 +4,20 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Storage;
 using Microsoft.AspNetCore.Http;
 
 namespace HealthSharingPortal.API.Controllers
 {
-    public class PersonsController : RestControllerBase<Person>
+    public class PersonsController : PersonDataRestControllerBase<Person>
     {
         public PersonsController(
             IStore<Person> store,
-            IHttpContextAccessor httpContextAccessor)
-            : base(store, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationModule authorizationModule)
+            : base(store, httpContextAccessor, authorizationModule)
         {
         }
 

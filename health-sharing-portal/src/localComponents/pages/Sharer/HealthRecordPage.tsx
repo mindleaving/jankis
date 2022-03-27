@@ -79,6 +79,19 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
         );
     }
 
+    const onDiagnosisMarkedAsResolved = (diagnosisId: string) => {
+        setDiagnoses(state => state.map(diagnosis => {
+            if(diagnosis.id === diagnosisId) {
+                return {
+                    ...diagnosis,
+                    hasResolved: true,
+                    resolvedTimestamp: new Date()
+                }
+            }
+            return diagnosis;
+        }));
+    }
+
     if(!personId) {
         return (<h1>{resolveText('MissingID')}</h1>);
     }
@@ -120,6 +133,7 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
                         medicationSchedules={medicationSchedules}
                         medicationDispensions={medicationDispensions}
                         createNewMedicationSchedule={createNewMedicationSchedule}
+                        onDiagnosisMarkedAsResolved={onDiagnosisMarkedAsResolved}
                     />
                 </Col>
             </Row>

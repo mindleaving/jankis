@@ -12,20 +12,18 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HealthSharingPortal.API.Controllers
 {
-    public class QuestionnairesController : RestControllerBase<Questionnaire>
+    public class QuestionnairesController : PersonDataRestControllerBase<Questionnaire>
     {
         private readonly IStore<QuestionnaireAnswers> answersStore;
-        private readonly IAuthorizationModule authorizationModule;
 
         public QuestionnairesController(
             IStore<Questionnaire> store,
             IHttpContextAccessor httpContextAccessor,
             IStore<QuestionnaireAnswers> answersStore,
             IAuthorizationModule authorizationModule)
-            : base(store, httpContextAccessor)
+            : base(store, httpContextAccessor, authorizationModule)
         {
             this.answersStore = answersStore;
-            this.authorizationModule = authorizationModule;
         }
 
         [HttpGet("{id}/schema")]
@@ -58,10 +56,7 @@ namespace HealthSharingPortal.API.Controllers
                 if (existingAnswer.QuestionnaireId != questionnaireId)
                     return Conflict("An answer with the same ID exists for another questionnaire. Please use another ID");
             }
-            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
-            var currentUserPersonId = ControllerHelpers.GetPersonId(httpContextAccessor);
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            var isAuthorized = await authorizationModule.HasPermissionForPerson(answer.PersonId, accountType.Value, username, currentUserPersonId);
+            var isAuthorized = await IsAuthorizedToAccessPerson(answer.PersonId);
             if (!isAuthorized)
                 return Forbid("You are not authorized to submit answers for this person");
             
@@ -80,10 +75,7 @@ namespace HealthSharingPortal.API.Controllers
                 return NotFound();
             if (answer.QuestionnaireId != questionnaireId)
                 return NotFound();
-            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            var currentUserPersonId = ControllerHelpers.GetPersonId(httpContextAccessor);
-            var isAuthorized = await authorizationModule.HasPermissionForPerson(answer.PersonId, accountType.Value, username, currentUserPersonId);
+            var isAuthorized = await IsAuthorizedToAccessPerson(answer.PersonId);
             if (!isAuthorized)
                 return Forbid();
             return Ok(answer);

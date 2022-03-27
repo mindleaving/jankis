@@ -11,8 +11,8 @@ DONE - Bed occupancy timeline view
 
 
 Health Sharing Portal TODO:
-- Store and display diagnosis
-- Store and display questionnaires, e.g. family history, social history
+DONE - Store and display diagnosis
+DONE - Store and display questionnaires, e.g. family history, social history
 - Specify length of access when creating access invite
 - Field for specifying time of observation/measurement in respective forms (default "Now", but when entering historic information the time needs to be specified)
 

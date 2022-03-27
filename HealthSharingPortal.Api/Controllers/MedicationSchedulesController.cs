@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels.Medication;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Storage;
 using Microsoft.AspNetCore.Http;
@@ -10,11 +11,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HealthSharingPortal.API.Controllers
 {
-    public class MedicationSchedulesController : RestControllerBase<MedicationSchedule>
+    public class MedicationSchedulesController : PersonDataRestControllerBase<MedicationSchedule>
     {
-        public MedicationSchedulesController(IStore<MedicationSchedule> store,
-            IHttpContextAccessor httpContextAccessor)
-            : base(store, httpContextAccessor)
+        public MedicationSchedulesController(
+            IStore<MedicationSchedule> store,
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationModule authorizationModule)
+            : base(store, httpContextAccessor, authorizationModule)
         {
         }
 

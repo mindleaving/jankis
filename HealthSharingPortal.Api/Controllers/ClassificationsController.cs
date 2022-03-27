@@ -22,6 +22,16 @@ namespace HealthSharingPortal.API.Controllers
             this.icd11CategoryStore = icd11CategoryStore;
         }
 
+        [HttpGet("icd11/{icd11Code}")]
+        public async Task<IActionResult> GetIcd11Entry([FromRoute] string icd11Code)
+        {
+            var item = await icd11CategoryStore.FirstOrDefaultAsync(x => x.Version == "11" && x.Code == icd11Code);
+            if (item == null)
+                return NotFound();
+            return Ok(item);
+        }
+
+
 
         [HttpGet("icd11")]
         public async Task<IActionResult> SearchIcd11Code(

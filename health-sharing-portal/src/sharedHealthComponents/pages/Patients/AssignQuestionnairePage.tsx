@@ -1,5 +1,5 @@
 import React, { FormEvent, useContext, useEffect, useState } from 'react';
-import { Col, Form, FormGroup, FormLabel, Row } from 'react-bootstrap';
+import { Button, Col, Form, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Models } from '../../../localComponents/types/models';
 import { StoreButton } from '../../../sharedCommonComponents/components/StoreButton';
@@ -91,6 +91,12 @@ export const AssignQuestionnairePage = (props: AssignQuestionnairePageProps) => 
                     disabled={!person || !questionnaire}
                 />
             </Form>
+            <hr />
+            <Row className='text-center mb-3'>
+                <Col>
+                    <Button variant="info" onClick={() => navigate("/create/questionnaire")}>{resolveText("CreateNewQuestionnaire")}</Button>
+                </Col>
+            </Row>
         </>
     );
 

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Storage;
 using Microsoft.AspNetCore.Http;
@@ -11,15 +12,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HealthSharingPortal.API.Controllers
 {
-    public class DocumentsController : RestControllerBase<PatientDocument>
+    public class DocumentsController : PersonDataRestControllerBase<PatientDocument>
     {
         private readonly IFilesStore filesStore;
 
         public DocumentsController(
             IStore<PatientDocument> store,
             IFilesStore filesStore,
-            IHttpContextAccessor httpContextAccessor)
-            : base(store, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationModule authorizationModule)
+            : base(store, httpContextAccessor, authorizationModule)
         {
             this.filesStore = filesStore;
         }

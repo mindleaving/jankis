@@ -54,5 +54,11 @@ namespace HealthSharingPortal.API.Storage
         {
             return collection.Find(filter).Skip(skip).Limit(count).ToListAsync();
         }
+
+        public Task<T> FirstOrDefaultAsync(
+            Expression<Func<T, bool>> filter)
+        {
+            return collection.Find(filter).FirstOrDefaultAsync();
+        }
     }
 }

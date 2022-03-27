@@ -9,6 +9,7 @@ namespace HealthModels.AccessControl
         public string AccessReceiverUsername { get; set; }
         public string SharerPersonId { get; set; }
         public DateTime CreatedTimestamp { get; set; }
+        public TimeSpan ExpirationDuration { get; set; }
         public bool IsCompleted { get; set; }
         public DateTime? CompletedTimestamp { get; set; }
         public string CodeForSharer { get; set; }

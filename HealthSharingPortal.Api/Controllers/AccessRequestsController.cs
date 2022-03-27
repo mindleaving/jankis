@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Security;
 using System.Threading.Tasks;
+using System.Xml;
 using Commons.Extensions;
 using HealthModels;
 using HealthModels.AccessControl;
@@ -139,9 +140,10 @@ namespace HealthSharingPortal.API.Controllers
             return emergencyRequests.Count - completedCount > MaximumFailedAttempts;
         }
 
-        [HttpPost("create/healthprofessional/{healthProfessionalUsername}")]
-        public async Task<IActionResult> CreateForHealthProfessional([FromRoute] string healthProfessionalUsername)
+        [HttpPost("create/healthprofessional")]
+        public async Task<IActionResult> CreateForHealthProfessional([FromBody] CreateAccessInviteBody body)
         {
+            var healthProfessionalUsername = body.HealthProfessionalUsername;
             var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
             if (accountType != AccountType.Sharer)
                 return StatusCode((int)HttpStatusCode.Forbidden, "Only data sharers can give access to health professionals");
@@ -149,8 +151,10 @@ namespace HealthSharingPortal.API.Controllers
                 .SearchAsync(x => x.AccountType == AccountType.HealthProfessional && x.Username == healthProfessionalUsername);
             if (matchingHealthProfessionalAccount == null)
                 return BadRequest($"Unknown health professional '{healthProfessionalUsername}'");
+            if (!DateTimeHelpers.TryParseTimespan(body.ExpirationDuration, out var parsedExpirationDuration))
+                parsedExpirationDuration = TimeSpan.FromMinutes(60);
             var sharerPersonId = ControllerHelpers.GetPersonId(httpContextAccessor);
-            var accessInviteId = await healthProfessionalRequestStore.CreateNew(healthProfessionalUsername, sharerPersonId);
+            var accessInviteId = await healthProfessionalRequestStore.CreateNew(healthProfessionalUsername, sharerPersonId, parsedExpirationDuration);
 
             // Distribute to health professional
             var storedAccessInviteForHealthProfessional = await healthProfessionalRequestStore.GetByIdAndRemoveCode(accessInviteId, AccountType.HealthProfessional);
@@ -246,7 +250,7 @@ namespace HealthSharingPortal.API.Controllers
                     AccessReceiverUsername = accessInvite.AccessReceiverUsername,
                     SharerPersonId = accessInvite.SharerPersonId,
                     AccessGrantedTimestamp = utcNow,
-                    AccessEndTimestamp = utcNow.AddMinutes(60)
+                    AccessEndTimestamp = utcNow.Add(accessInvite.ExpirationDuration)
                 };
                 await healthProfessionalAccessStore.StoreAsync(healthProfessionalAccess);
                 await accessRequestDistributor.NotifyAccessGranted(healthProfessionalAccess);

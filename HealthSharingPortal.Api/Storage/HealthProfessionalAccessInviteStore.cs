@@ -24,14 +24,17 @@ namespace HealthSharingPortal.API.Storage
 
         public async Task<string> CreateNew(
             string accessReceiverUsername,
-            string sharerPersonId)
+            string sharerPersonId,
+            TimeSpan expirationDuration)
         {
+            var utcNow = DateTime.UtcNow;
             var accessInvite = new HealthProfessionalAccessInvite
             {
                 Id = Guid.NewGuid().ToString(),
                 SharerPersonId = sharerPersonId,
                 AccessReceiverUsername = accessReceiverUsername,
-                CreatedTimestamp = DateTime.UtcNow,
+                CreatedTimestamp = utcNow,
+                ExpirationDuration = expirationDuration,
                 CodeForSharer = GenerateHealthProfessionalAccessInviteCode(),
                 CodeForHealthProfessional = GenerateHealthProfessionalAccessInviteCode()
             };

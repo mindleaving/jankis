@@ -14,5 +14,6 @@ namespace HealthSharingPortal.API.Storage
         Task<bool> ExistsAsync(string id);
         Task<T> GetByIdAsync(string id);
         Task<List<T>> SearchAsync(Expression<Func<T, bool>> filter, int? count = null, int? skip = null);
+        Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> filter);
     }
 }

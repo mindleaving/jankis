@@ -3,20 +3,44 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels.Diagnoses;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Storage;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HealthSharingPortal.API.Controllers
 {
-    public class DiagnosesController : RestControllerBase<Diagnosis>
+    public class DiagnosesController : PersonDataRestControllerBase<Diagnosis>
     {
+        private readonly IAuthorizationModule authorizationModule;
+
         public DiagnosesController(
             IStore<Diagnosis> store,
-            IHttpContextAccessor httpContextAccessor)
-            : base(store, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationModule authorizationModule)
+            : base(store, httpContextAccessor, authorizationModule)
         {
+            this.authorizationModule = authorizationModule;
         }
+
+        [HttpPost("{diagnosisId}/resolve")]
+        public async Task<IActionResult> MarkAsResolve([FromRoute] string diagnosisId)
+        {
+            var diagnosis = await store.GetByIdAsync(diagnosisId);
+            if (diagnosis == null)
+                return NotFound();
+            if (diagnosis.HasResolved)
+                return Ok();
+            var isAuthorized = await IsAuthorizedToAccessPerson(diagnosis.PersonId);
+            if (!isAuthorized)
+                return Forbid();
+            diagnosis.HasResolved = true;
+            diagnosis.ResolvedTimestamp = DateTime.UtcNow;
+            await store.StoreAsync(diagnosis);
+            return Ok();
+        }
+
 
         protected override Task<object> TransformItem(
             Diagnosis item)
