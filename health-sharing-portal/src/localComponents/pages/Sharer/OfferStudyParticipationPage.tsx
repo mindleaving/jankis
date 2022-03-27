@@ -82,11 +82,11 @@ export const OfferStudyParticipationPage = (props: OfferStudyParticipationPagePr
                 }],
                 inclusionCriteriaQuestionnaireAnswers: inclusionCriteriaQuestionnaires.map((questionnaire, questionnaireIndex) => {
                     const formData = inclusionCriteriaDatas[questionnaireIndex];
-                    return formDataToQuestionnaireAnswers(formData, questionnaire, personId);
+                    return formDataToQuestionnaireAnswers(formData, questionnaire, personId, user!.username);
                 }),
                 exclusionCriteriaQuestionnaireAnswers: exclusionCriteriaQuestionnaires.map((questionnaire, questionnaireIndex) => {
                     const formData = exclusionCriteriaDatas[questionnaireIndex];
-                    return formDataToQuestionnaireAnswers(formData, questionnaire, personId);
+                    return formDataToQuestionnaireAnswers(formData, questionnaire, personId, user!.username);
                 })
             };
             await apiClient.instance!.post(`api/studies/${studyId}/offerparticipation`, {}, enrollment);

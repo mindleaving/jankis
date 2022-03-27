@@ -23,10 +23,12 @@ export const IcdAutocompleteWidget = (props: WidgetProps) => {
             () => setIsLoading(false)
         );
         loadIcdCategory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ props.value]);
 
     useEffect(() => {
         props.onChange(icdCategory?.code);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ icdCategory ]);
 
     return (

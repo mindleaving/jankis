@@ -1,33 +1,34 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { buildAndStoreObject } from '../../../sharedCommonComponents/helpers/StoringHelpers';
 import { BasicInformationBox } from '../../components/HealthData/BasicInformationBox';
-import UserContext from '../../contexts/UserContext';
 import { Models } from '../../types/models';
 import { ViewModels } from '../../types/viewModels';
 import { NotificationManager } from 'react-notifications';
 import { v4 as uuid } from 'uuid';
 import { PatientDataTabControl } from '../../../sharedHealthComponents/components/Patients/PatientDataTabControl';
 import { PatientActionsCard } from '../../../sharedHealthComponents/components/Patients/PatientActionsCard';
+import { HealthRecordAction } from '../../../sharedHealthComponents/types/frontendTypes';
+import { useParams } from 'react-router-dom';
 
 interface HealthRecordPageProps {}
 
 export const HealthRecordPage = (props: HealthRecordPageProps) => {
 
-    const user = useContext(UserContext);
-    const personId = user!.profileData.id;
+    const { personId } = useParams();
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
     const [ profileData, setProfileData ] = useState<Models.Person>();
     const [ admissions, setAdmissions ] = useState<Models.Admission[]>([]);
     const [ notes, setNotes ] = useState<Models.PatientNote[]>([]);
-    const [ diagnoses, setDiagnoses ] = useState<Models.Diagnoses.Diagnosis[]>([]);
+    const [ diagnoses, setDiagnoses ] = useState<ViewModels.DiagnosisViewModel[]>([]);
     const [ medicationSchedules, setMedicationSchedules ] = useState<Models.Medication.MedicationSchedule[]>([]);
     const [ medicationDispensions, setMedicationDispensions ] = useState<Models.Medication.MedicationDispension[]>([]);
     const [ observations, setObservations ] = useState<Models.Observations.Observation[]>([]);
     const [ testResults, setTestResults ] = useState<Models.DiagnosticTestResults.DiagnosticTestResult[]>([]);
     const [ documents, setDocuments ] = useState<Models.PatientDocument[]>([]);
+    const [ questionnaires, setQuestionnaires ] = useState<ViewModels.QuestionnaireAnswersViewModel[]>([]);
     
     useEffect(() => {
         if(!personId) return;
@@ -45,6 +46,7 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
                 setObservations(vm.observations);
                 setTestResults(vm.testResults);
                 setDocuments(vm.documents);
+                setQuestionnaires(vm.questionnaires);
             },
             () => setIsLoading(false)
         );
@@ -84,6 +86,17 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
         return (<h1>{resolveText('Loading...')}</h1>);
     }
 
+    const actions: HealthRecordAction[] = [
+        { path: `/healthrecord/${personId}/create/note`, textResourceId: 'Action_AddNote' },
+        { path: `/healthrecord/${personId}/create/observation`, textResourceId: 'Action_AddObservation' },
+        { path: `/healthrecord/${personId}/create/diagnosis`, textResourceId: 'Action_AddDiagnosis' },
+        { path: `/healthrecord/${personId}/add/medication`, textResourceId: 'Action_AddMedication' },
+        { path: `/healthrecord/${personId}/create/testresult`, textResourceId: 'Action_AddTestResult' },
+        { path: `/healthrecord/${personId}/create/document`, textResourceId: 'Action_AddDocument' },
+        { path: `/healthrecord/${personId}/add/questionnaire`, textResourceId: 'Action_AddQuestionnaire' },
+        { path: `/healthrecord/${personId}/order/service`, textResourceId: 'Action_OrderService' },
+    ]
+
     return (
         <>
             <Row>
@@ -91,17 +104,19 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
                     <BasicInformationBox />
                 </Col>
                 <Col xl={6}>
-                    <PatientActionsCard personId={personId} />
+                    <PatientActionsCard actions={actions} />
                 </Col>
             </Row>
             <Row className='mt-3'>
                 <Col>
                     <PatientDataTabControl
+                        personId={personId}
                         notes={notes}
                         documents={documents}
                         diagnoses={diagnoses}
                         observations={observations}
                         testResults={testResults}
+                        questionnaires={questionnaires}
                         medicationSchedules={medicationSchedules}
                         medicationDispensions={medicationDispensions}
                         createNewMedicationSchedule={createNewMedicationSchedule}

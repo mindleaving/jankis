@@ -14,6 +14,7 @@ import { buildAndStoreObject } from '../../../sharedCommonComponents/helpers/Sto
 import { formatAdmission } from '../../../sharedHealthComponents/helpers/Formatters';
 import { PatientDataTabControl } from '../../../sharedHealthComponents/components/Patients/PatientDataTabControl';
 import { PatientActionsCard } from '../../../sharedHealthComponents/components/Patients/PatientActionsCard';
+import { HealthRecordAction } from '../../../sharedHealthComponents/types/frontendTypes';
 
 interface PatientPageProps {}
 
@@ -85,6 +86,19 @@ export const PatientPage = (props: PatientPageProps) => {
     if(isLoading || !profileData) {
         return (<h1>{resolveText('Loading...')}</h1>);
     }
+
+    const actions: HealthRecordAction[] = [
+        { path: `/healthrecord/${personId}/create/note`, textResourceId: 'Action_AddNote' },
+        { path: `/healthrecord/${personId}/create/observation`, textResourceId: 'Action_AddObservation' },
+        { path: `/healthrecord/${personId}/create/diagnosis`, textResourceId: 'Action_AddDiagnosis' },
+        { path: `/healthrecord/${personId}/add/medication`, textResourceId: 'Action_AddMedication' },
+        { path: `/healthrecord/${personId}/nursing`, textResourceId: 'Action_AddEquipment' },
+        { path: `/healthrecord/${personId}/create/testresult`, textResourceId: 'Action_AddTestResult' },
+        { path: `/healthrecord/${personId}/create/document`, textResourceId: 'Action_AddDocument' },
+        { path: `/healthrecord/${personId}/order/service`, textResourceId: 'Action_OrderService' },
+        { path: `/healthrecord/${personId}/nursing`, textResourceId: 'Action_Nursing' },
+    ]
+
     return (
         <>
             <Row className="mb-1">
@@ -124,7 +138,7 @@ export const PatientPage = (props: PatientPageProps) => {
                     />
                 </Col>
                 <Col lg={6}>
-                    <PatientActionsCard personId={personId} />
+                    <PatientActionsCard actions={actions} />
                 </Col>
             </Row>
             <PatientDataTabControl

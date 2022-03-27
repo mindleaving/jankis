@@ -51,6 +51,7 @@ const NominalValueEditor = (props: DiagnosticTestValueEditorProps) => {
             return updatedItem;
         }
         onChange(update);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ value ]);
     return (
         <MemoryFormControl
@@ -115,6 +116,7 @@ const OrdinalOrQuantativeValueEditor = (props: DiagnosticTestValueEditorProps) =
             return updatedItem;
         }
         onChange(update);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ scaleType ]);
 
     return (
@@ -147,6 +149,7 @@ const FreetextValueEditor = (props: DiagnosticTestValueEditorProps) => {
             return updatedItem;
         }
         onChange(update);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ value ]);
     return (
         <FormControl
@@ -173,6 +176,7 @@ const DocumentValueEditor = (props: DiagnosticTestValueEditorProps) => {
             return updatedItem;
         }
         onChange(update);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ documentId ]);
     const uploadFile = async (file: File) => {
         setIsUploading(true);

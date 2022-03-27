@@ -21,12 +21,14 @@ export const TestResultTable = (props: TestResultTableProps) => {
                 {groupedTestResults.map(testGroup => {
                     if(testGroup.items.length === 1) {
                         return (<NonQuantitativeTestResultRow
+                            key={testGroup.key}
                             testResults={testGroup.items}
                         />);
                     }
                     const isQuantitativeTest = testGroup.items.every(x => x.scaleType === DiagnosticTestScaleType.Quantitative);
                     if(!isQuantitativeTest) {
                         return (<NonQuantitativeTestResultRow
+                            key={testGroup.key}
                             testResults={testGroup.items}
                         />);
                     }
@@ -35,11 +37,13 @@ export const TestResultTable = (props: TestResultTableProps) => {
                     const commonUnit = mostCommonValue(units)!;
                     const hasSharedUnit = quantitativeTestResults.every(x => canConvertTo(x.value, x.unit, commonUnit));
                     if(!hasSharedUnit) {
-                        <NonQuantitativeTestResultRow
+                        return (<NonQuantitativeTestResultRow
+                            key={testGroup.key}
                             testResults={quantitativeTestResults}
-                        />
+                        />);
                     }
                     return (<QuantitativeTestResultRow
+                        key={testGroup.key}
                         commonUnit={commonUnit}
                         testResults={quantitativeTestResults}
                     />);

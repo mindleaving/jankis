@@ -20,6 +20,7 @@ export const SharedAccessesFilterView = (props: SharedAccessesFilterViewProps) =
         props.onFilterChanged({
             searchText, onlyActive, startTime, endTime
         });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ searchText, onlyActive, startTime, endTime ]);
 
     return (

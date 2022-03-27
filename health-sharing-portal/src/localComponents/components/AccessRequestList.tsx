@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Models } from '../types/models';
 import { NotificationManager } from 'react-notifications';
 import { HubConnectionBuilder } from '@microsoft/signalr';
@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../sharedCommonComponents/communication/ApiClient';
 import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../sharedCommonComponents/helpers/LoadingHelpers';
-import UserContext from '../contexts/UserContext';
 
 interface AccessRequestListProps { }
 

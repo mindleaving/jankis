@@ -25,6 +25,7 @@ export const PatientMedicationView = (props: PatientMedicationViewProps) => {
         if(selectedMedicationSchedule) return;
         if(props.medicationSchedules.length === 0) return;
         setSelectedMedicationSchedule(props.medicationSchedules[0]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ props.medicationSchedules ]);
     useEffect(() => {
         if(!selectedMedicationSchedule) return;

@@ -78,7 +78,7 @@ export const CreatePatientDocumentPage = (props: CreatePatientDocumentPageProps)
         <>
             <h1>{resolveText('Patient_Document')}</h1>
             <Form onSubmit={store}>
-            <FormGroup as={Row}>
+                <FormGroup as={Row}>
                     <FormLabel column>{resolveText('Patient')}</FormLabel>
                     <Col>
                         <PatientAutocomplete
@@ -102,6 +102,7 @@ export const CreatePatientDocumentPage = (props: CreatePatientDocumentPageProps)
                 <StoreButton
                     type="submit"
                     isStoring={isStoring}
+                    disabled={!profileData || !file}
                 />
             </Form>
         </>

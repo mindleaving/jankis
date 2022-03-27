@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Alert } from "react-bootstrap";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { buildLoadObjectFunc } from "../../../sharedCommonComponents/helpers/LoadingHelpers";
-import { Models } from "../../types/models";
+import { Models } from "../../../localComponents/types/models";
 import { QuestionnaireAutocomplete } from "../Autocompletes/QuestionnaireAutocomplete";
 
 export const QuestionnaireAutocompleteWidget = (props: WidgetProps) => {

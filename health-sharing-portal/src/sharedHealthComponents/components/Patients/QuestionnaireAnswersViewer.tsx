@@ -1,7 +1,7 @@
 import React from 'react';
 import { Row, Col, FormGroup, FormLabel } from 'react-bootstrap';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { Models } from '../../types/models';
+import { Models } from '../../../localComponents/types/models';
 
 interface QuestionnaireAnswersViewerProps {
     answers: Models.Interview.QuestionnaireAnswers;

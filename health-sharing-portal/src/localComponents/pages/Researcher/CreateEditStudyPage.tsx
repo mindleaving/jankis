@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { GenericTypeCreateEditPage } from '../../../sharedCommonComponents/pages/GenericTypeCreateEditPage';
-import { QuestionnaireAutocompleteWidget } from '../../components/Researcher/QuestionnaireAutocompleteWidget';
+import { QuestionnaireAutocompleteWidget } from '../../../sharedHealthComponents/components/Widgets/QuestionnaireAutocompleteWidget';
 import { Models } from '../../types/models';
 
 interface CreateEditStudyPageProps {}

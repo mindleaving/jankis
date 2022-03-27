@@ -415,10 +415,9 @@ export namespace Models {
             questions: Models.Interview.Question[];
         }
     
-        interface QuestionnaireAnswers extends Models.IId {
+        interface QuestionnaireAnswers extends Models.IHealthRecordEntry {
             questionnaireId: string;
-            personId: string;
-            timestamp: Date;
+            createdTimestamp: Date;
             answers: Models.Interview.QuestionAnswer[];
         }
     }

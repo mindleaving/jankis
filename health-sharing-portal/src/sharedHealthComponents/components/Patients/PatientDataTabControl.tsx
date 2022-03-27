@@ -9,13 +9,17 @@ import { PatientNotesView } from './PatientNotesView';
 import { PatientObservationsView } from './PatientObservationsView';
 import { PatientTestResultsView } from './PatientTestResultsView';
 import { PatientDiagnosesView } from './PatientDiagnosesView';
+import { ViewModels } from '../../../localComponents/types/viewModels';
+import { PatientQuestionnairesView } from './PatientQuestionnairesView';
 
 interface PatientDataTabControlProps {
+    personId: string;
     notes: Models.PatientNote[];
-    diagnoses: Models.Diagnoses.Diagnosis[];
+    diagnoses: ViewModels.DiagnosisViewModel[];
     observations: Models.Observations.Observation[];
     documents: Models.PatientDocument[];
     testResults: Models.DiagnosticTestResults.DiagnosticTestResult[];
+    questionnaires: ViewModels.QuestionnaireAnswersViewModel[];
     medicationSchedules: Models.Medication.MedicationSchedule[];
     medicationDispensions: Models.Medication.MedicationDispension[];
     createNewMedicationSchedule: () => void;
@@ -23,7 +27,7 @@ interface PatientDataTabControlProps {
 
 export const PatientDataTabControl = (props: PatientDataTabControlProps) => {
 
-    const { notes, diagnoses, observations, documents, testResults, medicationSchedules, medicationDispensions }  = props;
+    const { notes, diagnoses, observations, documents, testResults, medicationSchedules, medicationDispensions, questionnaires }  = props;
 
     return (
         <Tabs defaultActiveKey="overview">
@@ -50,6 +54,12 @@ export const PatientDataTabControl = (props: PatientDataTabControlProps) => {
             </Tab>
             <Tab eventKey="equipment" title={resolveText('Patient_Equipment')}>
 
+            </Tab>
+            <Tab eventKey="questionnaires" title={resolveText('Patient_Questionnaires')}>
+                <PatientQuestionnairesView
+                    personId={props.personId}
+                    questionnaires={questionnaires}
+                />
             </Tab>
             <Tab eventKey="testResults" title={resolveText('Patient_TestResults')}>
                 <PatientTestResultsView testResults={testResults} />

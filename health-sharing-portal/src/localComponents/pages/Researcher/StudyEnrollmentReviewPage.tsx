@@ -7,7 +7,7 @@ import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer'
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { submitPostRequest } from '../../../sharedCommonComponents/helpers/StoringHelpers';
 import { formatPerson } from '../../../sharedHealthComponents/helpers/Formatters';
-import { QuestionnaireAnswersViewer } from '../../components/Researcher/QuestionnaireAnswersViewer';
+import { QuestionnaireAnswersViewer } from '../../../sharedHealthComponents/components/Patients/QuestionnaireAnswersViewer';
 import { ViewModels } from '../../types/viewModels';
 
 interface StudyEnrollmentReviewPageProps {}

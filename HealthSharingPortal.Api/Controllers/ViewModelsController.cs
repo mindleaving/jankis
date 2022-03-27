@@ -13,6 +13,7 @@ using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
 using HealthSharingPortal.API.ViewModels;
 using HealthSharingPortal.API.Workflow;
+using HealthSharingPortal.API.Workflow.ViewModelBuilders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +40,9 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IAuthorizationModule authorizationModule;
         private readonly IReadonlyStore<Questionnaire> questionaireStore;
         private readonly IReadonlyStore<Diagnosis> diagnosesStore;
+        private readonly IViewModelBuilder<QuestionnaireAnswers> questionnaireAnwersViewModelBuilder;
+        private readonly IViewModelBuilder<Diagnosis> diagnosisViewModelBuilder;
+        private IReadonlyStore<QuestionnaireAnswers> questionnaireAnswersStore;
 
         public ViewModelsController(
             IHttpContextAccessor httpContextAccessor,
@@ -55,7 +59,10 @@ namespace HealthSharingPortal.API.Controllers
             IReadonlyStore<StudyAssociation> studyAssociationStore,
             IAuthorizationModule authorizationModule,
             IReadonlyStore<Questionnaire> questionaireStore,
-            IReadonlyStore<Diagnosis> diagnosesStore)
+            IReadonlyStore<Diagnosis> diagnosesStore,
+            IViewModelBuilder<QuestionnaireAnswers> questionnaireAnwersViewModelBuilder,
+            IViewModelBuilder<Diagnosis> diagnosisViewModelBuilder,
+            IReadonlyStore<QuestionnaireAnswers> questionnaireAnswersStore)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.personStore = personStore;
@@ -72,24 +79,36 @@ namespace HealthSharingPortal.API.Controllers
             this.authorizationModule = authorizationModule;
             this.questionaireStore = questionaireStore;
             this.diagnosesStore = diagnosesStore;
+            this.questionnaireAnwersViewModelBuilder = questionnaireAnwersViewModelBuilder;
+            this.diagnosisViewModelBuilder = diagnosisViewModelBuilder;
+            this.questionnaireAnswersStore = questionnaireAnswersStore;
         }
 
         [HttpGet("healthdata/{personId}")]
-        public async Task<IActionResult> HealthData(string personId)
+        public async Task<IActionResult> HealthData(
+            [FromRoute] string personId, 
+            [FromQuery] Language language = Language.en)
         {
+            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
             var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            if (!await authorizationModule.HasPermissionForPerson(personId, username))
+            var currentUserPersonId = ControllerHelpers.GetPersonId(httpContextAccessor);
+            if (!await authorizationModule.HasPermissionForPerson(personId, accountType.Value, username, currentUserPersonId))
                 return Forbid();
-            var profileData = await personStore.GetByIdAsync(personId);
-            var admissions = await admissionsStore.SearchAsync(x => x.ProfileData.Id == personId);
-            var notes = await patientNotesStore.SearchAsync(x => x.PersonId == personId);
-            var diagnoses = await diagnosesStore.SearchAsync(x => x.PersonId == personId);
-            var medicationSchedules = await medicationSchedulesStore.GetForPerson(personId);
-            var medicationDispensions = await medicationDispensionsStore.SearchAsync(x => x.PersonId == personId);
-            var testResults = await testResultsStore.SearchAsync(x => x.PersonId == personId);
-            var observations = await observationsStore.SearchAsync(x => x.PersonId == personId);
-            var documents = await documentsStore.SearchAsync(x => x.PersonId == personId);
-            var viewModel = new PatientOverviewViewModel(
+            var profileData = personStore.GetByIdAsync(personId);
+            var admissions = admissionsStore.SearchAsync(x => x.ProfileData.Id == personId);
+            var notes = patientNotesStore.SearchAsync(x => x.PersonId == personId);
+            var diagnoses = diagnosesStore.SearchAsync(x => x.PersonId == personId)
+                .ContinueWith(result => diagnosisViewModelBuilder.BatchBuild(result.Result, new DiagnosisViewModelBuilderOptions { Language = language }))
+                .Unwrap();
+            var medicationSchedules = medicationSchedulesStore.GetForPerson(personId);
+            var medicationDispensions = medicationDispensionsStore.SearchAsync(x => x.PersonId == personId);
+            var testResults = testResultsStore.SearchAsync(x => x.PersonId == personId);
+            var observations = observationsStore.SearchAsync(x => x.PersonId == personId);
+            var documents = documentsStore.SearchAsync(x => x.PersonId == personId);
+            var questionnaireAnswers = questionnaireAnswersStore.SearchAsync(x => x.PersonId == personId)
+                .ContinueWith(result => questionnaireAnwersViewModelBuilder.BatchBuild(result.Result))
+                .Unwrap();
+            await Task.WhenAll(
                 profileData,
                 admissions,
                 notes,
@@ -98,7 +117,20 @@ namespace HealthSharingPortal.API.Controllers
                 medicationDispensions,
                 testResults,
                 observations,
-                documents);
+                documents,
+                questionnaireAnswers);
+
+            var viewModel = new PatientOverviewViewModel(
+                profileData.Result,
+                admissions.Result,
+                notes.Result,
+                diagnoses.Result.Cast<DiagnosisViewModel>().ToList(),
+                medicationSchedules.Result,
+                medicationDispensions.Result,
+                testResults.Result,
+                observations.Result,
+                documents.Result,
+                questionnaireAnswers.Result.Cast<QuestionnaireAnswersViewModel>().ToList());
             return Ok(viewModel);
         }
 

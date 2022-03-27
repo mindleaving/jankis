@@ -18,7 +18,9 @@ namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
             this.personStore = personStore;
         }
 
-        public async Task<IViewModel<StudyEnrollment>> Build(StudyEnrollment model)
+        public async Task<IViewModel<StudyEnrollment>> Build(
+            StudyEnrollment model, 
+            IViewModelBuilderOptions<StudyEnrollment> options = null)
         {
             var person = await personStore.GetByIdAsync(model.PersonId);
             return new StudyEnrollmentViewModel
@@ -28,7 +30,9 @@ namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
             };
         }
 
-        public async Task<List<IViewModel<StudyEnrollment>>> BatchBuild(List<StudyEnrollment> models)
+        public async Task<List<IViewModel<StudyEnrollment>>> BatchBuild(
+            List<StudyEnrollment> models, 
+            IViewModelBuilderOptions<StudyEnrollment> options = null)
         {
             var personIds = models.Select(x => x.PersonId).ToList();
             var persons = await personStore.SearchAsync(x => personIds.Contains(x.Id));

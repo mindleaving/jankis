@@ -10,3 +10,7 @@ export interface DepartmentsFilter {
 export interface AdmissionsFilter {
     searchText?: string;
 }
+export interface HealthRecordAction {
+    path: string;
+    textResourceId: string;
+}

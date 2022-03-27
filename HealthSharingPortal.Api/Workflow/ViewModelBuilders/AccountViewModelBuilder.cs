@@ -18,17 +18,21 @@ namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
             this.personsStore = personsStore;
         }
 
-        public async Task<IViewModel<Account>> Build(Account account)
+        public async Task<IViewModel<Account>> Build(
+            Account account,
+            IViewModelBuilderOptions<Account> options = null)
         {
             var person = await personsStore.GetByIdAsync(account.PersonId);
             return new AccountViewModel(account.Username, account.AccountType, person);
         }
 
-        public async Task<List<IViewModel<Account>>> BatchBuild(List<Account> models)
+        public async Task<List<IViewModel<Account>>> BatchBuild(
+            List<Account> models,
+            IViewModelBuilderOptions<Account> options = null)
         {
             var personIds = models.Select(x => x.PersonId).ToList();
             var persons = await personsStore.SearchAsync(x => personIds.Contains(x.Id));
-            var personDictionary = persons.ToDictionary(x => x.Id, x => x);
+            var personDictionary = persons.ToDictionary(x => x.Id);
             var viewModels = new List<IViewModel<Account>>();
             foreach (var account in models)
             {

@@ -1,7 +1,7 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { Alert } from 'react-bootstrap';
-import { HealthRecordEntryType, MeasurementType } from '../../../localComponents/types/enums.d';
+import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';

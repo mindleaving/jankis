@@ -1,11 +1,11 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { Alert } from 'react-bootstrap';
 import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { formatDate, formatDiagnosticTestNameOfResult } from '../../helpers/Formatters';
+import { formatDate, formatDiagnosticTestNameOfResult, formatObservationValue } from '../../helpers/Formatters';
 import { DiagnosticTestValueView } from './DiagnosticTestValueView';
 
 interface PatientTimelineItemProps {
@@ -23,10 +23,21 @@ export const PatientTimelineItem = (props: PatientTimelineItemProps) => {
         symbol = "fa-comment";
         body = note.message;
     }
+    else if(props.event.type === HealthRecordEntryType.Diagnosis) {
+        const diagnosis = props.event as Models.Diagnoses.Diagnosis;
+        colorVariant = "success";
+        symbol = "fa-exclamation-circle";
+        body = (<>
+            {resolveText("HealthRecordEntryType_Diagnosis")}: <strong>{diagnosis.icd11Code}</strong>
+        </>);
+    }
     else if(props.event.type === HealthRecordEntryType.Observation) {
         const observation = props.event as Models.Observations.Observation;
         colorVariant = "warning";
         symbol = "fa-stethoscope";
+        body = (<>
+            {resolveText(`MeasurementType_${observation.measurementType}`)} {formatObservationValue(observation)}
+        </>);
     }
     else if(props.event.type === HealthRecordEntryType.Document) {
         const document = props.event as Models.PatientDocument;

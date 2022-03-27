@@ -9,43 +9,47 @@ namespace HealthSharingPortal.API.AccessControl
 {
     public interface IAuthorizationModule
     {
-        Task<bool> HasPermissionForPerson(string personId, string username);
+        Task<bool> HasPermissionForPerson(
+            string personId,
+            AccountType accountType,
+            string username,
+            string currentUserPersonId);
     }
 
     public class AuthorizationModule : IAuthorizationModule
     {
-        private readonly IReadonlyStore<Account> accountStore;
         private readonly IReadonlyStore<EmergencyAccess> emergencyAccessStore;
         private readonly IReadonlyStore<HealthProfessionalAccess> healthProfessionalAccessStore;
         private readonly IReadonlyStore<StudyAssociation> studyAssociationStore;
         private readonly IReadonlyStore<StudyEnrollment> studyEnrollmentStore;
 
         public AuthorizationModule(
-            IReadonlyStore<Account> accountStore, 
             IReadonlyStore<EmergencyAccess> emergencyAccessStore, 
             IReadonlyStore<HealthProfessionalAccess> healthProfessionalAccessStore, 
             IReadonlyStore<StudyAssociation> studyAssociationStore,
             IReadonlyStore<StudyEnrollment> studyEnrollmentStore)
         {
-            this.accountStore = accountStore;
             this.emergencyAccessStore = emergencyAccessStore;
             this.healthProfessionalAccessStore = healthProfessionalAccessStore;
             this.studyAssociationStore = studyAssociationStore;
             this.studyEnrollmentStore = studyEnrollmentStore;
         }
 
-        public async Task<bool> HasPermissionForPerson(string personId, string username)
+        public async Task<bool> HasPermissionForPerson(
+            string personId,
+            AccountType accountType,
+            string username,
+            string currentUserPersonId)
         {
-            var account = await accountStore.GetByIdAsync(username);
-            if (account.AccountType == AccountType.Admin)
+            if (accountType == AccountType.Admin)
             {
                 return false; // Admins don't have access to health data
             }
-            if (account.AccountType == AccountType.Sharer)
+            if (accountType == AccountType.Sharer)
             {
-                return account.PersonId == personId;
+                return currentUserPersonId == personId;
             }
-            if (account.AccountType == AccountType.HealthProfessional)
+            if (accountType == AccountType.HealthProfessional)
             {
                 var utcNow = DateTime.UtcNow;
                 var activeEmergencyAccesses = await emergencyAccessStore
@@ -62,7 +66,7 @@ namespace HealthSharingPortal.API.AccessControl
                                       && (x.AccessEndTimestamp == null || x.AccessEndTimestamp > utcNow));
                 return activeAccesses.Any();
             }
-            if (account.AccountType == AccountType.Researcher)
+            if (accountType == AccountType.Researcher)
             {
                 var associatedStudies = await studyAssociationStore.SearchAsync(x => x.Username == username);
                 var studyIds = associatedStudies.Select(x => x.StudyId).ToList();

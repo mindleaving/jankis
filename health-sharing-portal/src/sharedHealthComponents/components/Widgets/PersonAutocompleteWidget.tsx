@@ -24,10 +24,12 @@ export const PersonAutocompleteWidget = (props: WidgetProps) => {
             () => setIsLoading(false)
         );
         loadProfileData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ props.value ]);
 
     useEffect(() => {
         props.onChange(person?.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ person ]);
     
     return (

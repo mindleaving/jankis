@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels.Interview;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Storage;
 using HealthSharingPortal.API.Workflow;
@@ -13,11 +14,18 @@ namespace HealthSharingPortal.API.Controllers
 {
     public class QuestionnairesController : RestControllerBase<Questionnaire>
     {
+        private readonly IStore<QuestionnaireAnswers> answersStore;
+        private readonly IAuthorizationModule authorizationModule;
+
         public QuestionnairesController(
             IStore<Questionnaire> store,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IStore<QuestionnaireAnswers> answersStore,
+            IAuthorizationModule authorizationModule)
             : base(store, httpContextAccessor)
         {
+            this.answersStore = answersStore;
+            this.authorizationModule = authorizationModule;
         }
 
         [HttpGet("{id}/schema")]
@@ -29,6 +37,56 @@ namespace HealthSharingPortal.API.Controllers
             var questionnaireToSchemaConverter = new QuestionaireToSchemaConverter();
             var schema = questionnaireToSchemaConverter.Convert(item);
             return Ok(schema);
+        }
+
+        [HttpPost("{questionnaireId}/answers")]
+        [HttpPut("{questionnaireId}/answers/{answerId}")]
+        public async Task<IActionResult> SubmitAnswer(
+            [FromRoute] string questionnaireId, 
+            [FromRoute] string answerId, 
+            [FromBody] QuestionnaireAnswers answer)
+        {
+            if (answer.QuestionnaireId != questionnaireId)
+                return BadRequest("Questionnaire ID of body doesn't match route");
+            if (answerId != null && answer.Id != answerId)
+                return BadRequest("Answer ID of body doesn't match route");
+            var existingAnswer = await answersStore.GetByIdAsync(answer.Id);
+            if (existingAnswer != null)
+            {
+                if (existingAnswer.PersonId != answer.PersonId)
+                    return Conflict("An answer with the same ID exists for another person");
+                if (existingAnswer.QuestionnaireId != questionnaireId)
+                    return Conflict("An answer with the same ID exists for another questionnaire. Please use another ID");
+            }
+            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
+            var currentUserPersonId = ControllerHelpers.GetPersonId(httpContextAccessor);
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var isAuthorized = await authorizationModule.HasPermissionForPerson(answer.PersonId, accountType.Value, username, currentUserPersonId);
+            if (!isAuthorized)
+                return Forbid("You are not authorized to submit answers for this person");
+            
+            await answersStore.StoreAsync(answer);
+            return Ok();
+        }
+
+
+        [HttpGet("{questionnaireId}/answers/{answerId}")]
+        public async Task<IActionResult> GetAnswer(
+            [FromRoute] string questionnaireId,
+            [FromRoute] string answerId)
+        {
+            var answer = await answersStore.GetByIdAsync(answerId);
+            if (answer == null)
+                return NotFound();
+            if (answer.QuestionnaireId != questionnaireId)
+                return NotFound();
+            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var currentUserPersonId = ControllerHelpers.GetPersonId(httpContextAccessor);
+            var isAuthorized = await authorizationModule.HasPermissionForPerson(answer.PersonId, accountType.Value, username, currentUserPersonId);
+            if (!isAuthorized)
+                return Forbid();
+            return Ok(answer);
         }
 
 

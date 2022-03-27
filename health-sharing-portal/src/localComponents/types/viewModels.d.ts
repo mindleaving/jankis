@@ -14,6 +14,10 @@ export namespace ViewModels {
         profileData: Models.Person;
     }
 
+    interface DiagnosisViewModel extends Models.Diagnoses.Diagnosis, ViewModels.IViewModel<Models.Diagnoses.Diagnosis> {
+        name: string;
+    }
+
     interface IViewModel<T> {
         
     }
@@ -30,12 +34,26 @@ export namespace ViewModels {
         profileData: Models.Person;
         admissions: Models.Admission[];
         notes: Models.PatientNote[];
-        diagnoses: Models.Diagnoses.Diagnosis[];
+        diagnoses: ViewModels.DiagnosisViewModel[];
         medicationSchedules: Models.Medication.MedicationSchedule[];
         medicationDispensions: Models.Medication.MedicationDispension[];
         testResults: Models.DiagnosticTestResults.DiagnosticTestResult[];
         observations: Models.Observations.Observation[];
         documents: Models.PatientDocument[];
+        questionnaires: ViewModels.QuestionnaireAnswersViewModel[];
+    }
+
+    interface QuestionnaireAnswersViewModel extends ViewModels.IViewModel<Models.Interview.QuestionnaireAnswers> {
+        questionnaireId: string;
+        questionnaireTitle: string;
+        questionnaireDescription: string;
+        questionnaireLanguage: Enums.Language;
+        questionCount: number;
+        answersId: string;
+        hasAnswered: boolean;
+        lastChangeTimestamp: Date;
+        assignedBy: string;
+        assignedTimestamp: Date;
     }
 
     interface StudyEnrollmentViewModel extends ViewModels.IViewModel<Models.StudyEnrollment> {
@@ -66,6 +84,14 @@ export namespace ViewModels {
     }
 
     interface IViewModel<Account> {
+        
+    }
+
+    interface IViewModel<Diagnosis> {
+        
+    }
+
+    interface IViewModel<QuestionnaireAnswers> {
         
     }
 

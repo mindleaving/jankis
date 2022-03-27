@@ -9,6 +9,7 @@
         Document = 4,
         MedicationDispension = 5,
         Equipment = 6,
-        Diagnosis = 7
+        Diagnosis = 7,
+        Questionnaire = 8
     }
 }

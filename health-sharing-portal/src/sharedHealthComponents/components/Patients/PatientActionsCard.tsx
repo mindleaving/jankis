@@ -2,9 +2,10 @@ import React from 'react';
 import { Card, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
+import { HealthRecordAction } from '../../types/frontendTypes';
 
 interface PatientActionsCardProps {
-    personId: string;
+    actions: HealthRecordAction[];
 }
 
 export const PatientActionsCard = (props: PatientActionsCardProps) => {
@@ -14,15 +15,15 @@ export const PatientActionsCard = (props: PatientActionsCardProps) => {
         <Card>
             <Card.Header>{resolveText('Patient_Actions')}</Card.Header>
             <Card.Body>
-                <Button className="m-1" onClick={() => navigate(`/healthrecord/${props.personId}/create/note`)}>{resolveText('Action_AddNote')}</Button>
-                <Button className="m-1" onClick={() => navigate(`/healthrecord/${props.personId}/create/observation`)}>{resolveText('Action_AddObservation')}</Button>
-                <Button className="m-1" onClick={() => navigate(`/healthrecord/${props.personId}/create/diagnosis`)}>{resolveText('Action_AddDiagnosis')}</Button>
-                <Button className="m-1" onClick={() => navigate(`/healthrecord/${props.personId}/add/medication`)}>{resolveText('Action_AddMedication')}</Button>
-                <Button className="m-1" onClick={() => navigate(`/healthrecord/${props.personId}/nursing`)}>{resolveText('Action_AddEquipment')}</Button>
-                <Button className="m-1" onClick={() => navigate(`/healthrecord/${props.personId}/create/testresult`)}>{resolveText('Action_AddTestResult')}</Button>
-                <Button className="m-1" onClick={() => navigate(`/healthrecord/${props.personId}/create/document`)}>{resolveText('Action_AddDocument')}</Button>
-                <Button className="m-1" onClick={() => navigate(`/healthrecord/${props.personId}/order/service`)}>{resolveText('Action_OrderService')}</Button>
-                <Button className="m-1" onClick={() => navigate(`/healthrecord/${props.personId}/nursing`)}>{resolveText('Action_Nursing')}</Button>
+                {props.actions.map((action,index) => (
+                    <Button 
+                        key={index}
+                        className="m-1" 
+                        onClick={() => navigate(action.path)}
+                    >
+                        {resolveText(action.textResourceId)}
+                    </Button>
+                ))}
             </Card.Body>
         </Card>
     );

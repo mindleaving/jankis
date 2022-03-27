@@ -1,4 +1,4 @@
-import { Button, Col, Row } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { resolveText } from "../../sharedCommonComponents/helpers/Globalizer";
 

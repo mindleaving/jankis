@@ -1,19 +1,19 @@
 import React, { useMemo } from 'react';
 import { Alert } from 'react-bootstrap';
-import { Models } from '../../types/models';
+import { Models } from '../../../localComponents/types/models';
 import { Autocomplete } from '../../../sharedCommonComponents/components/Autocompletes/Autocomplete';
 import { AutocompleteRunner } from '../../../sharedCommonComponents/helpers/AutocompleteRunner';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 
-interface QuestionnaireAutocompleteProps {
+interface IcdAutocompleteProps {
     isLoading?: boolean;
-    value?: Models.Interview.Questionnaire;
-    onChange: (questionnaire: Models.Interview.Questionnaire | undefined) => void;
+    value?: Models.Icd.IcdCategory;
+    onChange: (service: Models.Icd.IcdCategory | undefined) => void;
 }
 
-export const QuestionnaireAutocomplete = (props: QuestionnaireAutocompleteProps) => {
+export const IcdAutocomplete = (props: IcdAutocompleteProps) => {
 
-    const questionnaireAutocompleteRunner = useMemo(() => new AutocompleteRunner<Models.Interview.Questionnaire>('api/questionnaires/search', 'searchText', 10), []);
+    const icdAutocompleteRunner = useMemo(() => new AutocompleteRunner<Models.Icd.IcdCategory>('api/classifications/icd11', 'searchText', 10), []);
 
     if(props.value || props.isLoading) {
         return (<Alert 
@@ -23,12 +23,12 @@ export const QuestionnaireAutocomplete = (props: QuestionnaireAutocompleteProps)
         >
             {props.isLoading 
             ? resolveText('Loading...') 
-            : props.value!.title}
+            : props.value!.name}
         </Alert>);
     }
     return (<Autocomplete
-        search={questionnaireAutocompleteRunner.search}
-        displayNameSelector={x => !x ? resolveText("UnnamedQuestionnaire") : `${x.title} (${x.language})`}
+        search={icdAutocompleteRunner.search}
+        displayNameSelector={x => x.name}
         onItemSelected={props.onChange}
     />);
 
