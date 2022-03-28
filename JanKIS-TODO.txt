@@ -13,7 +13,7 @@ DONE - Bed occupancy timeline view
 Health Sharing Portal TODO:
 DONE - Store and display diagnosis
 DONE - Store and display questionnaires, e.g. family history, social history
-- Specify length of access when creating access invite
+DONE - Specify length of access when creating access invite
 - Field for specifying time of observation/measurement in respective forms (default "Now", but when entering historic information the time needs to be specified)
 
 - Idea, medium priority: Have a command line tool for health professionals that can create entries quickly. E.g. "Diagnosis<TAB>Acute Pharyngitis" or "Observation<TAB>Pulse<TAB>84" (with auto-complete). Maybe even skip "Diagnosis/Observation" and recognize disease names and observation names directly?

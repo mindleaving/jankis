@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthModels.Interview;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
@@ -30,12 +32,14 @@ namespace HealthSharingPortal.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public virtual async Task<IActionResult> GetById([FromRoute] string id)
+        public virtual async Task<IActionResult> GetById(
+            [FromRoute] string id,
+            [FromQuery] Language language = Language.en)
         {
             var item = await store.GetByIdAsync(id);
             if (item == null)
                 return NotFound();
-            var transformedItem = await TransformItem(item);
+            var transformedItem = await TransformItem(item, language);
             return Ok(transformedItem);
         }
 
@@ -44,16 +48,21 @@ namespace HealthSharingPortal.API.Controllers
             [FromQuery] int? count = null,
             [FromQuery] int? skip = null,
             [FromQuery] string orderBy = null,
-            [FromQuery] OrderDirection orderDirection = OrderDirection.Ascending)
+            [FromQuery] OrderDirection orderDirection = OrderDirection.Ascending,
+            [FromQuery] Language language = Language.en)
         {
             var orderByExpression = BuildOrderByExpression(orderBy);
             var items = await store.GetMany(count, skip, orderByExpression, orderDirection);
-            var transformedItems = await TransformItems(items);
+            var transformedItems = await TransformItems(items, language);
             return Ok(transformedItems);
         }
 
         [HttpGet(nameof(Search))]
-        public virtual async Task<IActionResult> Search([FromQuery] string searchText, [FromQuery] int? count = null, [FromQuery] int? skip = null)
+        public virtual async Task<IActionResult> Search(
+            [FromQuery] string searchText, 
+            [FromQuery] int? count = null, 
+            [FromQuery] int? skip = null,
+            [FromQuery] Language language = Language.en)
         {
             if (searchText == null)
                 return BadRequest("No search text specified");
@@ -61,7 +70,7 @@ namespace HealthSharingPortal.API.Controllers
             var searchExpression = BuildSearchExpression(searchTerms);
             var items = await store.SearchAsync(searchExpression, count, skip);
             var prioritizedItems = PrioritizeItems(items, searchText);
-            var transformedItems = await TransformItems(prioritizedItems);
+            var transformedItems = await TransformItems(prioritizedItems, language);
             return Ok(transformedItems);
         }
 
@@ -95,20 +104,18 @@ namespace HealthSharingPortal.API.Controllers
             return Ok();
         }
 
-        protected async Task<List<object>> TransformItems(IEnumerable<T> items)
+        protected async Task<List<object>> TransformItems(IEnumerable<T> items, Language language)
         {
-            var transformedItems = new List<object>();
-            foreach (var item in items)
-            {
-                var transformedItem = await TransformItem(item);
-                transformedItems.Add(transformedItem);
-            }
-            return transformedItems;
+            var transformTasks = items.Select(item => TransformItem(item, language)).ToList();
+            await Task.WhenAll(transformTasks);
+            return transformTasks.Select(x => x.Result).ToList();
         }
 
         
 
-        protected abstract Task<object> TransformItem(T item);
+        protected abstract Task<object> TransformItem(
+            T item,
+            Language language);
         protected abstract Expression<Func<T, object>> BuildOrderByExpression(string orderBy);
         protected abstract Expression<Func<T,bool>> BuildSearchExpression(string[] searchTerms);
         protected abstract IEnumerable<T> PrioritizeItems(List<T> items, string searchText);

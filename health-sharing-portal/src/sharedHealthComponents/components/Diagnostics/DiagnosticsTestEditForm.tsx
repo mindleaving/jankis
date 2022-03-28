@@ -40,6 +40,7 @@ export const DiagnosticsTestEditForm = (props: DiagnosticsTestEditFormProps) => 
         return {
             id: props.id ?? uuid(),
             name: testName,
+            translations: [],
             description: description,
             testCodeLoinc: testCodeLoinc,
             testCodeLocal: testCodeLocal,

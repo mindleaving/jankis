@@ -23,6 +23,7 @@ interface PatientDataTabControlProps {
     medicationSchedules: Models.Medication.MedicationSchedule[];
     medicationDispensions: Models.Medication.MedicationDispension[];
     createNewMedicationSchedule: () => void;
+    onDiagnosisMarkedAsResolved: (diagnosisId: string) => void;
 }
 
 export const PatientDataTabControl = (props: PatientDataTabControlProps) => {
@@ -40,7 +41,11 @@ export const PatientDataTabControl = (props: PatientDataTabControlProps) => {
                 <PatientNotesView notes={notes} />
             </Tab>
             <Tab eventKey="diagnosis" title={resolveText("Patient_Diagnosis")}>
-                <PatientDiagnosesView diagnoses={diagnoses} />
+                <PatientDiagnosesView 
+                    personId={props.personId}
+                    diagnoses={diagnoses} 
+                    onMarkAsResolved={props.onDiagnosisMarkedAsResolved}
+                />
             </Tab>
             <Tab eventKey="observations" title={resolveText('Patient_Observations')}>
                 <PatientObservationsView observations={observations} />

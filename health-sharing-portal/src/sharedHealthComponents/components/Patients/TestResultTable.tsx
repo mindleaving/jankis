@@ -33,9 +33,9 @@ export const TestResultTable = (props: TestResultTableProps) => {
                         />);
                     }
                     const quantitativeTestResults = testGroup.items.map(x => x as Models.DiagnosticTestResults.QuantitativeDiagnosticTestResult);
-                    const units = quantitativeTestResults.map(x => x.unit);
+                    const units = quantitativeTestResults.map(x => x.unit!);
                     const commonUnit = mostCommonValue(units)!;
-                    const hasSharedUnit = quantitativeTestResults.every(x => canConvertTo(x.value, x.unit, commonUnit));
+                    const hasSharedUnit = quantitativeTestResults.every(x => canConvertTo(x.value, x.unit!, commonUnit));
                     if(!hasSharedUnit) {
                         return (<NonQuantitativeTestResultRow
                             key={testGroup.key}

@@ -113,11 +113,14 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
     return (
         <>
             <Row>
-                <Col xl={6}>
+                <Col xl={6} className="mb-2">
                     <BasicInformationBox />
                 </Col>
                 <Col xl={6}>
-                    <PatientActionsCard actions={actions} />
+                    <PatientActionsCard 
+                        personId={personId}
+                        actions={actions} 
+                    />
                 </Col>
             </Row>
             <Row className='mt-3'>

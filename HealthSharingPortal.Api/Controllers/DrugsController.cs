@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using HealthModels.Interview;
 using HealthModels.Medication;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Storage;
@@ -22,7 +23,9 @@ namespace HealthSharingPortal.API.Controllers
             this.autocompleteCache = autocompleteCache;
         }
 
-        protected override Task<object> TransformItem(Drug item)
+        protected override Task<object> TransformItem(
+            Drug item,
+            Language language)
         {
             return Task.FromResult<object>(item);
         }

@@ -1,4 +1,5 @@
 ﻿using HealthModels;
+using HealthModels.Interview;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
@@ -28,6 +29,7 @@ namespace HealthSharingPortal.API.Models
         public string PersonId { get; set; }
         public AccountType AccountType { get; set; }
         public string Username { get; set; }
+        public Language PreferedLanguage { get; set; } = Language.en;
 
         #region Login-information
         [JsonIgnore]

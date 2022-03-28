@@ -1,4 +1,5 @@
 ﻿using HealthModels;
+using HealthModels.Interview;
 using HealthSharingPortal.API.Models;
 
 namespace HealthSharingPortal.API.ViewModels
@@ -10,13 +11,15 @@ namespace HealthSharingPortal.API.ViewModels
             AuthenticationResult authenticationResult,
             string username,
             bool isPasswordResetRequired,
-            AccountType accountType)
+            AccountType accountType,
+            Language preferedLanguage)
         {
             ProfileData = profileData;
             AuthenticationResult = authenticationResult;
             Username = username;
             IsPasswordResetRequired = isPasswordResetRequired;
             AccountType = accountType;
+            PreferedLanguage = preferedLanguage;
         }
 
         public Person ProfileData { get; set; }
@@ -24,5 +27,6 @@ namespace HealthSharingPortal.API.ViewModels
         public string Username { get; set; }
         public bool IsPasswordResetRequired { get; set; }
         public AccountType AccountType { get; set; }
+        public Language PreferedLanguage { get; set; } = Language.en;
     }
 }

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { ViewModels } from '../../../localComponents/types/viewModels';
 import { AsyncButton } from '../../../sharedCommonComponents/components/AsyncButton';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { submitPostRequest } from '../../../sharedCommonComponents/helpers/StoringHelpers';
+import { sendPostRequest } from '../../../sharedCommonComponents/helpers/StoringHelpers';
 import { formatDate } from '../../helpers/Formatters';
 
 interface PatientDiagnosisViewProps {
@@ -38,7 +38,7 @@ export const PatientDiagnosesView = (props: PatientDiagnosisViewProps) => {
             return;
         }
         setIsSubmitting(true);
-        await submitPostRequest(
+        await sendPostRequest(
             `api/diagnoses/${diagnosisId}/resolve`,
             resolveText("Diagnosis_CouldNotMarkAsResolved"),
             null,
