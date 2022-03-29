@@ -2,6 +2,9 @@ import { CommandPartType } from "../../types/medicalCommandEnums";
 import { MedicalCommands } from "../../types/medicalCommandTypes";
 import { sendPostRequest } from "../../../sharedCommonComponents/helpers/StoringHelpers";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
+import { getObjectReferenceValue } from "../../helpers/MedicalCommandHelpers";
+import { Models } from "../../../localComponents/types/models";
+import { formatDrug } from "../../helpers/Formatters";
 
 export class MedicationCommands {
     personId: string;
@@ -9,8 +12,9 @@ export class MedicationCommands {
     navigate: (path: string) => void;
     commandHierarchy: MedicalCommands.CommandPart;
 
-    addMedication = async (commandParts: string[]) => {
-        const drugId = commandParts[2];
+    addMedication = async (commandParts: MedicalCommands.SelectedCommandPart[]) => {
+        const drug = getObjectReferenceValue<Models.Medication.Drug>(commandParts, "Drug");
+        const drugId = drug!.id;
         const dosage = commandParts[3];
         const dispensionPattern = commandParts[4];
         // const medication: Models.Medication.MedicationScheduleItemLight = {
@@ -29,22 +33,30 @@ export class MedicationCommands {
         // );
     }
 
-    pauseMedication = async (commandParts: string[]) => {
-        const medicationId = commandParts[commandParts.length-1];
+    pauseMedication = async (commandParts: MedicalCommands.SelectedCommandPart[]) => {
+        const medication = getObjectReferenceValue<Models.Medication.MedicationScheduleItem>(commandParts, "Medication");
+        const medicationId = medication!.id;
+        let isSuccess = false;
         sendPostRequest(
             `api/persons/${this.personId}/medications/${medicationId}/pause`,
             resolveText("Medication_CouldNotPause"),
-            null
+            null,
+            response => isSuccess = response.ok
         );
+        return isSuccess;
     }
 
-    removeMedication = async (commandParts: string[]) => {
-        const medicationId = commandParts[commandParts.length-1];
+    removeMedication = async (commandParts: MedicalCommands.SelectedCommandPart[]) => {
+        const medication = getObjectReferenceValue<Models.Medication.MedicationScheduleItem>(commandParts, "Medication");
+        const medicationId = medication!.id;
+        let isSuccess = false;
         sendPostRequest(
             `api/persons/${this.personId}/medications/${medicationId}/stop`,
             resolveText("Medication_CouldNotRemove"),
-            null
+            null,
+            response => isSuccess = response.ok
         );
+        return isSuccess;
     }
 
     
@@ -66,7 +78,11 @@ export class MedicationCommands {
                         contextCommands: [
                             {
                                 type: CommandPartType.ObjectReference,
+                                description: 'Drug',
+                                objectType: 'Drug',
                                 autocompleteUrl: 'api/drugs',
+                                searchParameter: 'searchText',
+                                displayFunc: formatDrug,
                                 contextCommands: [
                                     {
                                         type: CommandPartType.Pattern,
@@ -91,7 +107,11 @@ export class MedicationCommands {
                         contextCommands: [
                             {
                                 type: CommandPartType.ObjectReference,
+                                description: 'Medication',
+                                objectType: 'Medication',
                                 autocompleteUrl: `api/persons/${this.personId}/medications`,
+                                searchParameter: 'searchText',
+                                displayFunc: (medication: Models.Medication.MedicationScheduleItem) => formatDrug(medication.drug),
                                 action: this.removeMedication,
                                 contextCommands: []
                             } as MedicalCommands.ObjectReferenceCommandPart
@@ -103,7 +123,11 @@ export class MedicationCommands {
                         contextCommands: [
                             {
                                 type: CommandPartType.ObjectReference,
+                                description: 'Medication',
+                                objectType: 'Medication',
                                 autocompleteUrl: `api/persons/${this.personId}/medications`,
+                                searchParameter: 'searchText',
+                                displayFunc: (medication: Models.Medication.MedicationScheduleItem) => formatDrug(medication.drug),
                                 action: this.pauseMedication,
                                 contextCommands: []
                             } as MedicalCommands.ObjectReferenceCommandPart
