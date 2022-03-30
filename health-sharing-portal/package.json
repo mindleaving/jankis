@@ -12,7 +12,6 @@
     "@types/date-fns": "^2.6.0",
     "@types/jest": "^27.4.1",
     "@types/js-cookie": "^3.0.1",
-    "@types/mathjs": "^9.4.2",
     "@types/node": "^16.11.26",
     "@types/react": "^17.0.39",
     "@types/react-autosuggest": "^10.1.5",

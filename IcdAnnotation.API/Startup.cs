@@ -1,24 +1,10 @@
-using Commons.Physics;
-using HealthModels.Icd;
-using HealthModels.Icd.Annotation.Epidemiology;
-using HealthModels.Observations;
-using HealthModels.Symptoms;
-using IcdAnnotation.API.Data;
 using IcdAnnotation.API.Hubs;
-using IcdAnnotation.API.Models;
 using IcdAnnotation.API.Setups;
-using IcdAnnotation.API.Workflow;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Conventions;
-using MongoDB.Driver;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace IcdAnnotation.API
 {

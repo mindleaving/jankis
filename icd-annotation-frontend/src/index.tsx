@@ -7,7 +7,8 @@ import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-notifications/dist/react-notifications.css';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import './styles/common.css';
+import './sharedCommonComponents/styles/common.css';
+import './localComponents/styles/common.css';
 
 ReactDOM.render(
   <React.StrictMode>

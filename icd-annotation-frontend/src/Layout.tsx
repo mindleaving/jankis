@@ -6,8 +6,8 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import Button from 'react-bootstrap/Button';
 import { useNavigate } from 'react-router-dom';
 import { NotificationContainer } from 'react-notifications';
-import { Form } from 'react-bootstrap';
-import { FeedbackModal } from './modals/FeedbackModal';
+import { NavItem } from 'react-bootstrap';
+import { FeedbackModal } from './localComponents/modals/FeedbackModal';
 
 interface LayoutProps extends React.PropsWithChildren<{}> {
     username?: string;
@@ -45,16 +45,25 @@ export const Layout = (props: LayoutProps) => {
 
                         <Nav.Link onClick={() => navigate('/legal')}>Legal</Nav.Link>
                     </Nav>
-                    <Form inline className="mr-3 my-1 my-md-0">
-                        {props.username ? <Form.Label className="mr-3">Hello, {props.username}</Form.Label> : null}
+                    <Nav className='me-auto'></Nav>
+                    <Nav className='mx-2'>
+                        {props.username 
+                        ? <Navbar.Text className='me-2'>
+                            Hello, {props.username}
+                        </Navbar.Text>
+                        : null}
+                        <NavItem>
                         {props.username 
                             ? <Button onClick={props.onLogout}><i className="fa fa-lock" /> Log out</Button>
                             : <Button variant="success" onClick={props.onLogin}><i className="fa fa-lock mr-1" /> Login</Button>
                         }
-                    </Form>
-                    <Form inline className="mr-3 my-1 my-md-0">
-                        <Button variant="secondary" onClick={() => setShowFeedbackModal(true)} disabled={showFeedbackModal}>Feedback</Button>
-                    </Form>
+                        </NavItem>
+                    </Nav>
+                    <Nav className='mx-2'>
+                        <NavItem>
+                            <Button variant="secondary" onClick={() => setShowFeedbackModal(true)} disabled={showFeedbackModal}>Feedback</Button>
+                        </NavItem>
+                    </Nav>
                 </Navbar.Collapse>
             </Navbar>
             <FeedbackModal show={showFeedbackModal} onCancel={() => setShowFeedbackModal(false)} />
