@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using HealthModels;
 using JanKIS.API.Storage;
 using JanKIS.API.ViewModels;
@@ -14,7 +15,7 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
             this.departmentsStore = departmentsStore;
         }
 
-        public async Task<IViewModel<Department>> Build(Department model)
+        public async Task<IViewModel<Department>> Build(Department model, IViewModelBuilderOptions<Department> options = null)
         {
             IViewModel<Department> parentDepartmentViewModel = null;
             if (model.ParentDepartmentId != null)
@@ -26,6 +27,13 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
             {
                 ParentDepartment = (DepartmentViewModel) parentDepartmentViewModel
             };
+        }
+
+        public Task<List<IViewModel<Department>>> BatchBuild(
+            List<Department> models,
+            IViewModelBuilderOptions<Department> options = null)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

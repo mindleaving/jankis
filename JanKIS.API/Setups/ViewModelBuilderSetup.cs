@@ -1,4 +1,6 @@
 ﻿using HealthModels;
+using HealthModels.Diagnoses;
+using HealthModels.Interview;
 using HealthModels.Services;
 using JanKIS.API.Models;
 using JanKIS.API.Workflow.ViewModelBuilders;
@@ -23,6 +25,8 @@ namespace JanKIS.API.Setups
             services.AddScoped<IViewModelBuilder<ServiceDefinition>, ServiceViewModelBuilder>();
             services.AddScoped<IViewModelBuilder<Stock>, StockViewModelBuilder>();
             services.AddScoped<IViewModelBuilder<StockState>, StockStateViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<Diagnosis>, DiagnosisViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<QuestionnaireAnswers>, QuestionnaireAnswersViewModelBuilder>();
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using HealthModels.Interview;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
@@ -27,7 +28,9 @@ namespace JanKIS.API.Controllers
             this.notificationDistributor = notificationDistributor;
         }
 
-        protected override async Task<object> TransformItem(AttachedEquipment item)
+        protected override async Task<object> TransformItem(
+            AttachedEquipment item,
+            Language language = Language.en)
         {
             return await attachedEquipmentViewModelBuilder.Build(item);
         }

@@ -19,6 +19,9 @@ export const formatCommandPart = (commandPart: MedicalCommands.CommandPart) => {
         case CommandPartType.ObjectReference:
             //const objectReferenceCommandPart = commandPart as MedicalCommands.ObjectReferenceCommandPart;
             return resolveText("MedicalCommands_ObjectReference");
+        case CommandPartType.AutoComplete:
+            //const autoCompleteCommandPart = commandPart as MedicalCommands.AutoCompleteCommandPart;
+            return resolveText("MedicalCommands_AutoComplete");
         case CommandPartType.Pattern:
             const patternCommandPart = commandPart as MedicalCommands.PatternCommandPart;
             return `${resolveText("MedicalCommands_Pattern")}: ${patternCommandPart.pattern}`;
@@ -42,6 +45,9 @@ export const formatSelectedCommandPart = (selectedPart: MedicalCommands.Selected
         case CommandPartType.ObjectReference:
             const objectReferenceCommandPart = commandPart as MedicalCommands.ObjectReferenceCommandPart;
             return descriptionPrefix + objectReferenceCommandPart.displayFunc(selectedPart.selectedValue);
+        case CommandPartType.AutoComplete:
+            //const autoCompleteCommandPart = commandPart as MedicalCommands.ObjectReferenceCommandPart;
+            return descriptionPrefix + selectedPart.selectedValue;
         case CommandPartType.Pattern:
             //const patternCommandPart = commandPart as MedicalCommands.PatternCommandPart;
             return descriptionPrefix + selectedPart.selectedValue;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, Button, Col, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
@@ -8,12 +8,26 @@ import { HealthRecordAction } from '../../types/frontendTypes';
 interface PatientActionsCardProps {
     personId: string;
     actions: HealthRecordAction[];
+    onCommandSuccessful?: () => void;
 }
 
 export const PatientActionsCard = (props: PatientActionsCardProps) => {
 
     const [ showCommandline, setShowCommandline] = useState<boolean>(false);
     const navigate = useNavigate();
+
+    const onKeyDown = (keyEvent: KeyboardEvent) => {
+        if(keyEvent.key === "Enter" && keyEvent.altKey) {
+            setShowCommandline(true);
+        }
+    }
+
+    useEffect(() => {
+        window.addEventListener("keydown", onKeyDown);
+        return () => {
+            window.removeEventListener("keydown", onKeyDown);
+        }
+    }, []);
     
     return (
         <>
@@ -49,6 +63,7 @@ export const PatientActionsCard = (props: PatientActionsCardProps) => {
                 personId={props.personId}
                 show={showCommandline}
                 onCloseRequested={() => setShowCommandline(false)}
+                onCommandSuccessful={props.onCommandSuccessful}
             />
         </>
     );

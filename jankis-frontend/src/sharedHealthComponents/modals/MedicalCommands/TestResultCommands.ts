@@ -12,9 +12,9 @@ export class TestResultCommands {
     navigate: (path: string) => void;
     commandHierarchy: MedicalCommands.CommandPart;
 
-    addTestResult = async (commandParts: string[]) => {
-        const loincCode = commandParts[2];
-        const value = commandParts[3];
+    addTestResult = async (commandParts: MedicalCommands.SelectedCommandPart[]) => {
+        const loincCode = commandParts[2].selectedValue;
+        const value = commandParts[3].selectedValue;
         const testResult: Models.DiagnosticTestResults.FreetextDiagnosticTestResult = {
             id: uuid(),
             type: HealthRecordEntryType.TestResult,
@@ -26,11 +26,14 @@ export class TestResultCommands {
             scaleType: DiagnosticTestScaleType.Undefined,
             text: value
         };
+        let isSuccess = false;
         await sendPutRequest(
             `api/testresults/${testResult.id}`,
             resolveText("TestResult_CouldNotStore"),
-            testResult
+            testResult,
+            response => isSuccess = response.ok
         );
+        return isSuccess;
     }
 
     gotoTestResults = () => {

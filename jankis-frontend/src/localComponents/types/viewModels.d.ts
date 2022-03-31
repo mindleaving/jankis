@@ -35,6 +35,10 @@ export namespace ViewModels {
         parentDepartment?: ViewModels.DepartmentViewModel;
     }
 
+    interface DiagnosisViewModel extends Models.Diagnoses.Diagnosis, ViewModels.IViewModel<Models.Diagnoses.Diagnosis> {
+        name: string;
+    }
+
     interface InstitutionViewModel extends Models.Institution, ViewModels.IViewModel<Models.Institution> {
         rooms: Models.Room[];
         departments: ViewModels.DepartmentViewModel[];
@@ -78,12 +82,27 @@ export namespace ViewModels {
         currentBedOccupancy: Models.BedOccupancy;
         admissions: Models.Admission[];
         notes: Models.PatientNote[];
+        diagnoses: ViewModels.DiagnosisViewModel[];
         medicationSchedules: Models.Medication.MedicationSchedule[];
         medicationDispensions: Models.Medication.MedicationDispension[];
         testResults: Models.DiagnosticTestResults.DiagnosticTestResult[];
         observations: Models.Observations.Observation[];
         documents: Models.PatientDocument[];
+        questionnaires: ViewModels.QuestionnaireAnswersViewModel[];
         subscription: Models.Subscriptions.PatientSubscription;
+    }
+
+    interface QuestionnaireAnswersViewModel extends ViewModels.IViewModel<Models.Interview.QuestionnaireAnswers> {
+        questionnaireId: string;
+        questionnaireTitle: string;
+        questionnaireDescription: string;
+        questionnaireLanguage: Enums.Language;
+        questionCount: number;
+        answersId: string;
+        hasAnswered: boolean;
+        lastChangeTimestamp: Date;
+        assignedBy: string;
+        assignedTimestamp: Date;
     }
 
     interface ResourceViewModel extends Models.Resource, ViewModels.IViewModel<Models.Resource> {
@@ -130,11 +149,19 @@ export namespace ViewModels {
         
     }
 
+    interface IViewModel<Diagnosis> {
+        
+    }
+
     interface IViewModel<Institution> {
         
     }
 
     interface IViewModel<LocationReference> {
+        
+    }
+
+    interface IViewModel<QuestionnaireAnswers> {
         
     }
 

@@ -23,7 +23,7 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
             this.personsStore = personsStore;
         }
 
-        public async Task<IViewModel<Account>> Build(Account account)
+        public async Task<IViewModel<Account>> Build(Account account, IViewModelBuilderOptions<Account> options = null)
         {
             var person = await personsStore.GetByIdAsync(account.PersonId);
             if (account.AccountType == AccountType.Employee)
@@ -51,6 +51,13 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
                     accountDepartments);
             }
             return new AccountViewModel(account.Username, account.AccountType, person);
+        }
+
+        public Task<List<IViewModel<Account>>> BatchBuild(
+            List<Account> models,
+            IViewModelBuilderOptions<Account> options = null)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

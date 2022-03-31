@@ -44,6 +44,11 @@ export namespace Models {
         insuranceNumber: string;
     }
 
+    interface IHasTranslations {
+        name: string;
+        translations: { [key: Enums.Language]: string };
+    }
+
     interface IHealthRecordEntry extends Models.IId {
         type: Enums.HealthRecordEntryType;
         personId: string;
@@ -274,12 +279,6 @@ export namespace Models {
             scaleType: Enums.DiagnosticTestScaleType;
         }
     
-        interface QuantitativeDiagnosticTestDefinition extends Models.Services.DiagnosticTestDefinition {
-            unit: string;
-            referenceRangeStart: number;
-            referenceRangeEnd: number;
-        }
-    
         interface NumberServiceParameter extends Models.Services.ServiceParameter {
             value: number;
             lowerLimit?: number | null;
@@ -310,6 +309,12 @@ export namespace Models {
             personId: string;
         }
     
+        interface QuantitativeDiagnosticTestDefinition extends Models.Services.DiagnosticTestDefinition {
+            unit: string;
+            referenceRangeStart: number;
+            referenceRangeEnd: number;
+        }
+    
         interface RoleServiceAudience extends Models.Services.ServiceAudience {
             roleId: string;
         }
@@ -318,8 +323,7 @@ export namespace Models {
             type: Enums.ServiceAudienceType;
         }
     
-        interface ServiceDefinition extends Models.IId {
-            name: string;
+        interface ServiceDefinition extends Models.IId, Models.IHasTranslations {
             description: string;
             parameters: Models.Services.ServiceParameter[];
             audience: Models.Services.ServiceAudience[];
@@ -372,7 +376,7 @@ export namespace Models {
     
         interface GenericObservation extends Models.Observations.Observation {
             value: string;
-            unit: string;
+            unit?: string;
         }
     
         interface Observation extends Models.IHealthRecordEntry {
@@ -381,13 +385,13 @@ export namespace Models {
     
         interface PulseObservation extends Models.Observations.Observation {
             bpm: number;
-            location: string;
+            location?: string;
         }
     
         interface TemperatureObservation extends Models.Observations.Observation {
             value: number;
             unit: string;
-            bodyPart: string;
+            bodyPart?: string;
         }
     }
 
@@ -483,10 +487,9 @@ export namespace Models {
             questions: Models.Interview.Question[];
         }
     
-        interface QuestionnaireAnswers extends Models.IId {
+        interface QuestionnaireAnswers extends Models.IHealthRecordEntry {
             questionnaireId: string;
-            personId: string;
-            timestamp: Date;
+            createdTimestamp: Date;
             answers: Models.Interview.QuestionAnswer[];
         }
     }
@@ -504,18 +507,21 @@ export namespace Models {
             
         }
     
-        interface IcdEntry extends Models.Icd.IIcdEntry {
+        interface IcdEntry extends Models.Icd.IIcdEntry, Models.IHasTranslations {
             
         }
     
         interface IIcdEntry {
+            version: string;
             name: string;
+            translations: { [key: Enums.Language]: string };
             subEntries: Models.Icd.IcdEntry[];
         }
     
         export namespace Annotation {
             interface Disease extends Models.IId {
-                icdCode: string;
+                icd11Code: string;
+                icd10Code?: string;
                 name: string;
                 editLock?: Models.Icd.Annotation.DiseaseLock;
                 categoryIcdCode: string;
@@ -667,6 +673,10 @@ export namespace Models {
         interface JObjectExtensions {
             
         }
+    
+        interface TranslationsExtensions {
+            
+        }
     }
 
     export namespace DiagnosticTestResults {
@@ -684,7 +694,7 @@ export namespace Models {
     
         interface IDiagnosticTestResult extends Models.IHealthRecordEntry {
             testCodeLoinc: string;
-            testCodeLocal: string;
+            testCodeLocal?: string;
             testName: string;
             scaleType: Enums.DiagnosticTestScaleType;
         }
@@ -700,13 +710,22 @@ export namespace Models {
     
         interface QuantitativeDiagnosticTestResult extends Models.DiagnosticTestResults.DiagnosticTestResult {
             value: number;
-            unit: string;
-            referenceRangeStart: number;
-            referenceRangeEnd: number;
+            unit?: string;
+            referenceRangeStart?: number;
+            referenceRangeEnd?: number;
         }
     
         interface SetDiagnosticTestResult extends Models.DiagnosticTestResults.DiagnosticTestResult {
             
+        }
+    }
+
+    export namespace Diagnoses {
+        interface Diagnosis extends Models.IHealthRecordEntry {
+            icd10Code?: string;
+            icd11Code: string;
+            hasResolved: boolean;
+            resolvedTimestamp?: Date | null;
         }
     }
 
@@ -737,6 +756,7 @@ export namespace Models {
         }
     
         interface HealthProfessionalAccessInvite extends Models.AccessControl.IAccessRequest {
+            expirationDuration: string;
             codeForSharer: string;
             codeForHealthProfessional: string;
             sharerHasAccepted: boolean;

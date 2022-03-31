@@ -15,6 +15,7 @@ namespace JanKIS.Tools
     public class LocalizationStringSearcher
     {
         private readonly string FrontendDirectory = Path.Combine(Constants.GetRepositoryPath(), "jankis-frontend");
+        private readonly string ReferenceTranslation = Path.Combine(Constants.GetRepositoryPath(), "health-sharing-portal", "src", "localComponents", "resources", "translation.en.json");
 
         [Test]
         public void CreateLocalizationIdDictionary()
@@ -43,16 +44,23 @@ namespace JanKIS.Tools
             }
 
             var resourceDictionary = new JObject();
+            var referenceTranslation = JObject.Parse(File.ReadAllText(ReferenceTranslation));
             foreach (var resourceId in resourceIds.Distinct().OrderBy(x => x))
             {
                 var existingValue = existingLocalizations[resourceId]?.Value<string>();
                 if(!string.IsNullOrEmpty(existingValue))
                     resourceDictionary[resourceId] = existingValue;
-                else if (enumResources.ContainsKey(resourceId))
-                    resourceDictionary[resourceId] = enumResources[resourceId];
                 else
-                    resourceDictionary[resourceId] = string.Empty;
-                Console.WriteLine($"{resourceId}: {existingValue}");
+                {
+                    var referenceValue = referenceTranslation[resourceId]?.Value<string>();
+                    if(referenceValue != null)
+                        resourceDictionary[resourceId] = referenceValue;
+                    else if (enumResources.ContainsKey(resourceId))
+                        resourceDictionary[resourceId] = enumResources[resourceId];
+                    else
+                        resourceDictionary[resourceId] = string.Empty;
+                }
+                Console.WriteLine($"{resourceId}: {resourceDictionary[resourceId]}");
             }
 
             File.WriteAllText(localizationOutputFile, JsonConvert.SerializeObject(resourceDictionary, Formatting.Indented));
@@ -60,7 +68,6 @@ namespace JanKIS.Tools
 
         [Test]
         [TestCase("de")]
-        [TestCase("dk")]
         public void CreateLocalizationsIdsInSecondaryDictionaries(string language)
         {
             var primaryLanguage = "en";

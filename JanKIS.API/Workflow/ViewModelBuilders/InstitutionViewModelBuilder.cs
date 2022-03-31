@@ -24,7 +24,7 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
             this.departmentViewModelBuilder = departmentViewModelBuilder;
         }
 
-        public async Task<IViewModel<Institution>> Build(Institution model)
+        public async Task<IViewModel<Institution>> Build(Institution model, IViewModelBuilderOptions<Institution> options = null)
         {
             var rooms = await roomsStore.SearchAsync(x => model.RoomIds.Contains(x.Id));
             var departments = await departmentsStore.SearchAsync(x => x.InstitutionId == model.Id);
@@ -39,6 +39,13 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
                 Departments = departmentViewModels.OrderBy(x => x.Name).ToList(),
                 Rooms = rooms.OrderBy(x => x.Name).ToList()
             };
+        }
+
+        public Task<List<IViewModel<Institution>>> BatchBuild(
+            List<Institution> models,
+            IViewModelBuilderOptions<Institution> options = null)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

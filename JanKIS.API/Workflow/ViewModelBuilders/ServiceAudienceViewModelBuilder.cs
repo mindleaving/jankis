@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using HealthModels;
 using HealthModels.Services;
@@ -21,7 +22,7 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
             this.rolesStore = rolesStore;
         }
 
-        public async Task<IViewModel<ServiceAudience>> Build(ServiceAudience model)
+        public async Task<IViewModel<ServiceAudience>> Build(ServiceAudience model, IViewModelBuilderOptions<ServiceAudience> options = null)
         {
             if (model.Type == ServiceAudienceType.All)
             {
@@ -47,6 +48,13 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
             }
 
             throw new ArgumentOutOfRangeException(nameof(model.Type), $"View model building for that service audience type not implemented");
+        }
+
+        public Task<List<IViewModel<ServiceAudience>>> BatchBuild(
+            List<ServiceAudience> models,
+            IViewModelBuilderOptions<ServiceAudience> options = null)
+        {
+            throw new NotImplementedException();
         }
     }
 }

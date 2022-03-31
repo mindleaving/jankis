@@ -6,7 +6,7 @@ import { NotificationManager } from 'react-notifications';
 import { useNavigate } from 'react-router';
 import { apiClient } from '../../sharedCommonComponents/communication/ApiClient';
 import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
-import { formatPerson } from '../../sharedHealthComponents/helpers/Formatters';
+import { formatDate, formatPerson } from '../../sharedHealthComponents/helpers/Formatters';
 
 interface NotificationTickerItemProps {
     item: Models.Subscriptions.NotificationBase;

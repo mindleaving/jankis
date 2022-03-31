@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using HealthModels.Interview;
 using HealthModels.MedicalTextEditor;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
@@ -17,7 +18,9 @@ namespace JanKIS.API.Controllers
         {
         }
 
-        protected override Task<object> TransformItem(MedicalText item)
+        protected override Task<object> TransformItem(
+            MedicalText item,
+            Language language = Language.en)
         {
             return Task.FromResult<object>(item);
         }

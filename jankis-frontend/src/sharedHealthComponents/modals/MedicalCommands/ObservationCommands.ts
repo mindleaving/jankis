@@ -1,10 +1,12 @@
-import { HealthRecordEntryType, MeasurementType } from "../../../localComponents/types/enums.d";
+import { AutoCompleteContext, HealthRecordEntryType, MeasurementType } from "../../../localComponents/types/enums.d";
 import { Models } from "../../../localComponents/types/models";
 import { CommandPartType } from "../../types/medicalCommandEnums";
 import { MedicalCommands } from "../../types/medicalCommandTypes";
 import { v4 as uuid } from 'uuid';
 import { sendPutRequest } from "../../../sharedCommonComponents/helpers/StoringHelpers";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
+import { getObjectReferenceValue } from "../../helpers/MedicalCommandHelpers";
+import { formatObservation } from "../../helpers/Formatters";
 
 export class ObservationCommands {
     personId: string;
@@ -12,8 +14,8 @@ export class ObservationCommands {
     navigate: (path: string) => void;
     commandHierarchy: MedicalCommands.CommandPart;
 
-    addPulseObservation = async (commandParts: string[]) => {
-        const bpm = Number(commandParts[commandParts.length-1]);
+    addPulseObservation = async (commandParts: MedicalCommands.SelectedCommandPart[]) => {
+        const bpm = Number(commandParts[commandParts.length-1].selectedValue);
         const pulseObservation: Models.Observations.PulseObservation = {
             id: uuid(),
             type: HealthRecordEntryType.Observation,
@@ -23,14 +25,17 @@ export class ObservationCommands {
             measurementType: MeasurementType.Pulse,
             bpm: bpm
         };
+        let isSuccess = false;
         await sendPutRequest(
             `api/observations/${pulseObservation.id}`,
             resolveText("Observation_CouldNotStore"),
-            pulseObservation
+            pulseObservation,
+            response => isSuccess = response.ok
         );
+        return isSuccess;
     }
-    addBloodpressureObservation = async (commandParts: string[]) => {
-        const bloodPressure = commandParts[commandParts.length-1].split('/');
+    addBloodpressureObservation = async (commandParts: MedicalCommands.SelectedCommandPart[]) => {
+        const bloodPressure = commandParts[commandParts.length-1].selectedValue.split('/');
         const systolic = Number(bloodPressure[0]);
         const diastolic = Number(bloodPressure[1]);
         const bloodPressureObservation: Models.Observations.BloodPressureObservation = {
@@ -43,14 +48,17 @@ export class ObservationCommands {
             systolic: systolic,
             diastolic: diastolic
         };
+        let isSuccess = false;
         await sendPutRequest(
             `api/observations/${bloodPressureObservation.id}`,
             resolveText("Observation_CouldNotStore"),
-            bloodPressureObservation
+            bloodPressureObservation,
+            response => isSuccess = response.ok
         );
+        return isSuccess;
     }
-    addTemperatureObservation = async (commandParts: string[]) => {
-        const temperature = Number(commandParts[commandParts.length-1].replace(',','.'));
+    addTemperatureObservation = async (commandParts: MedicalCommands.SelectedCommandPart[]) => {
+        const temperature = Number(commandParts[commandParts.length-1].selectedValue.replace(',','.'));
         const temperatureObservation: Models.Observations.TemperatureObservation = {
             id: uuid(),
             type: HealthRecordEntryType.Observation,
@@ -61,16 +69,19 @@ export class ObservationCommands {
             value: temperature,
             unit: '°C'
         };
+        let isSuccess = false;
         await sendPutRequest(
             `api/observations/${temperatureObservation.id}`,
             resolveText("Observation_CouldNotStore"),
-            temperatureObservation
+            temperatureObservation,
+            response => isSuccess = response.ok
         );
+        return isSuccess;
     }
-    addGenericObservation = async (commandParts: string[]) => {
-        const measurementType = commandParts[2];
-        const value = commandParts[3];
-        const unit = commandParts.length > 4 ? commandParts[4] : undefined;
+    addGenericObservation = async (commandParts: MedicalCommands.SelectedCommandPart[]) => {
+        const measurementType = commandParts[2].selectedValue;
+        const value = commandParts[3].selectedValue;
+        const unit = commandParts.length > 4 ? commandParts[4].selectedValue : undefined;
         const genericObservation: Models.Observations.GenericObservation = {
             id: uuid(),
             type: HealthRecordEntryType.Observation,
@@ -81,16 +92,21 @@ export class ObservationCommands {
             value: value,
             unit: unit
         };
+        let isSuccess = false;
         await sendPutRequest(
             `api/observations/${genericObservation.id}`,
             resolveText("Observation_CouldNotStore"),
-            genericObservation
+            genericObservation,
+            response => isSuccess = response.ok
         );
+        return isSuccess;
     }
 
-    editObservation = (commandParts: string[]) => {
-        const observationId = commandParts[commandParts.length-1];
+    editObservation = async (commandParts: MedicalCommands.SelectedCommandPart[]) => {
+        const observation = getObjectReferenceValue<Models.Observations.Observation>(commandParts, "Observation");
+        const observationId = observation!.id;
         this.navigate(`/healthrecord/${this.personId}/edit/observation/${observationId}`);
+        return true;
     }
 
     constructor(
@@ -148,6 +164,33 @@ export class ObservationCommands {
                                 ]
                             } as MedicalCommands.KeywordCommandPart,
                             {
+                                type: CommandPartType.AutoComplete,
+                                description: 'Other',
+                                context: AutoCompleteContext.MeasurementType,
+                                contextCommands: [
+                                    {
+                                        type: CommandPartType.FreeText,
+                                        description: 'Value',
+                                        action: this.addGenericObservation,
+                                        contextCommands: [
+                                            {
+                                                type: CommandPartType.AutoComplete,
+                                                context: AutoCompleteContext.Unit,
+                                                description: 'Unit',
+                                                action: this.addGenericObservation,
+                                                contextCommands: []
+                                            } as MedicalCommands.AutoCompleteCommandPart,
+                                            {
+                                                type: CommandPartType.FreeText,
+                                                description: 'Unit',
+                                                action: this.addGenericObservation,
+                                                contextCommands: []
+                                            } as MedicalCommands.FreeTextCommandPart
+                                        ]
+                                    } as MedicalCommands.FreeTextCommandPart
+                                ]
+                            } as MedicalCommands.AutoCompleteCommandPart,
+                            {
                                 type: CommandPartType.FreeText,
                                 description: 'Other',
                                 contextCommands: [
@@ -156,6 +199,13 @@ export class ObservationCommands {
                                         description: 'Value',
                                         action: this.addGenericObservation,
                                         contextCommands: [
+                                            {
+                                                type: CommandPartType.AutoComplete,
+                                                context: AutoCompleteContext.Unit,
+                                                description: 'Unit',
+                                                action: this.addGenericObservation,
+                                                contextCommands: []
+                                            } as MedicalCommands.AutoCompleteCommandPart,
                                             {
                                                 type: CommandPartType.FreeText,
                                                 description: 'Unit',
@@ -174,7 +224,11 @@ export class ObservationCommands {
                         contextCommands: [
                             {
                                 type: CommandPartType.ObjectReference,
+                                description: 'Observation',
+                                objectType: 'Observation',
                                 autocompleteUrl: `api/persons/${this.personId}/observations`,
+                                searchParameter: 'searchText',
+                                displayFunc: (observation: Models.Observations.Observation) => formatObservation(observation),
                                 action: this.editObservation,
                                 contextCommands: []
                             } as MedicalCommands.ObjectReferenceCommandPart

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using HealthModels.Interview;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
@@ -105,7 +106,9 @@ namespace JanKIS.API.Controllers
             return Ok();
         }
 
-        protected override async Task<object> TransformItem(Resource item)
+        protected override async Task<object> TransformItem(
+            Resource item,
+            Language language = Language.en)
         {
             return await resourceViewModelBuilder.Build(item);
         }

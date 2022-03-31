@@ -1,4 +1,4 @@
-import { HealthRecordEntryType, MeasurementType } from "../../../localComponents/types/enums.d";
+import { AutoCompleteContext, HealthRecordEntryType, MeasurementType } from "../../../localComponents/types/enums.d";
 import { Models } from "../../../localComponents/types/models";
 import { CommandPartType } from "../../types/medicalCommandEnums";
 import { MedicalCommands } from "../../types/medicalCommandTypes";
@@ -164,6 +164,33 @@ export class ObservationCommands {
                                 ]
                             } as MedicalCommands.KeywordCommandPart,
                             {
+                                type: CommandPartType.AutoComplete,
+                                description: 'Other',
+                                context: AutoCompleteContext.MeasurementType,
+                                contextCommands: [
+                                    {
+                                        type: CommandPartType.FreeText,
+                                        description: 'Value',
+                                        action: this.addGenericObservation,
+                                        contextCommands: [
+                                            {
+                                                type: CommandPartType.AutoComplete,
+                                                context: AutoCompleteContext.Unit,
+                                                description: 'Unit',
+                                                action: this.addGenericObservation,
+                                                contextCommands: []
+                                            } as MedicalCommands.AutoCompleteCommandPart,
+                                            {
+                                                type: CommandPartType.FreeText,
+                                                description: 'Unit',
+                                                action: this.addGenericObservation,
+                                                contextCommands: []
+                                            } as MedicalCommands.FreeTextCommandPart
+                                        ]
+                                    } as MedicalCommands.FreeTextCommandPart
+                                ]
+                            } as MedicalCommands.AutoCompleteCommandPart,
+                            {
                                 type: CommandPartType.FreeText,
                                 description: 'Other',
                                 contextCommands: [
@@ -172,6 +199,13 @@ export class ObservationCommands {
                                         description: 'Value',
                                         action: this.addGenericObservation,
                                         contextCommands: [
+                                            {
+                                                type: CommandPartType.AutoComplete,
+                                                context: AutoCompleteContext.Unit,
+                                                description: 'Unit',
+                                                action: this.addGenericObservation,
+                                                contextCommands: []
+                                            } as MedicalCommands.AutoCompleteCommandPart,
                                             {
                                                 type: CommandPartType.FreeText,
                                                 description: 'Unit',

@@ -1,4 +1,4 @@
-import { compareDesc } from 'date-fns';
+import { compareDesc, format } from 'date-fns';
 import React, { useEffect, useState } from 'react';
 import { Accordion, Alert, Button, ButtonGroup, Card, Col, Row, Table } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router';
@@ -148,7 +148,7 @@ export const PatientNursingPage = (props: PatientNursingPageProps) => {
                                     {observations.length > 0
                                         ? observations.map(observation => (
                                             <tr key={observation.id}>
-                                                <td>{new Date(observation.timestamp), 'yyyy-MM-dd HH:mm')}</td>
+                                                <td>{format(new Date(observation.timestamp), 'yyyy-MM-dd HH:mm')}</td>
                                                 <td>{formatMeasurementType(observation.measurementType)}</td>
                                                 <td>{formatObservationValue(observation)}</td>
                                             </tr>

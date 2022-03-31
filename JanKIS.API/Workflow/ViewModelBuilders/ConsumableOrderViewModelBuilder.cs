@@ -28,7 +28,7 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
             this.stockViewModelBuilder = stockViewModelBuilder;
         }
 
-        public async Task<IViewModel<ConsumableOrder>> Build(ConsumableOrder model)
+        public async Task<IViewModel<ConsumableOrder>> Build(ConsumableOrder model, IViewModelBuilderOptions<ConsumableOrder> options = null)
         {
             var consumable = await consumablesStore.CachedGetByIdAsync(model.ConsumableId);
             var requesterAccount = await accountsStore.CachedGetByIdAsync(model.Requester);
@@ -46,6 +46,13 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
                 RequesterViewModel = (AccountViewModel) requesterViewModel,
                 StockViewModels = stockViewModels
             };
+        }
+
+        public Task<List<IViewModel<ConsumableOrder>>> BatchBuild(
+            List<ConsumableOrder> models,
+            IViewModelBuilderOptions<ConsumableOrder> options = null)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

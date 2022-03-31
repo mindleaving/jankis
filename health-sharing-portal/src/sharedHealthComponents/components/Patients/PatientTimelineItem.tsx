@@ -5,7 +5,7 @@ import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { ViewModels } from '../../../localComponents/types/viewModels';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
-import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
+import { canResolveText, resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { formatDate, formatDiagnosisNameAndCode, formatDiagnosticTestNameOfResult, formatObservationValue } from '../../helpers/Formatters';
 import { DiagnosticTestValueView } from './DiagnosticTestValueView';
 
@@ -37,7 +37,7 @@ export const PatientTimelineItem = (props: PatientTimelineItemProps) => {
         colorVariant = "warning";
         symbol = "fa-stethoscope";
         body = (<>
-            {resolveText(`MeasurementType_${observation.measurementType}`)} {formatObservationValue(observation)}
+            {canResolveText(`MeasurementType_${observation.measurementType}`) ? resolveText(`MeasurementType_${observation.measurementType}`) : observation.measurementType} {formatObservationValue(observation)}
         </>);
     }
     else if(props.event.type === HealthRecordEntryType.Document) {

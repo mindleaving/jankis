@@ -459,7 +459,7 @@ export namespace Models {
         export namespace Annotation {
             interface Disease extends Models.IId {
                 icd11Code: string;
-                icd10Code: string;
+                icd10Code?: string;
                 name: string;
                 editLock?: Models.Icd.Annotation.DiseaseLock;
                 categoryIcdCode: string;

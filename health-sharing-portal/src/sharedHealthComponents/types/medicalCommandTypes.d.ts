@@ -14,6 +14,9 @@ export namespace MedicalCommands {
         searchParameter: string;
         displayFunc: (item: any) => string;
     }
+    interface AutoCompleteCommandPart extends CommandPart {
+        context: string;
+    }
     interface PatternCommandPart extends CommandPart {
         pattern: string;
     }

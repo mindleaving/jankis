@@ -40,7 +40,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IAuthorizationModule authorizationModule;
         private readonly IReadonlyStore<Questionnaire> questionaireStore;
         private readonly IReadonlyStore<Diagnosis> diagnosesStore;
-        private readonly IViewModelBuilder<QuestionnaireAnswers> questionnaireAnwersViewModelBuilder;
+        private readonly IViewModelBuilder<QuestionnaireAnswers> questionnaireAnswersViewModelBuilder;
         private readonly IViewModelBuilder<Diagnosis> diagnosisViewModelBuilder;
         private IReadonlyStore<QuestionnaireAnswers> questionnaireAnswersStore;
 
@@ -60,7 +60,7 @@ namespace HealthSharingPortal.API.Controllers
             IAuthorizationModule authorizationModule,
             IReadonlyStore<Questionnaire> questionaireStore,
             IReadonlyStore<Diagnosis> diagnosesStore,
-            IViewModelBuilder<QuestionnaireAnswers> questionnaireAnwersViewModelBuilder,
+            IViewModelBuilder<QuestionnaireAnswers> questionnaireAnswersViewModelBuilder,
             IViewModelBuilder<Diagnosis> diagnosisViewModelBuilder,
             IReadonlyStore<QuestionnaireAnswers> questionnaireAnswersStore)
         {
@@ -79,7 +79,7 @@ namespace HealthSharingPortal.API.Controllers
             this.authorizationModule = authorizationModule;
             this.questionaireStore = questionaireStore;
             this.diagnosesStore = diagnosesStore;
-            this.questionnaireAnwersViewModelBuilder = questionnaireAnwersViewModelBuilder;
+            this.questionnaireAnswersViewModelBuilder = questionnaireAnswersViewModelBuilder;
             this.diagnosisViewModelBuilder = diagnosisViewModelBuilder;
             this.questionnaireAnswersStore = questionnaireAnswersStore;
         }
@@ -106,7 +106,7 @@ namespace HealthSharingPortal.API.Controllers
             var observations = observationsStore.SearchAsync(x => x.PersonId == personId);
             var documents = documentsStore.SearchAsync(x => x.PersonId == personId);
             var questionnaireAnswers = questionnaireAnswersStore.SearchAsync(x => x.PersonId == personId)
-                .ContinueWith(result => questionnaireAnwersViewModelBuilder.BatchBuild(result.Result))
+                .ContinueWith(result => questionnaireAnswersViewModelBuilder.BatchBuild(result.Result))
                 .Unwrap();
             await Task.WhenAll(
                 profileData,

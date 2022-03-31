@@ -10,11 +10,12 @@ import { DiagnosisCommands } from './MedicalCommands/DiagnosisCommands';
 import { MedicationCommands } from './MedicalCommands/MedicationCommands';
 import { ObservationCommands } from './MedicalCommands/ObservationCommands';
 import { TestResultCommands } from './MedicalCommands/TestResultCommands';
-
-import '../styles/medical-command-line.css';
+import { NotificationManager} from 'react-notifications';
 import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
 import { groupBy } from '../../sharedCommonComponents/helpers/CollectionHelpers';
 import { AutocompleteRunner } from '../../sharedCommonComponents/helpers/AutocompleteRunner';
+
+import '../styles/medical-command-line.css';
 
 interface MedicalCommandlineModalProps {
     personId: string;
@@ -78,6 +79,24 @@ export const MedicalCommandlineModal = (props: MedicalCommandlineModalProps) => 
             }
         }
 
+        // Autocomplete
+        const autoCompleteParts = groupedParts
+            .find(group => group.key === CommandPartType.AutoComplete)?.items
+            .map(x => x as MedicalCommands.AutoCompleteCommandPart)
+            ?? [];
+        const selectedAutoCompletes: MedicalCommands.SelectedCommandPart[] = [];
+        for (const part of autoCompleteParts) {
+            const autocompleteRunner = new AutocompleteRunner(`api/autocomplete/${part.context}`, 'searchText', 10);
+            const matches = await autocompleteRunner.search(searchText);
+            for (const match of matches) {
+                const selectedAutoComplete: MedicalCommands.SelectedCommandPart = {
+                    commandPart: part,
+                    selectedValue: match
+                };
+                selectedAutoCompletes.push(selectedAutoComplete);
+            }
+        }
+
         // Pattern
         const patternParts = groupedParts
             .find(group => group.key === CommandPartType.Pattern)?.items
@@ -99,13 +118,18 @@ export const MedicalCommandlineModal = (props: MedicalCommandlineModalProps) => 
             selectedValue: searchText
         } as MedicalCommands.SelectedCommandPart));
 
-        return selectedKeywords.concat(selectedObjectReferences).concat(selectedPatterns).concat(selectedFreetexts);
+        return selectedKeywords
+            .concat(selectedObjectReferences)
+            .concat(selectedAutoCompletes)
+            .concat(selectedPatterns)
+            .concat(selectedFreetexts);
     }
 
     const onCommandPartSelected = (selectedPart: MedicalCommands.SelectedCommandPart) => {
         setSelectedParts(state => state.concat(selectedPart));
         setActiveCommandParts(selectedPart.commandPart.contextCommands);
     }
+    
     const onMoveBack = () => {
         if(selectedParts.length === 0) {
             return; // Cannot move further back
@@ -129,12 +153,15 @@ export const MedicalCommandlineModal = (props: MedicalCommandlineModalProps) => 
             return;
         }
         if(await lastSelectedPart.commandPart.action(selectedParts)) {
+            NotificationManager.success(resolveText("MedicalCommand_SuccessfullyExecuted"));
             if(props.onCommandSuccessful) {
                 props.onCommandSuccessful();
             }
             if(props.closeOnSuccess) {
                 props.onCloseRequested();
             }
+            setSelectedParts([]);
+            setActiveCommandParts(commandHierarchy);
         }
     }
 
@@ -142,13 +169,17 @@ export const MedicalCommandlineModal = (props: MedicalCommandlineModalProps) => 
         if(currentSearchText === '' && keyEvent.key === "Backspace") {
             if(!moveBackOnNextBackspace) {
                 setMoveBackOnNextBackspace(true);
-                return;
+            } else {
+                onMoveBack();
             }
-            onMoveBack();
         } else {
             setMoveBackOnNextBackspace(false);
         }
-    }
+        if(keyEvent.key === "Enter" && keyEvent.shiftKey) {
+            executeAction();
+        }
+    }    
+
 
     return (
         <Modal 
@@ -171,10 +202,11 @@ export const MedicalCommandlineModal = (props: MedicalCommandlineModalProps) => 
                         ))}
                         <Autocomplete<MedicalCommands.SelectedCommandPart> 
                             required
+                            autoFocus
                             className="no-border flex-fill"
                             search={filterCommandParts}
                             onItemSelected={onCommandPartSelected}
-                            onKeyPress={onKeyPress}
+                            onKeyUp={onKeyPress}
                             displayNameSelector={formatSelectedCommandPart}
                             resetOnSelect
                             minSearchTextLength={1}

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using HealthModels.Interview;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
@@ -42,7 +43,9 @@ namespace JanKIS.API.Controllers
         }
 
 
-        protected override Task<object> TransformItem(Role item)
+        protected override Task<object> TransformItem(
+            Role item,
+            Language language = Language.en)
         {
             return Task.FromResult<object>(item);
         }

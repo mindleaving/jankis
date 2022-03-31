@@ -363,6 +363,8 @@
   "MeasurementType_Pulse": "Pulse",
   "MeasurementType_Temperature": "Temperature",
   "MeasurementType_Weight": "Weight",
+  "MedicalCommand_SuccessfullyExecuted": "Command successfully executed",
+  "MedicalCommands_AutoComplete": "AutoComplete",
   "MedicalCommands_FreeText": "Free text",
   "MedicalCommands_ObjectReference": "Object reference",
   "MedicalCommands_Pattern": "Pattern",
