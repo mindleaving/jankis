@@ -22,7 +22,7 @@ namespace JanKIS.API.Models.Subscriptions
             Admission = admission;
         }
 
-        public override NotificationType NotificationType => NotificationType.NewAdmission;
+        public override string NotificationType => Subscriptions.NotificationType.NewAdmission.ToString();
         public Admission Admission { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthSharingPortal.API.Storage;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
 using Microsoft.IdentityModel.Tokens;

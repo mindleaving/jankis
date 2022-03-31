@@ -1,5 +1,5 @@
 using System;
-using JanKIS.API.AccessManagement;
+using HealthSharingPortal.API.AccessControl;
 using NUnit.Framework;
 
 namespace JanKIS.API.Test.AccessManagement
@@ -9,14 +9,14 @@ namespace JanKIS.API.Test.AccessManagement
         [Test]
         public void ExceptionThrownForNonPositiveLength()
         {
-            Assert.That(() => TemporaryPasswordGenerator.Generate(-1), Throws.TypeOf<ArgumentOutOfRangeException>());
+            Assert.That(() => new TemporaryPasswordGenerator().Generate(-1), Throws.TypeOf<ArgumentOutOfRangeException>());
         }
 
         [Test]
         public void PasswordOfRequestedLengthIsGenerated()
         {
             const int Length = 5;
-            var password = TemporaryPasswordGenerator.Generate(Length);
+            var password = new TemporaryPasswordGenerator().Generate(Length);
             Assert.That(password.Length, Is.EqualTo(Length));
         }
     }

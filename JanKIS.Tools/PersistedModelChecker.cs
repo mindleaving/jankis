@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using HealthModels;
-using HealthModels.DiagnosticTestResults;
-using HealthModels.Medication;
-using HealthModels.Observations;
-using HealthModels.Services;
 using JanKIS.API.Models;
-using JanKIS.API.Models.Subscriptions;
 using MongoDB.Driver;
 using NUnit.Framework;
 
@@ -20,7 +15,7 @@ namespace JanKIS.Tools
         [Test]
         public async Task CheckCompatibility()
         {
-            var collection = GetCollection<SubscriptionBase>();
+            var collection = GetCollection<BedOccupancy>();
             var allItems = await collection.Find(x => true).ToListAsync();
             Console.WriteLine($"Item count: {allItems.Count}");
         }

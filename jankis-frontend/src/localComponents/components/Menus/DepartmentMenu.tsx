@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { Accordion, Nav, NavDropdown } from 'react-bootstrap';
 import { useNavigate } from 'react-router';
+import { AccordionCard } from '../../../sharedCommonComponents/components/AccordionCard';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { Models } from '../../types/models';
 
@@ -19,16 +20,11 @@ export const DepartmentMenu = (props: DepartmentMenuProps) => {
                 {props.departments.map(department => (
                     <Fragment key={department.id}>
                         <NavDropdown.Divider />
-                        <Accordion.Header as={NavDropdown.Header} className="clickable" eventKey={department.id}>
-                            <b>{department.name}</b>
-                        </Accordion.Header>
-                        <Accordion.Collapse eventKey={department.id}>
-                            <>
-                                <NavDropdown.Item onClick={() => navigate(`/departments/${department.id}/services`)}>{resolveText('Services')}</NavDropdown.Item>
-                                <NavDropdown.Item onClick={() => navigate(`/departments/${department.id}/requests`)}>{resolveText('ServiceRequests')}</NavDropdown.Item>
-                                <NavDropdown.Item onClick={() => navigate(`/departments/${department.id}/stocks`)}>{resolveText('Stocks')}</NavDropdown.Item>
-                            </>
-                        </Accordion.Collapse>
+                        <NavDropdown title={<b>{department.name}</b>}>
+                            <NavDropdown.Item onClick={() => navigate(`/departments/${department.id}/services`)}>{resolveText('Services')}</NavDropdown.Item>
+                            <NavDropdown.Item onClick={() => navigate(`/departments/${department.id}/requests`)}>{resolveText('ServiceRequests')}</NavDropdown.Item>
+                            <NavDropdown.Item onClick={() => navigate(`/departments/${department.id}/stocks`)}>{resolveText('Stocks')}</NavDropdown.Item>
+                        </NavDropdown>
                     </Fragment>
                 ))}
                 </Accordion>

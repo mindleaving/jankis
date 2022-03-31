@@ -6,14 +6,18 @@ using System.Threading.Tasks;
 using HealthModels;
 using HealthModels.Interview;
 using HealthModels.Services;
-using JanKIS.API.Helpers;
+using HealthSharingPortal.API.Controllers;
+using HealthSharingPortal.API.Helpers;
+using HealthSharingPortal.API.Storage;
+using HealthSharingPortal.API.Workflow.ViewModelBuilders;
 using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
-using JanKIS.API.Storage;
 using JanKIS.API.Workflow.ViewModelBuilders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SearchExpressionBuilder = JanKIS.API.Helpers.SearchExpressionBuilder;
+using SearchTermSplitter = JanKIS.API.Helpers.SearchTermSplitter;
 
 namespace JanKIS.API.Controllers
 {
@@ -26,7 +30,7 @@ namespace JanKIS.API.Controllers
         private readonly IReadonlyStore<Account> accountsStore;
         private readonly IStore<ServiceDefinition> servicesStore;
         private readonly IStore<ServiceRequest> serviceRequestsStore;
-        private readonly ISubscriptionsStore subscriptionsStore;
+        private readonly Storage.ISubscriptionsStore subscriptionsStore;
         private readonly IViewModelBuilder<Department> departmentViewModelBuilder;
 
         public DepartmentsController(
@@ -34,7 +38,7 @@ namespace JanKIS.API.Controllers
             IStore<ServiceDefinition> servicesStore,
             IReadonlyStore<Account> accountsStore,
             IStore<ServiceRequest> serviceRequestsStore,
-            ISubscriptionsStore subscriptionsStore,
+            Storage.ISubscriptionsStore subscriptionsStore,
             IHttpContextAccessor httpContextAccessor,
             IViewModelBuilder<Department> departmentViewModelBuilder)
             : base(departmentsStore, httpContextAccessor)

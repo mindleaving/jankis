@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using HealthModels;
+using HealthSharingPortal.API.ViewModels;
 using Newtonsoft.Json;
 using TypescriptGenerator.Attributes;
 

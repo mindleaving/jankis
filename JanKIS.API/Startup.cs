@@ -1,4 +1,4 @@
-using JanKIS.API.Hubs;
+using HealthSharingPortal.API.Hubs;
 using JanKIS.API.Setups;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

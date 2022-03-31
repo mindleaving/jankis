@@ -1,4 +1,6 @@
-﻿namespace JanKIS.API.Models.Subscriptions
+﻿using HealthSharingPortal.API.Models.Subscriptions;
+
+namespace JanKIS.API.Models.Subscriptions
 {
     public class ResourceSubscription : SubscriptionBase
     {
@@ -14,7 +16,7 @@
             ResourceId = resourceId;
         }
 
-        public override SubscriptionObjectType Type => SubscriptionObjectType.Resource;
+        public override string Type => SubscriptionObjectType.Resource.ToString();
         public string ResourceId { get; set; }
     }
 }

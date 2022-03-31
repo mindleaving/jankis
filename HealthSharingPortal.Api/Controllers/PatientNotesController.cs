@@ -7,23 +7,28 @@ using HealthModels.Interview;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Storage;
+using HealthSharingPortal.API.Workflow;
 using Microsoft.AspNetCore.Http;
 
 namespace HealthSharingPortal.API.Controllers
 {
     public class PatientNotesController : PersonDataRestControllerBase<PatientNote>
     {
+        private readonly INotificationDistributor notificationDistributor;
+
         public PatientNotesController(
             IStore<PatientNote> store,
             IHttpContextAccessor httpContextAccessor,
-            IAuthorizationModule authorizationModule)
+            IAuthorizationModule authorizationModule,
+            INotificationDistributor notificationDistributor)
             : base(store, httpContextAccessor, authorizationModule)
         {
+            this.notificationDistributor = notificationDistributor;
         }
 
         protected override Task<object> TransformItem(
             PatientNote item,
-            Language language)
+            Language language = Language.en)
         {
             return Task.FromResult<object>(item);
         }
@@ -46,6 +51,14 @@ namespace HealthSharingPortal.API.Controllers
             string searchText)
         {
             return items;
+        }
+
+        protected override Task PublishChange(
+            PatientNote item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            return notificationDistributor.NotifyNewPatientEvent(item, storageOperation, submitterUsername);
         }
     }
 }

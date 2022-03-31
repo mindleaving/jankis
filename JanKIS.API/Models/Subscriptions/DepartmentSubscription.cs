@@ -1,4 +1,6 @@
-﻿namespace JanKIS.API.Models.Subscriptions
+﻿using HealthSharingPortal.API.Models.Subscriptions;
+
+namespace JanKIS.API.Models.Subscriptions
 {
     public class DepartmentSubscription : SubscriptionBase
     {
@@ -14,7 +16,7 @@
             DepartmentId = departmentId;
         }
 
-        public override SubscriptionObjectType Type => SubscriptionObjectType.Department;
+        public override string Type => SubscriptionObjectType.Department.ToString();
         public string DepartmentId { get; set; }
     }
 }

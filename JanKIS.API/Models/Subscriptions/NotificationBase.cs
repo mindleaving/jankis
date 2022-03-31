@@ -1,7 +1,7 @@
 ﻿using System;
-using JanKIS.API.Converters;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
+using NotificationJsonConverter = JanKIS.API.Converters.NotificationJsonConverter;
 
 namespace JanKIS.API.Models.Subscriptions
 {
@@ -9,27 +9,21 @@ namespace JanKIS.API.Models.Subscriptions
         typeof(PatientEventNotification)
     )]
     [JsonConverter(typeof(NotificationJsonConverter))]
-    public abstract class NotificationBase : INotification
+    public abstract class NotificationBase : HealthSharingPortal.API.Models.Subscriptions.NotificationBase
     {
         protected NotificationBase(
             string id,
-            SubscriptionBase subscription,
+            HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase subscription,
             bool isDismissed,
             DateTime timestamp,
             string submitter)
+            : base(
+                id, 
+                subscription, 
+                isDismissed,
+                timestamp,
+                submitter)
         {
-            Id = id;
-            Subscription = subscription;
-            IsDismissed = isDismissed;
-            Timestamp = timestamp;
-            Submitter = submitter;
         }
-
-        public string Id { get; private set; }
-        public abstract NotificationType NotificationType { get; }
-        public SubscriptionBase Subscription { get; private set; }
-        public bool IsDismissed { get; private set; }
-        public string Submitter { get; private set; }
-        public DateTime Timestamp { get; private set; }
     }
 }

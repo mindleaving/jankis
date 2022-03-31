@@ -1,4 +1,5 @@
 ﻿using System;
+using HealthSharingPortal.API.Models.Subscriptions;
 
 namespace JanKIS.API.Models.Subscriptions
 {
@@ -19,7 +20,7 @@ namespace JanKIS.API.Models.Subscriptions
             RequestId = requestId;
         }
 
-        public override NotificationType NotificationType => NotificationType.NewServiceRequest;
+        public override string NotificationType => Subscriptions.NotificationType.NewServiceRequest.ToString();
         public string RequestId { get; private set; }
     }
 }

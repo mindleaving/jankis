@@ -13,7 +13,7 @@
             CancelSubscriptionOnDischarge = cancelSubscriptionOnDischarge;
         }
 
-        public override SubscriptionObjectType Type => SubscriptionObjectType.Patient;
+        public override string Type => SubscriptionObjectType.Patient.ToString();
         public string PersonId { get; set; }
         public bool CancelSubscriptionOnDischarge { get; set; }
     }

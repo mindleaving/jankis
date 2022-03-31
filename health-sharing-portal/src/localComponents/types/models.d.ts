@@ -734,6 +734,42 @@ export namespace Models {
         }
     }
 
+    export namespace Subscriptions {
+        interface AdmissionNotification extends Models.Subscriptions.NotificationBase {
+            admission: Models.Admission;
+        }
+    
+        interface INotification extends Models.IId {
+            notificationType: string;
+            subscription: Models.Subscriptions.SubscriptionBase;
+            isDismissed: boolean;
+            submitter: string;
+            timestamp: Date;
+        }
+    
+        interface NotificationBase extends Models.Subscriptions.INotification {
+            
+        }
+    
+        interface PatientEventNotification extends Models.Subscriptions.NotificationBase {
+            patient: Models.Person;
+            eventType: Enums.HealthRecordEntryType;
+            objectId: string;
+            storageOperation: Enums.StorageOperation;
+        }
+    
+        interface PatientSubscription extends Models.Subscriptions.SubscriptionBase {
+            personId: string;
+            cancelSubscriptionOnDischarge: boolean;
+        }
+    
+        interface SubscriptionBase extends Models.IId {
+            username: string;
+            mutedUntil?: Date | null;
+            type: string;
+        }
+    }
+
     export namespace Filters {
         interface SharedAccessFilter {
             searchText?: string;

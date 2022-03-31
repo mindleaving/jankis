@@ -1,5 +1,6 @@
 ﻿using System;
 using HealthModels.Services;
+using HealthSharingPortal.API.Models.Subscriptions;
 
 namespace JanKIS.API.Models.Subscriptions
 {
@@ -20,7 +21,7 @@ namespace JanKIS.API.Models.Subscriptions
             Service = service;
         }
 
-        public override NotificationType NotificationType => NotificationType.NewService;
+        public override string NotificationType => Subscriptions.NotificationType.NewService.ToString();
         public ServiceDefinition Service { get; private set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using HealthSharingPortal.API.Storage;
 using JanKIS.API.Models.Subscriptions;
 using MongoDB.Driver;
 

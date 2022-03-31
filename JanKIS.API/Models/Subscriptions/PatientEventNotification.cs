@@ -1,5 +1,6 @@
 ﻿using System;
 using HealthModels;
+using HealthSharingPortal.API.Storage;
 
 namespace JanKIS.API.Models.Subscriptions
 {
@@ -7,7 +8,7 @@ namespace JanKIS.API.Models.Subscriptions
     {
         public PatientEventNotification(
             string id,
-            SubscriptionBase subscription,
+            HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase subscription,
             bool isDismissed,
             DateTime timestamp,
             string submitter,
@@ -27,7 +28,7 @@ namespace JanKIS.API.Models.Subscriptions
             StorageOperation = storageOperation;
         }
 
-        public override NotificationType NotificationType => NotificationType.NewPatientEvent;
+        public override string NotificationType => Subscriptions.NotificationType.NewPatientEvent.ToString();
         public Person Patient { get; set; }
         public HealthRecordEntryType EventType { get; set; }
         public string ObjectId { get; set; }

@@ -1,7 +1,5 @@
-﻿using System;
-using HealthModels;
+﻿using HealthSharingPortal.API.Models.Subscriptions;
 using JanKIS.API.Converters;
-using JanKIS.API.Storage;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
@@ -13,20 +11,14 @@ namespace JanKIS.API.Models.Subscriptions
         typeof(PatientSubscription)
     )]
     [JsonConverter(typeof(SubscriptionJsonConverter))]
-    public abstract class SubscriptionBase : IId
+    public abstract class SubscriptionBase : HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase
     {
-        protected SubscriptionBase() {}
+        protected SubscriptionBase(): base() {}
         protected SubscriptionBase(
             string id, 
             string username)
+        : base(id, username)
         {
-            Id = id;
-            Username = username;
         }
-
-        public string Id { get; set; }
-        public string Username { get; set; }
-        public DateTime? MutedUntil { get; set; }
-        public abstract SubscriptionObjectType Type { get; }
     }
 }

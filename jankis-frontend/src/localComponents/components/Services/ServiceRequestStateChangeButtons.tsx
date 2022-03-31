@@ -119,6 +119,7 @@ export const ServiceRequestStateChangeButtons = (props: ServiceRequestStateChang
     return (<>
         {nextStates.map(newState => (
             <AsyncButton
+                key={newState}
                 className="m-2 p-3"
                 variant={buttonColorFromState(props.state, newState)}
                 activeText={resolveText(`ServiceRequestState_${newState}`)}

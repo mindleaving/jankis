@@ -8,15 +8,22 @@ using HealthModels.DiagnosticTestResults;
 using HealthModels.Interview;
 using HealthModels.Medication;
 using HealthModels.Observations;
+using HealthSharingPortal.API.Helpers;
+using HealthSharingPortal.API.Models.Subscriptions;
+using HealthSharingPortal.API.Storage;
+using HealthSharingPortal.API.ViewModels;
+using HealthSharingPortal.API.Workflow.ViewModelBuilders;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
 using JanKIS.API.ViewModels;
-using JanKIS.API.Workflow.ViewModelBuilders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ISubscriptionsStore = JanKIS.API.Storage.ISubscriptionsStore;
+using PatientOverviewViewModel = JanKIS.API.ViewModels.PatientOverviewViewModel;
+using PatientSubscription = JanKIS.API.Models.Subscriptions.PatientSubscription;
 
 namespace JanKIS.API.Controllers
 {
@@ -34,7 +41,7 @@ namespace JanKIS.API.Controllers
         private readonly IReadonlyStore<BedOccupancy> bedOccupanciesStore;
         private readonly ISubscriptionsStore subscriptionsStore;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IMedicationScheduleStore medicationSchedulesStore;
+        private readonly IReadonlyStore<MedicationSchedule> medicationSchedulesStore;
         private readonly IReadonlyStore<MedicationDispension> medicationDispensionsStore;
         private readonly IReadonlyStore<AttachedEquipment> patientEquipmentStore;
         private readonly IViewModelBuilder<AttachedEquipment> attachedEquipmentViewModelBuilder;
@@ -53,7 +60,7 @@ namespace JanKIS.API.Controllers
             IReadonlyStore<BedOccupancy> bedOccupanciesStore,
             ISubscriptionsStore subscriptionsStore,
             IHttpContextAccessor httpContextAccessor,
-            IMedicationScheduleStore medicationSchedulesStore,
+            IReadonlyStore<MedicationSchedule> medicationSchedulesStore,
             IReadonlyStore<MedicationDispension> medicationDispensionsStore,
             IReadonlyStore<AttachedEquipment> patientEquipmentStore,
             IViewModelBuilder<AttachedEquipment> attachedEquipmentViewModelBuilder,
@@ -95,7 +102,7 @@ namespace JanKIS.API.Controllers
             var diagnoses = diagnosesStore.SearchAsync(x => x.PersonId == personId)
                 .ContinueWith(result => diagnosisViewModelBuilder.BatchBuild(result.Result, new DiagnosisViewModelBuilderOptions { Language = language }))
                 .Unwrap();
-            var medicationSchedules = medicationSchedulesStore.GetForPatient(personId);
+            var medicationSchedules = medicationSchedulesStore.SearchAsync(x => x.PersonId == personId);
             var medicationDispensions = medicationDispensionsStore.SearchAsync(x => x.PersonId == personId);
             var testResults = testResultsStore.SearchAsync(x => x.PersonId == personId);
             var observations = observationsStore.SearchAsync(x => x.PersonId == personId);

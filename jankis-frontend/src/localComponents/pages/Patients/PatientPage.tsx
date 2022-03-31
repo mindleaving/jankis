@@ -15,6 +15,8 @@ import { PatientDataTabControl } from '../../../sharedHealthComponents/component
 import { PatientActionsCard } from '../../../sharedHealthComponents/components/Patients/PatientActionsCard';
 import { HealthRecordAction } from '../../../sharedHealthComponents/types/frontendTypes';
 
+import '../../../sharedHealthComponents/styles/healthrecord.css';
+
 interface PatientPageProps {}
 
 export const PatientPage = (props: PatientPageProps) => {
@@ -109,7 +111,6 @@ export const PatientPage = (props: PatientPageProps) => {
         { path: `/healthrecord/${personId}/create/note`, textResourceId: 'Action_AddNote' },
         { path: `/healthrecord/${personId}/create/observation`, textResourceId: 'Action_AddObservation' },
         { path: `/healthrecord/${personId}/create/diagnosis`, textResourceId: 'Action_AddDiagnosis' },
-        { path: `/healthrecord/${personId}/add/medication`, textResourceId: 'Action_AddMedication' },
         { path: `/healthrecord/${personId}/nursing`, textResourceId: 'Action_AddEquipment' },
         { path: `/healthrecord/${personId}/create/testresult`, textResourceId: 'Action_AddTestResult' },
         { path: `/healthrecord/${personId}/create/document`, textResourceId: 'Action_AddDocument' },

@@ -1,4 +1,5 @@
-﻿using JanKIS.API.Models;
+﻿using HealthSharingPortal.API.ViewModels;
+using JanKIS.API.Models;
 
 namespace JanKIS.API.ViewModels
 {

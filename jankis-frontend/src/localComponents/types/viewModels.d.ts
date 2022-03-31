@@ -35,17 +35,9 @@ export namespace ViewModels {
         parentDepartment?: ViewModels.DepartmentViewModel;
     }
 
-    interface DiagnosisViewModel extends Models.Diagnoses.Diagnosis, ViewModels.IViewModel<Models.Diagnoses.Diagnosis> {
-        name: string;
-    }
-
     interface InstitutionViewModel extends Models.Institution, ViewModels.IViewModel<Models.Institution> {
         rooms: Models.Room[];
         departments: ViewModels.DepartmentViewModel[];
-    }
-
-    interface IViewModel<T> {
-        
     }
 
     interface LocationViewModel extends Models.LocationReference, ViewModels.IViewModel<Models.LocationReference> {
@@ -77,32 +69,9 @@ export namespace ViewModels {
         observations: Models.Observations.Observation[];
     }
 
-    interface PatientOverviewViewModel {
-        profileData: Models.Person;
+    interface PatientOverviewViewModel extends ViewModels.PatientOverviewViewModel {
         currentBedOccupancy: Models.BedOccupancy;
-        admissions: Models.Admission[];
-        notes: Models.PatientNote[];
-        diagnoses: ViewModels.DiagnosisViewModel[];
-        medicationSchedules: Models.Medication.MedicationSchedule[];
-        medicationDispensions: Models.Medication.MedicationDispension[];
-        testResults: Models.DiagnosticTestResults.DiagnosticTestResult[];
-        observations: Models.Observations.Observation[];
-        documents: Models.PatientDocument[];
-        questionnaires: ViewModels.QuestionnaireAnswersViewModel[];
         subscription: Models.Subscriptions.PatientSubscription;
-    }
-
-    interface QuestionnaireAnswersViewModel extends ViewModels.IViewModel<Models.Interview.QuestionnaireAnswers> {
-        questionnaireId: string;
-        questionnaireTitle: string;
-        questionnaireDescription: string;
-        questionnaireLanguage: Enums.Language;
-        questionCount: number;
-        answersId: string;
-        hasAnswered: boolean;
-        lastChangeTimestamp: Date;
-        assignedBy: string;
-        assignedTimestamp: Date;
     }
 
     interface ResourceViewModel extends Models.Resource, ViewModels.IViewModel<Models.Resource> {
@@ -129,6 +98,45 @@ export namespace ViewModels {
         locationViewModel: ViewModels.LocationViewModel;
     }
 
+    interface DiagnosisViewModel extends Models.Diagnoses.Diagnosis, ViewModels.IViewModel<Models.Diagnoses.Diagnosis> {
+        name: string;
+    }
+
+    interface IViewModel<T> {
+        
+    }
+
+    interface PatientOverviewViewModel {
+        profileData: Models.Person;
+        admissions: Models.Admission[];
+        notes: Models.PatientNote[];
+        diagnoses: ViewModels.DiagnosisViewModel[];
+        medicationSchedules: Models.Medication.MedicationSchedule[];
+        medicationDispensions: Models.Medication.MedicationDispension[];
+        testResults: Models.DiagnosticTestResults.DiagnosticTestResult[];
+        observations: Models.Observations.Observation[];
+        documents: Models.PatientDocument[];
+        questionnaires: ViewModels.QuestionnaireAnswersViewModel[];
+    }
+
+    interface QuestionnaireAnswersViewModel extends ViewModels.IViewModel<Models.Interview.QuestionnaireAnswers> {
+        questionnaireId: string;
+        questionnaireTitle: string;
+        questionnaireDescription: string;
+        questionnaireLanguage: Enums.Language;
+        questionCount: number;
+        answersId: string;
+        hasAnswered: boolean;
+        lastChangeTimestamp: Date;
+        assignedBy: string;
+        assignedTimestamp: Date;
+    }
+
+    interface QuestionnaireSchema {
+        questionnaireId: string;
+        schema: any;
+    }
+
     interface IViewModel<Account> {
         
     }
@@ -149,19 +157,11 @@ export namespace ViewModels {
         
     }
 
-    interface IViewModel<Diagnosis> {
-        
-    }
-
     interface IViewModel<Institution> {
         
     }
 
     interface IViewModel<LocationReference> {
-        
-    }
-
-    interface IViewModel<QuestionnaireAnswers> {
         
     }
 
@@ -182,6 +182,14 @@ export namespace ViewModels {
     }
 
     interface IViewModel<Stock> {
+        
+    }
+
+    interface IViewModel<Diagnosis> {
+        
+    }
+
+    interface IViewModel<QuestionnaireAnswers> {
         
     }
 }

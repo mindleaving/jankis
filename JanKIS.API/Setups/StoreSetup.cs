@@ -9,8 +9,9 @@ using HealthModels.MedicalTextEditor;
 using HealthModels.Medication;
 using HealthModels.Observations;
 using HealthModels.Services;
+using HealthSharingPortal.API.Models.Subscriptions;
+using HealthSharingPortal.API.Storage;
 using JanKIS.API.Models;
-using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,9 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
+using INotificationsStore = JanKIS.API.Storage.INotificationsStore;
+using NotificationBase = JanKIS.API.Models.Subscriptions.NotificationBase;
+using NotificationsStore = JanKIS.API.Storage.NotificationsStore;
 
 namespace JanKIS.API.Setups
 {
@@ -49,7 +53,7 @@ namespace JanKIS.API.Setups
         private static void SetupStores(IServiceCollection services)
         {
             SetupTypeStores<Account>(services);
-            services.AddScoped<IAccountStore, AccountStore>();
+            services.AddScoped<Storage.IAccountStore, Storage.AccountStore>();
             SetupTypeStores<Admission>(services);
             services.AddScoped<IAdmissionsStore, AdmissionsStore>();
             SetupTypeStores<AttachedEquipment>(services);
@@ -71,7 +75,6 @@ namespace JanKIS.API.Setups
             SetupTypeStores<InstitutionPolicy>(services);
             SetupTypeStores<HealthProfessionalAccess>(services);
             SetupTypeStores<MedicationSchedule>(services);
-            services.AddScoped<IMedicationScheduleStore, MedicationScheduleStore>();
             SetupTypeStores<MedicationDispension>(services);
             SetupTypeStores<MedicalText>(services);
             SetupTypeStores<NotificationBase>(services);
@@ -92,7 +95,7 @@ namespace JanKIS.API.Setups
             services.AddScoped<IServiceRequestsStore, ServiceRequestsStore>();
             SetupTypeStores<Stock>(services);
             SetupTypeStores<SubscriptionBase>(services);
-            services.AddScoped<ISubscriptionsStore, SubscriptionsStore>();
+            services.AddScoped<Storage.ISubscriptionsStore, Storage.SubscriptionsStore>();
         }
 
         private static void SetupTypeStores<T>(IServiceCollection services) where T: IId

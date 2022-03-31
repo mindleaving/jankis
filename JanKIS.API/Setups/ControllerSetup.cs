@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Reflection;
+using Commons.Extensions;
+using HealthSharingPortal.API.Controllers;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -11,6 +14,12 @@ namespace JanKIS.API.Setups
         {
             services.AddHttpContextAccessor();
             services.AddControllers()
+                .AddApplicationPart(Assembly.GetAssembly(typeof(ObservationsController)))
+                .ConfigureApplicationPartManager(
+                    manager =>
+                    {
+                        manager.FeatureProviders.Add(new FilteredHealthControllersProvider());
+                    })
                 .AddNewtonsoftJson(
                     options =>
                     {

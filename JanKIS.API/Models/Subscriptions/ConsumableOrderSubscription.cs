@@ -13,7 +13,7 @@
             OrderId = orderId;
         }
 
-        public override SubscriptionObjectType Type => SubscriptionObjectType.ConsumableOrder;
+        public override string Type => SubscriptionObjectType.ConsumableOrder.ToString();
         public string OrderId { get; set; }
     }
 }

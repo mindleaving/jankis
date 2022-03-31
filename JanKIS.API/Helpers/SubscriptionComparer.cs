@@ -1,5 +1,8 @@
 ﻿using System;
 using JanKIS.API.Models.Subscriptions;
+using PatientSubscription = JanKIS.API.Models.Subscriptions.PatientSubscription;
+using SubscriptionBase = JanKIS.API.Models.Subscriptions.SubscriptionBase;
+using SubscriptionObjectType = JanKIS.API.Models.Subscriptions.SubscriptionObjectType;
 
 namespace JanKIS.API.Helpers
 {
@@ -15,19 +18,19 @@ namespace JanKIS.API.Helpers
                 return false;
             switch (a.Type)
             {
-                case SubscriptionObjectType.Patient:
+                case nameof(SubscriptionObjectType.Patient):
                     return ComparePatientSubscriptions((PatientSubscription) a, (PatientSubscription) b);
-                case SubscriptionObjectType.Service:
+                case nameof(SubscriptionObjectType.Service):
                     return CompareServiceSubscriptions((ServiceSubscription) a, (ServiceSubscription) b);
-                case SubscriptionObjectType.ServiceRequest:
+                case nameof(SubscriptionObjectType.ServiceRequest):
                     return CompareServiceRequestSubscriptions((ServiceRequestSubscription) a, (ServiceRequestSubscription) b);
-                case SubscriptionObjectType.Stock:
+                case nameof(SubscriptionObjectType.Stock):
                     return CompareStockSubscriptions((StockSubscription) a, (StockSubscription) b);
-                case SubscriptionObjectType.Resource:
+                case nameof(SubscriptionObjectType.Resource):
                     return CompareResourceSubscriptions((ResourceSubscription) a, (ResourceSubscription) b);
-                case SubscriptionObjectType.Department:
+                case nameof(SubscriptionObjectType.Department):
                     return CompareDepartmentSubscriptions((DepartmentSubscription) a, (DepartmentSubscription) b);
-                case SubscriptionObjectType.Institution:
+                case nameof(SubscriptionObjectType.Institution):
                     return CompareInstitutionSubscriptions((InstitutionSubscription) a, (InstitutionSubscription) b);
                 default:
                     throw new ArgumentOutOfRangeException();

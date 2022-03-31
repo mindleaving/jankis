@@ -26,7 +26,7 @@ namespace HealthSharingPortal.API.Controllers
 
         protected override Task<object> TransformItem(
             Person item,
-            Language language)
+            Language language = Language.en)
         {
             return Task.FromResult<object>(item);
         }
@@ -57,6 +57,15 @@ namespace HealthSharingPortal.API.Controllers
             string searchText)
         {
             return items.OrderBy(x => x.Id);
+        }
+
+        protected override Task PublishChange(
+            Person item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            // Nothing to do
+            return Task.CompletedTask;
         }
     }
 }

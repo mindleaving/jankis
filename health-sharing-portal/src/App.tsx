@@ -37,7 +37,7 @@ import { ReceiveHealthProfessionalAccessPage } from './localComponents/pages/Hea
 import { SharedAccessListPage } from './localComponents/pages/Sharer/SharedAccessListPage';
 import { OfferStudyParticipationPage } from './localComponents/pages/Sharer/OfferStudyParticipationPage';
 import { CreateEditStudyPage } from './localComponents/pages/Researcher/CreateEditStudyPage';
-import { CreateEditQuestionnairePage } from './localComponents/pages/Researcher/CreateEditQuestionnairePage';
+import { CreateEditQuestionnairePage } from './sharedHealthComponents/pages/CreateEditQuestionnairePage';
 import { StudyEnrollmentReviewPage } from './localComponents/pages/Researcher/StudyEnrollmentReviewPage';
 
 import './localComponents/styles/App.css';

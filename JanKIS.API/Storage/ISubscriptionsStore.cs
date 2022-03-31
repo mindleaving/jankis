@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using HealthSharingPortal.API.Storage;
 using JanKIS.API.Models.Subscriptions;
 using MongoDB.Driver;
 
@@ -37,7 +38,6 @@ namespace JanKIS.API.Storage
         {
             return collection.OfType<PatientSubscription>().Find(x => x.PersonId == personId).ToListAsync();
         }
-
         public Task<List<ServiceSubscription>> GetServiceSubscriptions(string serviceId)
         {
             return collection.OfType<ServiceSubscription>().Find(x => x.ServiceId == serviceId).ToListAsync();
@@ -79,7 +79,6 @@ namespace JanKIS.API.Storage
         {
             return collection.OfType<PatientSubscription>().Find(x => x.PersonId == personId && x.Username == username).FirstOrDefaultAsync();
         }
-
         public Task<ServiceSubscription> GetServiceSubscription(
             string serviceId,
             string username)

@@ -1,4 +1,5 @@
-﻿using JanKIS.API.Models;
+﻿using HealthSharingPortal.API.ViewModels;
+using JanKIS.API.Models;
 using TypescriptGenerator.Attributes;
 
 namespace JanKIS.API.ViewModels

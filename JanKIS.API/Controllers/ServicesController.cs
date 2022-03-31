@@ -5,15 +5,19 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels.Interview;
 using HealthModels.Services;
-using JanKIS.API.Helpers;
-using JanKIS.API.Models;
+using HealthSharingPortal.API.Controllers;
+using HealthSharingPortal.API.Helpers;
+using HealthSharingPortal.API.Models;
+using HealthSharingPortal.API.Storage;
+using HealthSharingPortal.API.Workflow.ViewModelBuilders;
 using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
 using JanKIS.API.Workflow;
-using JanKIS.API.Workflow.ViewModelBuilders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ISubscriptionsStore = JanKIS.API.Storage.ISubscriptionsStore;
+using SearchExpressionBuilder = JanKIS.API.Helpers.SearchExpressionBuilder;
 
 namespace JanKIS.API.Controllers
 {
@@ -48,12 +52,13 @@ namespace JanKIS.API.Controllers
             int? count = null,
             int? skip = null,
             string orderBy = null,
-            OrderDirection orderDirection = OrderDirection.Ascending)
+            OrderDirection orderDirection = OrderDirection.Ascending,
+            Language language = Language.en)
         {
             Request.Query.TryGetValue("departmentId", out var departmentId);
             var orderByExpression = BuildOrderByExpression(orderBy);
             var items = await servicesStore.GetManyFiltered(count, skip, orderByExpression, orderDirection, departmentId);
-            var transformedItems = await TransformItems(items);
+            var transformedItems = await TransformItems(items, language);
             return Ok(transformedItems);
         }
 

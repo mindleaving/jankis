@@ -20,7 +20,7 @@ namespace JanKIS.API.Models.Subscriptions
             BedOccupancy = bedOccupancy;
         }
 
-        public override NotificationType NotificationType => NotificationType.NewBedOccupancy;
+        public override string NotificationType => Subscriptions.NotificationType.NewBedOccupancy.ToString();
         public BedOccupancy BedOccupancy { get; private set; }
     }
 }

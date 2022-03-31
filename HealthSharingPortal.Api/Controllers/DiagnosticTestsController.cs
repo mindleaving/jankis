@@ -25,7 +25,7 @@ namespace HealthSharingPortal.API.Controllers
 
         protected override Task<object> TransformItem(
             DiagnosticTestDefinition item,
-            Language language)
+            Language language = Language.en)
         {
             item.Translate(language);
             return Task.FromResult<object>(item);
@@ -54,6 +54,15 @@ namespace HealthSharingPortal.API.Controllers
         protected override IEnumerable<DiagnosticTestDefinition> PrioritizeItems(List<DiagnosticTestDefinition> items, string searchText)
         {
             return items.OrderBy(x => x.Name.Length);
+        }
+
+        protected override Task PublishChange(
+            DiagnosticTestDefinition item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            // Nothing to do
+            return Task.CompletedTask;
         }
     }
 }

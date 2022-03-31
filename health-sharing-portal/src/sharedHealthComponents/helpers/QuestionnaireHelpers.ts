@@ -1,6 +1,6 @@
 import { Models } from "../../localComponents/types/models";
 import { v4 as uuid } from 'uuid';
-import { HealthRecordEntryType } from "../../localComponents/types/enums";
+import { HealthRecordEntryType } from "../../localComponents/types/enums.d";
 
 export const questionnaireAnswersToFormData = (questionnaireAnswers: Models.Interview.QuestionnaireAnswers): { [key: string]: string } => {
     const formData: { [key: string]: string } = {};

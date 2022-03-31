@@ -4,12 +4,14 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels.Interview;
+using HealthSharingPortal.API.Controllers;
+using HealthSharingPortal.API.Storage;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
-using JanKIS.API.Storage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using IAccountStore = JanKIS.API.Storage.IAccountStore;
 
 namespace JanKIS.API.Controllers
 {

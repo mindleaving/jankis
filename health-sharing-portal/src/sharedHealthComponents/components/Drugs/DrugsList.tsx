@@ -67,7 +67,7 @@ export const DrugsList = (props: DrugsListProps) => {
             </thead>
             <tbody>
                 {drugs.map(drug => (
-                    <tr>
+                    <tr key={drug.id}>
                         <td>
                             <i className="fa fa-trash red clickable" onClick={() => deleteDrug(drug.id, formatDrug(drug))} />
                         </td>
@@ -76,7 +76,7 @@ export const DrugsList = (props: DrugsListProps) => {
                         <td>
                             <ul className="bulletFreeList">
                                 {drug.activeIngredients.map(activeIngredient => (
-                                    <li>{activeIngredient}</li>
+                                    <li key={activeIngredient}>{activeIngredient}</li>
                                 ))}
                             </ul>
                         </td>

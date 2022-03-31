@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace HealthSharingPortal.API.Helpers
 {
-    internal static class ControllerHelpers
+    public static class ControllerHelpers
     {
         public static string GetUsername(IHttpContextAccessor httpContextAccessor)
         {
@@ -17,7 +19,7 @@ namespace HealthSharingPortal.API.Helpers
             return UsernameNormalizer.Normalize(username);
         }
 
-        public static AccountType? GetAccountType(IHttpContextAccessor httpContextAccessor)
+        internal static AccountType? GetAccountType(IHttpContextAccessor httpContextAccessor)
         {
             var accountTypeString = httpContextAccessor.HttpContext?.User.Claims
                 .FirstOrDefault(x => x.Type == JwtSecurityTokenBuilder.AccountTypeClaimName)?.Value;
@@ -30,6 +32,11 @@ namespace HealthSharingPortal.API.Helpers
         {
             return httpContextAccessor.HttpContext?.User.Claims
                 .FirstOrDefault(x => x.Type == JwtSecurityTokenBuilder.PersonIdClaimName)?.Value;
+        }
+
+        public static List<Claim> GetClaims(IHttpContextAccessor httpContextAccessor)
+        {
+            return httpContextAccessor.HttpContext?.User.Claims.ToList() ?? new List<Claim>();
         }
     }
 }

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace HealthSharingPortal.API.AccessControl
 {
-    public class AdminRequirementHandler : AuthorizationHandler<AdminRequirement>
+    internal class AdminRequirementHandler : AuthorizationHandler<AdminRequirement>
     {
         protected override Task HandleRequirementAsync(
             AuthorizationHandlerContext context,

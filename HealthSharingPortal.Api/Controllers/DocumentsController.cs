@@ -8,6 +8,7 @@ using HealthModels.Interview;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Storage;
+using HealthSharingPortal.API.Workflow;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,15 +17,18 @@ namespace HealthSharingPortal.API.Controllers
     public class DocumentsController : PersonDataRestControllerBase<PatientDocument>
     {
         private readonly IFilesStore filesStore;
+        private readonly INotificationDistributor notificationDistributor;
 
         public DocumentsController(
             IStore<PatientDocument> store,
             IFilesStore filesStore,
             IHttpContextAccessor httpContextAccessor,
-            IAuthorizationModule authorizationModule)
+            IAuthorizationModule authorizationModule,
+            INotificationDistributor notificationDistributor)
             : base(store, httpContextAccessor, authorizationModule)
         {
             this.filesStore = filesStore;
+            this.notificationDistributor = notificationDistributor;
         }
 
         [HttpPut("{documentId}/upload")]
@@ -80,6 +84,13 @@ namespace HealthSharingPortal.API.Controllers
         {
             return items;
         }
-        
+
+        protected override Task PublishChange(
+            PatientDocument item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            return notificationDistributor.NotifyNewPatientEvent(item, storageOperation, submitterUsername);
+        }
     }
 }

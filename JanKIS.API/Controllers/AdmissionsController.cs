@@ -5,11 +5,15 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels;
 using HealthModels.Interview;
+using HealthSharingPortal.API.Controllers;
+using HealthSharingPortal.API.Storage;
+using HealthSharingPortal.API.Workflow;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
 using JanKIS.API.Workflow;
 using Microsoft.AspNetCore.Http;
+using INotificationDistributor = JanKIS.API.Workflow.INotificationDistributor;
 
 namespace JanKIS.API.Controllers
 {

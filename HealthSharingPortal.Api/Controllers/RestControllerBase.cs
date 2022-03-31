@@ -79,7 +79,9 @@ namespace HealthSharingPortal.API.Controllers
         {
             if (id != item.Id)
                 return BadRequest("ID of route doesn't match body");
-            await store.StoreAsync(item);
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var storageOperation = await store.StoreAsync(item);
+            await PublishChange(item, storageOperation, username);
             return Ok(id);
         }
 
@@ -92,7 +94,9 @@ namespace HealthSharingPortal.API.Controllers
             updates.ApplyTo(item, ModelState);
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
             await store.StoreAsync(item);
+            await PublishChange(item, StorageOperation.Changed, username);
             return Ok();
         }
 
@@ -111,13 +115,10 @@ namespace HealthSharingPortal.API.Controllers
             return transformTasks.Select(x => x.Result).ToList();
         }
 
-        
-
-        protected abstract Task<object> TransformItem(
-            T item,
-            Language language);
+        protected abstract Task<object> TransformItem(T item, Language language = Language.en);
         protected abstract Expression<Func<T, object>> BuildOrderByExpression(string orderBy);
         protected abstract Expression<Func<T,bool>> BuildSearchExpression(string[] searchTerms);
         protected abstract IEnumerable<T> PrioritizeItems(List<T> items, string searchText);
+        protected abstract Task PublishChange(T item, StorageOperation storageOperation, string submitterUsername);
     }
 }

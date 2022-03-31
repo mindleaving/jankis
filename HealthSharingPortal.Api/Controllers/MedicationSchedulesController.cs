@@ -72,5 +72,14 @@ namespace HealthSharingPortal.API.Controllers
         {
             return items;
         }
+
+        protected override Task PublishChange(
+            MedicationSchedule item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            // Nothing to do
+            return Task.CompletedTask;
+        }
     }
 }

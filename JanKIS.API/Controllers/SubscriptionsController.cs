@@ -4,12 +4,14 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels.Interview;
-using JanKIS.API.Helpers;
-using JanKIS.API.Models;
+using HealthSharingPortal.API.Controllers;
+using HealthSharingPortal.API.Helpers;
+using HealthSharingPortal.API.Storage;
 using JanKIS.API.Models.Subscriptions;
-using JanKIS.API.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SearchExpressionBuilder = JanKIS.API.Helpers.SearchExpressionBuilder;
+using SubscriptionComparer = JanKIS.API.Helpers.SubscriptionComparer;
 
 namespace JanKIS.API.Controllers
 {

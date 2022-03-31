@@ -2,7 +2,7 @@
 
 namespace HealthSharingPortal.API.AccessControl
 {
-    public class AdminRequirement : IAuthorizationRequirement
+    internal class AdminRequirement : IAuthorizationRequirement
     {
         public const string PolicyName = "Admin";
     }

@@ -2,33 +2,31 @@
 using System.Threading.Tasks;
 using HealthModels;
 using HealthModels.Services;
-using JanKIS.API.Hubs;
+using HealthSharingPortal.API.Hubs;
+using HealthSharingPortal.API.Storage;
 using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
-using JanKIS.API.Storage;
 using Microsoft.AspNetCore.SignalR;
 
 namespace JanKIS.API.Workflow
 {
-    public interface INotificationDistributor
+    public interface INotificationDistributor : HealthSharingPortal.API.Workflow.INotificationDistributor
     {
-        Task NotifyNewPatientEvent(IHealthRecordEntry healthRecordEntry, StorageOperation storageOperation, string submitterUsername);
-        Task NotifyNewAdmission(Admission admission, StorageOperation storageOperation, string submitterUsername);
         Task NotifyNewBedOccupancy(BedOccupancy bedOccupancy, StorageOperation storageOperation, string submitterUsername);
-        Task NotifyNewServiceRequest(ServiceRequest serviceRequest, StorageOperation storageOperation, string submitterUsername); 
+        Task NotifyNewServiceRequest(ServiceRequest serviceRequest, StorageOperation storageOperation, string submitterUsername);
         Task NotifyNewService(ServiceDefinition service, StorageOperation storageOperation, string submitterUsername);
     }
 
     public class NotificationDistributor : INotificationDistributor
     {
-        private readonly INotificationsStore notificationsStore;
-        private readonly ISubscriptionsStore subscriptionsStore;
+        private readonly Storage.INotificationsStore notificationsStore;
+        private readonly Storage.ISubscriptionsStore subscriptionsStore;
         private readonly IHubContext<NotificationsHub, INotificationsClient> notificationsHub;
         private readonly IReadonlyStore<Person> personsStore;
 
         public NotificationDistributor(
-            INotificationsStore notificationsStore,
-            ISubscriptionsStore subscriptionsStore,
+            Storage.INotificationsStore notificationsStore,
+            Storage.ISubscriptionsStore subscriptionsStore,
             IHubContext<NotificationsHub, INotificationsClient> notificationsHub,
             IReadonlyStore<Person> personsStore)
         {

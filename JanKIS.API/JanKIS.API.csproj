@@ -17,6 +17,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HealthModels\HealthModels.csproj" />
+    <ProjectReference Include="..\HealthSharingPortal.Api\HealthSharingPortal.API.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Hubs\" />
   </ItemGroup>
 
 </Project>
