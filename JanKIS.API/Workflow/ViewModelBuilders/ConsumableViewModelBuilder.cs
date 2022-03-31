@@ -14,7 +14,7 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
             this.stockStateViewModelBuilder = stockStateViewModelBuilder;
         }
 
-        public async Task<IViewModel<Consumable>> Build(Consumable model)
+        public async Task<IViewModel<Consumable>> Build(Consumable model, IViewModelBuilderOptions<Consumable> options = null)
         {
             var stockStateViewModels = new List<StockStateViewModel>();
             foreach (var stockState in model.StockStates)
@@ -26,6 +26,13 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
             {
                 StockStateViewModels = stockStateViewModels
             };
+        }
+
+        public Task<List<IViewModel<Consumable>>> BatchBuild(
+            List<Consumable> models,
+            IViewModelBuilderOptions<Consumable> options = null)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

@@ -12,7 +12,7 @@ import { ViewModels } from '../../types/viewModels.d';
 import { v4 as uuid } from 'uuid';
 import UserContext from '../../contexts/UserContext';
 import { StudyEnrollementState } from '../../types/enums.d';
-import { formDataToQuestionnaireAnswers, questionnaireAnswersToFormData } from '../../helpers/QuestionnaireHelpers';
+import { formDataToQuestionnaireAnswers, questionnaireAnswersToFormData } from '../../../sharedHealthComponents/helpers/QuestionnaireHelpers';
 
 interface OfferStudyParticipationPageProps {}
 

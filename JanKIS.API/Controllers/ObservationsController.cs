@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthModels.Interview;
 using HealthModels.Observations;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
@@ -46,7 +47,9 @@ namespace JanKIS.API.Controllers
             return await base.CreateOrReplace(id, item);
         }
 
-        protected override Task<object> TransformItem(Observation item)
+        protected override Task<object> TransformItem(
+            Observation item,
+            Language language = Language.en)
         {
             return Task.FromResult<object>(item);
         }

@@ -162,7 +162,8 @@ namespace HealthSharingPortal.API.Controllers
                 authenticationResult,
                 username,
                 account.IsPasswordChangeRequired,
-                account.AccountType);
+                account.AccountType,
+                account.PreferedLanguage);
             return Ok(userViewModel);
         }
 

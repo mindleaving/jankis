@@ -83,7 +83,8 @@ namespace HealthSharingPortal.API.Controllers
 
 
         protected override Task<object> TransformItem(
-            Questionnaire item)
+            Questionnaire item,
+            Language language)
         {
             return Task.FromResult<object>(item);
         }

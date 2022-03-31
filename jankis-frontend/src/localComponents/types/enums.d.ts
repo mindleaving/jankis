@@ -4,12 +4,15 @@ export enum AddressRole {
     Temporary = "Temporary"
 }
 export enum HealthRecordEntryType {
+    Undefined = "Undefined",
     Observation = "Observation",
     Note = "Note",
     TestResult = "TestResult",
     Document = "Document",
     MedicationDispension = "MedicationDispension",
-    Equipment = "Equipment"
+    Equipment = "Equipment",
+    Diagnosis = "Diagnosis",
+    Questionnaire = "Questionnaire"
 }
 export enum Sex {
     Both = "Both",

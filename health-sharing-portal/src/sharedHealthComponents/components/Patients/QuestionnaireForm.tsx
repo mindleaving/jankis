@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { translateSchema } from '../../../sharedCommonComponents/helpers/SchemaTranslator';
-import { formDataToQuestionnaireAnswers, questionnaireAnswersToFormData } from '../../../localComponents/helpers/QuestionnaireHelpers';
+import { formDataToQuestionnaireAnswers, questionnaireAnswersToFormData } from '../../helpers/QuestionnaireHelpers';
 import { Models } from '../../../localComponents/types/models';
 import { StoreButton } from '../../../sharedCommonComponents/components/StoreButton';
 import UserContext from '../../../localComponents/contexts/UserContext';

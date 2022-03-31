@@ -1,6 +1,7 @@
 import { differenceInYears, differenceInMonths, differenceInDays, format } from 'date-fns';
 import { Sex, MeasurementType, DiagnosticTestScaleType } from '../../localComponents/types/enums.d';
 import { Models } from '../../localComponents/types/models';
+import { ViewModels } from '../../localComponents/types/viewModels';
 import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
 
 export const formatDate = (date: Date) => {
@@ -105,4 +106,13 @@ export const formatDiagnosticTestValue = (testResult: Models.DiagnosticTestResul
             const quantitativeTestResult = testResult as Models.DiagnosticTestResults.QuantitativeDiagnosticTestResult;
             return `${quantitativeTestResult.value} ${quantitativeTestResult.unit}`;
     }
+}
+export const formatDiagnosisNameAndCode = (diagnosis: ViewModels.DiagnosisViewModel) => {
+    const codes = [
+        `${resolveText("ICD11")}: ${diagnosis.icd11Code}`
+    ];
+    if(diagnosis.icd10Code) {
+        codes.push(`${resolveText("ICD10")}: ${diagnosis.icd10Code}`);
+    }
+    return `${diagnosis.name} (${codes.join(", ")})`;
 }

@@ -18,9 +18,9 @@ namespace JanKIS.Tools
             database = mongoClient.GetDatabase("JanKIS");
         }
         
-        protected IMongoCollection<T> GetCollection<T>(string collectionName)
+        protected IMongoCollection<T> GetCollection<T>(string collectionName = null)
         {
-            return database.GetCollection<T>(collectionName);
+            return database.GetCollection<T>(collectionName ?? typeof(T).Name);
         }
     }
 }

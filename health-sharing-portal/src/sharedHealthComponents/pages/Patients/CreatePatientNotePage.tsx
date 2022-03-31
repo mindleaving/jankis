@@ -49,7 +49,7 @@ export const CreatePatientNotePage = (props: CreatePatientNotePageProps) => {
             resolveText('Patient_Note_SuccessfullyStored'),
             resolveText('Patient_Note_CouldNotStore'),
             buildNote,
-            () => navigate(-1), //push(`/patients/${personId}`),
+            () => navigate(-1), //push(`/healthrecord/${personId}`),
             () => setIsStoring(false)
         );
     }

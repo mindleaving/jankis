@@ -74,7 +74,7 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
             seriesName: formatMeasurementType(measurementType),
             timestamp: observation.timestamp,
             value: parseFloat(genericObservation.value),
-            unit: genericObservation.unit
+            unit: genericObservation.unit ?? ''
         }];
     });
     const groupedObservations = groupBy(observationDataPoints, x => x.seriesName);

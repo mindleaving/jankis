@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using HealthModels.Extensions;
+using HealthModels.Interview;
 using HealthModels.Services;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
@@ -21,8 +23,11 @@ namespace HealthSharingPortal.API.Controllers
         {
         }
 
-        protected override Task<object> TransformItem(DiagnosticTestDefinition item)
+        protected override Task<object> TransformItem(
+            DiagnosticTestDefinition item,
+            Language language)
         {
+            item.Translate(language);
             return Task.FromResult<object>(item);
         }
 

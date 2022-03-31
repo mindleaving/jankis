@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using HealthModels.Interview;
 using HealthModels.Services;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
@@ -103,7 +104,9 @@ namespace JanKIS.API.Controllers
             return Ok();
         }
 
-        protected override async Task<object> TransformItem(ServiceDefinition item)
+        protected override async Task<object> TransformItem(
+            ServiceDefinition item,
+            Language language = Language.en)
         {
             return await serviceViewModelBuilder.Build(item);
         }

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using HealthModels;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
@@ -22,7 +23,7 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
             this.roomsStore = roomsStore;
         }
 
-        public async Task<IViewModel<LocationReference>> Build(LocationReference model)
+        public async Task<IViewModel<LocationReference>> Build(LocationReference model, IViewModelBuilderOptions<LocationReference> options = null)
         {
             IViewModel<Department> departmentViewModel = null;
             Room room = null;
@@ -40,6 +41,13 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
                 Department = (DepartmentViewModel) departmentViewModel,
                 Room = room
             };
+        }
+
+        public Task<List<IViewModel<LocationReference>>> BatchBuild(
+            List<LocationReference> models,
+            IViewModelBuilderOptions<LocationReference> options = null)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

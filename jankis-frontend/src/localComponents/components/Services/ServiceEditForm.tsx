@@ -63,7 +63,8 @@ export const ServiceEditForm = (props: ServiceEditFormProps) => {
             audience: audience,
             parameters: parameters,
             isAvailable: true,
-            autoAcceptRequests: false
+            autoAcceptRequests: false,
+            translations: []
         };
         return service;
     }

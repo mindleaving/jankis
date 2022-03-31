@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthModels.Interview;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
@@ -402,7 +403,9 @@ namespace HealthSharingPortal.API.Controllers
         }
 
 
-        protected override Task<object> TransformItem(Study item)
+        protected override Task<object> TransformItem(
+            Study item,
+            Language language)
         {
             return Task.FromResult<object>(item);
         }

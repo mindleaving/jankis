@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { AsyncButton } from '../../../sharedCommonComponents/components/AsyncButton';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
-import { submitPostRequest } from '../../../sharedCommonComponents/helpers/StoringHelpers';
+import { sendPostRequest } from '../../../sharedCommonComponents/helpers/StoringHelpers';
 import { formatPerson } from '../../../sharedHealthComponents/helpers/Formatters';
 import { QuestionnaireAnswersViewer } from '../../../sharedHealthComponents/components/Patients/QuestionnaireAnswersViewer';
 import { ViewModels } from '../../types/viewModels';
@@ -33,7 +33,7 @@ export const StudyEnrollmentReviewPage = (props: StudyEnrollmentReviewPageProps)
 
     const markParticipantAsEligible = async () => {
         setIsSubmitting(true);
-        await submitPostRequest(
+        await sendPostRequest(
             `api/studies/${studyId}/enrollments/${enrollmentId}/invite`,
             resolveText("StudyEnrollment_CouldNotMarkEligible"),
             undefined,
@@ -62,7 +62,7 @@ export const StudyEnrollmentReviewPage = (props: StudyEnrollmentReviewPageProps)
             return;
         }
         setIsSubmitting(true);
-        await submitPostRequest(
+        await sendPostRequest(
             `api/studies/${studyId}/enrollments/${enrollmentId}/exclude`,
             resolveText("StudyEnrollment_CouldNotExclude"),
             undefined,

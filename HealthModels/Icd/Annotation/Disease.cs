@@ -16,6 +16,7 @@ namespace HealthModels.Icd.Annotation
         [JsonIgnore]
         public string Id => Icd11Code;
         public string Icd11Code { get; set; }
+        [TypescriptIsOptional]
         public string Icd10Code { get; set; }
         public string Name { get; set; }
         [TypescriptIsOptional]

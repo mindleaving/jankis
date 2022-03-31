@@ -84,7 +84,7 @@ export const QuantitativeTestResultRow = (props: QuantitativeTestResultRowProps)
             name: testName,
             data: timeOrderedTests.map(x => {
                 const value = mathjs
-                    .unit(x.value, x.unit)
+                    .unit(x.value, x.unit!)
                     .to(commonUnit)
                     .toNumber();
                 return {

@@ -23,7 +23,7 @@ export const CreateDiagnosisPage = (props: CreateDiagnosisPageProps) => {
     }
 
     const loadDiagnoses = async (id: string) => {
-        const response = await apiClient.instance!.get(`api/diagnosis/${id}`, {});
+        const response = await apiClient.instance!.get(`api/diagnoses/${id}`, {});
         return await response.json();
     }
 
@@ -47,6 +47,7 @@ export const CreateDiagnosisPage = (props: CreateDiagnosisPageProps) => {
             <h1>{resolveText("Diagnosis")}</h1>
             <GenericTypeCreateEditPage<Models.Diagnoses.Diagnosis>
                 typeName='diagnosis'
+                paramName='diagnosisId'
                 item={diagnosis}
                 itemLoader={loadDiagnoses}
                 onSubmit={submit}

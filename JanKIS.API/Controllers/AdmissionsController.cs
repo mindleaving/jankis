@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthModels.Interview;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
@@ -25,7 +26,9 @@ namespace JanKIS.API.Controllers
             this.notificationDistributor = notificationDistributor;
         }
 
-        protected override Task<object> TransformItem(Admission item)
+        protected override Task<object> TransformItem(
+            Admission item,
+            Language language = Language.en)
         {
             return Task.FromResult<object>(item);
         }

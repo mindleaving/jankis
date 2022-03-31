@@ -28,6 +28,7 @@ export namespace ViewModels {
         username: string;
         isPasswordResetRequired: boolean;
         accountType: Enums.AccountType;
+        preferedLanguage: Enums.Language;
     }
 
     interface PatientOverviewViewModel {

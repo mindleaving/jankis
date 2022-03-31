@@ -17,7 +17,7 @@ export const IcdAutocompleteWidget = (props: WidgetProps) => {
         }
         setIsLoading(true);
         const loadIcdCategory = buildLoadObjectFunc(
-            `api/classiciations/icd11/${props.value}`, {},
+            `api/classifications/icd11/${props.value}`, {},
             resolveText("IcdCategory_CouldNotLoad"),
             setIcdCategory,
             () => setIsLoading(false)

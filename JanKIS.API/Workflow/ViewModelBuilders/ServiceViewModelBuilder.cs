@@ -24,7 +24,7 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
             this.serviceAudienceViewModelBuilder = serviceAudienceViewModelBuilder;
         }
 
-        public async Task<IViewModel<ServiceDefinition>> Build(ServiceDefinition model)
+        public async Task<IViewModel<ServiceDefinition>> Build(ServiceDefinition model, IViewModelBuilderOptions<ServiceDefinition> options = null)
         {
             var department = await departmentsStore.CachedGetByIdAsync(model.DepartmentId);
             var departmentViewModel = await departmentViewModelBuilder.Build(department);
@@ -39,6 +39,13 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
                 Department = (DepartmentViewModel) departmentViewModel,
                 AudienceViewModels = audienceViewModels
             };
+        }
+
+        public Task<List<IViewModel<ServiceDefinition>>> BatchBuild(
+            List<ServiceDefinition> models,
+            IViewModelBuilderOptions<ServiceDefinition> options = null)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

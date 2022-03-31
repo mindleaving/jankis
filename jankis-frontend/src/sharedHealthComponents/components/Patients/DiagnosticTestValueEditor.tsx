@@ -65,7 +65,7 @@ const OrdinalValueEditor = NominalValueEditor;
 const QuantativeValueEditor = (props: DiagnosticTestValueEditorProps) => {
     const quantativeTestResult = props.testResult as Models.DiagnosticTestResults.QuantitativeDiagnosticTestResult;
     const [ value, setValue ] = useState<number>(quantativeTestResult.value);
-    const [ unit, setUnit ] = useState<string>(quantativeTestResult.unit);
+    const [ unit, setUnit ] = useState<string | undefined>(quantativeTestResult.unit);
     const onChange = props.onChange;
     useEffect(() => {
         const update: Update<Models.DiagnosticTestResults.DiagnosticTestResult> = (testResult) => {

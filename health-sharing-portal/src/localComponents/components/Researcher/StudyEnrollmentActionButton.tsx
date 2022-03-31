@@ -4,7 +4,7 @@ import { confirmAlert } from 'react-confirm-alert';
 import { useNavigate } from 'react-router-dom';
 import { AsyncButton } from '../../../sharedCommonComponents/components/AsyncButton';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { submitPostRequest } from '../../../sharedCommonComponents/helpers/StoringHelpers';
+import { sendPostRequest } from '../../../sharedCommonComponents/helpers/StoringHelpers';
 import { StudyEnrollementState } from '../../types/enums.d';
 import { Models } from '../../types/models';
 
@@ -41,7 +41,7 @@ export const StudyEnrollmentActionButton = (props: StudyEnrollmentActionButtonPr
             return;
         }
         setIsSubmitting(true);
-        await submitPostRequest(
+        await sendPostRequest(
             `api/studies/${props.studyId}/enrollments/${props.enrollmentId}/reject`,
             resolveText("StudyEnrollmentAction_CouldNotReject"),
             undefined,
@@ -69,7 +69,7 @@ export const StudyEnrollmentActionButton = (props: StudyEnrollmentActionButtonPr
             return;
         }
         setIsSubmitting(true);
-        await submitPostRequest(
+        await sendPostRequest(
             `api/studies/${props.studyId}/enrollments/${props.enrollmentId}/exclude`,
             resolveText("StudyEnrollmentAction_CouldNotExclude"),
             undefined,

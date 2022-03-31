@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using HealthModels;
+using HealthModels.Extensions;
 using HealthModels.Icd;
 using HealthModels.Interview;
 using HealthSharingPortal.API.Helpers;
@@ -52,18 +54,8 @@ namespace HealthSharingPortal.API.Controllers
             }
             var combinedFilterExpression = SearchExpressionBuilder.And(filterExpressions.ToArray());
             var items = await icd11CategoryStore.SearchAsync(combinedFilterExpression, count, skip);
-            if(language != Language.en)
-                Translate(items, language);
+            items.ForEach(item => item.Translate(language));
             return Ok(items);
-        }
-
-        private void Translate(List<IcdCategory> items, Language language)
-        {
-            foreach (var item in items)
-            {
-                if (item.Translations.ContainsKey(language))
-                    item.Name = item.Translations[language];
-            }
         }
     }
 }

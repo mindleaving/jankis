@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthModels.Interview;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Storage;
@@ -20,7 +21,9 @@ namespace HealthSharingPortal.API.Controllers
         {
         }
 
-        protected override Task<object> TransformItem(PatientNote item)
+        protected override Task<object> TransformItem(
+            PatientNote item,
+            Language language)
         {
             return Task.FromResult<object>(item);
         }

@@ -6,7 +6,6 @@ import { PatientProfileJumbotron } from '../../components/Patients/PatientProfil
 import { Models } from '../../types/models';
 import { ViewModels } from '../../types/viewModels';
 import { v4 as uuid } from 'uuid';
-import { isAfter, isBefore } from 'date-fns';
 import { NotificationManager } from 'react-notifications';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
@@ -28,41 +27,47 @@ export const PatientPage = (props: PatientPageProps) => {
     const [ admissions, setAdmissions ] = useState<Models.Admission[]>([]);
     const [ selectedAdmissionId, setSelectedAdmissionId ] = useState<string>();
     const [ notes, setNotes ] = useState<Models.PatientNote[]>([]);
+    const [ diagnoses, setDiagnoses ] = useState<ViewModels.DiagnosisViewModel[]>([]);
     const [ medicationSchedules, setMedicationSchedules ] = useState<Models.Medication.MedicationSchedule[]>([]);
     const [ medicationDispensions, setMedicationDispensions ] = useState<Models.Medication.MedicationDispension[]>([]);
     const [ observations, setObservations ] = useState<Models.Observations.Observation[]>([]);
     const [ testResults, setTestResults ] = useState<Models.DiagnosticTestResults.DiagnosticTestResult[]>([]);
     const [ documents, setDocuments ] = useState<Models.PatientDocument[]>([]);
+    const [ questionnaires, setQuestionnaires ] = useState<ViewModels.QuestionnaireAnswersViewModel[]>([]);
     const [ subscription, setSubscription ] = useState<Models.Subscriptions.PatientSubscription>();
     const isHistoricAdmission = selectedAdmissionId && admissions.find(x => x.id === selectedAdmissionId)?.dischargeTime;
 
+    const loadHealthData = buildLoadObjectFunc<ViewModels.PatientOverviewViewModel>(
+        `api/viewmodels/healthdata/${personId}`,
+        {},
+        resolveText('Patient_CouldNotLoad'),
+        vm => {
+            setProfileData(vm.profileData);
+            setBedOccupancy(vm.currentBedOccupancy);
+            setAdmissions(vm.admissions ?? []);
+            setSelectedAdmissionId(vm.admissions.length > 0 ? vm.admissions[vm.admissions.length-1].id : undefined);
+            setNotes(vm.notes ?? []);
+            setDiagnoses(vm.diagnoses ?? []);
+            setMedicationSchedules(vm.medicationSchedules ?? []);
+            setMedicationDispensions(vm.medicationDispensions ?? []);
+            setObservations(vm.observations ?? []);
+            setTestResults(vm.testResults ?? []);
+            setDocuments(vm.documents ?? []);
+            setSubscription(vm.subscription);
+            setQuestionnaires(vm.questionnaires ?? []);
+        },
+        () => setIsLoading(false)
+    );
+
     useEffect(() => {
-        if(!personId) return;
-        const loadPatient = buildLoadObjectFunc<ViewModels.PatientOverviewViewModel>(
-            `api/patients/${personId}/overviewviewmodel`,
-            {},
-            resolveText('Patient_CouldNotLoad'),
-            vm => {
-                setProfileData(vm.profileData);
-                setBedOccupancy(vm.currentBedOccupancy);
-                setAdmissions(vm.admissions);
-                setSelectedAdmissionId(vm.admissions.length > 0 ? vm.admissions[vm.admissions.length-1].id : undefined);
-                setNotes(vm.notes);
-                setMedicationSchedules(vm.medicationSchedules);
-                setMedicationDispensions(vm.medicationDispensions);
-                setObservations(vm.observations);
-                setTestResults(vm.testResults);
-                setDocuments(vm.documents);
-                setSubscription(vm.subscription);
-            },
-            () => setIsLoading(false)
-        );
-        loadPatient();
+        if(!personId) {
+            return;
+        }
+        loadHealthData();
     }, [ personId ]);
 
     const createNewMedicationSchedule = async () => {
         NotificationManager.info(resolveText('MedicationSchedule_Creating...'));
-        const now = new Date();
         const medicationSchedule: Models.Medication.MedicationSchedule = {
             id: uuid(),
             personId: personId!,
@@ -72,12 +77,25 @@ export const PatientPage = (props: PatientPageProps) => {
             items: []
         };
         await buildAndStoreObject<Models.Medication.MedicationSchedule>(
-            `api/medicationschedules/${medicationSchedule.personId}`,
+            `api/medicationschedules/${medicationSchedule.id}`,
             resolveText('MedicationSchedule_SuccessfullyStored'),
             resolveText('MedicationSchedule_CouldNotStore'),
             () => medicationSchedule,
             () => setMedicationSchedules(medicationSchedules.concat(medicationSchedule))
         );
+    }
+
+    const onDiagnosisMarkedAsResolved = (diagnosisId: string) => {
+        setDiagnoses(state => state.map(diagnosis => {
+            if(diagnosis.id === diagnosisId) {
+                return {
+                    ...diagnosis,
+                    hasResolved: true,
+                    resolvedTimestamp: new Date()
+                }
+            }
+            return diagnosis;
+        }));
     }
 
     if(!personId) {
@@ -95,6 +113,7 @@ export const PatientPage = (props: PatientPageProps) => {
         { path: `/healthrecord/${personId}/nursing`, textResourceId: 'Action_AddEquipment' },
         { path: `/healthrecord/${personId}/create/testresult`, textResourceId: 'Action_AddTestResult' },
         { path: `/healthrecord/${personId}/create/document`, textResourceId: 'Action_AddDocument' },
+        { path: `/healthrecord/${personId}/add/questionnaire`, textResourceId: 'Action_AddQuestionnaire' },
         { path: `/healthrecord/${personId}/order/service`, textResourceId: 'Action_OrderService' },
         { path: `/healthrecord/${personId}/nursing`, textResourceId: 'Action_Nursing' },
     ]
@@ -138,17 +157,25 @@ export const PatientPage = (props: PatientPageProps) => {
                     />
                 </Col>
                 <Col lg={6}>
-                    <PatientActionsCard actions={actions} />
+                    <PatientActionsCard 
+                        personId={personId}
+                        actions={actions}
+                        onCommandSuccessful={loadHealthData}
+                    />
                 </Col>
             </Row>
             <PatientDataTabControl
+                personId={personId}
                 notes={notes}
                 documents={documents}
+                questionnaires={questionnaires}
+                diagnoses={diagnoses}
                 observations={observations}
                 testResults={testResults}
                 medicationSchedules={medicationSchedules}
                 medicationDispensions={medicationDispensions}
                 createNewMedicationSchedule={createNewMedicationSchedule}
+                onDiagnosisMarkedAsResolved={onDiagnosisMarkedAsResolved}
             />
         </>
     );

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using HealthModels.Interview;
 using HealthModels.Observations;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
@@ -43,7 +44,9 @@ namespace HealthSharingPortal.API.Controllers
             return await base.CreateOrReplace(id, item);
         }
 
-        protected override Task<object> TransformItem(Observation item)
+        protected override Task<object> TransformItem(
+            Observation item,
+            Language language)
         {
             return Task.FromResult<object>(item);
         }

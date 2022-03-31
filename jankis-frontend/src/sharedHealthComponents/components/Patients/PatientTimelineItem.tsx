@@ -3,9 +3,10 @@ import { Col, Row } from 'react-bootstrap';
 import { Alert } from 'react-bootstrap';
 import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
+import { ViewModels } from '../../../localComponents/types/viewModels';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
-import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { formatDate, formatDiagnosticTestNameOfResult, formatObservationValue } from '../../helpers/Formatters';
+import { canResolveText, resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
+import { formatDate, formatDiagnosisNameAndCode, formatDiagnosticTestNameOfResult, formatObservationValue } from '../../helpers/Formatters';
 import { DiagnosticTestValueView } from './DiagnosticTestValueView';
 
 interface PatientTimelineItemProps {
@@ -24,11 +25,11 @@ export const PatientTimelineItem = (props: PatientTimelineItemProps) => {
         body = note.message;
     }
     else if(props.event.type === HealthRecordEntryType.Diagnosis) {
-        const diagnosis = props.event as Models.Diagnoses.Diagnosis;
+        const diagnosis = props.event as ViewModels.DiagnosisViewModel;
         colorVariant = "success";
         symbol = "fa-exclamation-circle";
         body = (<>
-            {resolveText("HealthRecordEntryType_Diagnosis")}: <strong>{diagnosis.icd11Code}</strong>
+            {resolveText("HealthRecordEntryType_Diagnosis")}: <strong>{formatDiagnosisNameAndCode(diagnosis)}</strong>
         </>);
     }
     else if(props.event.type === HealthRecordEntryType.Observation) {
@@ -36,7 +37,7 @@ export const PatientTimelineItem = (props: PatientTimelineItemProps) => {
         colorVariant = "warning";
         symbol = "fa-stethoscope";
         body = (<>
-            {resolveText(`MeasurementType_${observation.measurementType}`)} {formatObservationValue(observation)}
+            {canResolveText(`MeasurementType_${observation.measurementType}`) ? resolveText(`MeasurementType_${observation.measurementType}`) : observation.measurementType} {formatObservationValue(observation)}
         </>);
     }
     else if(props.event.type === HealthRecordEntryType.Document) {

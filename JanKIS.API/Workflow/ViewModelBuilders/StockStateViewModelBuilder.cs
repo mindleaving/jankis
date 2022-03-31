@@ -23,7 +23,7 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
             this.serviceAudienceViewModelBuilder = serviceAudienceViewModelBuilder;
         }
 
-        public async Task<IViewModel<StockState>> Build(StockState model)
+        public async Task<IViewModel<StockState>> Build(StockState model, IViewModelBuilderOptions<StockState> options = null)
         {
             var stock = await stocksStore.CachedGetByIdAsync(model.StockId);
             var stockViewModel = await stockViewModelBuilder.Build(stock);
@@ -38,6 +38,13 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
                 Stock = (StockViewModel) stockViewModel,
                 Audience = audience
             };
+        }
+
+        public Task<List<IViewModel<StockState>>> BatchBuild(
+            List<StockState> models,
+            IViewModelBuilderOptions<StockState> options = null)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

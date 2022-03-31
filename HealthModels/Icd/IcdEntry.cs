@@ -5,7 +5,7 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace HealthModels.Icd
 {
     [BsonKnownTypes(typeof(IcdChapter), typeof(IcdBlock), typeof(IcdCategory))]
-    public abstract class IcdEntry : IIcdEntry
+    public abstract class IcdEntry : IIcdEntry, IHasTranslations
     {
         protected IcdEntry(
             string version,

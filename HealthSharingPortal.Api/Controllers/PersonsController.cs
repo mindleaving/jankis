@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthModels.Interview;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Storage;
@@ -23,7 +24,9 @@ namespace HealthSharingPortal.API.Controllers
 
         // TODO: Restrict access to person data
 
-        protected override Task<object> TransformItem(Person item)
+        protected override Task<object> TransformItem(
+            Person item,
+            Language language)
         {
             return Task.FromResult<object>(item);
         }

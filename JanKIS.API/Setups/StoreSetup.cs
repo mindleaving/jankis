@@ -1,6 +1,10 @@
 ﻿using Commons.Physics;
 using HealthModels;
+using HealthModels.AccessControl;
+using HealthModels.Diagnoses;
 using HealthModels.DiagnosticTestResults;
+using HealthModels.Icd;
+using HealthModels.Interview;
 using HealthModels.MedicalTextEditor;
 using HealthModels.Medication;
 using HealthModels.Observations;
@@ -56,12 +60,16 @@ namespace JanKIS.API.Setups
             services.AddScoped<IConsumableOrdersStore, ConsumableOrdersStore>();
             SetupTypeStores<Contact>(services);
             SetupTypeStores<Department>(services);
+            SetupTypeStores<Diagnosis>(services);
             SetupTypeStores<DiagnosticTestDefinition>(services);
             SetupTypeStores<DiagnosticTestResult>(services);
             SetupTypeStores<Drug>(services);
+            SetupTypeStores<EmergencyAccess>(services);
             services.AddScoped<IFilesStore, FilesStore>();
+            SetupTypeStores<IcdCategory>(services);
             SetupTypeStores<Institution>(services);
             SetupTypeStores<InstitutionPolicy>(services);
+            SetupTypeStores<HealthProfessionalAccess>(services);
             SetupTypeStores<MedicationSchedule>(services);
             services.AddScoped<IMedicationScheduleStore, MedicationScheduleStore>();
             SetupTypeStores<MedicationDispension>(services);
@@ -73,6 +81,8 @@ namespace JanKIS.API.Setups
             SetupTypeStores<PatientNote>(services);
             SetupTypeStores<Person>(services);
             SetupTypeStores<PersonalizedAbbreviation>(services);
+            SetupTypeStores<Questionnaire>(services);
+            SetupTypeStores<QuestionnaireAnswers>(services);
             SetupTypeStores<Resource>(services);
             SetupTypeStores<Role>(services);
             SetupTypeStores<Room>(services);

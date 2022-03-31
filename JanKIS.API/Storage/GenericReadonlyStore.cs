@@ -13,10 +13,10 @@ namespace JanKIS.API.Storage
         protected readonly IMongoDatabase database;
         protected readonly IMongoCollection<T> collection;
 
-        public GenericReadonlyStore(IMongoDatabase mongoDatabase)
+        public GenericReadonlyStore(IMongoDatabase mongoDatabase, string collectionName = null)
         {
             database = mongoDatabase;
-            collection = mongoDatabase.GetCollection<T>(typeof(T).Name);
+            collection = mongoDatabase.GetCollection<T>(collectionName ?? typeof(T).Name);
         }
 
         public Task<List<T>> GetAllAsync()
@@ -53,6 +53,12 @@ namespace JanKIS.API.Storage
             int? skip = 0)
         {
             return collection.Find(filter).Skip(skip).Limit(count).ToListAsync();
+        }
+
+        public Task<T> FirstOrDefaultAsync(
+            Expression<Func<T, bool>> filter)
+        {
+            return collection.Find(filter).FirstOrDefaultAsync();
         }
     }
 }

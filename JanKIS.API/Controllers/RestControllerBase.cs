@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthModels.Interview;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
@@ -108,7 +109,7 @@ namespace JanKIS.API.Controllers
             return transformedItems;
         }
 
-        protected abstract Task<object> TransformItem(T item);
+        protected abstract Task<object> TransformItem(T item, Language language = Language.en);
         protected abstract Expression<Func<T, object>> BuildOrderByExpression(string orderBy);
         protected abstract Expression<Func<T,bool>> BuildSearchExpression(string[] searchTerms);
         protected abstract IEnumerable<T> PrioritizeItems(List<T> items, string searchText);

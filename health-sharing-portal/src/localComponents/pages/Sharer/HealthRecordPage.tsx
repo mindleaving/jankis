@@ -30,26 +30,29 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
     const [ documents, setDocuments ] = useState<Models.PatientDocument[]>([]);
     const [ questionnaires, setQuestionnaires ] = useState<ViewModels.QuestionnaireAnswersViewModel[]>([]);
     
+    const loadHealthData = buildLoadObjectFunc<ViewModels.PatientOverviewViewModel>(
+        `api/viewmodels/healthdata/${personId}`,
+        {},
+        resolveText('HealthData_CouldNotLoad'),
+        vm => {
+            setProfileData(vm.profileData);
+            setAdmissions(vm.admissions);
+            setNotes(vm.notes);
+            setDiagnoses(vm.diagnoses);
+            setMedicationSchedules(vm.medicationSchedules);
+            setMedicationDispensions(vm.medicationDispensions);
+            setObservations(vm.observations);
+            setTestResults(vm.testResults);
+            setDocuments(vm.documents);
+            setQuestionnaires(vm.questionnaires);
+        },
+        () => setIsLoading(false)
+    );
+
     useEffect(() => {
-        if(!personId) return;
-        const loadHealthData = buildLoadObjectFunc<ViewModels.PatientOverviewViewModel>(
-            `api/viewmodels/healthdata/${personId}`,
-            {},
-            resolveText('HealthData_CouldNotLoad'),
-            vm => {
-                setProfileData(vm.profileData);
-                setAdmissions(vm.admissions);
-                setNotes(vm.notes);
-                setDiagnoses(vm.diagnoses);
-                setMedicationSchedules(vm.medicationSchedules);
-                setMedicationDispensions(vm.medicationDispensions);
-                setObservations(vm.observations);
-                setTestResults(vm.testResults);
-                setDocuments(vm.documents);
-                setQuestionnaires(vm.questionnaires);
-            },
-            () => setIsLoading(false)
-        );
+        if(!personId) {
+            return;
+        }
         loadHealthData();
     }, [ personId ]);
 
@@ -113,11 +116,15 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
     return (
         <>
             <Row>
-                <Col xl={6}>
+                <Col xl={6} className="mb-2">
                     <BasicInformationBox />
                 </Col>
                 <Col xl={6}>
-                    <PatientActionsCard actions={actions} />
+                    <PatientActionsCard 
+                        personId={personId}
+                        actions={actions} 
+                        onCommandSuccessful={loadHealthData}
+                    />
                 </Col>
             </Row>
             <Row className='mt-3'>

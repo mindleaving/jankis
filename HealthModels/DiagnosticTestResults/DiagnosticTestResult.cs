@@ -2,7 +2,6 @@
 using HealthModels.Converters;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
-using TypescriptGenerator.Attributes;
 
 namespace HealthModels.DiagnosticTestResults
 {

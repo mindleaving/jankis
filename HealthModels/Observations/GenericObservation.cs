@@ -1,4 +1,6 @@
-﻿namespace HealthModels.Observations
+﻿using TypescriptGenerator.Attributes;
+
+namespace HealthModels.Observations
 {
     public class GenericObservation : Observation
     {
@@ -9,6 +11,7 @@
 
         public override string MeasurementType { get; set; }
         public string Value { get; set; }
+        [TypescriptIsOptional]
         public string Unit { get; set; }
     }
 }

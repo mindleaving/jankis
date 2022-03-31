@@ -7,7 +7,7 @@ import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer'
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { PatientAutocomplete } from '../../components/Autocompletes/PatientAutocomplete';
 import { NotificationManager } from 'react-notifications';
-import { submitPostRequest } from '../../../sharedCommonComponents/helpers/StoringHelpers';
+import { sendPostRequest } from '../../../sharedCommonComponents/helpers/StoringHelpers';
 import { v4 as uuid } from 'uuid';
 import { QuestionnaireAutocomplete } from '../../components/Autocompletes/QuestionnaireAutocomplete';
 import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
@@ -55,7 +55,7 @@ export const AssignQuestionnairePage = (props: AssignQuestionnairePageProps) => 
             answers: []
         };
         setIsStoring(true);
-        await submitPostRequest(
+        await sendPostRequest(
             `api/questionnaires/${questionnaire.id}/answers`,
             resolveText("QuestionnaireAnswers_CouldNotCreate"),
             answer,

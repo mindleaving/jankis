@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import { PagedTable } from '../../../sharedCommonComponents/components/PagedTable';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import PagedTableLoader from '../../../sharedCommonComponents/helpers/PagedTableLoader';
+import { formatDate } from '../../../sharedHealthComponents/helpers/Formatters';
 import { ServiceRequestState } from '../../types/enums.d';
 import { ServiceRequestsFilter } from '../../types/frontendTypes';
 import { Models } from '../../types/models';
@@ -45,7 +46,7 @@ export const ServiceRequestsList = (props: ServiceRequestsListProps) => {
                 {requests.length > 0
                 ? requests.map(request => (
                     <tr>
-                        <td>{new Date(request.timestamps.find(x => x.newState === ServiceRequestState.Requested)!.timestamp), 'yyyy-MM-dd HH:mm')}</td>
+                        <td>{formatDate(new Date(request.timestamps.find(x => x.newState === ServiceRequestState.Requested)!.timestamp))}</td>
                         <td>{request.service.name}</td>
                         <td>{request.requester}</td>
                         <td>

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthModels.Diagnoses;
 using HealthModels.DiagnosticTestResults;
+using HealthModels.Interview;
 using HealthModels.Medication;
 using HealthModels.Observations;
 using JanKIS.API.Helpers;
@@ -36,6 +38,10 @@ namespace JanKIS.API.Controllers
         private readonly IReadonlyStore<MedicationDispension> medicationDispensionsStore;
         private readonly IReadonlyStore<AttachedEquipment> patientEquipmentStore;
         private readonly IViewModelBuilder<AttachedEquipment> attachedEquipmentViewModelBuilder;
+        private readonly IReadonlyStore<Diagnosis> diagnosesStore;
+        private readonly IViewModelBuilder<Diagnosis> diagnosisViewModelBuilder;
+        private readonly IReadonlyStore<QuestionnaireAnswers> questionnaireAnswersStore;
+        private readonly IViewModelBuilder<QuestionnaireAnswers> questionnaireAnswersViewModelBuilder;
 
         public PatientsController(
             IStore<Person> personsStore,
@@ -50,7 +56,11 @@ namespace JanKIS.API.Controllers
             IMedicationScheduleStore medicationSchedulesStore,
             IReadonlyStore<MedicationDispension> medicationDispensionsStore,
             IReadonlyStore<AttachedEquipment> patientEquipmentStore,
-            IViewModelBuilder<AttachedEquipment> attachedEquipmentViewModelBuilder)
+            IViewModelBuilder<AttachedEquipment> attachedEquipmentViewModelBuilder,
+            IViewModelBuilder<Diagnosis> diagnosisViewModelBuilder,
+            IViewModelBuilder<QuestionnaireAnswers> questionnaireAnswersViewModelBuilder,
+            IReadonlyStore<Diagnosis> diagnosesStore,
+            IReadonlyStore<QuestionnaireAnswers> questionnaireAnswersStore)
         {
             this.personsStore = personsStore;
             this.admissionsStore = admissionsStore;
@@ -65,36 +75,62 @@ namespace JanKIS.API.Controllers
             this.medicationDispensionsStore = medicationDispensionsStore;
             this.patientEquipmentStore = patientEquipmentStore;
             this.attachedEquipmentViewModelBuilder = attachedEquipmentViewModelBuilder;
+            this.diagnosisViewModelBuilder = diagnosisViewModelBuilder;
+            this.questionnaireAnswersViewModelBuilder = questionnaireAnswersViewModelBuilder;
+            this.diagnosesStore = diagnosesStore;
+            this.questionnaireAnswersStore = questionnaireAnswersStore;
         }
 
         [HttpGet("/api/viewmodels/healthdata/{personId}")]
-        public async Task<IActionResult> OverviewViewModel([FromRoute] string personId)
+        public async Task<IActionResult> OverviewViewModel([FromRoute] string personId, [FromQuery] Language language = Language.en)
         {
             var profileData = await personsStore.GetByIdAsync(personId);
             if (profileData == null)
                 return NotFound();
             var now = DateTime.UtcNow;
             var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            var currentBedOccupancy = (await bedOccupanciesStore.SearchAsync(x => x.Patient.Id == personId && x.StartTime <= now && (x.EndTime == null || x.EndTime > now))).FirstOrDefault();
-            var admissions = await admissionsStore.SearchAsync(x => x.ProfileData.Id == personId);
-            var notes = await patientNotesStore.SearchAsync(x => x.PersonId == personId);
-            var medicationSchedules = await medicationSchedulesStore.GetForPatient(personId);
-            var medicationDispensions = await medicationDispensionsStore.SearchAsync(x => x.PersonId == personId);
-            var testResults = await testResultsStore.SearchAsync(x => x.PersonId == personId);
-            var observations = await observationsStore.SearchAsync(x => x.PersonId == personId);
-            var documents = await documentsStore.SearchAsync(x => x.PersonId == personId);
-            var subscription = await subscriptionsStore.GetPatientSubscription(personId, username);
-            var viewModel = new PatientOverviewViewModel(
-                profileData,
+            var currentBedOccupancy = bedOccupanciesStore.FirstOrDefaultAsync(x => x.Patient.Id == personId && x.StartTime <= now && (x.EndTime == null || x.EndTime > now));
+            var admissions = admissionsStore.SearchAsync(x => x.ProfileData.Id == personId);
+            var notes = patientNotesStore.SearchAsync(x => x.PersonId == personId);
+            var diagnoses = diagnosesStore.SearchAsync(x => x.PersonId == personId)
+                .ContinueWith(result => diagnosisViewModelBuilder.BatchBuild(result.Result, new DiagnosisViewModelBuilderOptions { Language = language }))
+                .Unwrap();
+            var medicationSchedules = medicationSchedulesStore.GetForPatient(personId);
+            var medicationDispensions = medicationDispensionsStore.SearchAsync(x => x.PersonId == personId);
+            var testResults = testResultsStore.SearchAsync(x => x.PersonId == personId);
+            var observations = observationsStore.SearchAsync(x => x.PersonId == personId);
+            var documents = documentsStore.SearchAsync(x => x.PersonId == personId);
+            var questionnaireAnswers = questionnaireAnswersStore.SearchAsync(x => x.PersonId == personId)
+                .ContinueWith(result => questionnaireAnswersViewModelBuilder.BatchBuild(result.Result))
+                .Unwrap();
+            var subscription = subscriptionsStore.GetPatientSubscription(personId, username);
+
+            await Task.WhenAll(
                 currentBedOccupancy,
                 admissions,
-                notes.OrderByDescending(x => x.Timestamp).ToList(),
+                notes,
+                diagnoses,
                 medicationSchedules,
-                medicationDispensions.OrderByDescending(x => x.Timestamp).ToList(),
-                testResults.OrderByDescending(x => x.Timestamp).ToList(),
-                observations.OrderByDescending(x => x.Timestamp).ToList(),
-                documents.OrderByDescending(x => x.Timestamp).ToList(),
+                medicationDispensions,
+                testResults,
+                observations,
+                documents,
+                questionnaireAnswers,
                 subscription);
+
+            var viewModel = new PatientOverviewViewModel(
+                profileData,
+                currentBedOccupancy.Result,
+                admissions.Result,
+                notes.Result.OrderByDescending(x => x.Timestamp).ToList(),
+                diagnoses.Result.Cast<DiagnosisViewModel>().ToList(),
+                medicationSchedules.Result,
+                medicationDispensions.Result.OrderByDescending(x => x.Timestamp).ToList(),
+                testResults.Result.OrderByDescending(x => x.Timestamp).ToList(),
+                observations.Result.OrderByDescending(x => x.Timestamp).ToList(),
+                documents.Result.OrderByDescending(x => x.Timestamp).ToList(),
+                questionnaireAnswers.Result.Cast<QuestionnaireAnswersViewModel>().ToList(),
+                subscription.Result);
             return Ok(viewModel);
         }
 

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthModels.Interview;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Storage;
@@ -53,7 +54,9 @@ namespace HealthSharingPortal.API.Controllers
             return await base.Delete(id);
         }
 
-        protected override Task<object> TransformItem(PatientDocument item)
+        protected override Task<object> TransformItem(
+            PatientDocument item,
+            Language language)
         {
             return Task.FromResult<object>(item);
         }

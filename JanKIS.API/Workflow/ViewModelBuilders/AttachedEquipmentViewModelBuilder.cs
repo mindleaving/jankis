@@ -20,7 +20,7 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
             this.resourcesStore = resourcesStore;
         }
 
-        public async Task<IViewModel<AttachedEquipment>> Build(AttachedEquipment model)
+        public async Task<IViewModel<AttachedEquipment>> Build(AttachedEquipment model, IViewModelBuilderOptions<AttachedEquipment> options = null)
         {
             var materialViewModels = new List<MaterialViewModel>();
             foreach (var materialReference in model.Materials)
@@ -45,6 +45,13 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
             {
                 MaterialViewModels = materialViewModels
             };
+        }
+
+        public Task<List<IViewModel<AttachedEquipment>>> BatchBuild(
+            List<AttachedEquipment> models,
+            IViewModelBuilderOptions<AttachedEquipment> options = null)
+        {
+            throw new NotImplementedException();
         }
     }
 }

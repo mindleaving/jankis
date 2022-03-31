@@ -35,7 +35,7 @@ namespace IcdAnnotation.API.Setups
                 .ConfigureNamespace("IcdAnnotation.API.Models", options => options.Translation = "Models")
                 .CustomizeType(x => x == typeof(UnitValue), x => "math.Unit")
                 .CustomizeType(x => x == typeof(Guid), x => "string")
-                .SetOutputDirectory(Path.Combine(repositoryPath, "icd-annotation-frontend", "src", "types"))
+                .SetOutputDirectory(Path.Combine(repositoryPath, "icd-annotation-frontend", "src", "localComponents", "types"))
                 .Generate();
         }
     }

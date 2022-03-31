@@ -1,5 +1,5 @@
 import React, { FormEvent, useContext, useEffect, useState } from 'react';
-import { Col, Form, FormGroup, FormLabel, Row } from 'react-bootstrap';
+import { Button, Col, Form, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Models } from '../../../localComponents/types/models';
 import { StoreButton } from '../../../sharedCommonComponents/components/StoreButton';
@@ -7,7 +7,7 @@ import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer'
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { PatientAutocomplete } from '../../components/Autocompletes/PatientAutocomplete';
 import { NotificationManager } from 'react-notifications';
-import { submitPostRequest } from '../../../sharedCommonComponents/helpers/StoringHelpers';
+import { sendPostRequest } from '../../../sharedCommonComponents/helpers/StoringHelpers';
 import { v4 as uuid } from 'uuid';
 import { QuestionnaireAutocomplete } from '../../components/Autocompletes/QuestionnaireAutocomplete';
 import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
@@ -55,7 +55,7 @@ export const AssignQuestionnairePage = (props: AssignQuestionnairePageProps) => 
             answers: []
         };
         setIsStoring(true);
-        await submitPostRequest(
+        await sendPostRequest(
             `api/questionnaires/${questionnaire.id}/answers`,
             resolveText("QuestionnaireAnswers_CouldNotCreate"),
             answer,
@@ -91,6 +91,12 @@ export const AssignQuestionnairePage = (props: AssignQuestionnairePageProps) => 
                     disabled={!person || !questionnaire}
                 />
             </Form>
+            <hr />
+            <Row className='text-center mb-3'>
+                <Col>
+                    <Button variant="info" onClick={() => navigate("/create/questionnaire")}>{resolveText("CreateNewQuestionnaire")}</Button>
+                </Col>
+            </Row>
         </>
     );
 

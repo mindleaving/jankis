@@ -1,6 +1,6 @@
-import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { resolveText } from "../../sharedCommonComponents/helpers/Globalizer";
+import { AccountSelectionButton } from "../components/Home/AccountSelectionButton";
 
 interface HomePageProps {
 
@@ -38,17 +38,3 @@ export const HomePage = (props: HomePageProps) => {
     );
 }
 
-interface AccountSelectionButtonProps {
-    imageUrl: string;
-    imageAltText: string;
-    title: string;
-    onClick: () => void;
-}
-const AccountSelectionButton = (props: AccountSelectionButtonProps) => {
-    return (
-        <Button onClick={props.onClick} className="mx-2 d-flex flex-column align-items-center">
-            <img src={props.imageUrl} alt={props.imageAltText} className="mx-2 my-2" />
-            <div className="account-selection-button-title">{props.title}</div>
-        </Button>
-    )
-}
