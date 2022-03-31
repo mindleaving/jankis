@@ -48,7 +48,7 @@ export const MedicationScheduleItemTableRow = (props: MedicationScheduleItemTabl
         <td>
             {dispensionsToday.length > 0
             ? dispensionsToday.map(dispension => (
-                <div>
+                <div key={dispension.id}>
                     <Badge bg="primary">{formatDate(new Date(dispension.timestamp))}{dispension.note ? ` (${dispension.note})` : ''}</Badge>
                 </div>
             ))
@@ -57,7 +57,7 @@ export const MedicationScheduleItemTableRow = (props: MedicationScheduleItemTabl
         <td>
             {dispensionsTomorrow.length > 0
             ? dispensionsTomorrow.map(dispension => (
-                <div>
+                <div key={dispension.id}>
                     <Badge bg="primary">{formatDate(new Date(dispension.timestamp))}{dispension.note ? ` (${dispension.note})` : ''}</Badge>
                 </div>
             ))

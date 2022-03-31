@@ -39,7 +39,7 @@ export const NotificationTickerItem = (props: NotificationTickerItemProps) => {
                 .replace('{storageOperation}', patientEventNotification.storageOperation.toLowerCase())
                 .replace('{eventType}', resolveText(`HealthRecordEntryType_${patientEventNotification.eventType}`).toLowerCase())
                 .replace('{patient}', formatPerson(patientEventNotification.patient))
-            } <Button variant="link" onClick={() => navigate(`/patients/${patientEventNotification.patient.id}`)}>{resolveText('Open')}</Button>
+            } <Button variant="link" onClick={() => navigate(`/healthrecord/${patientEventNotification.patient.id}`)}>{resolveText('Open')}</Button>
         </Alert>);
     }
     return (<Alert

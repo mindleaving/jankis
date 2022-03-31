@@ -28,11 +28,13 @@ namespace JanKIS.API.ViewModels
             CurrentBedOccupancy = currentBedOccupancy;
             Admissions = admissions;
             Notes = notes;
+            Diagnoses = diagnoses;
             MedicationSchedules = medicationSchedules;
             MedicationDispensions = medicationDispensions;
             TestResults = testResults;
             Observations = observations;
             Documents = documents;
+            Questionnaires = questionnaires;
             Subscription = subscription;
         }
 

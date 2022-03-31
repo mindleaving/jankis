@@ -57,6 +57,7 @@ import { OrderServiceForPatientPage } from './localComponents/pages/Patients/Ord
 import { PatientMedicationsPage } from './sharedHealthComponents/pages/Patients/PatientMedicationsPage';
 import { PatientTimelinePage } from './sharedHealthComponents/pages/Patients/PatientTimelinePage';
 import { AccountsListPage } from './localComponents/pages/UserManagement/AccountsListPage';
+import { CreateDiagnosisPage } from './sharedHealthComponents/pages/Patients/CreateDiagnosisPage';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";
@@ -107,16 +108,17 @@ function App() {
                     <Route path="/(patients|persons)/:personId/edit" element={<CreateEditPatientPage />} />
                     <Route path="/mypatients" element={<MyPatientsPage />} />
                     <Route path="/persons" element={<PersonsListPage filter={{}} />} />
-                    <Route path="/patients/:personId" element={<PatientPage />} />
-                    <Route path="/patients/:personId/nursing" element={<PatientNursingPage />} />
-                    <Route path="/patients/:personId/timeline" element={<PatientTimelinePage />} />
-                    <Route path="/patients/:personId/medications" element={<PatientMedicationsPage />} />
-                    <Route path="/patients/:personId/create/testresult" element={<CreatePatientTestResultPage />} />
-                    <Route path="/patients/:personId/create/observation" element={<CreatePatientObservationPage />} />
-                    <Route path="/patients/:personId/create/document" element={<CreatePatientDocumentPage />} />
-                    <Route path="/patients/:personId/create/note" element={<CreatePatientNotePage />} />
-                    <Route path="/patients/:personId/equipment" element={<PatientEquipmentPage />} />
-                    <Route path="/patients/:personId/order/service" element={<OrderServiceForPatientPage />} />
+                    <Route path="/healthrecord/:personId" element={<PatientPage />} />
+                    <Route path="/healthrecord/:personId/nursing" element={<PatientNursingPage />} />
+                    <Route path="/healthrecord/:personId/timeline" element={<PatientTimelinePage />} />
+                    <Route path="/healthrecord/:personId/medications" element={<PatientMedicationsPage />} />
+                    <Route path="/healthrecord/:personId/create/testresult" element={<CreatePatientTestResultPage />} />
+                    <Route path="/healthrecord/:personId/create/observation" element={<CreatePatientObservationPage />} />
+                    <Route path="/healthrecord/:personId/create/diagnosis" element={<CreateDiagnosisPage />} />
+                    <Route path="/healthrecord/:personId/create/document" element={<CreatePatientDocumentPage />} />
+                    <Route path="/healthrecord/:personId/create/note" element={<CreatePatientNotePage />} />
+                    <Route path="/healthrecord/:personId/equipment" element={<PatientEquipmentPage />} />
+                    <Route path="/healthrecord/:personId/order/service" element={<OrderServiceForPatientPage />} />
                     <Route path="/medicationschedules/:scheduleId/edit" element={<EditMedicationSchedulePage />} />
 
                     <Route path="/services" element={<ServicesListPage />} />

@@ -38,23 +38,23 @@ export const PatientPage = (props: PatientPageProps) => {
     const isHistoricAdmission = selectedAdmissionId && admissions.find(x => x.id === selectedAdmissionId)?.dischargeTime;
 
     const loadHealthData = buildLoadObjectFunc<ViewModels.PatientOverviewViewModel>(
-        `api/patients/${personId}/overviewviewmodel`,
+        `api/viewmodels/healthdata/${personId}`,
         {},
         resolveText('Patient_CouldNotLoad'),
         vm => {
             setProfileData(vm.profileData);
             setBedOccupancy(vm.currentBedOccupancy);
-            setAdmissions(vm.admissions);
+            setAdmissions(vm.admissions ?? []);
             setSelectedAdmissionId(vm.admissions.length > 0 ? vm.admissions[vm.admissions.length-1].id : undefined);
-            setNotes(vm.notes);
-            setDiagnoses(vm.diagnoses);
-            setMedicationSchedules(vm.medicationSchedules);
-            setMedicationDispensions(vm.medicationDispensions);
-            setObservations(vm.observations);
-            setTestResults(vm.testResults);
-            setDocuments(vm.documents);
+            setNotes(vm.notes ?? []);
+            setDiagnoses(vm.diagnoses ?? []);
+            setMedicationSchedules(vm.medicationSchedules ?? []);
+            setMedicationDispensions(vm.medicationDispensions ?? []);
+            setObservations(vm.observations ?? []);
+            setTestResults(vm.testResults ?? []);
+            setDocuments(vm.documents ?? []);
             setSubscription(vm.subscription);
-            setQuestionnaires(vm.questionnaires);
+            setQuestionnaires(vm.questionnaires ?? []);
         },
         () => setIsLoading(false)
     );
@@ -77,7 +77,7 @@ export const PatientPage = (props: PatientPageProps) => {
             items: []
         };
         await buildAndStoreObject<Models.Medication.MedicationSchedule>(
-            `api/medicationschedules/${medicationSchedule.personId}`,
+            `api/medicationschedules/${medicationSchedule.id}`,
             resolveText('MedicationSchedule_SuccessfullyStored'),
             resolveText('MedicationSchedule_CouldNotStore'),
             () => medicationSchedule,
@@ -113,6 +113,7 @@ export const PatientPage = (props: PatientPageProps) => {
         { path: `/healthrecord/${personId}/nursing`, textResourceId: 'Action_AddEquipment' },
         { path: `/healthrecord/${personId}/create/testresult`, textResourceId: 'Action_AddTestResult' },
         { path: `/healthrecord/${personId}/create/document`, textResourceId: 'Action_AddDocument' },
+        { path: `/healthrecord/${personId}/add/questionnaire`, textResourceId: 'Action_AddQuestionnaire' },
         { path: `/healthrecord/${personId}/order/service`, textResourceId: 'Action_OrderService' },
         { path: `/healthrecord/${personId}/nursing`, textResourceId: 'Action_Nursing' },
     ]

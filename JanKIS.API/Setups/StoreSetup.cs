@@ -1,5 +1,6 @@
 ﻿using Commons.Physics;
 using HealthModels;
+using HealthModels.AccessControl;
 using HealthModels.Diagnoses;
 using HealthModels.DiagnosticTestResults;
 using HealthModels.Icd;
@@ -63,10 +64,12 @@ namespace JanKIS.API.Setups
             SetupTypeStores<DiagnosticTestDefinition>(services);
             SetupTypeStores<DiagnosticTestResult>(services);
             SetupTypeStores<Drug>(services);
+            SetupTypeStores<EmergencyAccess>(services);
             services.AddScoped<IFilesStore, FilesStore>();
             SetupTypeStores<IcdCategory>(services);
             SetupTypeStores<Institution>(services);
             SetupTypeStores<InstitutionPolicy>(services);
+            SetupTypeStores<HealthProfessionalAccess>(services);
             SetupTypeStores<MedicationSchedule>(services);
             services.AddScoped<IMedicationScheduleStore, MedicationScheduleStore>();
             SetupTypeStores<MedicationDispension>(services);

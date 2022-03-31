@@ -39,7 +39,7 @@ export const CreateAdmissionPage = (props: CreateAdmissionPageProps) => {
             resolveText('Admission_SuccessfullyCreated'),
             resolveText('Admission_CouldNotStore'),
             buildAdmission,
-            () => navigate(`/patients/${person!.id}`),
+            () => navigate(`/healthrecord/${person!.id}`),
             () => setIsStoring(false)
         );
     }

@@ -34,6 +34,7 @@ namespace JanKIS.API.Setups
                     options.AddPolicy(SameUserRequirement.PolicyName, builder => builder.AddRequirements(new SameUserRequirement("username")));
                     options.AddPolicy(NotSameUserRequirement.PolicyName, builder => builder.AddRequirements(new NotSameUserRequirement("username")));
                 });
+            services.AddScoped<IAuthorizationModule, AuthorizationModule>();
         }
 
         private void SetupJwtTokenAuthentication(IServiceCollection services, IConfiguration configuration)

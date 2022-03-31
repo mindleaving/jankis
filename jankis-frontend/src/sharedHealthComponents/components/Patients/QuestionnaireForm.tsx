@@ -4,13 +4,13 @@ import React, { useContext, useEffect, useState } from 'react';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { translateSchema } from '../../../sharedCommonComponents/helpers/SchemaTranslator';
+import { formDataToQuestionnaireAnswers, questionnaireAnswersToFormData } from '../../helpers/QuestionnaireHelpers';
 import { Models } from '../../../localComponents/types/models';
 import { StoreButton } from '../../../sharedCommonComponents/components/StoreButton';
 import UserContext from '../../../localComponents/contexts/UserContext';
 import { buildAndStoreObject } from '../../../sharedCommonComponents/helpers/StoringHelpers';
 import { v4 as uuid } from 'uuid';
 import { useNavigate } from 'react-router-dom';
-import { questionnaireAnswersToFormData, formDataToQuestionnaireAnswers } from '../../helpers/QuestionnaireHelpers';
 
 interface QuestionnaireFormProps {
     questionnaireId: string;
