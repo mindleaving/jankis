@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Commons.Extensions;
 using HealthSharingPortal.API.Controllers;
+using JanKIS.API.Converters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -25,6 +26,8 @@ namespace JanKIS.API.Setups
                     {
                         options.SerializerSettings.Converters.Add(new StringEnumConverter());
                         options.SerializerSettings.Formatting = Formatting.None;
+                        options.SerializerSettings.Converters.Add(new SubscriptionJsonConverter());
+                        options.SerializerSettings.Converters.Add(new NotificationJsonConverter());
                     });
         }
     }

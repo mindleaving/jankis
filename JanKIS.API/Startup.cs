@@ -31,7 +31,7 @@ namespace JanKIS.API
                 new AccessControlSetup(),
                 new CorsSetup(),
                 new OpenApiSetup(),
-                new SignalRSetup()
+                new SignalRSetup(),
             };
             foreach (var setup in setups)
             {

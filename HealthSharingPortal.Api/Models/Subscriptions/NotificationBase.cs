@@ -1,14 +1,7 @@
 ﻿using System;
-using HealthSharingPortal.API.Converters;
-using MongoDB.Bson.Serialization.Attributes;
-using Newtonsoft.Json;
 
 namespace HealthSharingPortal.API.Models.Subscriptions
 {
-    [BsonKnownTypes(
-        typeof(PatientEventNotification)
-    )]
-    [JsonConverter(typeof(NotificationJsonConverter))]
     public abstract class NotificationBase : INotification
     {
         protected NotificationBase(

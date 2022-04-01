@@ -802,10 +802,6 @@ export namespace Models {
     }
 
     export namespace Subscriptions {
-        interface AdmissionNotification extends Models.Subscriptions.NotificationBase {
-            admission: Models.Admission;
-        }
-    
         interface BedOccupancyNotification extends Models.Subscriptions.NotificationBase {
             bedOccupancy: Models.BedOccupancy;
         }
@@ -820,22 +816,6 @@ export namespace Models {
     
         interface InstitutionSubscription extends Models.Subscriptions.SubscriptionBase {
             institutionId: string;
-        }
-    
-        interface NotificationBase extends Models.Subscriptions.NotificationBase {
-            
-        }
-    
-        interface PatientEventNotification extends Models.Subscriptions.NotificationBase {
-            patient: Models.Person;
-            eventType: Enums.HealthRecordEntryType;
-            objectId: string;
-            storageOperation: Enums.StorageOperation;
-        }
-    
-        interface PatientSubscription extends Models.Subscriptions.SubscriptionBase {
-            personId: string;
-            cancelSubscriptionOnDischarge: boolean;
         }
     
         interface ResourceSubscription extends Models.Subscriptions.SubscriptionBase {
@@ -862,10 +842,6 @@ export namespace Models {
             stockId: string;
         }
     
-        interface SubscriptionBase extends Models.Subscriptions.SubscriptionBase {
-            
-        }
-    
         interface INotification extends Models.IId {
             notificationType: string;
             subscription: Models.Subscriptions.SubscriptionBase;
@@ -878,10 +854,22 @@ export namespace Models {
             
         }
     
+        interface PatientEventNotification extends Models.Subscriptions.NotificationBase {
+            patient: Models.Person;
+            eventType: Enums.HealthRecordEntryType;
+            objectId: string;
+            storageOperation: Enums.StorageOperation;
+        }
+    
+        interface PatientSubscription extends Models.Subscriptions.SubscriptionBase {
+            personId: string;
+            cancelSubscriptionOnDischarge: boolean;
+        }
+    
         interface SubscriptionBase extends Models.IId {
-            type: string;
             username: string;
             mutedUntil?: Date | null;
+            type: string;
         }
     }
 }

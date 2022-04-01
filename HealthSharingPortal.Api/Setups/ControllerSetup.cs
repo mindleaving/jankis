@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using HealthSharingPortal.API.Converters;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -16,6 +17,8 @@ namespace HealthSharingPortal.API.Setups
                     {
                         options.SerializerSettings.Converters.Add(new StringEnumConverter());
                         options.SerializerSettings.Formatting = Formatting.None;
+                        options.SerializerSettings.Converters.Add(new SubscriptionJsonConverter());
+                        options.SerializerSettings.Converters.Add(new NotificationJsonConverter());
                     });
         }
     }

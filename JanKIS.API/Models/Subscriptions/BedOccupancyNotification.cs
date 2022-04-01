@@ -2,10 +2,10 @@
 
 namespace JanKIS.API.Models.Subscriptions
 {
-    public class BedOccupancyNotification : NotificationBase
+    public class BedOccupancyNotification : HealthSharingPortal.API.Models.Subscriptions.NotificationBase
     {
         public BedOccupancyNotification(string id,
-            SubscriptionBase subscription,
+            HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase subscription,
             bool isDismissed,
             DateTime timestamp,
             string submitter,

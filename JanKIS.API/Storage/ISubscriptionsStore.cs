@@ -1,14 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using HealthSharingPortal.API.Storage;
 using JanKIS.API.Models.Subscriptions;
 using MongoDB.Driver;
 
 namespace JanKIS.API.Storage
 {
-    public interface ISubscriptionsStore : IStore<SubscriptionBase>
+    public interface ISubscriptionsStore : HealthSharingPortal.API.Storage.ISubscriptionsStore
     {
-        Task<List<PatientSubscription>> GetPatientSubscriptions(string personId);
         Task<List<ServiceSubscription>> GetServiceSubscriptions(string serviceId);
         Task<List<ServiceRequestSubscription>> GetServiceRequestSubscriptions(string requestId);
         Task<List<DepartmentSubscription>> GetDepartmentSubscriptions(string departmentId);
@@ -17,7 +15,6 @@ namespace JanKIS.API.Storage
         Task<List<StockSubscription>> GetStockSubscription(string stockId);
         Task<List<ConsumableOrderSubscription>> GetConsumableOrderSubscriptions(string orderId);
 
-        Task<PatientSubscription> GetPatientSubscription(string personId, string username);
         Task<ServiceSubscription> GetServiceSubscription(string serviceId, string username);
         Task<ServiceRequestSubscription> GetServiceRequestSubscription(string requestId, string username);
         Task<DepartmentSubscription> GetDepartmentSubscription(string departmentId, string username);
@@ -27,17 +24,13 @@ namespace JanKIS.API.Storage
         Task<ConsumableOrderSubscription> GetConsumableOrderSubscription(string orderId, string username);
     }
 
-    public class SubscriptionsStore : GenericStore<SubscriptionBase>, ISubscriptionsStore
+    public class SubscriptionsStore : HealthSharingPortal.API.Storage.SubscriptionsStore, ISubscriptionsStore
     {
         public SubscriptionsStore(IMongoDatabase mongoDatabase)
             : base(mongoDatabase)
         {
         }
 
-        public Task<List<PatientSubscription>> GetPatientSubscriptions(string personId)
-        {
-            return collection.OfType<PatientSubscription>().Find(x => x.PersonId == personId).ToListAsync();
-        }
         public Task<List<ServiceSubscription>> GetServiceSubscriptions(string serviceId)
         {
             return collection.OfType<ServiceSubscription>().Find(x => x.ServiceId == serviceId).ToListAsync();
@@ -73,12 +66,6 @@ namespace JanKIS.API.Storage
             return collection.OfType<ConsumableOrderSubscription>().Find(x => x.OrderId == orderId).ToListAsync();
         }
 
-        public Task<PatientSubscription> GetPatientSubscription(
-            string personId,
-            string username)
-        {
-            return collection.OfType<PatientSubscription>().Find(x => x.PersonId == personId && x.Username == username).FirstOrDefaultAsync();
-        }
         public Task<ServiceSubscription> GetServiceSubscription(
             string serviceId,
             string username)

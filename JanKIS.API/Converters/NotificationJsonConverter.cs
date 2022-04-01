@@ -2,31 +2,32 @@
 using JanKIS.API.Models.Subscriptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NotificationBase = HealthSharingPortal.API.Models.Subscriptions.NotificationBase;
 
 namespace JanKIS.API.Converters
 {
-    public class NotificationJsonConverter : JsonConverter<NotificationBase>
+    public class NotificationJsonConverter : JsonConverter<HealthSharingPortal.API.Models.Subscriptions.NotificationBase>
     {
         public override bool CanWrite { get; } = false;
 
         public override void WriteJson(
             JsonWriter writer,
-            NotificationBase value,
+            HealthSharingPortal.API.Models.Subscriptions.NotificationBase value,
             JsonSerializer serializer)
         {
             throw new NotSupportedException();
         }
 
-        public override NotificationBase ReadJson(
+        public override HealthSharingPortal.API.Models.Subscriptions.NotificationBase ReadJson(
             JsonReader reader,
             Type objectType,
-            NotificationBase existingValue,
+            HealthSharingPortal.API.Models.Subscriptions.NotificationBase existingValue,
             bool hasExistingValue,
             JsonSerializer serializer)
         {
             var jObject = JObject.Load(reader);
 
-            var notificationTypeToken = jObject.GetValue(nameof(NotificationBase.NotificationType), StringComparison.InvariantCultureIgnoreCase);
+            var notificationTypeToken = jObject.GetValue(nameof(HealthSharingPortal.API.Models.Subscriptions.NotificationBase.NotificationType), StringComparison.InvariantCultureIgnoreCase);
             var notificationType = Enum.Parse<NotificationType>(notificationTypeToken.Value<string>(), true);
             NotificationBase notification;
             switch (notificationType)

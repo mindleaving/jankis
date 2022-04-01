@@ -95,7 +95,7 @@ namespace JanKIS.API.Controllers
             var existingRequest = await store.GetByIdAsync(requestId);
             if (existingRequest == null)
                 return NotFound();
-            var assigneeAccount = await accountsStore.FirstOrDefaultAsync(x => x.AccountType == AccountType.Employee && x.PersonId == assignee);
+            var assigneeAccount = await accountsStore.FirstOrDefaultAsync(x => x is EmployeeAccount && x.PersonId == assignee);
             if (assigneeAccount == null)
                 return BadRequest("Assignee doesn't exist");
             // TODO: Check permission to perform this action

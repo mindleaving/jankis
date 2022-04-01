@@ -12,6 +12,7 @@ using HealthModels.Services;
 using HealthSharingPortal.API.Models.Subscriptions;
 using HealthSharingPortal.API.Storage;
 using JanKIS.API.Models;
+using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,9 +20,10 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
+using AdmissionNotification = HealthSharingPortal.API.Models.Subscriptions.AdmissionNotification;
 using INotificationsStore = JanKIS.API.Storage.INotificationsStore;
-using NotificationBase = JanKIS.API.Models.Subscriptions.NotificationBase;
 using NotificationsStore = JanKIS.API.Storage.NotificationsStore;
+using PatientEventNotification = HealthSharingPortal.API.Models.Subscriptions.PatientEventNotification;
 
 namespace JanKIS.API.Setups
 {
@@ -41,6 +43,19 @@ namespace JanKIS.API.Setups
                 new EnumRepresentationConvention(BsonType.String)
             }, type => true);
             BsonSerializer.RegisterSerializer(typeof(UnitValue), new UnitValueBsonSerializer());
+            BsonClassMap.RegisterClassMap<PatientEventNotification>();
+            BsonClassMap.RegisterClassMap<AdmissionNotification>();
+            BsonClassMap.RegisterClassMap<BedOccupancyNotification>();
+            BsonClassMap.RegisterClassMap<ServiceNotification>();
+            BsonClassMap.RegisterClassMap<ServiceRequestNotification>();
+            BsonClassMap.RegisterClassMap<PatientSubscription>();
+            BsonClassMap.RegisterClassMap<ConsumableOrderSubscription>();
+            BsonClassMap.RegisterClassMap<DepartmentSubscription>();
+            BsonClassMap.RegisterClassMap<InstitutionSubscription>();
+            BsonClassMap.RegisterClassMap<ResourceSubscription>();
+            BsonClassMap.RegisterClassMap<ServiceSubscription>();
+            BsonClassMap.RegisterClassMap<ServiceRequestSubscription>();
+            BsonClassMap.RegisterClassMap<StockSubscription>();
             services.AddSingleton<IMongoClient>(new MongoClient());
             services.AddSingleton<IMongoDatabase>(
                 provider =>
@@ -79,6 +94,7 @@ namespace JanKIS.API.Setups
             SetupTypeStores<MedicalText>(services);
             SetupTypeStores<NotificationBase>(services);
             services.AddScoped<INotificationsStore, NotificationsStore>();
+            services.AddScoped<HealthSharingPortal.API.Storage.INotificationsStore, HealthSharingPortal.API.Storage.NotificationsStore>();
             SetupTypeStores<Observation>(services);
             SetupTypeStores<PatientDocument>(services);
             SetupTypeStores<PatientNote>(services);
@@ -96,6 +112,7 @@ namespace JanKIS.API.Setups
             SetupTypeStores<Stock>(services);
             SetupTypeStores<SubscriptionBase>(services);
             services.AddScoped<Storage.ISubscriptionsStore, Storage.SubscriptionsStore>();
+            services.AddScoped<HealthSharingPortal.API.Storage.ISubscriptionsStore, HealthSharingPortal.API.Storage.SubscriptionsStore>();
         }
 
         private static void SetupTypeStores<T>(IServiceCollection services) where T: IId

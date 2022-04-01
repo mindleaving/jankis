@@ -2,7 +2,7 @@
 
 namespace JanKIS.API.Models.Subscriptions
 {
-    public class DepartmentSubscription : SubscriptionBase
+    public class DepartmentSubscription : HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase
     {
         public DepartmentSubscription()
         {

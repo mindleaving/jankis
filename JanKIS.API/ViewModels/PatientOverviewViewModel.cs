@@ -3,9 +3,9 @@ using HealthModels;
 using HealthModels.DiagnosticTestResults;
 using HealthModels.Medication;
 using HealthModels.Observations;
+using HealthSharingPortal.API.Models.Subscriptions;
 using HealthSharingPortal.API.ViewModels;
 using JanKIS.API.Models;
-using JanKIS.API.Models.Subscriptions;
 
 namespace JanKIS.API.ViewModels
 {

@@ -1,6 +1,6 @@
 ﻿namespace JanKIS.API.Models.Subscriptions
 {
-    public class ConsumableOrderSubscription : SubscriptionBase
+    public class ConsumableOrderSubscription : HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase
     {
         public ConsumableOrderSubscription(){}
 

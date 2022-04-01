@@ -4,10 +4,10 @@ using HealthSharingPortal.API.Models.Subscriptions;
 
 namespace JanKIS.API.Models.Subscriptions
 {
-    public class ServiceNotification : NotificationBase
+    public class ServiceNotification : HealthSharingPortal.API.Models.Subscriptions.NotificationBase
     {
         public ServiceNotification(string id,
-            SubscriptionBase subscription,
+            HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase subscription,
             bool isDismissed,
             DateTime timestamp,
             string submitter,

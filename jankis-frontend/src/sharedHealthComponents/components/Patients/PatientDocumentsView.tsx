@@ -39,7 +39,7 @@ const PatientDocumentView = (props: PatientDocumentViewProps) => {
             </Col>
             <Col>
                 <Row>
-                    <Col lg="4" className="mr-3">
+                    <Col lg="4" className="me-3">
                         <div><small>{formatDate(new Date(props.document.timestamp))} {resolveText('by')} {props.document.createdBy}</small></div>
                         {props.document.fileName}
                     </Col>

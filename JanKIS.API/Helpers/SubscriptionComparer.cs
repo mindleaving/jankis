@@ -1,7 +1,6 @@
 ﻿using System;
+using HealthSharingPortal.API.Models.Subscriptions;
 using JanKIS.API.Models.Subscriptions;
-using PatientSubscription = JanKIS.API.Models.Subscriptions.PatientSubscription;
-using SubscriptionBase = JanKIS.API.Models.Subscriptions.SubscriptionBase;
 using SubscriptionObjectType = JanKIS.API.Models.Subscriptions.SubscriptionObjectType;
 
 namespace JanKIS.API.Helpers

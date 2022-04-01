@@ -8,6 +8,7 @@ namespace JanKIS.API.Setups
     {
         public void Run(IServiceCollection services, IConfiguration configuration)
         {
+            services.AddScoped<HealthSharingPortal.API.Workflow.INotificationDistributor, HealthSharingPortal.API.Workflow.NotificationDistributor>();
             services.AddScoped<INotificationDistributor, NotificationDistributor>();
         }
     }

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using HealthModels;
 using HealthModels.Services;
 using HealthSharingPortal.API.Hubs;
+using HealthSharingPortal.API.Models.Subscriptions;
 using HealthSharingPortal.API.Storage;
 using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;

@@ -1,13 +1,8 @@
 ﻿namespace HealthSharingPortal.API.Models.Subscriptions
 {
-    public enum NotificationType
+    internal enum NotificationType
     {
         NewPatientEvent,
-        NewService,
-        NewServiceRequest,
-        ServiceRequestStateChange,
-        NewAdmission,
-        NewBedOccupancy,
-        
+        NewAdmission
     }
 }

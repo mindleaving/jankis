@@ -13,9 +13,7 @@ using HealthSharingPortal.API.Models.Subscriptions;
 using HealthSharingPortal.API.Storage;
 using HealthSharingPortal.API.ViewModels;
 using HealthSharingPortal.API.Workflow.ViewModelBuilders;
-using JanKIS.API.Helpers;
 using JanKIS.API.Models;
-using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
 using JanKIS.API.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -23,7 +21,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ISubscriptionsStore = JanKIS.API.Storage.ISubscriptionsStore;
 using PatientOverviewViewModel = JanKIS.API.ViewModels.PatientOverviewViewModel;
-using PatientSubscription = JanKIS.API.Models.Subscriptions.PatientSubscription;
 
 namespace JanKIS.API.Controllers
 {

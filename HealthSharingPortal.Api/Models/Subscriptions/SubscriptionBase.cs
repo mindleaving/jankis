@@ -1,15 +1,8 @@
 ﻿using System;
 using HealthModels;
-using HealthSharingPortal.API.Converters;
-using MongoDB.Bson.Serialization.Attributes;
-using Newtonsoft.Json;
 
 namespace HealthSharingPortal.API.Models.Subscriptions
 {
-    [BsonKnownTypes(
-        typeof(PatientSubscription)
-    )]
-    [JsonConverter(typeof(SubscriptionJsonConverter))]
     public abstract class SubscriptionBase : IId
     {
         protected SubscriptionBase() {}

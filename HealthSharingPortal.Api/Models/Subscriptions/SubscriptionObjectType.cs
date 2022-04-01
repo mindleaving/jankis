@@ -1,6 +1,6 @@
 ﻿namespace HealthSharingPortal.API.Models.Subscriptions
 {
-    public enum SubscriptionObjectType
+    internal enum SubscriptionObjectType
     {
         Patient
     }

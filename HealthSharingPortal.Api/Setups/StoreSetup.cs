@@ -37,6 +37,9 @@ namespace HealthSharingPortal.API.Setups
                 new EnumRepresentationConvention(BsonType.String)
             }, type => true);
             BsonSerializer.RegisterSerializer(typeof(UnitValue), new UnitValueBsonSerializer());
+            BsonClassMap.RegisterClassMap<PatientEventNotification>();
+            BsonClassMap.RegisterClassMap<AdmissionNotification>();
+            BsonClassMap.RegisterClassMap<PatientSubscription>();
             services.AddSingleton<IMongoClient>(new MongoClient());
             services.AddSingleton<IMongoDatabase>(
                 provider =>

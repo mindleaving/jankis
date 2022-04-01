@@ -65,7 +65,7 @@ export const NotificationsTicker = (props: NotificationsTickerProps) => {
         <Card>
             <Card.Header>
                 {resolveText('Notifications')}
-                <Badge className="float-right" bg={isConnecting ? 'warning' : isConnected ? 'success' : 'danger'}>
+                <Badge className="mx-2 float-right" bg={isConnecting ? 'warning' : isConnected ? 'success' : 'danger'}>
                     {isConnecting ? <><span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" /> {resolveText('Connecting...')}</>
                     : isConnected ? resolveText('Connected')
                     : resolveText('NotConnected')}

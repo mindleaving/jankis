@@ -1,7 +1,9 @@
 ﻿using System;
+using HealthSharingPortal.API.Models.Subscriptions;
 using JanKIS.API.Models.Subscriptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SubscriptionObjectType = JanKIS.API.Models.Subscriptions.SubscriptionObjectType;
 
 namespace JanKIS.API.Converters
 {
