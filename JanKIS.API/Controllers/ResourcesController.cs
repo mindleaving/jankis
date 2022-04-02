@@ -4,14 +4,18 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels.Interview;
-using JanKIS.API.Helpers;
+using HealthSharingPortal.API.Controllers;
+using HealthSharingPortal.API.Helpers;
+using HealthSharingPortal.API.Models;
+using HealthSharingPortal.API.Storage;
+using HealthSharingPortal.API.Workflow.ViewModelBuilders;
 using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
-using JanKIS.API.Storage;
-using JanKIS.API.Workflow.ViewModelBuilders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ISubscriptionsStore = JanKIS.API.Storage.ISubscriptionsStore;
+using SearchExpressionBuilder = JanKIS.API.Helpers.SearchExpressionBuilder;
 
 namespace JanKIS.API.Controllers
 {
@@ -35,7 +39,7 @@ namespace JanKIS.API.Controllers
         }
 
         [Authorize(Policy = nameof(Permission.ViewResources))]
-        public override Task<IActionResult> GetById(string id)
+        public override Task<IActionResult> GetById(string id, Language language = Language.en)
         {
             return base.GetById(id);
         }
@@ -45,7 +49,8 @@ namespace JanKIS.API.Controllers
             int? count = null,
             int? skip = null,
             string orderBy = null,
-            OrderDirection orderDirection = OrderDirection.Ascending)
+            OrderDirection orderDirection = OrderDirection.Ascending, 
+            Language language = Language.en)
         {
             return base.GetMany(
                 count,
@@ -58,7 +63,8 @@ namespace JanKIS.API.Controllers
         public override Task<IActionResult> Search(
             string searchText,
             int? count = null,
-            int? skip = null)
+            int? skip = null, 
+            Language language = Language.en)
         {
             return base.Search(
                 searchText,

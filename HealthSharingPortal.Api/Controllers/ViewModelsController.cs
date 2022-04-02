@@ -29,7 +29,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IReadonlyStore<Person> personStore;
         private readonly IReadonlyStore<Admission> admissionsStore;
         private readonly IReadonlyStore<PatientNote> patientNotesStore;
-        private readonly IMedicationScheduleStore medicationSchedulesStore;
+        private readonly IReadonlyStore<MedicationSchedule> medicationSchedulesStore;
         private readonly IReadonlyStore<MedicationDispension> medicationDispensionsStore;
         private readonly IReadonlyStore<DiagnosticTestResult> testResultsStore;
         private readonly IReadonlyStore<Observation> observationsStore;
@@ -42,14 +42,14 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IReadonlyStore<Diagnosis> diagnosesStore;
         private readonly IViewModelBuilder<QuestionnaireAnswers> questionnaireAnswersViewModelBuilder;
         private readonly IViewModelBuilder<Diagnosis> diagnosisViewModelBuilder;
-        private IReadonlyStore<QuestionnaireAnswers> questionnaireAnswersStore;
+        private readonly IReadonlyStore<QuestionnaireAnswers> questionnaireAnswersStore;
 
         public ViewModelsController(
             IHttpContextAccessor httpContextAccessor,
             IReadonlyStore<Person> personStore,
             IReadonlyStore<Admission> admissionsStore, 
             IReadonlyStore<PatientNote> patientNotesStore, 
-            IMedicationScheduleStore medicationSchedulesStore,
+            IReadonlyStore<MedicationSchedule> medicationSchedulesStore,
             IReadonlyStore<MedicationDispension> medicationDispensionsStore, 
             IReadonlyStore<DiagnosticTestResult> testResultsStore,
             IReadonlyStore<Observation> observationsStore,
@@ -89,10 +89,8 @@ namespace HealthSharingPortal.API.Controllers
             [FromRoute] string personId, 
             [FromQuery] Language language = Language.en)
         {
-            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            var currentUserPersonId = ControllerHelpers.GetPersonId(httpContextAccessor);
-            if (!await authorizationModule.HasPermissionForPerson(personId, accountType.Value, username, currentUserPersonId))
+            var claims = ControllerHelpers.GetClaims(httpContextAccessor);
+            if (!await authorizationModule.HasPermissionForPerson(personId, claims))
                 return Forbid();
             var profileData = personStore.GetByIdAsync(personId);
             var admissions = admissionsStore.SearchAsync(x => x.ProfileData.Id == personId);
@@ -100,7 +98,7 @@ namespace HealthSharingPortal.API.Controllers
             var diagnoses = diagnosesStore.SearchAsync(x => x.PersonId == personId)
                 .ContinueWith(result => diagnosisViewModelBuilder.BatchBuild(result.Result, new DiagnosisViewModelBuilderOptions { Language = language }))
                 .Unwrap();
-            var medicationSchedules = medicationSchedulesStore.GetForPerson(personId);
+            var medicationSchedules = medicationSchedulesStore.SearchAsync(x => x.PersonId == personId);
             var medicationDispensions = medicationDispensionsStore.SearchAsync(x => x.PersonId == personId);
             var testResults = testResultsStore.SearchAsync(x => x.PersonId == personId);
             var observations = observationsStore.SearchAsync(x => x.PersonId == personId);

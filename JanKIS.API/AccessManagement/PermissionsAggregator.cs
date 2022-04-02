@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HealthSharingPortal.API.Storage;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
 

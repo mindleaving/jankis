@@ -1,24 +1,25 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using JanKIS.API.Models.Subscriptions;
+using HealthSharingPortal.API.Storage;
 using MongoDB.Driver;
+using NotificationBase = HealthSharingPortal.API.Models.Subscriptions.NotificationBase;
 
 namespace JanKIS.API.Storage
 {
-    public interface INotificationsStore : IStore<NotificationBase>
+    public interface INotificationsStore : IStore<HealthSharingPortal.API.Models.Subscriptions.NotificationBase>
     {
-        Task<List<NotificationBase>> GetAllForUser(string username, int? count = null, int? skip = null, bool includeDismissed = false);
+        Task<List<HealthSharingPortal.API.Models.Subscriptions.NotificationBase>> GetAllForUser(string username, int? count = null, int? skip = null, bool includeDismissed = false);
         Task<StorageResult> Dismiss(string notificationId);
     }
 
-    public class NotificationsStore : GenericStore<NotificationBase>, INotificationsStore
+    public class NotificationsStore : GenericStore<HealthSharingPortal.API.Models.Subscriptions.NotificationBase>, INotificationsStore
     {
         public NotificationsStore(IMongoDatabase mongoDatabase)
             : base(mongoDatabase)
         {
         }
 
-        public Task<List<NotificationBase>> GetAllForUser(
+        public Task<List<HealthSharingPortal.API.Models.Subscriptions.NotificationBase>> GetAllForUser(
             string username, 
             int? count = null, 
             int? skip = null,

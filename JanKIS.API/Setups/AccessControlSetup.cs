@@ -4,8 +4,10 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Commons.Extensions;
 using Commons.Misc;
+using HealthSharingPortal.API.AccessControl;
+using HealthSharingPortal.API.Hubs;
+using HealthSharingPortal.API.Storage;
 using JanKIS.API.AccessManagement;
-using JanKIS.API.Hubs;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,6 +15,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using AuthenticationModule = JanKIS.API.AccessManagement.AuthenticationModule;
+using AuthorizationModule = JanKIS.API.AccessManagement.AuthorizationModule;
+using ISecurityTokenBuilder = JanKIS.API.AccessManagement.ISecurityTokenBuilder;
+using SameUserRequirement = JanKIS.API.AccessManagement.SameUserRequirement;
+using SameUserRequirementHandler = JanKIS.API.AccessManagement.SameUserRequirementHandler;
 
 namespace JanKIS.API.Setups
 {

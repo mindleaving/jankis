@@ -1,6 +1,6 @@
 ﻿namespace JanKIS.API.Models.Subscriptions
 {
-    public class ConsumableOrderSubscription : SubscriptionBase
+    public class ConsumableOrderSubscription : HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase
     {
         public ConsumableOrderSubscription(){}
 
@@ -13,7 +13,7 @@
             OrderId = orderId;
         }
 
-        public override SubscriptionObjectType Type => SubscriptionObjectType.ConsumableOrder;
+        public override string Type => SubscriptionObjectType.ConsumableOrder.ToString();
         public string OrderId { get; set; }
     }
 }

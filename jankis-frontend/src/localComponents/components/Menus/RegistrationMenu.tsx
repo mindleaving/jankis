@@ -10,7 +10,7 @@ export const RegistrationMenu = (props: RegistrationMenuProps) => {
 
     const navigate = useNavigate();
     return (
-        <Nav className="mr-auto">
+        <Nav className="me-auto">
             <NavDropdown title={resolveText('Menu_Registration')} id="basic-nav-dropdown">
                 <NavDropdown.Item onClick={() => navigate('/create/patient')}>{resolveText('Menu_CreatePatient')}</NavDropdown.Item>
                 <NavDropdown.Item onClick={() => navigate('/persons')}>{resolveText('Menu_PatientList')}</NavDropdown.Item>

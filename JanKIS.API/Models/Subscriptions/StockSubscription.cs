@@ -1,6 +1,8 @@
-﻿namespace JanKIS.API.Models.Subscriptions
+﻿using HealthSharingPortal.API.Models.Subscriptions;
+
+namespace JanKIS.API.Models.Subscriptions
 {
-    public class StockSubscription : SubscriptionBase
+    public class StockSubscription : HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase
     {
         public StockSubscription()
         {
@@ -14,7 +16,7 @@
             StockId = stockId;
         }
 
-        public override SubscriptionObjectType Type => SubscriptionObjectType.Stock;
+        public override string Type => SubscriptionObjectType.Stock.ToString();
         public string StockId { get; set; }
     }
 }

@@ -91,21 +91,6 @@ export namespace Models {
         detachmentTime?: Date | null;
     }
 
-    interface AuthenticationResult {
-        isAuthenticated: boolean;
-        accessToken?: string;
-        error: Enums.AuthenticationErrorType;
-    }
-
-    interface AutocompleteCacheItem {
-        context: string;
-        value: string;
-    }
-
-    interface AutoCompleteContextGenerator {
-        
-    }
-
     interface BedOccupancy extends Models.IId {
         state: Enums.BedState;
         department: Models.Department;
@@ -236,6 +221,26 @@ export namespace Models {
 
     interface SystemRoles {
         
+    }
+
+    interface AuthenticationResult {
+        isAuthenticated: boolean;
+        accessToken?: string;
+        error: Enums.AuthenticationErrorType;
+    }
+
+    interface AutocompleteCacheItem {
+        context: string;
+        value: string;
+    }
+
+    interface AutoCompleteContextGenerator {
+        
+    }
+
+    interface StudyEnrollmentTimestamp {
+        timestamp: Date;
+        newEnrollmentState: Enums.StudyEnrollementState;
     }
 
     export namespace Symptoms {
@@ -797,10 +802,6 @@ export namespace Models {
     }
 
     export namespace Subscriptions {
-        interface AdmissionNotification extends Models.Subscriptions.NotificationBase {
-            admission: Models.Admission;
-        }
-    
         interface BedOccupancyNotification extends Models.Subscriptions.NotificationBase {
             bedOccupancy: Models.BedOccupancy;
         }
@@ -813,32 +814,8 @@ export namespace Models {
             departmentId: string;
         }
     
-        interface INotification extends Models.IId {
-            notificationType: Enums.NotificationType;
-            subscription: Models.Subscriptions.SubscriptionBase;
-            isDismissed: boolean;
-            submitter: string;
-            timestamp: Date;
-        }
-    
         interface InstitutionSubscription extends Models.Subscriptions.SubscriptionBase {
             institutionId: string;
-        }
-    
-        interface NotificationBase extends Models.Subscriptions.INotification {
-            
-        }
-    
-        interface PatientEventNotification extends Models.Subscriptions.NotificationBase {
-            patient: Models.Person;
-            eventType: Enums.HealthRecordEntryType;
-            objectId: string;
-            storageOperation: Enums.StorageOperation;
-        }
-    
-        interface PatientSubscription extends Models.Subscriptions.SubscriptionBase {
-            personId: string;
-            cancelSubscriptionOnDischarge: boolean;
         }
     
         interface ResourceSubscription extends Models.Subscriptions.SubscriptionBase {
@@ -865,10 +842,34 @@ export namespace Models {
             stockId: string;
         }
     
+        interface INotification extends Models.IId {
+            notificationType: string;
+            subscription: Models.Subscriptions.SubscriptionBase;
+            isDismissed: boolean;
+            submitter: string;
+            timestamp: Date;
+        }
+    
+        interface NotificationBase extends Models.Subscriptions.INotification {
+            
+        }
+    
+        interface PatientEventNotification extends Models.Subscriptions.NotificationBase {
+            patient: Models.Person;
+            eventType: Enums.HealthRecordEntryType;
+            objectId: string;
+            storageOperation: Enums.StorageOperation;
+        }
+    
+        interface PatientSubscription extends Models.Subscriptions.SubscriptionBase {
+            personId: string;
+            cancelSubscriptionOnDischarge: boolean;
+        }
+    
         interface SubscriptionBase extends Models.IId {
             username: string;
             mutedUntil?: Date | null;
-            type: Enums.SubscriptionObjectType;
+            type: string;
         }
     }
 }

@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Threading.Tasks;
 using HealthModels;
-using JanKIS.API.Models;
+using HealthSharingPortal.API.AccessControl;
+using HealthSharingPortal.API.Models;
 using JanKIS.API.Storage;
+using Account = JanKIS.API.Models.Account;
 
 namespace JanKIS.API.AccessManagement
 {
     public class AuthenticationModule
     {
-        private readonly IReadonlyStore<Person> personStore;
         private readonly IAccountStore accountStore;
         private readonly ISecurityTokenBuilder securityTokenBuilder;
 
         public AuthenticationModule(
-            IReadonlyStore<Person> personStore,
             IAccountStore accountStore,
             ISecurityTokenBuilder securityTokenBuilder)
         {
-            this.personStore = personStore;
             this.accountStore = accountStore;
             this.securityTokenBuilder = securityTokenBuilder;
         }

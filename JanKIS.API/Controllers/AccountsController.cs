@@ -5,14 +5,23 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthSharingPortal.API.AccessControl;
+using HealthSharingPortal.API.Models;
+using HealthSharingPortal.API.Storage;
+using HealthSharingPortal.API.ViewModels;
 using JanKIS.API.AccessManagement;
 using JanKIS.API.Helpers;
 using JanKIS.API.Models;
-using JanKIS.API.Storage;
-using JanKIS.API.ViewModels;
 using JanKIS.API.Workflow.ViewModelBuilders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Account = JanKIS.API.Models.Account;
+using AccountCreationInfo = JanKIS.API.ViewModels.AccountCreationInfo;
+using AccountFactory = JanKIS.API.AccessManagement.AccountFactory;
+using AccountType = JanKIS.API.Models.AccountType;
+using AuthenticationModule = JanKIS.API.AccessManagement.AuthenticationModule;
+using LoggedInUserViewModel = JanKIS.API.ViewModels.LoggedInUserViewModel;
+using SameUserRequirement = JanKIS.API.AccessManagement.SameUserRequirement;
 
 namespace JanKIS.API.Controllers
 {
@@ -20,14 +29,14 @@ namespace JanKIS.API.Controllers
     [Route("api/[controller]")]
     public class AccountsController : ControllerBase
     {
-        private readonly IAccountStore accountsStore;
+        private readonly Storage.IAccountStore accountsStore;
         private readonly IReadonlyStore<Person> personsStore;
         private readonly ICachedReadonlyStore<Role> rolesStore;
         private readonly ICachedReadonlyStore<Department> departmentsStore;
         private readonly AuthenticationModule authenticationModule;
 
         public AccountsController(
-            IAccountStore accountsStore,
+            Storage.IAccountStore accountsStore,
             IReadonlyStore<Person> personsStore,
             ICachedReadonlyStore<Role> rolesStore,
             ICachedReadonlyStore<Department> departmentsStore,
@@ -123,7 +132,7 @@ namespace JanKIS.API.Controllers
         {
             if (!await personsStore.ExistsAsync(creationInfo.PersonId))
                 return BadRequest($"Person with ID '{creationInfo.PersonId}' doesn't exist");
-            var password = TemporaryPasswordGenerator.Generate();
+            var password = new TemporaryPasswordGenerator().Generate();
             Account account = creationInfo.AccountType switch
             {
                 AccountType.Employee => AccountFactory.CreateEmployeeAccount(
@@ -208,7 +217,7 @@ namespace JanKIS.API.Controllers
         [Authorize(Policy = nameof(Permission.ResetPasswords))]
         public async Task<IActionResult> ResetPassword([FromRoute] string username)
         {
-            var password = TemporaryPasswordGenerator.Generate();
+            var password = new TemporaryPasswordGenerator().Generate();
             await authenticationModule.ChangePasswordAsync(username, password, true);
             return Ok(password);
         }

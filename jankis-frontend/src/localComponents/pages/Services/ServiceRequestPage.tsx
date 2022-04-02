@@ -59,14 +59,17 @@ export const ServiceRequestPage = (props: ServiceRequestPageProps) => {
     }
     const storeAssignee = async (e: FormEvent) => {
         e.preventDefault();
+        if(!assignedTo) {
+            return;
+        }
         setIsStoringAssignee(true);
         try {
-            await apiClient.instance!.post(`api/servicerequests/${requestId}/assignee`, {}, `"${assignedTo}"`);
+            await apiClient.instance!.post(`api/servicerequests/${requestId}/assign`, {}, `"${assignedTo.id}"`);
             NotificationManager.success(resolveText('ServiceRequest_Assignee_SuccessfullySet'));
         } catch(error: any) {
             NotificationManager.error(error.message, resolveText('ServiceRequest_Assignee_CouldNotSet'));
         } finally {
-            setIsStoringState(false)
+            setIsStoringAssignee(false)
         }
     }
     const storeNote = async (e: FormEvent) => {
@@ -109,7 +112,7 @@ export const ServiceRequestPage = (props: ServiceRequestPageProps) => {
                             <Col></Col>
                         </Row>
                         {Object.values(request.parameterResponses).map((parameterResponse) => (
-                            <Row>
+                            <Row key={parameterResponse.parameterName}>
                                 <Col>{parameterResponse.parameterName}</Col>
                                 <Col>
                                     <ServiceParameterResponse parameterResponse={parameterResponse} />
@@ -143,6 +146,7 @@ export const ServiceRequestPage = (props: ServiceRequestPageProps) => {
                             <StoreButton
                                 type="submit"
                                 isStoring={isStoringAssignee}
+                                disabled={!assignedTo}
                             />
                         </InputGroup>
                     </Col>

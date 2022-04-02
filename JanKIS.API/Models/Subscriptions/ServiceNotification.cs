@@ -1,12 +1,13 @@
 ﻿using System;
 using HealthModels.Services;
+using HealthSharingPortal.API.Models.Subscriptions;
 
 namespace JanKIS.API.Models.Subscriptions
 {
-    public class ServiceNotification : NotificationBase
+    public class ServiceNotification : HealthSharingPortal.API.Models.Subscriptions.NotificationBase
     {
         public ServiceNotification(string id,
-            SubscriptionBase subscription,
+            HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase subscription,
             bool isDismissed,
             DateTime timestamp,
             string submitter,
@@ -20,7 +21,7 @@ namespace JanKIS.API.Models.Subscriptions
             Service = service;
         }
 
-        public override NotificationType NotificationType => NotificationType.NewService;
+        public override string NotificationType => Subscriptions.NotificationType.NewService.ToString();
         public ServiceDefinition Service { get; private set; }
     }
 }

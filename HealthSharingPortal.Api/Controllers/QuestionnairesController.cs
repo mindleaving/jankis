@@ -109,5 +109,14 @@ namespace HealthSharingPortal.API.Controllers
         {
             return items;
         }
+
+        protected override Task PublishChange(
+            Questionnaire item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            // Nothing to do
+            return Task.CompletedTask;
+        }
     }
 }

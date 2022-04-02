@@ -7,6 +7,7 @@ import App from './App';
 //import reportWebVitals from './reportWebVitals';
 
 import './localComponents/styles/index.css';
+import './sharedCommonComponents/styles/common.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-notifications/dist/react-notifications.css';
 import 'react-confirm-alert/src/react-confirm-alert.css';

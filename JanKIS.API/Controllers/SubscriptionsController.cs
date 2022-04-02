@@ -4,19 +4,21 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels.Interview;
-using JanKIS.API.Helpers;
-using JanKIS.API.Models;
-using JanKIS.API.Models.Subscriptions;
-using JanKIS.API.Storage;
+using HealthSharingPortal.API.Controllers;
+using HealthSharingPortal.API.Helpers;
+using HealthSharingPortal.API.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SearchExpressionBuilder = JanKIS.API.Helpers.SearchExpressionBuilder;
+using SubscriptionBase = HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase;
+using SubscriptionComparer = JanKIS.API.Helpers.SubscriptionComparer;
 
 namespace JanKIS.API.Controllers
 {
-    public class SubscriptionsController : RestControllerBase<SubscriptionBase>
+    public class SubscriptionsController : RestControllerBase<HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase>
     {
         public SubscriptionsController(
-            IStore<SubscriptionBase> store,
+            IStore<HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase> store,
             IHttpContextAccessor httpContextAccessor)
             : base(store, httpContextAccessor)
         {
@@ -24,7 +26,7 @@ namespace JanKIS.API.Controllers
 
         public override async Task<IActionResult> CreateOrReplace(
             string id,
-            SubscriptionBase item)
+            HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase item)
         {
             var username = ControllerHelpers.GetUsername(httpContextAccessor);
             var existingTypeSubscriptions = await store.SearchAsync(x => x.Username.ToLower() == username && x.Type == item.Type);
@@ -36,13 +38,13 @@ namespace JanKIS.API.Controllers
         }
 
         protected override Task<object> TransformItem(
-            SubscriptionBase item,
+            HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase item,
             Language language = Language.en)
         {
             return Task.FromResult<object>(item);
         }
 
-        protected override Expression<Func<SubscriptionBase, object>> BuildOrderByExpression(string orderBy)
+        protected override Expression<Func<HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase, object>> BuildOrderByExpression(string orderBy)
         {
             return orderBy?.ToLower() switch
             {
@@ -50,13 +52,13 @@ namespace JanKIS.API.Controllers
             };
         }
 
-        protected override Expression<Func<SubscriptionBase, bool>> BuildSearchExpression(string[] searchTerms)
+        protected override Expression<Func<HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase, bool>> BuildSearchExpression(string[] searchTerms)
         {
-            return SearchExpressionBuilder.ContainsAll<SubscriptionBase>(x => x.Username.ToLower(), searchTerms);
+            return SearchExpressionBuilder.ContainsAll<HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase>(x => x.Username.ToLower(), searchTerms);
         }
 
-        protected override IEnumerable<SubscriptionBase> PrioritizeItems(
-            List<SubscriptionBase> items,
+        protected override IEnumerable<HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase> PrioritizeItems(
+            List<HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase> items,
             string searchText)
         {
             return items;

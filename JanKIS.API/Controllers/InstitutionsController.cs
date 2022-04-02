@@ -5,14 +5,17 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels;
 using HealthModels.Interview;
-using JanKIS.API.Helpers;
+using HealthSharingPortal.API.Controllers;
+using HealthSharingPortal.API.Helpers;
+using HealthSharingPortal.API.Storage;
+using HealthSharingPortal.API.Workflow.ViewModelBuilders;
 using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
-using JanKIS.API.Storage;
 using JanKIS.API.ViewModels;
 using JanKIS.API.Workflow.ViewModelBuilders;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SearchExpressionBuilder = JanKIS.API.Helpers.SearchExpressionBuilder;
 
 namespace JanKIS.API.Controllers
 {
@@ -21,7 +24,7 @@ namespace JanKIS.API.Controllers
         private readonly IStore<Room> roomsStore;
         private readonly IStore<Department> departmentsStore;
         private readonly IReadonlyStore<BedOccupancy> bedOccupanciesStore;
-        private readonly ISubscriptionsStore subscriptionsStore;
+        private readonly Storage.ISubscriptionsStore subscriptionsStore;
         private readonly IViewModelBuilder<Institution> institutionViewModelBuilder;
 
         public InstitutionsController(
@@ -30,7 +33,7 @@ namespace JanKIS.API.Controllers
             IStore<Department> departmentsStore,
             IReadonlyStore<BedOccupancy> bedOccupanciesStore,
             IHttpContextAccessor httpContextAccessor,
-            ISubscriptionsStore subscriptionsStore,
+            Storage.ISubscriptionsStore subscriptionsStore,
             IViewModelBuilder<Institution> institutionViewModelBuilder)
             : base(store, httpContextAccessor)
         {

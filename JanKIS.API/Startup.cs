@@ -1,4 +1,4 @@
-using JanKIS.API.Hubs;
+using HealthSharingPortal.API.Hubs;
 using JanKIS.API.Setups;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,7 +31,7 @@ namespace JanKIS.API
                 new AccessControlSetup(),
                 new CorsSetup(),
                 new OpenApiSetup(),
-                new SignalRSetup()
+                new SignalRSetup(),
             };
             foreach (var setup in setups)
             {

@@ -5,13 +5,22 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels.Interview;
 using HealthModels.Services;
-using JanKIS.API.Helpers;
+using HealthSharingPortal.API.Controllers;
+using HealthSharingPortal.API.Helpers;
+using HealthSharingPortal.API.Models;
+using HealthSharingPortal.API.Storage;
+using HealthSharingPortal.API.Workflow;
 using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
 using JanKIS.API.Workflow;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Account = JanKIS.API.Models.Account;
+using AccountType = JanKIS.API.Models.AccountType;
+using INotificationDistributor = JanKIS.API.Workflow.INotificationDistributor;
+using ISubscriptionsStore = JanKIS.API.Storage.ISubscriptionsStore;
+using SearchExpressionBuilder = JanKIS.API.Helpers.SearchExpressionBuilder;
 
 namespace JanKIS.API.Controllers
 {
@@ -46,7 +55,8 @@ namespace JanKIS.API.Controllers
             int? count = null,
             int? skip = null,
             string orderBy = null,
-            OrderDirection orderDirection = OrderDirection.Ascending)
+            OrderDirection orderDirection = OrderDirection.Ascending,
+            Language language = Language.en)
         {
             Request.Query.TryGetValue("departmentId", out var departmentId);
             Request.Query.TryGetValue("serviceId", out var serviceId);
@@ -85,7 +95,8 @@ namespace JanKIS.API.Controllers
             var existingRequest = await store.GetByIdAsync(requestId);
             if (existingRequest == null)
                 return NotFound();
-            if (!await accountsStore.ExistsAsync(assignee))
+            var assigneeAccount = await accountsStore.FirstOrDefaultAsync(x => x is EmployeeAccount && x.PersonId == assignee);
+            if (assigneeAccount == null)
                 return BadRequest("Assignee doesn't exist");
             // TODO: Check permission to perform this action
             //var username = ControllerHelpers.GetUsername(httpContextAccessor);

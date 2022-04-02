@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using HealthModels;
+using HealthSharingPortal.API.ViewModels;
 using JanKIS.API.Models;
 
 namespace JanKIS.API.ViewModels

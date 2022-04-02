@@ -1,5 +1,6 @@
 ﻿using HealthModels;
 using HealthModels.Services;
+using HealthSharingPortal.API.ViewModels;
 using JanKIS.API.Models;
 using TypescriptGenerator.Attributes;
 

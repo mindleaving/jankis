@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using HealthModels;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
@@ -22,10 +23,8 @@ namespace HealthSharingPortal.API.Controllers
 
         protected async Task<bool> IsAuthorizedToAccessPerson(string personId)
         {
-            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            var currentUserPersonId = ControllerHelpers.GetPersonId(httpContextAccessor);
-            return await authorizationModule.HasPermissionForPerson(personId, accountType.Value, username, currentUserPersonId);
+            var claims = ControllerHelpers.GetClaims(httpContextAccessor);
+            return await authorizationModule.HasPermissionForPerson(personId, claims);
         }
     }
 }

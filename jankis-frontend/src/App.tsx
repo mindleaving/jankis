@@ -58,6 +58,9 @@ import { PatientMedicationsPage } from './sharedHealthComponents/pages/Patients/
 import { PatientTimelinePage } from './sharedHealthComponents/pages/Patients/PatientTimelinePage';
 import { AccountsListPage } from './localComponents/pages/UserManagement/AccountsListPage';
 import { CreateDiagnosisPage } from './sharedHealthComponents/pages/Patients/CreateDiagnosisPage';
+import { AnswerQuestionnairePage } from './sharedHealthComponents/pages/Patients/AnswerQuestionnairePage';
+import { AssignQuestionnairePage } from './sharedHealthComponents/pages/Patients/AssignQuestionnairePage';
+import { CreateEditQuestionnairePage } from './sharedHealthComponents/pages/CreateEditQuestionnairePage';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";
@@ -104,8 +107,10 @@ function App() {
                     <Route path="/" element={<NewsPage />} />
 
                     <Route path="/admissions" element={<AdmissionsListPage />} />
-                    <Route path="/create/(patient|person)" element={<CreateEditPatientPage />} />
-                    <Route path="/(patients|persons)/:personId/edit" element={<CreateEditPatientPage />} />
+                    <Route path="/create/patient" element={<CreateEditPatientPage />} />
+                    <Route path="/create/person" element={<CreateEditPatientPage />} />
+                    <Route path="/persons/:personId/edit" element={<CreateEditPatientPage />} />
+                    <Route path="/patients/:personId/edit" element={<CreateEditPatientPage />} />
                     <Route path="/mypatients" element={<MyPatientsPage />} />
                     <Route path="/persons" element={<PersonsListPage filter={{}} />} />
                     <Route path="/healthrecord/:personId" element={<PatientPage />} />
@@ -118,8 +123,14 @@ function App() {
                     <Route path="/healthrecord/:personId/create/document" element={<CreatePatientDocumentPage />} />
                     <Route path="/healthrecord/:personId/create/note" element={<CreatePatientNotePage />} />
                     <Route path="/healthrecord/:personId/equipment" element={<PatientEquipmentPage />} />
+                    <Route path="/healthrecord/:personId/add/questionnaire" element={<AssignQuestionnairePage />} />
+                    <Route path="/healthrecord/:personId/questionnaire/:questionnaireId/answer" element={<AnswerQuestionnairePage />} />
+                    <Route path="/healthrecord/:personId/questionnaire/:questionnaireId/answer/:answerId" element={<AnswerQuestionnairePage />} />
                     <Route path="/healthrecord/:personId/order/service" element={<OrderServiceForPatientPage />} />
                     <Route path="/medicationschedules/:scheduleId/edit" element={<EditMedicationSchedulePage />} />
+
+                    <Route path="/create/questionnaire" element={<CreateEditQuestionnairePage />} />
+                    <Route path="/edit/questionnaire/:id" element={<CreateEditQuestionnairePage />} />
 
                     <Route path="/services" element={<ServicesListPage />} />
                     <Route path="/create/service" element={<ServiceEditPage />} />

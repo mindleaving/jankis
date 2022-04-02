@@ -5,8 +5,13 @@ using Commons.Physics;
 using HealthModels;
 using HealthModels.Attributes;
 using HealthModels.Converters;
+using HealthSharingPortal.API.Models;
+using HealthSharingPortal.API.ViewModels;
 using JanKIS.API.Models;
+using JanKIS.API.Models.Subscriptions;
+using JanKIS.API.ViewModels;
 using TypescriptGenerator;
+using Account = JanKIS.API.Models.Account;
 
 namespace JanKIS.API.Setups
 {
@@ -18,8 +23,33 @@ namespace JanKIS.API.Setups
             TypescriptGenerator.TypescriptGenerator.Builder
                 .IncludeAllInNamespace(Assembly.GetAssembly(typeof(Person)), "HealthModels")
                 .IncludeAllInNamespace(Assembly.GetAssembly(typeof(BedOccupancy)), "JanKIS.API.Models")
-                .IncludeAllInNamespace(Assembly.GetAssembly(typeof(BedOccupancy)), "JanKIS.API.ViewModels")
+                .IncludeAllInNamespace(Assembly.GetAssembly(typeof(ResourceViewModel)), "JanKIS.API.ViewModels")
+                .IncludeAllInNamespace(Assembly.GetAssembly(typeof(Publication)), "HealthSharingPortal.API.Models")
+                .IncludeAllInNamespace(Assembly.GetAssembly(typeof(StudyViewModel)), "HealthSharingPortal.API.ViewModels")
+                .Include<SubscriptionObjectType>()
+                .Include<NotificationType>()
                 .Exclude<Account>()
+                .Exclude<HealthSharingPortal.API.Models.Filters.SharedAccessFilter>()
+                .Exclude<HealthSharingPortal.API.Models.Subscriptions.AdmissionNotification>()
+                .Exclude<HealthSharingPortal.API.Models.Account>()
+                .Exclude<HealthSharingPortal.API.Models.AccountType>()
+                .Exclude<HealthSharingPortal.API.Models.CreateAccessInviteBody>()
+                .Exclude<HealthSharingPortal.API.Models.HealthProfessionalAccount>()
+                .Exclude<HealthSharingPortal.API.Models.Publication>()
+                .Exclude<HealthSharingPortal.API.Models.ResearchStaff>()
+                .Exclude<HealthSharingPortal.API.Models.Study>()
+                .Exclude<HealthSharingPortal.API.Models.StudyAssociation>()
+                .Exclude<HealthSharingPortal.API.Models.StudyEnrollementState>()
+                .Exclude<HealthSharingPortal.API.Models.StudyEnrollment>()
+                .Exclude<HealthSharingPortal.API.Models.StudyEnrollmentStatistics>()
+                .Exclude<HealthSharingPortal.API.Models.StudyParticipation>()
+                .Exclude<HealthSharingPortal.API.Models.StudyStaffRole>()
+                .Exclude<HealthSharingPortal.API.ViewModels.AccountCreationInfo>()
+                .Exclude<HealthSharingPortal.API.ViewModels.AccountViewModel>()
+                .Exclude<HealthSharingPortal.API.ViewModels.LoggedInUserViewModel>()
+                .Exclude<HealthSharingPortal.API.ViewModels.StudyEnrollmentViewModel>()
+                .Exclude<HealthSharingPortal.API.ViewModels.StudyParticipationOfferViewModel>()
+                .Exclude<HealthSharingPortal.API.ViewModels.StudyViewModel>()
                 .Exclude<OfferAutocompleteAttribute>()
                 .Exclude<DiagnosticCriteriaJsonConverter>()
                 .Exclude<DiagnosticTestResultJsonConverter>()
@@ -32,7 +62,13 @@ namespace JanKIS.API.Setups
                 .ReactDefaults()
                 .ConfigureNamespace("HealthModels", options => options.Translation = "Models")
                 .ConfigureNamespace("JanKIS.API.Models", options => options.Translation = "Models")
+                .ConfigureNamespace("HealthSharingPortal.API.Models", options => options.Translation = "Models")
                 .ConfigureNamespace("JanKIS.API.ViewModels", options =>
+                {
+                    options.Translation = "ViewModels";
+                    options.Filename = "viewModels.d.ts";
+                })
+                .ConfigureNamespace("HealthSharingPortal.API.ViewModels", options =>
                 {
                     options.Translation = "ViewModels";
                     options.Filename = "viewModels.d.ts";

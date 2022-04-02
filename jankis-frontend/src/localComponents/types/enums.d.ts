@@ -325,16 +325,6 @@ export enum AccountType {
     Patient = "Patient",
     Employee = "Employee"
 }
-export enum AutoCompleteContext {
-    MeasurementType = "MeasurementType",
-    Unit = "Unit",
-    DrugBrand = "DrugBrand",
-    DrugActiveIngredient = "DrugActiveIngredient",
-    DrugApplicationSite = "DrugApplicationSite",
-    DrugDispensionForm = "DrugDispensionForm",
-    ResourceGroup = "ResourceGroup",
-    ExternalLocation = "ExternalLocation"
-}
 export enum BedState {
     Empty = "Empty",
     Occupied = "Occupied",
@@ -365,10 +355,6 @@ export enum MealState {
     Cancelled = "Cancelled",
     Discarded = "Discarded"
 }
-export enum OrderDirection {
-    Ascending = "Ascending",
-    Descending = "Descending"
-}
 export enum OrderState {
     Ordered = "Ordered",
     Accepted = "Accepted",
@@ -395,10 +381,6 @@ export enum PermissionModifierType {
     Grant = "Grant",
     Deny = "Deny"
 }
-export enum StorageOperation {
-    Created = "Created",
-    Changed = "Changed"
-}
 export enum NotificationType {
     NewPatientEvent = "NewPatientEvent",
     NewService = "NewService",
@@ -422,4 +404,26 @@ export enum AuthenticationErrorType {
     UserNotFound = "UserNotFound",
     InvalidPassword = "InvalidPassword",
     AuthenticationMethodNotAvailable = "AuthenticationMethodNotAvailable"
+}
+export enum AutoCompleteContext {
+    MeasurementType = "MeasurementType",
+    Unit = "Unit",
+    DrugBrand = "DrugBrand",
+    DrugActiveIngredient = "DrugActiveIngredient",
+    DrugApplicationSite = "DrugApplicationSite",
+    DrugDispensionForm = "DrugDispensionForm",
+    ResourceGroup = "ResourceGroup",
+    ExternalLocation = "ExternalLocation"
+}
+export enum OrderDirection {
+    Ascending = "Ascending",
+    Descending = "Descending"
+}
+export enum DataRepresentationType {
+    Model = "Model",
+    ViewModel = "ViewModel"
+}
+export enum StorageOperation {
+    Created = "Created",
+    Changed = "Changed"
 }

@@ -43,7 +43,7 @@ export const RoomCard = (props: RoomCardProps) => {
                         : currentOccupancy.state === BedState.Unavailable ? "danger"
                         : "light";
                     const textColor = !currentOccupancy ? 'text-dark'
-                        : [BedState.Unavailable, BedState.Occupied].includes(currentOccupancy.state) ? 'text-white'
+                        : [BedState.Unavailable, BedState.Occupied].includes(currentOccupancy.state) ? 'text-dark'
                         : 'text-dark';
                     return (
                         <AccordionCard 
@@ -69,30 +69,31 @@ export const RoomCard = (props: RoomCardProps) => {
                             {occupancies.map(occupancy => (
                                 <Alert key={occupancy.id}>
                                     <Row>
-                                        <Col>
+                                        <Col xs={4}>
                                             <small>{`${occupancy.startTime.toLocaleDateString()} - ${occupancy.endTime?.toLocaleDateString() ?? ''}`}</small>
                                         </Col>
+                                        <Col />
                                         <Col xs="auto">
                                             <i className="fa fa-edit clickable" onClick={() => navigate(`/bedoccupancies/${occupancy.id}/edit`)} />
                                         </Col>
                                     </Row>
                                     <Row>
-                                        <Col>{resolveText('BedState')}</Col>
+                                        <Col xs={4}>{resolveText('BedState')}</Col>
                                         <Col>{resolveText(`BedState_${occupancy.state}`)}</Col>
                                     </Row>
                                     {occupancy.state === BedState.Unavailable ? 
                                     <Row>
-                                        <Col>{resolveText('BedOccupancy_UnavailabilityReason')}</Col>
+                                        <Col xs={4}>{resolveText('BedOccupancy_UnavailabilityReason')}</Col>
                                         <Col>{occupancy.unavailabilityReason}</Col>
                                     </Row> : 
                                     occupancy.patient ? 
                                     <Row>
-                                        <Col>{resolveText('Patient')}</Col>
+                                        <Col xs={4}>{resolveText('Patient')}</Col>
                                         <Col>
                                             <Button 
                                                 variant="link"
                                                 className={`p-0 m-0 text-left ${textColor}`}
-                                                onClick={() => navigate(`/patients/${occupancy.patient!.id}`)}
+                                                onClick={() => navigate(`/healthrecord/${occupancy.patient!.id}`)}
                                             >
                                                 {formatPerson(occupancy.patient)}
                                             </Button>

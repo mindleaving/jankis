@@ -61,7 +61,7 @@ export const PatientNursingPage = (props: PatientNursingPageProps) => {
             <Row>
                 <Col>
                     <Alert variant="info">
-                        <Button variant="info" size="sm" className="mr-3" onClick={() => navigate(`/healthrecord/${personId}`)}>&lt; {resolveText('BackToOverview')}</Button>
+                        <Button variant="info" size="sm" className="me-3" onClick={() => navigate(`/healthrecord/${personId}`)}>&lt; {resolveText('BackToOverview')}</Button>
                         <b>{formatPerson(profileData)}</b>
                     </Alert>
                 </Col>

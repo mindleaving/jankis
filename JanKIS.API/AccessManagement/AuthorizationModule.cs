@@ -1,21 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using HealthModels.AccessControl;
+using HealthSharingPortal.API.AccessControl;
+using HealthSharingPortal.API.Storage;
 using JanKIS.API.Models;
-using JanKIS.API.Storage;
 
 namespace JanKIS.API.AccessManagement
 {
-    public interface IAuthorizationModule
-    {
-        Task<bool> HasPermissionForPerson(
-            string personId,
-            AccountType accountType,
-            string username,
-            string currentUserPersonId);
-    }
-
     public class AuthorizationModule : IAuthorizationModule
     {
         private readonly IReadonlyStore<EmergencyAccess> emergencyAccessStore;
@@ -31,17 +25,20 @@ namespace JanKIS.API.AccessManagement
 
         public async Task<bool> HasPermissionForPerson(
             string personId,
-            AccountType accountType,
-            string username,
-            string currentUserPersonId)
+            List<Claim> claims)
         {
+            var accountType = claims.TryGetAccountType();
+            if (accountType == null)
+                return false;
             if (accountType == AccountType.Patient)
             {
+                var currentUserPersonId = claims.TryGetValue(JwtSecurityTokenBuilder.PersonIdClaimName);
                 return currentUserPersonId == personId;
             }
             if (accountType == AccountType.Employee)
             {
                 var utcNow = DateTime.UtcNow;
+                var username = claims.TryGetValue(JwtSecurityTokenBuilder.UsernameClaimName);
                 var activeEmergencyAccesses = await emergencyAccessStore
                     .SearchAsync(x => x.AccessReceiverUsername == username 
                                       && x.SharerPersonId == personId 

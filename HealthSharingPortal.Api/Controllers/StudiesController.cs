@@ -405,7 +405,7 @@ namespace HealthSharingPortal.API.Controllers
 
         protected override Task<object> TransformItem(
             Study item,
-            Language language)
+            Language language = Language.en)
         {
             return Task.FromResult<object>(item);
         }
@@ -430,6 +430,15 @@ namespace HealthSharingPortal.API.Controllers
         protected override IEnumerable<Study> PrioritizeItems(List<Study> items, string searchText)
         {
             return items;
+        }
+
+        protected override Task PublishChange(
+            Study item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            // Nothing to publish
+            return Task.CompletedTask;
         }
     }
 }

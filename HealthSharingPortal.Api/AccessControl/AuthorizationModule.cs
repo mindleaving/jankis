@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using HealthModels.AccessControl;
 using HealthSharingPortal.API.Models;
@@ -11,12 +13,10 @@ namespace HealthSharingPortal.API.AccessControl
     {
         Task<bool> HasPermissionForPerson(
             string personId,
-            AccountType accountType,
-            string username,
-            string currentUserPersonId);
+            List<Claim> claims);
     }
 
-    public class AuthorizationModule : IAuthorizationModule
+    internal class AuthorizationModule : IAuthorizationModule
     {
         private readonly IReadonlyStore<EmergencyAccess> emergencyAccessStore;
         private readonly IReadonlyStore<HealthProfessionalAccess> healthProfessionalAccessStore;
@@ -37,21 +37,24 @@ namespace HealthSharingPortal.API.AccessControl
 
         public async Task<bool> HasPermissionForPerson(
             string personId,
-            AccountType accountType,
-            string username,
-            string currentUserPersonId)
+            List<Claim> claims)
         {
+            var accountType = claims.TryGetAccountType();
+            if (accountType == null)
+                return false;
             if (accountType == AccountType.Admin)
             {
                 return false; // Admins don't have access to health data
             }
             if (accountType == AccountType.Sharer)
             {
+                var currentUserPersonId = claims.TryGetValue(JwtSecurityTokenBuilder.PersonIdClaimName);
                 return currentUserPersonId == personId;
             }
             if (accountType == AccountType.HealthProfessional)
             {
                 var utcNow = DateTime.UtcNow;
+                var username = claims.TryGetValue(JwtSecurityTokenBuilder.UsernameClaimName);
                 var activeEmergencyAccesses = await emergencyAccessStore
                     .SearchAsync(x => x.AccessReceiverUsername == username 
                                       && x.SharerPersonId == personId 
@@ -68,6 +71,7 @@ namespace HealthSharingPortal.API.AccessControl
             }
             if (accountType == AccountType.Researcher)
             {
+                var username = claims.TryGetValue(JwtSecurityTokenBuilder.UsernameClaimName);
                 var associatedStudies = await studyAssociationStore.SearchAsync(x => x.Username == username);
                 var studyIds = associatedStudies.Select(x => x.StudyId).ToList();
                 var studyEnrollments = await studyEnrollmentStore

@@ -2,6 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthSharingPortal.API.Storage;
+using HealthSharingPortal.API.ViewModels;
+using HealthSharingPortal.API.Workflow.ViewModelBuilders;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
 using JanKIS.API.ViewModels;

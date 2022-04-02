@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using HealthModels;
+using HealthSharingPortal.API.Models;
 using JanKIS.API.Models;
+using AccountType = JanKIS.API.Models.AccountType;
 
 namespace JanKIS.API.ViewModels
 {

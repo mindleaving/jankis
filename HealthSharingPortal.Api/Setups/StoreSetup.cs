@@ -10,6 +10,7 @@ using HealthModels.Medication;
 using HealthModels.Observations;
 using HealthModels.Services;
 using HealthSharingPortal.API.Models;
+using HealthSharingPortal.API.Models.Subscriptions;
 using HealthSharingPortal.API.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,6 +37,9 @@ namespace HealthSharingPortal.API.Setups
                 new EnumRepresentationConvention(BsonType.String)
             }, type => true);
             BsonSerializer.RegisterSerializer(typeof(UnitValue), new UnitValueBsonSerializer());
+            BsonClassMap.RegisterClassMap<PatientEventNotification>();
+            BsonClassMap.RegisterClassMap<AdmissionNotification>();
+            BsonClassMap.RegisterClassMap<PatientSubscription>();
             services.AddSingleton<IMongoClient>(new MongoClient());
             services.AddSingleton<IMongoDatabase>(
                 provider =>
@@ -65,9 +69,10 @@ namespace HealthSharingPortal.API.Setups
             SetupTypeStores<HealthProfessionalAccess>(services);
             services.AddScoped<IHealthProfessionalAccessInviteStore, HealthProfessionalAccessInviteStore>();
             SetupTypeStores<MedicationSchedule>(services);
-            services.AddScoped<IMedicationScheduleStore, MedicationScheduleStore>();
             SetupTypeStores<MedicationDispension>(services);
             SetupTypeStores<MedicalText>(services);
+            SetupTypeStores<NotificationBase>(services);
+            services.AddScoped<INotificationsStore, NotificationsStore>();
             SetupTypeStores<Observation>(services);
             SetupTypeStores<PatientDocument>(services);
             SetupTypeStores<PatientNote>(services);
@@ -80,6 +85,8 @@ namespace HealthSharingPortal.API.Setups
             SetupTypeStores<Study>(services);
             SetupTypeStores<StudyAssociation>(services);
             SetupTypeStores<StudyEnrollment>(services);
+            SetupTypeStores<SubscriptionBase>(services);
+            services.AddScoped<ISubscriptionsStore, SubscriptionsStore>();
         }
 
         private static void SetupTypeStores<T>(IServiceCollection services) where T: IId

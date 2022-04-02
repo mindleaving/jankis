@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using HealthSharingPortal.API.Helpers;
 using JanKIS.API.Helpers;
 using JanKIS.API.Storage;
 using Microsoft.AspNetCore.Http;

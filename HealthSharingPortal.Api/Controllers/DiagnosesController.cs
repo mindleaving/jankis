@@ -7,6 +7,7 @@ using HealthModels.Interview;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Storage;
+using HealthSharingPortal.API.Workflow;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,15 +15,16 @@ namespace HealthSharingPortal.API.Controllers
 {
     public class DiagnosesController : PersonDataRestControllerBase<Diagnosis>
     {
-        private readonly IAuthorizationModule authorizationModule;
+        private readonly INotificationDistributor notificationDistributor;
 
         public DiagnosesController(
             IStore<Diagnosis> store,
             IHttpContextAccessor httpContextAccessor,
-            IAuthorizationModule authorizationModule)
+            IAuthorizationModule authorizationModule,
+            INotificationDistributor notificationDistributor)
             : base(store, httpContextAccessor, authorizationModule)
         {
-            this.authorizationModule = authorizationModule;
+            this.notificationDistributor = notificationDistributor;
         }
 
         [HttpPost("{diagnosisId}/resolve")]
@@ -75,6 +77,14 @@ namespace HealthSharingPortal.API.Controllers
             string searchText)
         {
             return items;
+        }
+
+        protected override Task PublishChange(
+            Diagnosis item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            return notificationDistributor.NotifyNewPatientEvent(item, storageOperation, submitterUsername);
         }
     }
 }

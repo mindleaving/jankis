@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JanKIS.API.Test", "JanKIS.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthModels", "HealthModels\HealthModels.csproj", "{83D05CAE-DDA5-4C69-BD7D-9ADB6C2583EC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthSharingPortal.API", "HealthSharingPortal.Api\HealthSharingPortal.API.csproj", "{CBC11F06-BF67-49FE-B83F-60432FA831D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthSharingPortal.API", "HealthSharingPortal.API\HealthSharingPortal.API.csproj", "{CBC11F06-BF67-49FE-B83F-60432FA831D1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IcdAnnotation.API", "IcdAnnotation.API\IcdAnnotation.API.csproj", "{790DE262-D5CF-4437-9430-308EC2DD6C0A}"
 EndProject

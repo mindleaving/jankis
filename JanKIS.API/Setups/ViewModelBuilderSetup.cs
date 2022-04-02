@@ -2,10 +2,12 @@
 using HealthModels.Diagnoses;
 using HealthModels.Interview;
 using HealthModels.Services;
+using HealthSharingPortal.API.Workflow.ViewModelBuilders;
 using JanKIS.API.Models;
 using JanKIS.API.Workflow.ViewModelBuilders;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using AccountViewModelBuilder = JanKIS.API.Workflow.ViewModelBuilders.AccountViewModelBuilder;
 
 namespace JanKIS.API.Setups
 {

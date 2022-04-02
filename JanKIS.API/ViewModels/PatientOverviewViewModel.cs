@@ -3,12 +3,13 @@ using HealthModels;
 using HealthModels.DiagnosticTestResults;
 using HealthModels.Medication;
 using HealthModels.Observations;
+using HealthSharingPortal.API.Models.Subscriptions;
+using HealthSharingPortal.API.ViewModels;
 using JanKIS.API.Models;
-using JanKIS.API.Models.Subscriptions;
 
 namespace JanKIS.API.ViewModels
 {
-    public class PatientOverviewViewModel
+    public class PatientOverviewViewModel : HealthSharingPortal.API.ViewModels.PatientOverviewViewModel
     {
         public PatientOverviewViewModel(
             Person profileData,
@@ -23,32 +24,13 @@ namespace JanKIS.API.ViewModels
             List<PatientDocument> documents,
             List<QuestionnaireAnswersViewModel> questionnaires,
             PatientSubscription subscription)
+            : base(profileData, admissions, notes, diagnoses, medicationSchedules, medicationDispensions, testResults, observations, documents, questionnaires)
         {
-            ProfileData = profileData;
             CurrentBedOccupancy = currentBedOccupancy;
-            Admissions = admissions;
-            Notes = notes;
-            Diagnoses = diagnoses;
-            MedicationSchedules = medicationSchedules;
-            MedicationDispensions = medicationDispensions;
-            TestResults = testResults;
-            Observations = observations;
-            Documents = documents;
-            Questionnaires = questionnaires;
             Subscription = subscription;
         }
 
-        public Person ProfileData { get; set; }
         public BedOccupancy CurrentBedOccupancy { get; set; }
-        public List<Admission> Admissions { get; set; }
-        public List<PatientNote> Notes { get; set; }
-        public List<DiagnosisViewModel> Diagnoses { get; set; }
-        public List<MedicationSchedule> MedicationSchedules { get; }
-        public List<MedicationDispension> MedicationDispensions { get; }
-        public List<DiagnosticTestResult> TestResults { get; set; }
-        public List<Observation> Observations { get; set; }
-        public List<PatientDocument> Documents { get; set; }
-        public List<QuestionnaireAnswersViewModel> Questionnaires { get; }
-        public PatientSubscription Subscription { get; }
+        public PatientSubscription Subscription { get; set; }
     }
 }

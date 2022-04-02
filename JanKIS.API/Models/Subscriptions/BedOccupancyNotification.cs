@@ -2,10 +2,10 @@
 
 namespace JanKIS.API.Models.Subscriptions
 {
-    public class BedOccupancyNotification : NotificationBase
+    public class BedOccupancyNotification : HealthSharingPortal.API.Models.Subscriptions.NotificationBase
     {
         public BedOccupancyNotification(string id,
-            SubscriptionBase subscription,
+            HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase subscription,
             bool isDismissed,
             DateTime timestamp,
             string submitter,
@@ -20,7 +20,7 @@ namespace JanKIS.API.Models.Subscriptions
             BedOccupancy = bedOccupancy;
         }
 
-        public override NotificationType NotificationType => NotificationType.NewBedOccupancy;
+        public override string NotificationType => Subscriptions.NotificationType.NewBedOccupancy.ToString();
         public BedOccupancy BedOccupancy { get; private set; }
     }
 }

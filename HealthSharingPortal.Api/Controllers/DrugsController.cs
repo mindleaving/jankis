@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using HealthModels.Interview;
 using HealthModels.Medication;
 using HealthSharingPortal.API.Helpers;
+using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
 using Microsoft.AspNetCore.Http;
 
@@ -25,7 +26,7 @@ namespace HealthSharingPortal.API.Controllers
 
         protected override Task<object> TransformItem(
             Drug item,
-            Language language)
+            Language language = Language.en)
         {
             return Task.FromResult<object>(item);
         }
@@ -52,6 +53,20 @@ namespace HealthSharingPortal.API.Controllers
             string searchText)
         {
             return items;
+        }
+
+        protected override async Task PublishChange(
+            Drug item,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.DrugBrand.ToString(), item.Brand));
+            await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.DrugApplicationSite.ToString(), item.ApplicationSite));
+            await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.DrugDispensionForm.ToString(), item.DispensionForm));
+            foreach (var activeIngredient in item.ActiveIngredients)
+            {
+                await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.DrugActiveIngredient.ToString(), activeIngredient));
+            }
         }
     }
 }

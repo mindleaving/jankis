@@ -9,6 +9,8 @@ using HealthModels.MedicalTextEditor;
 using HealthModels.Medication;
 using HealthModels.Observations;
 using HealthModels.Services;
+using HealthSharingPortal.API.Models.Subscriptions;
+using HealthSharingPortal.API.Storage;
 using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
 using JanKIS.API.Storage;
@@ -18,6 +20,10 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
+using AdmissionNotification = HealthSharingPortal.API.Models.Subscriptions.AdmissionNotification;
+using INotificationsStore = JanKIS.API.Storage.INotificationsStore;
+using NotificationsStore = JanKIS.API.Storage.NotificationsStore;
+using PatientEventNotification = HealthSharingPortal.API.Models.Subscriptions.PatientEventNotification;
 
 namespace JanKIS.API.Setups
 {
@@ -37,6 +43,19 @@ namespace JanKIS.API.Setups
                 new EnumRepresentationConvention(BsonType.String)
             }, type => true);
             BsonSerializer.RegisterSerializer(typeof(UnitValue), new UnitValueBsonSerializer());
+            BsonClassMap.RegisterClassMap<PatientEventNotification>();
+            BsonClassMap.RegisterClassMap<AdmissionNotification>();
+            BsonClassMap.RegisterClassMap<BedOccupancyNotification>();
+            BsonClassMap.RegisterClassMap<ServiceNotification>();
+            BsonClassMap.RegisterClassMap<ServiceRequestNotification>();
+            BsonClassMap.RegisterClassMap<PatientSubscription>();
+            BsonClassMap.RegisterClassMap<ConsumableOrderSubscription>();
+            BsonClassMap.RegisterClassMap<DepartmentSubscription>();
+            BsonClassMap.RegisterClassMap<InstitutionSubscription>();
+            BsonClassMap.RegisterClassMap<ResourceSubscription>();
+            BsonClassMap.RegisterClassMap<ServiceSubscription>();
+            BsonClassMap.RegisterClassMap<ServiceRequestSubscription>();
+            BsonClassMap.RegisterClassMap<StockSubscription>();
             services.AddSingleton<IMongoClient>(new MongoClient());
             services.AddSingleton<IMongoDatabase>(
                 provider =>
@@ -49,7 +68,7 @@ namespace JanKIS.API.Setups
         private static void SetupStores(IServiceCollection services)
         {
             SetupTypeStores<Account>(services);
-            services.AddScoped<IAccountStore, AccountStore>();
+            services.AddScoped<Storage.IAccountStore, Storage.AccountStore>();
             SetupTypeStores<Admission>(services);
             services.AddScoped<IAdmissionsStore, AdmissionsStore>();
             SetupTypeStores<AttachedEquipment>(services);
@@ -71,11 +90,11 @@ namespace JanKIS.API.Setups
             SetupTypeStores<InstitutionPolicy>(services);
             SetupTypeStores<HealthProfessionalAccess>(services);
             SetupTypeStores<MedicationSchedule>(services);
-            services.AddScoped<IMedicationScheduleStore, MedicationScheduleStore>();
             SetupTypeStores<MedicationDispension>(services);
             SetupTypeStores<MedicalText>(services);
             SetupTypeStores<NotificationBase>(services);
             services.AddScoped<INotificationsStore, NotificationsStore>();
+            services.AddScoped<HealthSharingPortal.API.Storage.INotificationsStore, HealthSharingPortal.API.Storage.NotificationsStore>();
             SetupTypeStores<Observation>(services);
             SetupTypeStores<PatientDocument>(services);
             SetupTypeStores<PatientNote>(services);
@@ -92,7 +111,8 @@ namespace JanKIS.API.Setups
             services.AddScoped<IServiceRequestsStore, ServiceRequestsStore>();
             SetupTypeStores<Stock>(services);
             SetupTypeStores<SubscriptionBase>(services);
-            services.AddScoped<ISubscriptionsStore, SubscriptionsStore>();
+            services.AddScoped<Storage.ISubscriptionsStore, Storage.SubscriptionsStore>();
+            services.AddScoped<HealthSharingPortal.API.Storage.ISubscriptionsStore, HealthSharingPortal.API.Storage.SubscriptionsStore>();
         }
 
         private static void SetupTypeStores<T>(IServiceCollection services) where T: IId

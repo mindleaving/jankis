@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels.Interview;
-using JanKIS.API.Helpers;
+using HealthSharingPortal.API.Controllers;
+using HealthSharingPortal.API.Helpers;
+using HealthSharingPortal.API.Storage;
+using HealthSharingPortal.API.Workflow.ViewModelBuilders;
 using JanKIS.API.Models;
 using JanKIS.API.Models.Subscriptions;
-using JanKIS.API.Storage;
 using JanKIS.API.Workflow.ViewModelBuilders;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ISubscriptionsStore = JanKIS.API.Storage.ISubscriptionsStore;
+using SearchExpressionBuilder = JanKIS.API.Helpers.SearchExpressionBuilder;
 
 namespace JanKIS.API.Controllers
 {
