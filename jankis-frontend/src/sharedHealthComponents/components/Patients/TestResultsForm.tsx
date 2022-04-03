@@ -39,6 +39,7 @@ export const TestResultsForm = (props: TestResultsFormProps) => {
             testCodeLocal: testDefinition.testCodeLocal,
             testCodeLoinc: testDefinition.testCodeLoinc,
             testName: testDefinition.name,
+            testCategory: testDefinition.category,
             timestamp: new Date(),
         };
         setTestResults(state => state.concat(testResult));
@@ -78,7 +79,8 @@ export const TestResultsForm = (props: TestResultsFormProps) => {
                 </thead>
                 <tbody>
                     {testResults.map(testResult => {
-                        return (<tr>
+                        return (
+                        <tr key={testResult.id}>
                             <td>
                                 <Button 
                                     size='sm'

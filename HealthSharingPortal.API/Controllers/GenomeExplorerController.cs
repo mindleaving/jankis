@@ -39,7 +39,7 @@ namespace HealthSharingPortal.API.Controllers
             // TODO: Implement
 
             var environmentId = Guid.NewGuid().ToString();
-            deployment.EnvironmentUrl = $"https://genome.doctorstodo.com/{environmentId}";
+            deployment.EnvironmentUrl = $"https://genome.doctorstodo.com/{environmentId}?config={deployment.Id}/config.json";
             await deploymentStore.StoreAsync(deployment);
             return Ok(deployment);
         }

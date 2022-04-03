@@ -626,7 +626,7 @@ export namespace Models {
 
     export namespace DiagnosticTestResults {
         interface DiagnosticTestResult extends Models.DiagnosticTestResults.IDiagnosticTestResult {
-            
+            testCategory: string;
         }
     
         interface DocumentDiagnosticTestResult extends Models.DiagnosticTestResults.DiagnosticTestResult {

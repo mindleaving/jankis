@@ -24,6 +24,7 @@ namespace HealthModels.DiagnosticTestResults
         public string TestCodeLoinc { get; set; }
         public string TestCodeLocal { get; set; }
         public string TestName { get; set; }
+        public string TestCategory { get; set; }
         public abstract DiagnosticTestScaleType ScaleType { get; }
 
     }

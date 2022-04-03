@@ -179,7 +179,7 @@ export const DiagnosticCriteriasSection = (props: DiagnosticCriteriasSectionProp
                                             onChange={(e:any) => setExpectedResponse(e.target.value)}
                                         />
                                         <Button
-                                            className="ml-2"
+                                            className="ms-2"
                                             onClick={addExpectedResponse}
                                             disabled={!canAddExpectedResponse()}
                                         >

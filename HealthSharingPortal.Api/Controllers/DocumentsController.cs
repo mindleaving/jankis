@@ -31,6 +31,7 @@ namespace HealthSharingPortal.API.Controllers
             this.notificationDistributor = notificationDistributor;
         }
 
+        [DisableRequestSizeLimit]
         [HttpPut("{documentId}/upload")]
         public async Task<IActionResult> Upload([FromRoute] string documentId)
         {

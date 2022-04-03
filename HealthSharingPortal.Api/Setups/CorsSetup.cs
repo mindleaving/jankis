@@ -17,6 +17,7 @@ namespace HealthSharingPortal.API.Setups
                                 .WithOrigins(configuration["CORS:Origins"].Split(','))
                                 .AllowAnyMethod()
                                 .AllowAnyHeader()
+                                .WithExposedHeaders("content-disposition")
                                 .AllowCredentials();
                         });
                 });

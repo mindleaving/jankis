@@ -48,6 +48,8 @@ import { AssignQuestionnairePage } from './sharedHealthComponents/pages/Patients
 import { ImagingUploadPage } from './sharedHealthComponents/pages/Patients/ImagingUploadPage';
 import { GenomeExplorationPage } from './sharedHealthComponents/pages/Patients/GenomeExplorationPage';
 import { ImagingExplorationPage } from './sharedHealthComponents/pages/Patients/ImagingExplorationPage';
+import { differenceInMilliseconds } from 'date-fns';
+import { extractJwtBody } from './sharedCommonComponents/helpers/JwtHelpers';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";
@@ -73,6 +75,11 @@ export const App = (props: AppProps) => {
             sessionStorage.setItem(accessTokenSessionStorageKey, userViewModel.authenticationResult.accessToken!);
             sessionStorage.setItem(userSessionStorageKey, JSON.stringify(userViewModel));
             setLoggedInUser(userViewModel);
+            const jwtBody = extractJwtBody(userViewModel.authenticationResult.accessToken!);
+            const expirationDateTime = new Date(jwtBody.exp*1000);
+            const now = new Date();
+            const millisecondsUntilExpiration = differenceInMilliseconds(expirationDateTime, now);
+            setTimeout(() => onLogOut(), millisecondsUntilExpiration-60*1000);
             navigate("/");
         }
     }

@@ -55,7 +55,7 @@ export const Layout = (props: LayoutProps) => {
                         <NavItem>
                         {props.username 
                             ? <Button onClick={props.onLogout}><i className="fa fa-lock" /> Log out</Button>
-                            : <Button variant="success" onClick={props.onLogin}><i className="fa fa-lock mr-1" /> Login</Button>
+                            : <Button variant="success" onClick={props.onLogin}><i className="fa fa-lock me-1" /> Login</Button>
                         }
                         </NavItem>
                     </Nav>
