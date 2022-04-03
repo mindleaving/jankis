@@ -360,17 +360,6 @@ export enum StudyStaffRole {
     Undefined = "Undefined",
     Investigator = "Investigator"
 }
-export enum NotificationType {
-    NewPatientEvent = "NewPatientEvent",
-    NewService = "NewService",
-    NewServiceRequest = "NewServiceRequest",
-    ServiceRequestStateChange = "ServiceRequestStateChange",
-    NewAdmission = "NewAdmission",
-    NewBedOccupancy = "NewBedOccupancy"
-}
-export enum SubscriptionObjectType {
-    Patient = "Patient"
-}
 export enum DataRepresentationType {
     Model = "Model",
     ViewModel = "ViewModel"

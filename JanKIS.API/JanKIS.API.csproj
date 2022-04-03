@@ -21,8 +21,4 @@
     <ProjectReference Include="..\HealthSharingPortal.API\HealthSharingPortal.API.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Hubs\" />
-  </ItemGroup>
-
 </Project>

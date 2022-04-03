@@ -112,6 +112,13 @@ export namespace Models {
         expirationDuration: string;
     }
 
+    interface GenomeExplorerDeployment extends Models.IId {
+        personId: string;
+        referenceSequences: string[];
+        documentIds: string[];
+        environmentUrl?: string;
+    }
+
     interface HealthProfessionalAccount extends Models.Account {
         workAddress: Models.Address;
         canRequestEmergencyAccess: boolean;
