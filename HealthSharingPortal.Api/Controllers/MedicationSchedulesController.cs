@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Security;
 using System.Threading.Tasks;
 using HealthModels.Interview;
 using HealthModels.Medication;
@@ -15,7 +16,7 @@ namespace HealthSharingPortal.API.Controllers
     public class MedicationSchedulesController : PersonDataRestControllerBase<MedicationSchedule>
     {
         public MedicationSchedulesController(
-            IStore<MedicationSchedule> store,
+            IPersonDataStore<MedicationSchedule> store,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule)
             : base(store, httpContextAccessor, authorizationModule)
@@ -27,28 +28,60 @@ namespace HealthSharingPortal.API.Controllers
         {
             if (itemId != medication.Id)
                 return BadRequest("ID of route doesn't match ID of body");
-            var medicationSchedule = await store.GetByIdAsync(scheduleId);
+            var accessGrants = await GetAccessGrants();
+            MedicationSchedule medicationSchedule;
+            try
+            {
+                medicationSchedule = await store.GetByIdAsync(scheduleId, accessGrants);
+            }
+            catch (SecurityException)
+            {
+                return Forbid();
+            }
             if (medicationSchedule == null)
                 return NotFound();
             medicationSchedule.Items.Add(medication);
-            await store.StoreAsync(medicationSchedule);
-            return Ok();
+            try
+            {
+                await store.StoreAsync(medicationSchedule, accessGrants);
+                return Ok();
+            }
+            catch (SecurityException)
+            {
+                return Forbid();
+            }
         }
 
         [HttpDelete("{scheduleId}/items/{itemId}")]
         public async Task<IActionResult> RemoveMedication([FromRoute] string scheduleId, [FromRoute] string itemId)
         {
-            var medicationSchedule = await store.GetByIdAsync(scheduleId);
+            var accessGrants = await GetAccessGrants();
+            MedicationSchedule medicationSchedule;
+            try
+            {
+                medicationSchedule = await store.GetByIdAsync(scheduleId, accessGrants);
+            }
+            catch (SecurityException)
+            {
+                return Forbid();
+            }
             if (medicationSchedule == null)
                 return NotFound();
             medicationSchedule.Items.RemoveAll(x => x.Id == itemId);
-            await store.StoreAsync(medicationSchedule);
-            return Ok();
+            try
+            {
+                await store.StoreAsync(medicationSchedule, accessGrants);
+                return Ok();
+            }
+            catch (SecurityException)
+            {
+                return Forbid();
+            }
         }
 
         protected override Task<object> TransformItem(
             MedicationSchedule item,
-            Language language)
+            Language language = Language.en)
         {
             return Task.FromResult<object>(item);
         }

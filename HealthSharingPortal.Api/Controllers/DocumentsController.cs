@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
+using System.Security;
 using System.Threading.Tasks;
 using HealthModels;
 using HealthModels.Interview;
@@ -20,7 +21,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly INotificationDistributor notificationDistributor;
 
         public DocumentsController(
-            IStore<PatientDocument> store,
+            IPersonDataStore<PatientDocument> store,
             IFilesStore filesStore,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,
@@ -35,7 +36,16 @@ namespace HealthSharingPortal.API.Controllers
         [HttpPut("{documentId}/upload")]
         public async Task<IActionResult> Upload([FromRoute] string documentId)
         {
-            var document = await store.GetByIdAsync(documentId);
+            var accessGrants = await GetAccessGrants();
+            PatientDocument document;
+            try
+            {
+                document = await store.GetByIdAsync(documentId, accessGrants);
+            }
+            catch (SecurityException)
+            {
+                return Forbid();
+            }
             if (document == null)
                 return BadRequest($"No document exists with ID '{documentId}'. It must be created before uploading the file content");
             await filesStore.StoreAsync(documentId, Request.Body);
@@ -45,7 +55,16 @@ namespace HealthSharingPortal.API.Controllers
         [HttpGet("{documentId}/download")]
         public async Task<IActionResult> Download([FromRoute] string documentId)
         {
-            var document = await store.GetByIdAsync(documentId);
+            var accessGrants = await GetAccessGrants();
+            PatientDocument document;
+            try
+            {
+                document = await store.GetByIdAsync(documentId, accessGrants);
+            }
+            catch (SecurityException)
+            {
+                return Forbid();
+            }
             if (document == null)
                 return NotFound();
             var fileStream = filesStore.GetById(documentId);
@@ -55,13 +74,15 @@ namespace HealthSharingPortal.API.Controllers
 
         public override async Task<IActionResult> Delete(string id)
         {
-            filesStore.Delete(id);
-            return await base.Delete(id);
+            var documentDeletionResult = await base.Delete(id);
+            if(documentDeletionResult is OkResult)
+                filesStore.Delete(id);
+            return documentDeletionResult;
         }
 
         protected override Task<object> TransformItem(
             PatientDocument item,
-            Language language)
+            Language language = Language.en)
         {
             return Task.FromResult<object>(item);
         }

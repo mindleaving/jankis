@@ -1,5 +1,5 @@
 ﻿using HealthModels.Icd;
-using HealthModels.Symptoms;
+using HealthModels.Icd.Annotation.Symptoms;
 using IcdAnnotation.API.Tools.Extensions;
 using MongoDB.Driver;
 using NUnit.Framework;

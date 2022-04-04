@@ -1,24 +1,20 @@
 import React from 'react';
-import { Card, Col, Row } from 'react-bootstrap';
+import { Col, Row } from 'react-bootstrap';
 import { AccordionCard } from '../../../sharedCommonComponents/components/AccordionCard';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
+import { Models } from '../../types/models';
 
 interface BasicInformationBoxProps {
-    
+    profileData: Models.Person;
 }
 
 export const BasicInformationBox = (props: BasicInformationBoxProps) => {
 
-    const name = "Jan Scholtyssek";
-    const birthday = new Date("1989-11-17");
-    const address = {
-        street: "Poststr.",
-        houseNumber: "28",
-        postalCode: "69115",
-        city: "Heidelberg",
-        country: "Deutschland"
-    };
-    const telephone = "+49 174 6322405";
+    const profileData = props.profileData;
+    const name = `${profileData.firstName} ${profileData.lastName}`;
+    const birthday = new Date(profileData.birthDate);
+    const addresses = profileData.addresses;
+    const telephone = profileData.phoneNumber;
     return (
         <AccordionCard
             standalone
@@ -35,16 +31,29 @@ export const BasicInformationBox = (props: BasicInformationBoxProps) => {
             <Row>
                 <Col>Address</Col>
                 <Col>
-                    {address.street} {address.houseNumber}<br/>
-                    {address.postalCode} {address.city} <br />
-                    {address.country}
+                    {addresses.length > 0
+                    ? <Address address={addresses[0]} /> : resolveText("None")}
                 </Col>
             </Row>
             <Row>
                 <Col>Telephone</Col>
-                <Col>{telephone}</Col>
+                <Col>{telephone ?? resolveText('None')}</Col>
             </Row>
         </AccordionCard>
     );
 
+}
+
+interface AddressProps {
+    address: Models.Address;
+}
+const Address = (props: AddressProps) => {
+    const address = props.address;
+    return (
+        <>
+            {address.street} {address.houseNumber}<br/>
+            {address.postalCode} {address.city} <br />
+            {address.country}
+        </>
+    );
 }

@@ -17,7 +17,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly INotificationDistributor notificationDistributor;
 
         public PatientNotesController(
-            IStore<PatientNote> store,
+            IPersonDataStore<PatientNote> store,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,
             INotificationDistributor notificationDistributor)

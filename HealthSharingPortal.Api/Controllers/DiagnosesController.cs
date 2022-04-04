@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Security;
 using System.Threading.Tasks;
 using HealthModels.Diagnoses;
 using HealthModels.Interview;
@@ -18,7 +19,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly INotificationDistributor notificationDistributor;
 
         public DiagnosesController(
-            IStore<Diagnosis> store,
+            IPersonDataStore<Diagnosis> store,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,
             INotificationDistributor notificationDistributor)
@@ -30,24 +31,37 @@ namespace HealthSharingPortal.API.Controllers
         [HttpPost("{diagnosisId}/resolve")]
         public async Task<IActionResult> MarkAsResolve([FromRoute] string diagnosisId)
         {
-            var diagnosis = await store.GetByIdAsync(diagnosisId);
+            var accessGrants = await GetAccessGrants();
+            Diagnosis diagnosis;
+            try
+            {
+                diagnosis = await store.GetByIdAsync(diagnosisId, accessGrants);
+            }
+            catch (SecurityException)
+            {
+                return Forbid();
+            }
             if (diagnosis == null)
                 return NotFound();
             if (diagnosis.HasResolved)
                 return Ok();
-            var isAuthorized = await IsAuthorizedToAccessPerson(diagnosis.PersonId);
-            if (!isAuthorized)
-                return Forbid();
             diagnosis.HasResolved = true;
             diagnosis.ResolvedTimestamp = DateTime.UtcNow;
-            await store.StoreAsync(diagnosis);
+            try
+            {
+                await store.StoreAsync(diagnosis, accessGrants);
+            }
+            catch (SecurityException)
+            {
+                Forbid();
+            }
             return Ok();
         }
 
 
         protected override Task<object> TransformItem(
             Diagnosis item,
-            Language language)
+            Language language = Language.en)
         {
             return Task.FromResult<object>(item);
         }

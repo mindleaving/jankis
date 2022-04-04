@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace HealthModels
 {
-    public class Admission : IId
+    public class Admission : IId, IPersonData
     {
         public Admission(
             string id,
@@ -20,6 +20,7 @@ namespace HealthModels
         }
 
         public string Id { get; set; }
+        public string PersonId => ProfileData.Id;
         public Person ProfileData { get; set; }
         public bool IsReadmission { get; set; }
         public DateTime AdmissionTime { get; set; }

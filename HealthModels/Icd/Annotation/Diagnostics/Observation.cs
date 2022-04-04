@@ -1,5 +1,5 @@
 ﻿using System;
-using HealthModels.Symptoms;
+using HealthModels.Icd.Annotation.Symptoms;
 using TypescriptGenerator.Attributes;
 
 namespace HealthModels.Icd.Annotation.Diagnostics

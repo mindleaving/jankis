@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using HealthModels.AccessControl;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
@@ -33,7 +35,8 @@ namespace HealthSharingPortal.API.Controllers
         public async Task<IActionResult> DeployExplorerEnvironment([FromBody] GenomeExplorerDeployment deployment)
         {
             var claims = ControllerHelpers.GetClaims(httpContextAccessor);
-            if (!await authorizationModule.HasPermissionForPerson(deployment.PersonId, claims))
+            var accessGrant = await authorizationModule.GetAccessGrantForPerson(deployment.PersonId, claims);
+            if (!accessGrant.Permissions.Contains(AccessPermissions.Read))
                 return Forbid();
 
             // TODO: Implement

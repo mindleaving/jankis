@@ -2,7 +2,7 @@
 using HealthModels.Icd;
 using HealthModels.Icd.Annotation.Diagnostics;
 using HealthModels.Icd.Annotation.Epidemiology;
-using HealthModels.Symptoms;
+using HealthModels.Icd.Annotation.Symptoms;
 using IcdAnnotation.API.Data;
 using IcdAnnotation.API.Models;
 using Microsoft.Extensions.Configuration;

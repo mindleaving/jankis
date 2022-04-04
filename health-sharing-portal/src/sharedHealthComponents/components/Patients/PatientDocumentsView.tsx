@@ -2,7 +2,6 @@ import React from 'react';
 import { compareDesc } from 'date-fns';
 import { Alert, Col, Row } from 'react-bootstrap';
 import { Models } from '../../../localComponents/types/models';
-import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { formatDate } from '../../helpers/Formatters';
 import { downloadFile } from '../../../sharedCommonComponents/communication/FileDownloader';

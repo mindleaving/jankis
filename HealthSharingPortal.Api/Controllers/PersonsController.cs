@@ -15,14 +15,12 @@ namespace HealthSharingPortal.API.Controllers
     public class PersonsController : PersonDataRestControllerBase<Person>
     {
         public PersonsController(
-            IStore<Person> store,
+            IPersonDataStore<Person> store,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule)
             : base(store, httpContextAccessor, authorizationModule)
         {
         }
-
-        // TODO: Restrict access to person data
 
         protected override Task<object> TransformItem(
             Person item,

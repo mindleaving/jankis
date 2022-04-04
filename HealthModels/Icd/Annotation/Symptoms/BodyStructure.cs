@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 
-namespace HealthModels.Symptoms
+namespace HealthModels.Icd.Annotation.Symptoms
 {
     public class BodyStructure : IId
     {

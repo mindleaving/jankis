@@ -6,20 +6,18 @@ using System.Threading.Tasks;
 using HealthModels.Extensions;
 using HealthModels.Interview;
 using HealthModels.Services;
-using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Storage;
 using Microsoft.AspNetCore.Http;
 
 namespace HealthSharingPortal.API.Controllers
 {
-    public class DiagnosticTestsController : PersonDataRestControllerBase<DiagnosticTestDefinition>
+    public class DiagnosticTestsController : RestControllerBase<DiagnosticTestDefinition>
     {
         public DiagnosticTestsController(
             IStore<DiagnosticTestDefinition> store, 
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationModule authorizationModule)
-            : base(store, httpContextAccessor, authorizationModule)
+            IHttpContextAccessor httpContextAccessor)
+            : base(store, httpContextAccessor)
         {
         }
 

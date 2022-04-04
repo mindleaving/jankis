@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using HealthModels.Icd.Annotation;
-using HealthModels.Symptoms;
+using HealthModels.Icd.Annotation.Symptoms;
 using IcdAnnotation.API.Data;
 using IcdAnnotation.API.Helpers;
 using Microsoft.AspNetCore.Mvc;

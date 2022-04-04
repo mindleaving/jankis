@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using HealthModels;
+using HealthModels.AccessControl;
 using HealthModels.Interview;
 
 namespace HealthSharingPortal.API.Models
 {
-    public class StudyEnrollment : IId
+    public class StudyEnrollment : IPersonData
     { 
         public string Id { get; set; }
         public string StudyId { get; set; }
@@ -14,6 +15,7 @@ namespace HealthSharingPortal.API.Models
         public List<StudyEnrollmentTimestamp> Timestamps { get; set; }
         public List<QuestionnaireAnswers> InclusionCriteriaQuestionnaireAnswers { get; set; }
         public List<QuestionnaireAnswers> ExclusionCriteriaQuestionnaireAnswers { get; set; }
+        public List<AccessPermissions> Permissions { get; set; }
 
         public void SetState(StudyEnrollementState state, DateTime timestamp)
         {

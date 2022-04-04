@@ -18,7 +18,7 @@ namespace HealthSharingPortal.API.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public abstract class RestControllerBase<T> : ControllerBase where T: class, IId
+    public abstract class RestControllerBase<T> : ControllerBase, IRestController<T> where T: class, IId
     {
         protected readonly IStore<T> store;
         protected readonly IHttpContextAccessor httpContextAccessor;
@@ -44,33 +44,28 @@ namespace HealthSharingPortal.API.Controllers
         }
 
         [HttpGet]
+        [HttpGet("search")]
         public virtual async Task<IActionResult> GetMany(
+            [FromQuery] string searchText, 
             [FromQuery] int? count = null,
             [FromQuery] int? skip = null,
             [FromQuery] string orderBy = null,
             [FromQuery] OrderDirection orderDirection = OrderDirection.Ascending,
             [FromQuery] Language language = Language.en)
         {
+            Expression<Func<T, bool>> searchExpression;
+            if(!string.IsNullOrWhiteSpace(searchText))
+            {
+                var searchTerms = SearchTermSplitter.SplitAndToLower(searchText);
+                searchExpression = BuildSearchExpression(searchTerms);
+            }
+            else
+            {
+                searchExpression = x => true;
+            }
             var orderByExpression = BuildOrderByExpression(orderBy);
-            var items = await store.GetMany(count, skip, orderByExpression, orderDirection);
+            var items = await store.SearchAsync(searchExpression, count, skip, orderByExpression, orderDirection);
             var transformedItems = await TransformItems(items, language);
-            return Ok(transformedItems);
-        }
-
-        [HttpGet(nameof(Search))]
-        public virtual async Task<IActionResult> Search(
-            [FromQuery] string searchText, 
-            [FromQuery] int? count = null, 
-            [FromQuery] int? skip = null,
-            [FromQuery] Language language = Language.en)
-        {
-            if (searchText == null)
-                return BadRequest("No search text specified");
-            var searchTerms = SearchTermSplitter.SplitAndToLower(searchText);
-            var searchExpression = BuildSearchExpression(searchTerms);
-            var items = await store.SearchAsync(searchExpression, count, skip);
-            var prioritizedItems = PrioritizeItems(items, searchText);
-            var transformedItems = await TransformItems(prioritizedItems, language);
             return Ok(transformedItems);
         }
 

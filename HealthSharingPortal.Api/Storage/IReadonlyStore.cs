@@ -10,10 +10,14 @@ namespace HealthSharingPortal.API.Storage
     public interface IReadonlyStore<T> where T: IId
     {
         Task<List<T>> GetAllAsync();
-        Task<List<T>> GetMany(int? count, int? skip, Expression<Func<T, object>> orderBy, OrderDirection orderDirection);
         Task<bool> ExistsAsync(string id);
         Task<T> GetByIdAsync(string id);
-        Task<List<T>> SearchAsync(Expression<Func<T, bool>> filter, int? count = null, int? skip = null);
+        Task<List<T>> SearchAsync(
+            Expression<Func<T, bool>> filter,
+            int? count = null,
+            int? skip = null,
+            Expression<Func<T, object>> orderBy = null,
+            OrderDirection orderDirection = OrderDirection.Ascending);
         Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> filter);
     }
 }

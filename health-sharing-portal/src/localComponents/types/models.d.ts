@@ -12,7 +12,7 @@ export namespace Models {
         lastStayDate?: Date | null;
     }
 
-    interface Admission extends Models.IId {
+    interface Admission extends Models.IId, Models.IPersonData {
         profileData: Models.Person;
         isReadmission: boolean;
         admissionTime: Date;
@@ -49,9 +49,8 @@ export namespace Models {
         translations: { [key: Enums.Language]: string };
     }
 
-    interface IHealthRecordEntry extends Models.IId {
+    interface IHealthRecordEntry extends Models.IId, Models.IPersonData {
         type: Enums.HealthRecordEntryType;
-        personId: string;
         createdBy: string;
         timestamp: Date;
     }
@@ -66,6 +65,10 @@ export namespace Models {
         departmentIds: string[];
     }
 
+    interface IPersonData {
+        personId: string;
+    }
+
     interface PatientDocument extends Models.IHealthRecordEntry {
         note: string;
         fileName: string;
@@ -75,17 +78,17 @@ export namespace Models {
         message: string;
     }
 
-    interface Person extends Models.IId {
+    interface Person extends Models.IId, Models.IPersonData {
         firstName: string;
         lastName: string;
         birthDate: Date;
         sex: Enums.Sex;
         addresses: Models.Address[];
+        phoneNumber?: string;
         healthInsurance?: Models.HealthInsurance;
     }
 
-    interface Account extends Models.IId {
-        personId: string;
+    interface Account extends Models.IId, Models.IPersonData {
         accountType: Enums.AccountType;
         username: string;
         preferedLanguage: Enums.Language;
@@ -181,27 +184,6 @@ export namespace Models {
     interface StudyParticipation {
         studyId: string;
         personId: string;
-    }
-
-    export namespace Symptoms {
-        interface BodyStructure extends Models.IId {
-            icdCode: string;
-            name: string;
-            categoryIcdCode: string;
-        }
-    
-        interface LocalizedSymptom extends Models.Symptoms.Symptom {
-            bodyStructures: Models.Symptoms.BodyStructure[];
-        }
-    
-        interface Symptom extends Models.IId {
-            type: Enums.SymptomType;
-            name: string;
-        }
-    
-        interface SystemicSymptom extends Models.Symptoms.Symptom {
-            
-        }
     }
 
     export namespace Services {
@@ -470,8 +452,8 @@ export namespace Models {
                 name: string;
                 editLock?: Models.Icd.Annotation.DiseaseLock;
                 categoryIcdCode: string;
-                affectedBodyStructures: Models.Symptoms.BodyStructure[];
-                symptoms: Models.Symptoms.Symptom[];
+                affectedBodyStructures: Models.Icd.Annotation.Symptoms.BodyStructure[];
+                symptoms: Models.Icd.Annotation.Symptoms.Symptom[];
                 observations: Models.Icd.Annotation.Diagnostics.Observation[];
                 diagnosticCriteria: Models.Icd.Annotation.Diagnostics.DiagnosticCriteria[];
                 epidemiology: Models.Icd.Annotation.Epidemiology.DiseaseEpidemiology;
@@ -488,6 +470,27 @@ export namespace Models {
             interface InfectiousDisease extends Models.Icd.Annotation.Disease {
                 pathogens: Models.Icd.Annotation.Epidemiology.Microb[];
                 hosts: Models.Icd.Annotation.Epidemiology.DiseaseHost[];
+            }
+        
+            export namespace Symptoms {
+                interface BodyStructure extends Models.IId {
+                    icdCode: string;
+                    name: string;
+                    categoryIcdCode: string;
+                }
+            
+                interface LocalizedSymptom extends Models.Icd.Annotation.Symptoms.Symptom {
+                    bodyStructures: Models.Icd.Annotation.Symptoms.BodyStructure[];
+                }
+            
+                interface Symptom extends Models.IId {
+                    type: Enums.SymptomType;
+                    name: string;
+                }
+            
+                interface SystemicSymptom extends Models.Icd.Annotation.Symptoms.Symptom {
+                    
+                }
             }
         
             export namespace Epidemiology {
@@ -589,7 +592,7 @@ export namespace Models {
             
                 interface Observation extends Models.IId {
                     name: string;
-                    bodyStructure?: Models.Symptoms.BodyStructure;
+                    bodyStructure?: Models.Icd.Annotation.Symptoms.BodyStructure;
                 }
             
                 interface OrdinalDiagnosticCriteria extends Models.Icd.Annotation.Diagnostics.DiagnosticCriteria {
@@ -687,13 +690,13 @@ export namespace Models {
         interface EmergencyAccessRequest extends Models.IId {
             type: Enums.SharedAccessType;
             accessReceiverUsername: string;
-            sharerPersonId: string;
+            sharerPersonId?: string;
             createdTimestamp: Date;
             isCompleted: boolean;
             completedTimestamp?: Date | null;
-            targetPersonFirstName: string;
-            targetPersonLastName: string;
-            targetPersonBirthdate: Date;
+            targetPersonFirstName?: string;
+            targetPersonLastName?: string;
+            targetPersonBirthdate?: Date;
         }
     
         interface HealthProfessionalAccess extends Models.AccessControl.ISharedAccess {
@@ -722,6 +725,7 @@ export namespace Models {
     
         interface IAccessRequest extends Models.IId {
             type: Enums.SharedAccessType;
+            permissions: Enums.AccessPermissions[];
             accessReceiverUsername: string;
             sharerPersonId: string;
             createdTimestamp: Date;
@@ -733,6 +737,7 @@ export namespace Models {
     
         interface ISharedAccess extends Models.IId {
             type: Enums.SharedAccessType;
+            permissions: Enums.AccessPermissions[];
             accessReceiverUsername: string;
             sharerPersonId: string;
             accessGrantedTimestamp: Date;

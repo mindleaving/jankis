@@ -22,7 +22,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IReadonlyStore<DiagnosticTestDefinition> testDefinitionStore;
 
         public TestResultsController(
-            IStore<DiagnosticTestResult> store,
+            IPersonDataStore<DiagnosticTestResult> store,
             IAutocompleteCache autocompleteCache,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,

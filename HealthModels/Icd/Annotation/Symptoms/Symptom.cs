@@ -3,7 +3,7 @@ using HealthModels.Converters;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
-namespace HealthModels.Symptoms
+namespace HealthModels.Icd.Annotation.Symptoms
 {
     [BsonKnownTypes(typeof(SystemicSymptom), typeof(LocalizedSymptom))]
     [JsonConverter(typeof(SymptomJsonConverter))]

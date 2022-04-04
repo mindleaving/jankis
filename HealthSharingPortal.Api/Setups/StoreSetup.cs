@@ -1,4 +1,6 @@
-﻿using Commons.Physics;
+﻿using System.Linq;
+using System.Security;
+using Commons.Physics;
 using HealthModels;
 using HealthModels.AccessControl;
 using HealthModels.Diagnoses;
@@ -51,7 +53,7 @@ namespace HealthSharingPortal.API.Setups
 
         private static void SetupStores(IServiceCollection services)
         {
-            SetupTypeStores<Account>(services);
+            SetupPersonDataStores<Account>(services);
             services.AddScoped<IAccountStore, AccountStore>();
             SetupTypeStores<Admission>(services);
             services.AddScoped<IAutocompleteCache, AutocompleteCache>();
@@ -92,9 +94,16 @@ namespace HealthSharingPortal.API.Setups
 
         private static void SetupTypeStores<T>(IServiceCollection services) where T: IId
         {
+            if (typeof(T).GetInterfaces().Contains(typeof(IPersonData)))
+                throw new SecurityException("SetupTypeStores cannot be used for person data, use SetupPersonDataStores instead");
             services.AddScoped<IReadonlyStore<T>, GenericReadonlyStore<T>>();
             services.AddSingleton<ICachedReadonlyStore<T>, GenericCachedReadonlyStore<T>>();
             services.AddScoped<IStore<T>, GenericStore<T>>();
+        }
+        private static void SetupPersonDataStores<T>(IServiceCollection services) where T: IPersonData
+        {
+            services.AddScoped<IPersonDataReadonlyStore<T>, GenericPersonDataReadonlyStore<T>>();
+            services.AddScoped<IPersonDataStore<T>, GenericPersonDataStore<T>>();
         }
 
         private static void SetupInterfaceStores<T>(IServiceCollection services, string collectionName) where T: IId

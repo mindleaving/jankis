@@ -225,6 +225,7 @@ namespace HealthSharingPortal.API.Controllers
                         existingEnrollment.SetState(StudyEnrollementState.ParticipationOffered, DateTime.UtcNow);
                         existingEnrollment.InclusionCriteriaQuestionnaireAnswers = body.InclusionCriteriaQuestionnaireAnswers;
                         existingEnrollment.ExclusionCriteriaQuestionnaireAnswers = body.ExclusionCriteriaQuestionnaireAnswers;
+                        existingEnrollment.Permissions = body.Permissions;
                         await enrollmentStore.StoreAsync(existingEnrollment);
                         return Ok();
                     }
@@ -253,7 +254,8 @@ namespace HealthSharingPortal.API.Controllers
                     PersonId = personId, 
                     StudyId = studyId, 
                     InclusionCriteriaQuestionnaireAnswers = body.InclusionCriteriaQuestionnaireAnswers,
-                    ExclusionCriteriaQuestionnaireAnswers = body.ExclusionCriteriaQuestionnaireAnswers
+                    ExclusionCriteriaQuestionnaireAnswers = body.ExclusionCriteriaQuestionnaireAnswers,
+                    Permissions = body.Permissions
                 };
             newEnrollment.SetState(StudyEnrollementState.ParticipationOffered, DateTime.UtcNow);
             await enrollmentStore.StoreAsync(newEnrollment);

@@ -7,7 +7,7 @@ namespace JanKIS.API.Models
     [BsonKnownTypes(
         typeof(EmployeeAccount),
         typeof(PatientAccount))]
-    public abstract class Account : IId
+    public abstract class Account : IId, IPersonData
     {
         public Account(
             string personId,

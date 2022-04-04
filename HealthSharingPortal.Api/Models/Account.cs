@@ -8,7 +8,7 @@ namespace HealthSharingPortal.API.Models
     [BsonKnownTypes(
         typeof(HealthProfessionalAccount)
     )]
-    public class Account : IId
+    public class Account : IId, IPersonData
     {
         public Account(
             string personId,

@@ -20,7 +20,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly INotificationDistributor notificationDistributor;
 
         public ObservationsController(
-            IStore<Observation> store,
+            IPersonDataStore<Observation> store,
             IAutocompleteCache autocompleteCache,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,
