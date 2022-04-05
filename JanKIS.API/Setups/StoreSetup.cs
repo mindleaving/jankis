@@ -71,9 +71,9 @@ namespace JanKIS.API.Setups
         {
             SetupTypeStores<Account>(services);
             services.AddScoped<Storage.IAccountStore, Storage.AccountStore>();
-            SetupTypeStores<Admission>(services);
+            SetupPersonDataStores<Admission>(services);
             services.AddScoped<IAdmissionsStore, AdmissionsStore>();
-            SetupTypeStores<AttachedEquipment>(services);
+            SetupPersonDataStores<AttachedEquipment>(services);
             services.AddScoped<IAutocompleteCache, AutocompleteCache>();
             SetupTypeStores<BedOccupancy>(services);
             SetupTypeStores<Consumable>(services);
@@ -81,30 +81,30 @@ namespace JanKIS.API.Setups
             services.AddScoped<IConsumableOrdersStore, ConsumableOrdersStore>();
             SetupTypeStores<Contact>(services);
             SetupTypeStores<Department>(services);
-            SetupTypeStores<Diagnosis>(services);
+            SetupPersonDataStores<Diagnosis>(services);
             SetupTypeStores<DiagnosticTestDefinition>(services);
-            SetupTypeStores<DiagnosticTestResult>(services);
+            SetupPersonDataStores<DiagnosticTestResult>(services);
             SetupTypeStores<Drug>(services);
             SetupTypeStores<EmergencyAccess>(services);
             services.AddScoped<IFilesStore, FilesStore>();
             SetupTypeStores<IcdCategory>(services);
             SetupTypeStores<Institution>(services);
             SetupTypeStores<InstitutionPolicy>(services);
-            SetupTypeStores<GenomeExplorerDeployment>(services);
+            SetupPersonDataStores<GenomeExplorerDeployment>(services);
             SetupTypeStores<HealthProfessionalAccess>(services);
-            SetupTypeStores<MedicationSchedule>(services);
-            SetupTypeStores<MedicationDispension>(services);
+            SetupPersonDataStores<MedicationSchedule>(services);
+            SetupPersonDataStores<MedicationDispension>(services);
             SetupTypeStores<MedicalText>(services);
             SetupTypeStores<NotificationBase>(services);
             services.AddScoped<INotificationsStore, NotificationsStore>();
             services.AddScoped<HealthSharingPortal.API.Storage.INotificationsStore, HealthSharingPortal.API.Storage.NotificationsStore>();
-            SetupTypeStores<Observation>(services);
-            SetupTypeStores<PatientDocument>(services);
-            SetupTypeStores<PatientNote>(services);
-            SetupTypeStores<Person>(services);
+            SetupPersonDataStores<Observation>(services);
+            SetupPersonDataStores<PatientDocument>(services);
+            SetupPersonDataStores<PatientNote>(services);
+            SetupPersonDataStores<Person>(services);
             SetupTypeStores<PersonalizedAbbreviation>(services);
             SetupTypeStores<Questionnaire>(services);
-            SetupTypeStores<QuestionnaireAnswers>(services);
+            SetupPersonDataStores<QuestionnaireAnswers>(services);
             SetupTypeStores<Resource>(services);
             SetupTypeStores<Role>(services);
             SetupTypeStores<Room>(services);
@@ -123,6 +123,12 @@ namespace JanKIS.API.Setups
             services.AddScoped<IReadonlyStore<T>, GenericReadonlyStore<T>>();
             services.AddSingleton<ICachedReadonlyStore<T>, GenericCachedReadonlyStore<T>>();
             services.AddScoped<IStore<T>, GenericStore<T>>();
+        }
+
+        private static void SetupPersonDataStores<T>(IServiceCollection services) where T: IPersonData
+        {
+            services.AddScoped<IPersonDataReadonlyStore<T>, GenericPersonDataReadonlyStore<T>>();
+            services.AddScoped<IPersonDataStore<T>, GenericPersonDataStore<T>>();
         }
     }
 }

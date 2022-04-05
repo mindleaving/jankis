@@ -5,7 +5,9 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthModels.AccessControl;
 using HealthModels.Interview;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
@@ -18,24 +20,27 @@ namespace HealthSharingPortal.API.Controllers
 {
     public class StudiesController : RestControllerBase<Study>
     {
-        private readonly IStore<StudyEnrollment> enrollmentStore;
+        private readonly IPersonDataStore<StudyEnrollment> enrollmentStore;
         private readonly IStore<StudyAssociation> studyAssociationStore;
-        private readonly IReadonlyStore<Person> personStore;
+        private readonly IPersonDataReadonlyStore<Person> personStore;
         private readonly IViewModelBuilder<StudyEnrollment> studEnrollmentViewModelBuilder;
+        private readonly IAuthorizationModule authorizationModule;
 
         public StudiesController(
             IStore<Study> store, 
             IHttpContextAccessor httpContextAccessor, 
-            IStore<StudyEnrollment> enrollmentStore, 
+            IPersonDataStore<StudyEnrollment> enrollmentStore, 
             IStore<StudyAssociation> studyAssociationStore,
-            IReadonlyStore<Person> personStore,
-            IViewModelBuilder<StudyEnrollment> studEnrollmentViewModelBuilder)
+            IPersonDataReadonlyStore<Person> personStore,
+            IViewModelBuilder<StudyEnrollment> studEnrollmentViewModelBuilder,
+            IAuthorizationModule authorizationModule)
             : base(store, httpContextAccessor)
         {
             this.enrollmentStore = enrollmentStore;
             this.studyAssociationStore = studyAssociationStore;
             this.personStore = personStore;
             this.studEnrollmentViewModelBuilder = studEnrollmentViewModelBuilder;
+            this.authorizationModule = authorizationModule;
         }
 
         public override async Task<IActionResult> CreateOrReplace(
@@ -78,6 +83,7 @@ namespace HealthSharingPortal.API.Controllers
             var myAssociations = await studyAssociationStore.SearchAsync(x => x.StudyId == studyId && x.Username == username);
             if (!myAssociations.Any())
                 return Forbid("You are not associated with study");
+            var accessGrants = AccessGrantHelpers.GrantReadAccessToAllPersons();
             var filterExpressions = new List<Expression<Func<StudyEnrollment, bool>>>
             {
                 x => x.StudyId == studyId
@@ -88,7 +94,11 @@ namespace HealthSharingPortal.API.Controllers
                     SearchExpressionBuilder.ContainsAny<Person>(x => x.FirstName.ToLower(), searchText),
                     SearchExpressionBuilder.ContainsAny<Person>(x => x.LastName.ToLower(), searchText)
                 );
-                var matchingPersons = await personStore.SearchAsync(personFilter);
+                var matchingPersons = await personStore.SearchAsync(
+                    personFilter,
+                    AccessGrantHelpers.GrantReadAccessToAllPersons());
+                if (matchingPersons.Count == 0)
+                    return Ok(new List<StudyEnrollment>());
                 var personIds = matchingPersons.Select(x => x.Id).ToList();
                 filterExpressions.Add(x => personIds.Contains(x.PersonId));
             }
@@ -98,11 +108,14 @@ namespace HealthSharingPortal.API.Controllers
             }
 
             var combinedFilter = SearchExpressionBuilder.And(filterExpressions.ToArray());
-            var enrollments = await enrollmentStore.SearchAsync(combinedFilter, count, skip);
+            var enrollments = await enrollmentStore.SearchAsync(combinedFilter, accessGrants, count, skip);
             enrollments = enrollments.OrderBy(x => x.State).ToList();
             if (mode == DataRepresentationType.Model)
                 return Ok(enrollments);
-            var viewModels = await studEnrollmentViewModelBuilder.BatchBuild(enrollments);
+            var viewModels = await studEnrollmentViewModelBuilder.BatchBuild(enrollments, new StudyEnrollmentViewModelBuilderOptions
+            {
+                AccessGrants = accessGrants
+            });
             return Ok(viewModels);
         }
 
@@ -111,7 +124,8 @@ namespace HealthSharingPortal.API.Controllers
             [FromRoute] string studyId,
             [FromRoute] string enrollmentId)
         {
-            var enrollment = await enrollmentStore.GetByIdAsync(enrollmentId);
+            var accessGrants = await GetAccessGrants();
+            var enrollment = await enrollmentStore.GetByIdAsync(enrollmentId, accessGrants);
             if (enrollment == null)
                 return NotFound();
             if (enrollment.StudyId != studyId)
@@ -122,7 +136,10 @@ namespace HealthSharingPortal.API.Controllers
                 var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
                 if (enrollment.PersonId == personId)
                 {
-                    var viewModel = await studEnrollmentViewModelBuilder.Build(enrollment);
+                    var viewModel = await studEnrollmentViewModelBuilder.Build(enrollment, new StudyEnrollmentViewModelBuilderOptions
+                    {
+                        AccessGrants = accessGrants
+                    });
                     return Ok(viewModel);
                 }
             }
@@ -132,7 +149,10 @@ namespace HealthSharingPortal.API.Controllers
                 var myAssociations = await studyAssociationStore.SearchAsync(x => x.StudyId == studyId && x.Username == username);
                 if (myAssociations.Any())
                 {
-                    var viewModel = await studEnrollmentViewModelBuilder.Build(enrollment);
+                    var viewModel = await studEnrollmentViewModelBuilder.Build(enrollment, new StudyEnrollmentViewModelBuilderOptions
+                    {
+                        AccessGrants = accessGrants
+                    });
                     return Ok(viewModel);
                 }
             }
@@ -194,7 +214,8 @@ namespace HealthSharingPortal.API.Controllers
         [HttpGet("{studyId}/enrollments/statistics")]
         public async Task<IActionResult> EnrollmentStatistics([FromRoute] string studyId)
         {
-            var enrollments = await enrollmentStore.SearchAsync(x => x.StudyId == studyId);
+            var readAccessGrant = AccessGrantHelpers.GrantReadAccessToAllPersons();
+            var enrollments = await enrollmentStore.SearchAsync(x => x.StudyId == studyId, readAccessGrant);
             var enrollmentStatistics = new StudyEnrollmentStatistics(enrollments);
             return Ok(enrollmentStatistics);
         }
@@ -213,7 +234,8 @@ namespace HealthSharingPortal.API.Controllers
                 return BadRequest("Study does currently not accept enrollments");
             var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
             CorrectQuestionnaireAnswers(body, personId);
-            var existingEnrollments = await enrollmentStore.SearchAsync(x => x.StudyId == studyId && x.PersonId == personId);
+            var accessGrants = await GetAccessGrants();
+            var existingEnrollments = await enrollmentStore.SearchAsync(x => x.StudyId == studyId && x.PersonId == personId, accessGrants);
             if (existingEnrollments.Count == 1)
             {
                 var existingEnrollment = existingEnrollments[0];
@@ -226,7 +248,7 @@ namespace HealthSharingPortal.API.Controllers
                         existingEnrollment.InclusionCriteriaQuestionnaireAnswers = body.InclusionCriteriaQuestionnaireAnswers;
                         existingEnrollment.ExclusionCriteriaQuestionnaireAnswers = body.ExclusionCriteriaQuestionnaireAnswers;
                         existingEnrollment.Permissions = body.Permissions;
-                        await enrollmentStore.StoreAsync(existingEnrollment);
+                        await enrollmentStore.StoreAsync(existingEnrollment, accessGrants);
                         return Ok();
                     }
                     case StudyEnrollementState.ParticipationOffered:
@@ -245,7 +267,7 @@ namespace HealthSharingPortal.API.Controllers
             }
             if (existingEnrollments.Count > 1)
             {
-                await DeleteEnrollments(existingEnrollments);
+                await DeleteEnrollments(existingEnrollments, accessGrants);
             }
 
             var newEnrollment = new StudyEnrollment
@@ -258,8 +280,14 @@ namespace HealthSharingPortal.API.Controllers
                     Permissions = body.Permissions
                 };
             newEnrollment.SetState(StudyEnrollementState.ParticipationOffered, DateTime.UtcNow);
-            await enrollmentStore.StoreAsync(newEnrollment);
+            await enrollmentStore.StoreAsync(newEnrollment, accessGrants);
             return Ok();
+        }
+
+        private async Task<List<IPersonDataAccessGrant>> GetAccessGrants()
+        {
+            var claims = ControllerHelpers.GetClaims(httpContextAccessor);
+            return await authorizationModule.GetAccessGrants(claims);
         }
 
         private void CorrectQuestionnaireAnswers(
@@ -283,13 +311,15 @@ namespace HealthSharingPortal.API.Controllers
                     });
         }
 
-        private async Task DeleteEnrollments(List<StudyEnrollment> existingEnrollments)
+        private async Task DeleteEnrollments(
+            List<StudyEnrollment> existingEnrollments,
+            List<IPersonDataAccessGrant> accessGrants)
         {
             // This should never happen, but if it does:
             // Delete all enrollments and start over
             foreach (var existingEnrollment in existingEnrollments)
             {
-                await enrollmentStore.DeleteAsync(existingEnrollment.Id);
+                await enrollmentStore.DeleteAsync(existingEnrollment.Id, accessGrants);
             }
         }
 
@@ -297,12 +327,13 @@ namespace HealthSharingPortal.API.Controllers
         public async Task<IActionResult> LeaveStudy([FromRoute] string studyId)
         {
             var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
-            var enrollments = await enrollmentStore.SearchAsync(x => x.PersonId == personId && x.StudyId == studyId);
+            var accessGrants = await GetAccessGrants();
+            var enrollments = await enrollmentStore.SearchAsync(x => x.PersonId == personId && x.StudyId == studyId, accessGrants);
             var utcNow = DateTime.UtcNow;
             foreach (var enrollment in enrollments)
             {
                 enrollment.SetState(StudyEnrollementState.Left, utcNow);
-                await enrollmentStore.StoreAsync(enrollment);
+                await enrollmentStore.StoreAsync(enrollment, accessGrants);
             }
             return Ok();
         }
@@ -310,7 +341,8 @@ namespace HealthSharingPortal.API.Controllers
         [HttpPost("{studyId}/enrollments/{enrollmentId}/invite")]
         public async Task<IActionResult> InviteCandidate([FromRoute] string studyId, [FromRoute] string enrollmentId)
         {
-            var enrollment = await enrollmentStore.GetByIdAsync(enrollmentId);
+            var readAccessGrant = AccessGrantHelpers.GrantReadAccessToAllPersons();
+            var enrollment = await enrollmentStore.GetByIdAsync(enrollmentId, readAccessGrant);
             if (enrollment == null)
                 return NotFound();
             if (enrollment.StudyId != studyId)
@@ -327,8 +359,9 @@ namespace HealthSharingPortal.API.Controllers
             var isAssociatedWithStudy = await IsCurrentUserAssociatedWithStudy(enrollment.StudyId);
             if (!isAssociatedWithStudy)
                 return StatusCode((int)HttpStatusCode.Forbidden, "You are not associated with the study");
+            var modifyAccessGrant = AccessGrantHelpers.GrantForPersonWithPermission(enrollment.PersonId, AccessPermissions.Modify);
             enrollment.SetState(StudyEnrollementState.Eligible, DateTime.UtcNow);
-            await enrollmentStore.StoreAsync(enrollment);
+            await enrollmentStore.StoreAsync(enrollment, modifyAccessGrant);
             return Ok();
         }
 
@@ -336,12 +369,13 @@ namespace HealthSharingPortal.API.Controllers
         public async Task<IActionResult> AcceptInvitation([FromRoute] string studyId)
         {
             var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
-            var enrollments = await enrollmentStore.SearchAsync(x => x.StudyId == studyId && x.PersonId == personId);
+            var accessGrants = await GetAccessGrants();
+            var enrollments = await enrollmentStore.SearchAsync(x => x.StudyId == studyId && x.PersonId == personId, accessGrants);
             if (enrollments.Count == 0)
                 return NotFound();
             if (enrollments.Count > 1)
             {
-                await DeleteEnrollments(enrollments);
+                await DeleteEnrollments(enrollments, accessGrants);
                 return StatusCode(
                     (int)HttpStatusCode.InternalServerError,
                     "Multiple enrollments matched. To ensure a consistent state all your enrollments to this study were deleted. "
@@ -355,14 +389,15 @@ namespace HealthSharingPortal.API.Controllers
                 return BadRequest("You have not yet been determined to be eligible");
 
             enrollment.SetState(StudyEnrollementState.Enrolled, DateTime.UtcNow);
-            await enrollmentStore.StoreAsync(enrollment);
+            await enrollmentStore.StoreAsync(enrollment, accessGrants);
             return Ok();
         }
 
         [HttpPost("{studyId}/enrollments/{enrollmentId}/exclude")]
         public async Task<IActionResult> ExcludeCandidate([FromRoute] string studyId, [FromRoute] string enrollmentId)
         {
-            var enrollment = await enrollmentStore.GetByIdAsync(enrollmentId);
+            var readAccessGrant = AccessGrantHelpers.GrantReadAccessToAllPersons();
+            var enrollment = await enrollmentStore.GetByIdAsync(enrollmentId, readAccessGrant);
             if (enrollment == null)
                 return NotFound();
             if (enrollment.StudyId != studyId)
@@ -373,15 +408,17 @@ namespace HealthSharingPortal.API.Controllers
             var isAssociatedWithStudy = await IsCurrentUserAssociatedWithStudy(enrollment.StudyId);
             if (!isAssociatedWithStudy)
                 return StatusCode((int)HttpStatusCode.Forbidden, "You are not associated with the study");
+            var modifyAccessGrant = AccessGrantHelpers.GrantForPersonWithPermission(enrollment.PersonId, AccessPermissions.Modify);
             enrollment.SetState(StudyEnrollementState.Excluded, DateTime.UtcNow);
-            await enrollmentStore.StoreAsync(enrollment);
+            await enrollmentStore.StoreAsync(enrollment, modifyAccessGrant);
             return Ok();
         }
 
         [HttpPost("{studyId}/enrollments/{enrollmentId}/reject")]
         public async Task<IActionResult> RejectCandidate([FromRoute] string studyId, [FromRoute] string enrollmentId)
         {
-            var enrollment = await enrollmentStore.GetByIdAsync(enrollmentId);
+            var readAccessGrant = AccessGrantHelpers.GrantReadAccessToAllPersons();
+            var enrollment = await enrollmentStore.GetByIdAsync(enrollmentId, readAccessGrant);
             if (enrollment == null)
                 return NotFound();
             if (enrollment.StudyId != studyId)
@@ -392,8 +429,9 @@ namespace HealthSharingPortal.API.Controllers
             var isAssociatedWithStudy = await IsCurrentUserAssociatedWithStudy(enrollment.StudyId);
             if (!isAssociatedWithStudy)
                 return StatusCode((int)HttpStatusCode.Forbidden, "You are not associated with the study");
+            var modifyAccessGrant = AccessGrantHelpers.GrantForPersonWithPermission(enrollment.PersonId, AccessPermissions.Modify);
             enrollment.SetState(StudyEnrollementState.Rejected, DateTime.UtcNow);
-            await enrollmentStore.StoreAsync(enrollment);
+            await enrollmentStore.StoreAsync(enrollment, modifyAccessGrant);
             return Ok();
         }
 
@@ -427,11 +465,6 @@ namespace HealthSharingPortal.API.Controllers
                 SearchExpressionBuilder.ContainsAny<Study>(x => x.Title.ToLower(), searchTerms),
                 SearchExpressionBuilder.ContainsAny<Study>(x => x.Description.ToLower(), searchTerms)
             );
-        }
-
-        protected override IEnumerable<Study> PrioritizeItems(List<Study> items, string searchText)
-        {
-            return items;
         }
 
         protected override Task PublishChange(

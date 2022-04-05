@@ -68,13 +68,6 @@ namespace HealthSharingPortal.API.Controllers
             return SearchExpressionBuilder.ContainsAll<Observation>(x => x.Id.ToLower(), searchTerms);
         }
 
-        protected override IEnumerable<Observation> PrioritizeItems(
-            List<Observation> items,
-            string searchText)
-        {
-            return items;
-        }
-
         protected override Task PublishChange(
             Observation item,
             StorageOperation storageOperation,

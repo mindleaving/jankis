@@ -5,15 +5,17 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthModels.AccessControl;
 using HealthSharingPortal.API.AccessControl;
+using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
 using HealthSharingPortal.API.ViewModels;
 using JanKIS.API.AccessManagement;
-using JanKIS.API.Helpers;
 using JanKIS.API.Models;
 using JanKIS.API.Workflow.ViewModelBuilders;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Account = JanKIS.API.Models.Account;
 using AccountCreationInfo = JanKIS.API.ViewModels.AccountCreationInfo;
@@ -22,6 +24,8 @@ using AccountType = JanKIS.API.Models.AccountType;
 using AuthenticationModule = JanKIS.API.AccessManagement.AuthenticationModule;
 using LoggedInUserViewModel = JanKIS.API.ViewModels.LoggedInUserViewModel;
 using SameUserRequirement = JanKIS.API.AccessManagement.SameUserRequirement;
+using SearchExpressionBuilder = JanKIS.API.Helpers.SearchExpressionBuilder;
+using SearchTermSplitter = JanKIS.API.Helpers.SearchTermSplitter;
 
 namespace JanKIS.API.Controllers
 {
@@ -30,32 +34,52 @@ namespace JanKIS.API.Controllers
     public class AccountsController : ControllerBase
     {
         private readonly Storage.IAccountStore accountsStore;
-        private readonly IReadonlyStore<Person> personsStore;
+        private readonly IPersonDataReadonlyStore<Person> personsStore;
         private readonly ICachedReadonlyStore<Role> rolesStore;
         private readonly ICachedReadonlyStore<Department> departmentsStore;
         private readonly AuthenticationModule authenticationModule;
+        private readonly IAuthorizationModule authorizationModule;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         public AccountsController(
             Storage.IAccountStore accountsStore,
-            IReadonlyStore<Person> personsStore,
+            IPersonDataReadonlyStore<Person> personsStore,
             ICachedReadonlyStore<Role> rolesStore,
             ICachedReadonlyStore<Department> departmentsStore,
-            AuthenticationModule authenticationModule)
+            AuthenticationModule authenticationModule,
+            IAuthorizationModule authorizationModule,
+            IHttpContextAccessor httpContextAccessor)
         {
             this.accountsStore = accountsStore;
             this.personsStore = personsStore;
             this.rolesStore = rolesStore;
             this.departmentsStore = departmentsStore;
             this.authenticationModule = authenticationModule;
+            this.authorizationModule = authorizationModule;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetMany(
-            [FromQuery] int? count = null,
+        [HttpGet()]
+        [HttpGet(nameof(Search))]
+        public async Task<IActionResult> Search(
+            [FromQuery] string searchText, 
+            [FromQuery] int? count = null, 
             [FromQuery] int? skip = null,
             [FromQuery] string orderBy = null,
             [FromQuery] OrderDirection orderDirection = OrderDirection.Ascending)
         {
+            Expression<Func<Account, bool>> searchExpression;
+            string[] searchTerms;
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                searchTerms = SearchTermSplitter.SplitAndToLower(searchText);
+                searchExpression = SearchExpressionBuilder.ContainsAll<Account>(x => x.Username.ToLower(), searchTerms);
+            }
+            else
+            {
+                searchTerms = Array.Empty<string>();
+                searchExpression = x => true;
+            }
             Expression<Func<Account, object>> orderByExpression = orderBy?.ToLower() switch
             {
                 "id" => x => x.Id,
@@ -64,47 +88,23 @@ namespace JanKIS.API.Controllers
                 "personid" => x => x.PersonId,
                 _ => x => x.Username
             };
-            var items = await accountsStore.GetMany(count, skip, orderByExpression, orderDirection);
-            var viewModels = await BuildAccountViewModels(items);
-            return Ok(viewModels);
-        }
-
-        [HttpGet(nameof(Search))]
-        public async Task<IActionResult> Search([FromQuery] string searchText, int? count = null, int? skip = null)
-        {
-            var searchTerms = SearchTermSplitter.SplitAndToLower(searchText);
-            var searchExpression = SearchExpressionBuilder.ContainsAll<Account>(x => x.Username.ToLower(), searchTerms);
-            var items = await accountsStore.SearchAsync(searchExpression, count, skip);
-            if (!items.Any())
+            var accessGrants = await GetAccessGrants();
+            var items = await accountsStore.SearchAsync(searchExpression, count, skip, orderByExpression, orderDirection);
+            if (!items.Any() && searchTerms.Any())
             {
                 var personSearchExpression = SearchExpressionBuilder.Or(
                     SearchExpressionBuilder.ContainsAny<Person>(x => x.FirstName.ToLower(), searchTerms),
                     SearchExpressionBuilder.ContainsAny<Person>(x => x.LastName.ToLower(), searchTerms));
                 var matchingPersons = await personsStore.SearchAsync(
                     personSearchExpression,
+                    accessGrants,
                     count,
                     skip);
                 var personIds = matchingPersons.Select(person => person.Id).ToList();
-                items = await accountsStore.SearchAsync(x => personIds.Contains(x.PersonId));
+                items = await accountsStore.SearchAsync(x => personIds.Contains(x.PersonId), count, skip, orderByExpression, orderDirection);
             }
-            var viewModels = await BuildAccountViewModels(items);
+            var viewModels = await BuildAccountViewModels(items, accessGrants);
             return Ok(viewModels);
-        }
-
-        private async Task<List<IViewModel<Account>>> BuildAccountViewModels(List<Account> items)
-        {
-            var viewModels = new List<IViewModel<Account>>();
-            var viewModelFactory = new AccountViewModelBuilder(
-                rolesStore,
-                departmentsStore,
-                personsStore);
-            foreach (var account in items)
-            {
-                var viewModel = await viewModelFactory.Build(account);
-                viewModels.Add(viewModel);
-            }
-
-            return viewModels;
         }
 
 
@@ -120,7 +120,6 @@ namespace JanKIS.API.Controllers
         }
 
 
-
         [HttpGet("{username}/exists")]
         public async Task<IActionResult> Exists([FromRoute] string username)
         {
@@ -130,7 +129,8 @@ namespace JanKIS.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAccount([FromBody] AccountCreationInfo creationInfo)
         {
-            if (!await personsStore.ExistsAsync(creationInfo.PersonId))
+            var accessGrants = await GetAccessGrants();
+            if (!await personsStore.ExistsAsync(creationInfo.PersonId, accessGrants))
                 return BadRequest($"Person with ID '{creationInfo.PersonId}' doesn't exist");
             var password = new TemporaryPasswordGenerator().Generate();
             Account account = creationInfo.AccountType switch
@@ -157,7 +157,12 @@ namespace JanKIS.API.Controllers
             var account = await accountsStore.GetByIdAsync(username);
             if(account == null)
                 return NotFound();
-            var person = await personsStore.GetByIdAsync(account.PersonId);
+            var person = await personsStore.GetByIdAsync(
+                account.PersonId,
+                new List<IPersonDataAccessGrant>
+                {
+                    new PersonDataAccessGrant(account.PersonId, new[] { AccessPermissions.Read })
+                });
             if (person == null)
                 return NotFound();
             var authenticationResult = await authenticationModule.AuthenticateAsync(person, account, password);
@@ -371,6 +376,28 @@ namespace JanKIS.API.Controllers
             return Ok();
         }
 
+        private async Task<List<IPersonDataAccessGrant>> GetAccessGrants()
+        {
+            var claims = ControllerHelpers.GetClaims(httpContextAccessor);
+            var accessGrants = await authorizationModule.GetAccessGrants(claims);
+            return accessGrants;
+        }
+
+        private async Task<List<IViewModel<Account>>> BuildAccountViewModels(List<Account> items, List<IPersonDataAccessGrant> accessGrants)
+        {
+            var viewModels = new List<IViewModel<Account>>();
+            var viewModelFactory = new AccountViewModelBuilder(
+                rolesStore,
+                departmentsStore,
+                personsStore);
+            foreach (var account in items)
+            {
+                var viewModel = await viewModelFactory.Build(account, new AccountViewModelBuilderOptions { AccessGrants = accessGrants });
+                viewModels.Add(viewModel);
+            }
+
+            return viewModels;
+        }
 
         private IActionResult HandleStorageResult(StorageResult result)
         {

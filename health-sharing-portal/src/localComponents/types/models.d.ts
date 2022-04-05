@@ -12,7 +12,7 @@ export namespace Models {
         lastStayDate?: Date | null;
     }
 
-    interface Admission extends Models.IId, Models.IPersonData {
+    interface Admission extends Models.IPersonData {
         profileData: Models.Person;
         isReadmission: boolean;
         admissionTime: Date;
@@ -49,7 +49,7 @@ export namespace Models {
         translations: { [key: Enums.Language]: string };
     }
 
-    interface IHealthRecordEntry extends Models.IId, Models.IPersonData {
+    interface IHealthRecordEntry extends Models.IPersonData {
         type: Enums.HealthRecordEntryType;
         createdBy: string;
         timestamp: Date;
@@ -65,7 +65,7 @@ export namespace Models {
         departmentIds: string[];
     }
 
-    interface IPersonData {
+    interface IPersonData extends Models.IId {
         personId: string;
     }
 
@@ -78,7 +78,7 @@ export namespace Models {
         message: string;
     }
 
-    interface Person extends Models.IId, Models.IPersonData {
+    interface Person extends Models.IPersonData {
         firstName: string;
         lastName: string;
         birthDate: Date;
@@ -88,7 +88,8 @@ export namespace Models {
         healthInsurance?: Models.HealthInsurance;
     }
 
-    interface Account extends Models.IId, Models.IPersonData {
+    interface Account extends Models.IId {
+        personId: string;
         accountType: Enums.AccountType;
         username: string;
         preferedLanguage: Enums.Language;
@@ -115,8 +116,7 @@ export namespace Models {
         expirationDuration: string;
     }
 
-    interface GenomeExplorerDeployment extends Models.IId {
-        personId: string;
+    interface GenomeExplorerDeployment extends Models.IPersonData {
         referenceSequences: string[];
         documentIds: string[];
         environmentUrl?: string;
@@ -149,6 +149,7 @@ export namespace Models {
         contactPersons: Models.ResearchStaff[];
         isAcceptingEnrollments: boolean;
         createdBy: string;
+        requiredPermissions: Enums.AccessPermissions[];
         inclusionCriteriaQuestionaireIds: string[];
         exclusionCriteriaQuestionaireIds: string[];
     }
@@ -159,13 +160,13 @@ export namespace Models {
         role: Enums.StudyStaffRole;
     }
 
-    interface StudyEnrollment extends Models.IId {
+    interface StudyEnrollment extends Models.IPersonData {
         studyId: string;
-        personId: string;
         state: Enums.StudyEnrollementState;
         timestamps: Models.StudyEnrollmentTimestamp[];
         inclusionCriteriaQuestionnaireAnswers: Models.Interview.QuestionnaireAnswers[];
         exclusionCriteriaQuestionnaireAnswers: Models.Interview.QuestionnaireAnswers[];
+        permissions: Enums.AccessPermissions[];
     }
 
     interface StudyEnrollmentTimestamp {
@@ -341,9 +342,8 @@ export namespace Models {
             note?: string;
         }
     
-        interface MedicationSchedule extends Models.IId {
+        interface MedicationSchedule extends Models.IPersonData {
             name?: string;
-            personId: string;
             items: Models.Medication.MedicationScheduleItem[];
             note: string;
             isPaused: boolean;

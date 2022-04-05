@@ -50,13 +50,6 @@ namespace HealthSharingPortal.API.Controllers
                 SearchExpressionBuilder.ContainsAny<Person>(x => x.LastName.ToLower(), searchTerms));
         }
 
-        protected override IEnumerable<Person> PrioritizeItems(
-            List<Person> items,
-            string searchText)
-        {
-            return items.OrderBy(x => x.Id);
-        }
-
         protected override Task PublishChange(
             Person item,
             StorageOperation storageOperation,

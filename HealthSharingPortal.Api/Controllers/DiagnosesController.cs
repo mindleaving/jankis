@@ -86,13 +86,6 @@ namespace HealthSharingPortal.API.Controllers
             );
         }
 
-        protected override IEnumerable<Diagnosis> PrioritizeItems(
-            List<Diagnosis> items,
-            string searchText)
-        {
-            return items;
-        }
-
         protected override Task PublishChange(
             Diagnosis item,
             StorageOperation storageOperation,

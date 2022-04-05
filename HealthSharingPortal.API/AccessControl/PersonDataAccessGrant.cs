@@ -4,7 +4,7 @@ using HealthModels.AccessControl;
 
 namespace HealthSharingPortal.API.AccessControl
 {
-    public class PersonDataAccessGrant
+    public class PersonDataAccessGrant : IPersonDataAccessGrant
     {
         public PersonDataAccessGrant(
             string personId,
@@ -17,13 +17,5 @@ namespace HealthSharingPortal.API.AccessControl
         public string PersonId { get; }
         public bool HasAnyPermissions => Permissions.Any(x => x != AccessPermissions.None);
         public IList<AccessPermissions> Permissions { get; }
-    }
-
-    public class StudyEnrollmentStatisticsAccessGrant : PersonDataAccessGrant
-    {
-        public StudyEnrollmentStatisticsAccessGrant()
-            : base(null, new[] { AccessPermissions.Read })
-        {
-        }
     }
 }

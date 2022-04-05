@@ -113,7 +113,6 @@ namespace HealthSharingPortal.API.Controllers
         protected abstract Task<object> TransformItem(T item, Language language = Language.en);
         protected abstract Expression<Func<T, object>> BuildOrderByExpression(string orderBy);
         protected abstract Expression<Func<T,bool>> BuildSearchExpression(string[] searchTerms);
-        protected abstract IEnumerable<T> PrioritizeItems(List<T> items, string searchText);
         protected abstract Task PublishChange(T item, StorageOperation storageOperation, string submitterUsername);
     }
 }

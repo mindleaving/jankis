@@ -46,13 +46,6 @@ namespace HealthSharingPortal.API.Controllers
             return SearchExpressionBuilder.ContainsAll<PatientNote>(x => x.Id.ToLower(), searchTerms);
         }
 
-        protected override IEnumerable<PatientNote> PrioritizeItems(
-            List<PatientNote> items,
-            string searchText)
-        {
-            return items;
-        }
-
         protected override Task PublishChange(
             PatientNote item,
             StorageOperation storageOperation,

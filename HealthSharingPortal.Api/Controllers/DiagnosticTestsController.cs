@@ -49,11 +49,6 @@ namespace HealthSharingPortal.API.Controllers
                 SearchExpressionBuilder.ContainsAll<DiagnosticTestDefinition>(x => x.TestCodeLocal.ToLower(), searchTerms));
         }
 
-        protected override IEnumerable<DiagnosticTestDefinition> PrioritizeItems(List<DiagnosticTestDefinition> items, string searchText)
-        {
-            return items.OrderBy(x => x.Name.Length);
-        }
-
         protected override Task PublishChange(
             DiagnosticTestDefinition item,
             StorageOperation storageOperation,

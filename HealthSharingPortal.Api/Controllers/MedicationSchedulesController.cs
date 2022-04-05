@@ -99,13 +99,6 @@ namespace HealthSharingPortal.API.Controllers
             return SearchExpressionBuilder.ContainsAll<MedicationSchedule>(x => x.Name.ToLower(), searchTerms);
         }
 
-        protected override IEnumerable<MedicationSchedule> PrioritizeItems(
-            List<MedicationSchedule> items,
-            string searchText)
-        {
-            return items;
-        }
-
         protected override Task PublishChange(
             MedicationSchedule item,
             StorageOperation storageOperation,

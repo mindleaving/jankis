@@ -69,13 +69,6 @@ namespace HealthSharingPortal.API.Controllers
             return SearchExpressionBuilder.ContainsAll<DiagnosticTestResult>(x => x.Id.ToLower(), searchTerms);
         }
 
-        protected override IEnumerable<DiagnosticTestResult> PrioritizeItems(
-            List<DiagnosticTestResult> items,
-            string searchText)
-        {
-            return items;
-        }
-
         protected override async Task PublishChange(
             DiagnosticTestResult item,
             StorageOperation storageOperation,

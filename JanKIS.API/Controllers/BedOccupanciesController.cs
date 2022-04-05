@@ -59,13 +59,6 @@ namespace JanKIS.API.Controllers
                 SearchExpressionBuilder.ContainsAny<BedOccupancy>(x => x.Room.Name.ToLower(), searchTerms));
         }
 
-        protected override IEnumerable<BedOccupancy> PrioritizeItems(
-            List<BedOccupancy> items,
-            string searchText)
-        {
-            return items.OrderBy(x => x.StartTime);
-        }
-
         protected override async Task PublishChange(
             BedOccupancy item,
             StorageOperation storageOperation,

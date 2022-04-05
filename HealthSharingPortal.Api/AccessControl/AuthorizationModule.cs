@@ -11,10 +11,8 @@ namespace HealthSharingPortal.API.AccessControl
 {
     public interface IAuthorizationModule
     {
-        Task<PersonDataAccessGrant> GetAccessGrantForPerson(
-            string personId,
-            List<Claim> claims);
-        Task<List<PersonDataAccessGrant>> GetAccessGrants(List<Claim> claims);
+        Task<PersonDataAccessGrant> GetAccessGrantForPerson(string personId, List<Claim> claims);
+        Task<List<IPersonDataAccessGrant>> GetAccessGrants(List<Claim> claims);
     }
 
     internal class AuthorizationModule : IAuthorizationModule
@@ -23,13 +21,13 @@ namespace HealthSharingPortal.API.AccessControl
         private readonly IReadonlyStore<EmergencyAccess> emergencyAccessStore;
         private readonly IReadonlyStore<HealthProfessionalAccess> healthProfessionalAccessStore;
         private readonly IReadonlyStore<StudyAssociation> studyAssociationStore;
-        private readonly IReadonlyStore<StudyEnrollment> studyEnrollmentStore;
+        private readonly IPersonDataReadonlyStore<StudyEnrollment> studyEnrollmentStore;
 
         public AuthorizationModule(
             IReadonlyStore<EmergencyAccess> emergencyAccessStore, 
             IReadonlyStore<HealthProfessionalAccess> healthProfessionalAccessStore, 
             IReadonlyStore<StudyAssociation> studyAssociationStore,
-            IReadonlyStore<StudyEnrollment> studyEnrollmentStore)
+            IPersonDataReadonlyStore<StudyEnrollment> studyEnrollmentStore)
         {
             this.emergencyAccessStore = emergencyAccessStore;
             this.healthProfessionalAccessStore = healthProfessionalAccessStore;
@@ -92,8 +90,12 @@ namespace HealthSharingPortal.API.AccessControl
                 var username = claims.TryGetValue(JwtSecurityTokenBuilder.UsernameClaimName);
                 var associatedStudies = await studyAssociationStore.SearchAsync(x => x.Username == username);
                 var studyIds = associatedStudies.Select(x => x.StudyId).ToList();
-                var studyEnrollments = await studyEnrollmentStore
-                    .SearchAsync(x => studyIds.Contains(x.StudyId) && x.PersonId == personId && x.State == StudyEnrollementState.Enrolled);
+                var studyEnrollments = 
+                    studyIds.Count > 0
+                    ? await studyEnrollmentStore.SearchAsync(
+                        x => studyIds.Contains(x.StudyId) && x.PersonId == personId && x.State == StudyEnrollementState.Enrolled,
+                        AccessGrantHelpers.GrantForPersonWithPermission(personId, AccessPermissions.Read))
+                    : new List<StudyEnrollment>();
                 if (studyEnrollments.Any())
                 {
                     var permissions = studyEnrollments
@@ -106,25 +108,25 @@ namespace HealthSharingPortal.API.AccessControl
             return new PersonDataAccessGrant(personId, new List<AccessPermissions>());
         }
 
-        public async Task<List<PersonDataAccessGrant>> GetAccessGrants(List<Claim> claims)
+        public async Task<List<IPersonDataAccessGrant>> GetAccessGrants(List<Claim> claims)
         {
             var accountType = claims.TryGetAccountType();
             if (accountType == null)
             {
-                return new List<PersonDataAccessGrant>();
+                return new List<IPersonDataAccessGrant>();
             }
             if (accountType == AccountType.Admin)
             {
                 // Admins don't have access to health data
-                return new List<PersonDataAccessGrant>();
+                return new List<IPersonDataAccessGrant>();
             }
             if (accountType == AccountType.Sharer)
             {
                 var currentUserPersonId = claims.TryGetValue(JwtSecurityTokenBuilder.PersonIdClaimName);
                 var allPermissions = Enum.GetValues<AccessPermissions>().Except(new[] { AccessPermissions.None }).ToList();
-                return new List<PersonDataAccessGrant>
+                return new List<IPersonDataAccessGrant>
                 {
-                    new(currentUserPersonId, allPermissions)
+                    new PersonDataAccessGrant(currentUserPersonId, allPermissions)
                 };
             }
             if (accountType == AccountType.HealthProfessional)
@@ -141,6 +143,7 @@ namespace HealthSharingPortal.API.AccessControl
                                       && (x.AccessEndTimestamp == null || x.AccessEndTimestamp > utcNow));
                 return activeAccesses.Select(x => new PersonDataAccessGrant(x.SharerPersonId, x.Permissions))
                     .Concat(activeEmergencyAccesses.Select(x => new PersonDataAccessGrant(x.SharerPersonId, EmergencyPermissions)))
+                    .Cast<IPersonDataAccessGrant>()
                     .ToList();
             }
             if (accountType == AccountType.Researcher)
@@ -148,14 +151,18 @@ namespace HealthSharingPortal.API.AccessControl
                 var username = claims.TryGetValue(JwtSecurityTokenBuilder.UsernameClaimName);
                 var associatedStudies = await studyAssociationStore.SearchAsync(x => x.Username == username);
                 var studyIds = associatedStudies.Select(x => x.StudyId).ToList();
-                var studyEnrollments = await studyEnrollmentStore
-                    .SearchAsync(x => studyIds.Contains(x.StudyId) && x.State == StudyEnrollementState.Enrolled);
+                var studyEnrollments = studyIds.Count > 0
+                    ? await studyEnrollmentStore.SearchAsync(
+                        x => studyIds.Contains(x.StudyId) && x.State == StudyEnrollementState.Enrolled,
+                        AccessGrantHelpers.GrantReadAccessToAllPersons())
+                    : new List<StudyEnrollment>();
                 return studyEnrollments
                     .Select(x => new PersonDataAccessGrant(x.PersonId, x.Permissions))
+                    .Cast<IPersonDataAccessGrant>()
                     .ToList();
             }
 
-            return new List<PersonDataAccessGrant>();
+            return new List<IPersonDataAccessGrant>();
         }
     }
 }

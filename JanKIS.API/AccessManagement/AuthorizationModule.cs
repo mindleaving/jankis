@@ -12,6 +12,7 @@ namespace JanKIS.API.AccessManagement
 {
     public class AuthorizationModule : IAuthorizationModule
     {
+        private static readonly IList<AccessPermissions> EmergencyPermissions = new[] { AccessPermissions.Read, AccessPermissions.Create };
         private readonly IReadonlyStore<EmergencyAccess> emergencyAccessStore;
         private readonly IReadonlyStore<HealthProfessionalAccess> healthProfessionalAccessStore;
 
@@ -23,37 +24,89 @@ namespace JanKIS.API.AccessManagement
             this.healthProfessionalAccessStore = healthProfessionalAccessStore;
         }
 
-        public async Task<bool> HasPermissionForPerson(
+        public async Task<PersonDataAccessGrant> GetAccessGrantForPerson(
             string personId,
             List<Claim> claims)
         {
             var accountType = claims.TryGetAccountType();
             if (accountType == null)
-                return false;
+            {
+                return new PersonDataAccessGrant(personId, new List<AccessPermissions>());
+            }
             if (accountType == AccountType.Patient)
             {
                 var currentUserPersonId = claims.TryGetValue(JwtSecurityTokenBuilder.PersonIdClaimName);
-                return currentUserPersonId == personId;
+                if (currentUserPersonId == personId)
+                {
+                    var allPermissions = Enum.GetValues<AccessPermissions>().Except(new[] { AccessPermissions.None }).ToList();
+                    return new PersonDataAccessGrant(personId, allPermissions);
+                }
             }
             if (accountType == AccountType.Employee)
             {
                 var utcNow = DateTime.UtcNow;
                 var username = claims.TryGetValue(JwtSecurityTokenBuilder.UsernameClaimName);
+                var activeAccesses = await healthProfessionalAccessStore
+                    .SearchAsync(x => x.AccessReceiverUsername == username 
+                                      && x.SharerPersonId == personId 
+                                      && !x.IsRevoked 
+                                      && (x.AccessEndTimestamp == null || x.AccessEndTimestamp > utcNow));
+                if (activeAccesses.Any())
+                {
+                    var permissions = activeAccesses
+                        .SelectMany(x => x.Permissions)
+                        .Distinct()
+                        .ToList();
+                    return new PersonDataAccessGrant(personId, permissions);
+                }
                 var activeEmergencyAccesses = await emergencyAccessStore
                     .SearchAsync(x => x.AccessReceiverUsername == username 
                                       && x.SharerPersonId == personId 
                                       && !x.IsRevoked 
                                       && (x.AccessEndTimestamp == null || x.AccessEndTimestamp > utcNow));
                 if (activeEmergencyAccesses.Any())
-                    return true;
+                {
+                    return new PersonDataAccessGrant(personId, EmergencyPermissions);
+                }
+            }
+            return new PersonDataAccessGrant(personId, new List<AccessPermissions>());
+        }
+
+        public async Task<List<IPersonDataAccessGrant>> GetAccessGrants(List<Claim> claims)
+        {
+            var accountType = claims.TryGetAccountType();
+            if (accountType == null)
+            {
+                return new List<IPersonDataAccessGrant>();
+            }
+            if (accountType == AccountType.Patient)
+            {
+                var currentUserPersonId = claims.TryGetValue(JwtSecurityTokenBuilder.PersonIdClaimName);
+                var allPermissions = Enum.GetValues<AccessPermissions>().Except(new[] { AccessPermissions.None }).ToList();
+                return new List<IPersonDataAccessGrant>
+                {
+                    new PersonDataAccessGrant(currentUserPersonId, allPermissions)
+                };
+            }
+            if (accountType == AccountType.Employee)
+            {
+                var utcNow = DateTime.UtcNow;
+                var username = claims.TryGetValue(JwtSecurityTokenBuilder.UsernameClaimName);
                 var activeAccesses = await healthProfessionalAccessStore
-                    .SearchAsync(x => x.AccessReceiverUsername == username 
-                                      && x.SharerPersonId == personId 
+                    .SearchAsync(x => x.AccessReceiverUsername == username
                                       && !x.IsRevoked 
                                       && (x.AccessEndTimestamp == null || x.AccessEndTimestamp > utcNow));
-                return activeAccesses.Any();
+                var activeEmergencyAccesses = await emergencyAccessStore
+                    .SearchAsync(x => x.AccessReceiverUsername == username
+                                      && !x.IsRevoked 
+                                      && (x.AccessEndTimestamp == null || x.AccessEndTimestamp > utcNow));
+                return activeAccesses.Select(x => new PersonDataAccessGrant(x.SharerPersonId, x.Permissions))
+                    .Concat(activeEmergencyAccesses.Select(x => new PersonDataAccessGrant(x.SharerPersonId, EmergencyPermissions)))
+                    .Cast<IPersonDataAccessGrant>()
+                    .ToList();
             }
-            return false;
+
+            return new List<IPersonDataAccessGrant>();
         }
     }
 }

@@ -121,13 +121,6 @@ namespace JanKIS.API.Controllers
             return SearchExpressionBuilder.ContainsAll<ConsumableOrder>(x => x.ConsumableName.ToLower(), searchTerms);
         }
 
-        protected override IEnumerable<ConsumableOrder> PrioritizeItems(
-            List<ConsumableOrder> items,
-            string searchText)
-        {
-            return items;
-        }
-
         protected override Task PublishChange(
             ConsumableOrder item,
             StorageOperation storageOperation,

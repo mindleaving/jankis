@@ -45,31 +45,21 @@ namespace JanKIS.API.Controllers
         }
 
         [Authorize(Policy = nameof(Permission.ViewResources))]
-        public override Task<IActionResult> GetMany(
+        public override async Task<IActionResult> GetMany(
+            string searchText,
             int? count = null,
             int? skip = null,
             string orderBy = null,
-            OrderDirection orderDirection = OrderDirection.Ascending, 
+            OrderDirection orderDirection = OrderDirection.Ascending,
             Language language = Language.en)
         {
-            return base.GetMany(
+            return await base.GetMany(
+                searchText,
                 count,
                 skip,
                 orderBy,
-                orderDirection);
-        }
-
-        [Authorize(Policy = nameof(Permission.ViewResources))]
-        public override Task<IActionResult> Search(
-            string searchText,
-            int? count = null,
-            int? skip = null, 
-            Language language = Language.en)
-        {
-            return base.Search(
-                searchText,
-                count,
-                skip);
+                orderDirection,
+                language);
         }
 
         [Authorize(Policy = nameof(Permission.ModifyResources))]
@@ -132,13 +122,6 @@ namespace JanKIS.API.Controllers
         protected override Expression<Func<Resource, bool>> BuildSearchExpression(string[] searchTerms)
         {
             return SearchExpressionBuilder.ContainsAll<Resource>(x => x.Name.ToLower(), searchTerms);
-        }
-
-        protected override IEnumerable<Resource> PrioritizeItems(
-            List<Resource> items,
-            string searchText)
-        {
-            return items.OrderBy(x => x.Name.Length);
         }
 
         protected override async Task PublishChange(

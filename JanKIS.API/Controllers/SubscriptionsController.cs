@@ -15,10 +15,10 @@ using SubscriptionComparer = JanKIS.API.Helpers.SubscriptionComparer;
 
 namespace JanKIS.API.Controllers
 {
-    public class SubscriptionsController : RestControllerBase<HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase>
+    public class SubscriptionsController : RestControllerBase<SubscriptionBase>
     {
         public SubscriptionsController(
-            IStore<HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase> store,
+            IStore<SubscriptionBase> store,
             IHttpContextAccessor httpContextAccessor)
             : base(store, httpContextAccessor)
         {
@@ -26,7 +26,7 @@ namespace JanKIS.API.Controllers
 
         public override async Task<IActionResult> CreateOrReplace(
             string id,
-            HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase item)
+            SubscriptionBase item)
         {
             var username = ControllerHelpers.GetUsername(httpContextAccessor);
             var existingTypeSubscriptions = await store.SearchAsync(x => x.Username.ToLower() == username && x.Type == item.Type);
@@ -38,13 +38,13 @@ namespace JanKIS.API.Controllers
         }
 
         protected override Task<object> TransformItem(
-            HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase item,
+            SubscriptionBase item,
             Language language = Language.en)
         {
             return Task.FromResult<object>(item);
         }
 
-        protected override Expression<Func<HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase, object>> BuildOrderByExpression(string orderBy)
+        protected override Expression<Func<SubscriptionBase, object>> BuildOrderByExpression(string orderBy)
         {
             return orderBy?.ToLower() switch
             {
@@ -52,16 +52,9 @@ namespace JanKIS.API.Controllers
             };
         }
 
-        protected override Expression<Func<HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase, bool>> BuildSearchExpression(string[] searchTerms)
+        protected override Expression<Func<SubscriptionBase, bool>> BuildSearchExpression(string[] searchTerms)
         {
-            return SearchExpressionBuilder.ContainsAll<HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase>(x => x.Username.ToLower(), searchTerms);
-        }
-
-        protected override IEnumerable<HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase> PrioritizeItems(
-            List<HealthSharingPortal.API.Models.Subscriptions.SubscriptionBase> items,
-            string searchText)
-        {
-            return items;
+            return SearchExpressionBuilder.ContainsAll<SubscriptionBase>(x => x.Username.ToLower(), searchTerms);
         }
 
         protected override Task PublishChange(

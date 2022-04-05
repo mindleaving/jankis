@@ -50,7 +50,9 @@ namespace HealthSharingPortal.API.Controllers
         }
 
         [HttpGet]
+        [HttpGet("search")]
         public virtual async Task<IActionResult> GetMany(
+            [FromQuery] string searchText, 
             [FromQuery] int? count = null,
             [FromQuery] int? skip = null,
             [FromQuery] string orderBy = null,
@@ -58,27 +60,19 @@ namespace HealthSharingPortal.API.Controllers
             [FromQuery] Language language = Language.en)
         {
             var accessGrants = await GetAccessGrants();
+            Expression<Func<T, bool>> searchExpression;
+            if(!string.IsNullOrWhiteSpace(searchText))
+            {
+                var searchTerms = SearchTermSplitter.SplitAndToLower(searchText);
+                searchExpression = BuildSearchExpression(searchTerms);
+            }
+            else
+            {
+                searchExpression = x => true;
+            }
             var orderByExpression = BuildOrderByExpression(orderBy);
-            var items = await store.GetMany(count, skip, orderByExpression, orderDirection, accessGrants);
+            var items = await store.SearchAsync(searchExpression, accessGrants, count, skip, orderByExpression, orderDirection);
             var transformedItems = await TransformItems(items, language);
-            return Ok(transformedItems);
-        }
-
-        [HttpGet(nameof(Search))]
-        public virtual async Task<IActionResult> Search(
-            [FromQuery] string searchText, 
-            [FromQuery] int? count = null, 
-            [FromQuery] int? skip = null,
-            [FromQuery] Language language = Language.en)
-        {
-            if (searchText == null)
-                return BadRequest("No search text specified");
-            var searchTerms = SearchTermSplitter.SplitAndToLower(searchText);
-            var searchExpression = BuildSearchExpression(searchTerms);
-            var accessGrants = await GetAccessGrants();
-            var items = await store.SearchAsync(searchExpression, accessGrants, count, skip);
-            var prioritizedItems = PrioritizeItems(items, searchText);
-            var transformedItems = await TransformItems(prioritizedItems, language);
             return Ok(transformedItems);
         }
 
@@ -141,7 +135,7 @@ namespace HealthSharingPortal.API.Controllers
             }
         }
 
-        protected async Task<List<PersonDataAccessGrant>> GetAccessGrants()
+        protected async Task<List<IPersonDataAccessGrant>> GetAccessGrants()
         {
             var claims = ControllerHelpers.GetClaims(httpContextAccessor);
             return await authorizationModule.GetAccessGrants(claims);
@@ -157,7 +151,6 @@ namespace HealthSharingPortal.API.Controllers
         protected abstract Task<object> TransformItem(T item, Language language = Language.en);
         protected abstract Expression<Func<T, object>> BuildOrderByExpression(string orderBy);
         protected abstract Expression<Func<T,bool>> BuildSearchExpression(string[] searchTerms);
-        protected abstract IEnumerable<T> PrioritizeItems(List<T> items, string searchText);
         protected abstract Task PublishChange(T item, StorageOperation storageOperation, string submitterUsername);
     }
 }

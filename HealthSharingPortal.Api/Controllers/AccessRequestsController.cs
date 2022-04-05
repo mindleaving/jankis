@@ -8,6 +8,7 @@ using System.Xml;
 using Commons.Extensions;
 using HealthModels;
 using HealthModels.AccessControl;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
@@ -28,7 +29,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IHealthProfessionalAccessInviteStore healthProfessionalRequestStore;
         private readonly IStore<HealthProfessionalAccess> healthProfessionalAccessStore;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IReadonlyStore<Person> personStore;
+        private readonly IPersonDataReadonlyStore<Person> personStore;
         private readonly IReadonlyStore<Account> accountStore;
         private readonly IAccessRequestDistributor accessRequestDistributor;
 
@@ -38,7 +39,7 @@ namespace HealthSharingPortal.API.Controllers
             IStore<EmergencyAccess> emergencyAccessStore,
             IHealthProfessionalAccessInviteStore healthProfessionalRequestStore, 
             IStore<HealthProfessionalAccess> healthProfessionalAccessStore,
-            IReadonlyStore<Person> personStore,
+            IPersonDataReadonlyStore<Person> personStore,
             IReadonlyStore<Account> accountStore,
             IAccessRequestDistributor accessRequestDistributor)
         {
@@ -117,15 +118,19 @@ namespace HealthSharingPortal.API.Controllers
 
         private async Task<Person> FindMatchingPerson(EmergencyAccessRequest emergencyAccessRequest)
         {
+            var emergencyReadAccessGrant = AccessGrantHelpers.GrantForPersonWithPermission(emergencyAccessRequest.SharerPersonId, AccessPermissions.Read);
             if (!string.IsNullOrEmpty(emergencyAccessRequest.SharerPersonId))
             {
-                return await personStore.GetByIdAsync(emergencyAccessRequest.SharerPersonId);
+                return await personStore.GetByIdAsync(
+                    emergencyAccessRequest.SharerPersonId,
+                    emergencyReadAccessGrant);
             }
 
             var matchingPersons = await personStore.SearchAsync(
                 x => x.FirstName.ToLower() == emergencyAccessRequest.TargetPersonFirstName.ToLower()
                      && x.LastName.ToLower() == emergencyAccessRequest.TargetPersonLastName.ToLower()
-                     && x.BirthDate == emergencyAccessRequest.TargetPersonBirthdate);
+                     && x.BirthDate == emergencyAccessRequest.TargetPersonBirthdate,
+                emergencyReadAccessGrant);
             if (matchingPersons.Count == 1)
                 return matchingPersons[0];
             return null;

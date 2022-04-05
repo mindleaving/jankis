@@ -12,7 +12,7 @@ namespace HealthSharingPortal.API.Storage
 {
     public class GenericPersonDataStore<T> : GenericPersonDataReadonlyStore<T>, IPersonDataStore<T> where T : IPersonData
     {
-        private readonly IMongoCollection<T> collection;
+        protected readonly IMongoCollection<T> collection;
 
         public GenericPersonDataStore(IMongoDatabase mongoDatabase, string collectionName = null)
             : base(mongoDatabase, collectionName)
@@ -20,7 +20,7 @@ namespace HealthSharingPortal.API.Storage
             collection = mongoDatabase.GetCollection<T>(collectionName ?? typeof(T).Name);
         }
 
-        public async Task<StorageOperation> StoreAsync(T item, List<PersonDataAccessGrant> accessGrants)
+        public async Task<StorageOperation> StoreAsync(T item, List<IPersonDataAccessGrant> accessGrants)
         {
             var permissions = GetPermissionsForPerson(item.PersonId, accessGrants);
             if(!permissions.Contains(AccessPermissions.Create) && !permissions.Contains(AccessPermissions.Modify))
@@ -39,7 +39,7 @@ namespace HealthSharingPortal.API.Storage
             return StorageOperation.Created;
         }
 
-        public async Task DeleteAsync(string id, List<PersonDataAccessGrant> accessGrants)
+        public async Task DeleteAsync(string id, List<IPersonDataAccessGrant> accessGrants)
         {
             var item = await collection.Find(x => x.Id == id).FirstOrDefaultAsync();
             if(item == null)
@@ -50,11 +50,12 @@ namespace HealthSharingPortal.API.Storage
             await collection.DeleteOneAsync(x => x.Id == id);
         }
 
-        private List<AccessPermissions> GetPermissionsForPerson(
+        protected List<AccessPermissions> GetPermissionsForPerson(
             string personId,
-            List<PersonDataAccessGrant> accessGrants)
+            List<IPersonDataAccessGrant> accessGrants)
         {
             return accessGrants
+                .OfType<PersonDataAccessGrant>()
                 .Where(x => x.PersonId == personId)
                 .SelectMany(x => x.Permissions)
                 .Distinct()

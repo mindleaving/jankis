@@ -25,14 +25,14 @@ namespace HealthSharingPortal.API.Storage
             backingStore = new GenericReadonlyStore<T>(mongoDatabase, collectionName, bypassPersonDataTypeCheck: true);
         }
 
-        public Task<List<T>> GetAllAsync(List<PersonDataAccessGrant> accessGrants)
+        public Task<List<T>> GetAllAsync(List<IPersonDataAccessGrant> accessGrants)
         {
-            return backingStore.SearchAsync(CreatePersonFilter(accessGrants));
+            return backingStore.SearchAsync(AddPersonFilter(x => true, accessGrants));
         }
 
         public async Task<bool> ExistsAsync(
             string id,
-            List<PersonDataAccessGrant> accessGrants)
+            List<IPersonDataAccessGrant> accessGrants)
         {
             var item = await backingStore.GetByIdAsync(id);
             CheckItemAccessRights(item, accessGrants);
@@ -41,7 +41,7 @@ namespace HealthSharingPortal.API.Storage
 
         public async Task<T> GetByIdAsync(
             string id,
-            List<PersonDataAccessGrant> accessGrants)
+            List<IPersonDataAccessGrant> accessGrants)
         {
             var item = await backingStore.GetByIdAsync(id);
             CheckItemAccessRights(item, accessGrants);
@@ -50,7 +50,7 @@ namespace HealthSharingPortal.API.Storage
 
         public Task<List<T>> SearchAsync(
             Expression<Func<T, bool>> filter,
-            List<PersonDataAccessGrant> accessGrants,
+            List<IPersonDataAccessGrant> accessGrants,
             int? count = null,
             int? skip = null,
             Expression<Func<T, object>> orderBy = null,
@@ -62,7 +62,7 @@ namespace HealthSharingPortal.API.Storage
 
         public Task<T> FirstOrDefaultAsync(
             Expression<Func<T, bool>> filter,
-            List<PersonDataAccessGrant> accessGrants)
+            List<IPersonDataAccessGrant> accessGrants)
         {
             filter = AddPersonFilter(filter, accessGrants);
             return backingStore.FirstOrDefaultAsync(filter);
@@ -70,7 +70,7 @@ namespace HealthSharingPortal.API.Storage
 
         private Expression<Func<T, bool>> AddPersonFilter(
             Expression<Func<T, bool>> filter,
-            List<PersonDataAccessGrant> accessGrants)
+            List<IPersonDataAccessGrant> accessGrants)
         {
             if (typeof(T) == typeof(StudyEnrollment) && accessGrants.OfType<StudyEnrollmentStatisticsAccessGrant>().Any())
                 return filter;
@@ -79,21 +79,35 @@ namespace HealthSharingPortal.API.Storage
         }
 
         private static Expression<Func<T, bool>> CreatePersonFilter(
-            List<PersonDataAccessGrant> accessGrants)
+            List<IPersonDataAccessGrant> accessGrants)
         {
-            var personIds = accessGrants.Where(x => x.Permissions.Contains(AccessPermissions.Read)).Select(x => x.PersonId).ToList();
-            Expression<Func<T, bool>> personFilter = x => personIds.Contains(x.PersonId);
-            return personFilter;
+            var personIds = accessGrants
+                .OfType<PersonDataAccessGrant>()
+                .Where(x => x.Permissions.Contains(AccessPermissions.Read))
+                .Select(x => x.PersonId)
+                .ToList();
+            if (personIds.Count == 0)
+                return x => false;
+            return x => personIds.Contains(x.PersonId);
         }
 
         private void CheckItemAccessRights(
             T item,
-            List<PersonDataAccessGrant> accessGrants)
+            List<IPersonDataAccessGrant> accessGrants)
         {
             if(item == null)
                 return;
-            var personAccessGrant = accessGrants.Find(x => x.PersonId == item.PersonId);
-            if(personAccessGrant == null || !personAccessGrant.Permissions.Contains(AccessPermissions.Read))
+            if(accessGrants.OfType<ReadAnyPersonDataAccessGrant>().Any())
+                return;
+            if(typeof(T) == typeof(Account) && accessGrants.OfType<AccountChangeAccessGrant>().Any())
+                return;
+            if(typeof(T) == typeof(StudyEnrollment) && accessGrants.OfType<StudyEnrollmentStatisticsAccessGrant>().Any())
+                return;
+            var personAccessGrants = accessGrants.OfType<PersonDataAccessGrant>().Where(x => x.PersonId == item.PersonId);
+            var permissions = personAccessGrants
+                .SelectMany(x => x.Permissions)
+                .Distinct();
+            if(!permissions.Contains(AccessPermissions.Read))
                 throw new SecurityException(SecurityErrorMessage);
         }
     }

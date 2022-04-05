@@ -97,7 +97,7 @@ namespace HealthSharingPortal.API.Controllers
             var accessGrant = await authorizationModule.GetAccessGrantForPerson(personId, claims);
             if (!accessGrant.Permissions.Contains(AccessPermissions.Read))
                 return Forbid();
-            var accessGrants = new List<PersonDataAccessGrant> { accessGrant };
+            var accessGrants = new List<IPersonDataAccessGrant> { accessGrant };
             var profileData = await personStore.GetByIdAsync(personId, accessGrants);
             if (profileData == null)
                 return NotFound();
@@ -145,9 +145,9 @@ namespace HealthSharingPortal.API.Controllers
             var study = await studyStore.GetByIdAsync(studyId);
             if (study == null)
                 return NotFound();
-            var statisticsAccessGrant = new List<PersonDataAccessGrant> 
+            var statisticsAccessGrant = new List<IPersonDataAccessGrant> 
             { 
-                new("*", new [] { AccessPermissions.Read })
+                new StudyEnrollmentStatisticsAccessGrant()
             };
             var enrollments = await studyEnrollmentStore.SearchAsync(x => x.StudyId == studyId, statisticsAccessGrant);
             var enrollmentStatistics = new StudyEnrollmentStatistics(enrollments);
@@ -164,7 +164,11 @@ namespace HealthSharingPortal.API.Controllers
             if (accountType == AccountType.Sharer)
             {
                 var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
-                var myEnrollments = await studyEnrollmentStore.SearchAsync(x => x.StudyId == studyId && x.PersonId == personId);
+                var claims = ControllerHelpers.GetClaims(httpContextAccessor);
+                var accessGrant = await authorizationModule.GetAccessGrantForPerson(personId, claims);
+                var myEnrollments = await studyEnrollmentStore.SearchAsync(
+                    x => x.StudyId == studyId && x.PersonId == personId, 
+                    new List<IPersonDataAccessGrant> { accessGrant });
                 myEnrollment = myEnrollments.FirstOrDefault();
             }
             var viewModel = new StudyViewModel
@@ -185,7 +189,11 @@ namespace HealthSharingPortal.API.Controllers
                 return Forbid("Only sharers can offer participation in a study");
             var study = await studyStore.GetByIdAsync(studyId);
             var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
-            var myEnrollments = await studyEnrollmentStore.SearchAsync(x => x.StudyId == studyId && x.PersonId == personId);
+            var claims = ControllerHelpers.GetClaims(httpContextAccessor);
+            var accessGrant = await authorizationModule.GetAccessGrantForPerson(personId, claims);
+            var myEnrollments = await studyEnrollmentStore.SearchAsync(
+                x => x.StudyId == studyId && x.PersonId == personId, 
+                new List<IPersonDataAccessGrant> { accessGrant });
             var myEnrollment = myEnrollments.FirstOrDefault();
             var questionaireToSchemaConverter = new QuestionaireToSchemaConverter();
             var inclusionCriteriaQuestionnaires = new List<Questionnaire>();
@@ -240,16 +248,20 @@ namespace HealthSharingPortal.API.Controllers
         public async Task<IActionResult> GenomeSequences([FromRoute] string personId)
         {
             var claims = ControllerHelpers.GetClaims(httpContextAccessor);
-            if (!await authorizationModule.GetAccessGrantForPerson(personId, claims))
+            var accessGrant = await authorizationModule.GetAccessGrantForPerson(personId, claims);
+            if (!accessGrant.Permissions.Contains(AccessPermissions.Read))
                 return Forbid();
-            var person = await personStore.GetByIdAsync(personId);
+            var accessGrants = new List<IPersonDataAccessGrant> { accessGrant };
+            var person = await personStore.GetByIdAsync(personId, accessGrants);
             if (person == null)
                 return NotFound();
-            var referenceSequences = await testResultsStore.SearchAsync(x => x.PersonId == personId && x.TestCodeLoinc == "62374-4");
-            var sequencingTestResults = await testResultsStore.SearchAsync(x => x.PersonId == personId && x.TestCodeLoinc == "86206-0");
+            var referenceSequences = await testResultsStore.SearchAsync(x => x.PersonId == personId && x.TestCodeLoinc == "62374-4", accessGrants);
+            var sequencingTestResults = await testResultsStore.SearchAsync(x => x.PersonId == personId && x.TestCodeLoinc == "86206-0", accessGrants);
             var associatedDocumentIds = sequencingTestResults.Cast<DocumentDiagnosticTestResult>().Select(x => x.DocumentId).ToList();
-            var sequencingDocuments = await documentsStore.SearchAsync(x => x.PersonId == personId && associatedDocumentIds.Contains(x.Id));
-            var deployments = await genomeExplorerDeploymentStore.SearchAsync(x => x.PersonId == personId);
+            var sequencingDocuments = associatedDocumentIds.Count > 0
+                ? await documentsStore.SearchAsync(x => x.PersonId == personId && associatedDocumentIds.Contains(x.Id), accessGrants)
+                : new List<PatientDocument>();
+            var deployments = await genomeExplorerDeploymentStore.SearchAsync(x => x.PersonId == personId, accessGrants);
             var viewModel = new PersonGenomeSequencesViewModel
             {
                 Person = person,

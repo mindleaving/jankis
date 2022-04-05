@@ -304,6 +304,12 @@ export enum AccessFilterType {
     Date = "Date",
     Category = "Category"
 }
+export enum AccessPermissions {
+    None = "None",
+    Read = "Read",
+    Create = "Create",
+    Modify = "Modify"
+}
 export enum PatientInformationCategory {
     Undefined = "Undefined",
     BasicInformation = "BasicInformation",
@@ -315,12 +321,6 @@ export enum PatientInformationCategory {
     Medications = "Medications",
     Diagnosis = "Diagnosis",
     Genome = "Genome"
-}
-export enum AccessPermissions {
-    None = "None",
-    Read = "Read",
-    Create = "Create",
-    Modify = "Modify"
 }
 export enum SharedAccessType {
     Unknown = "Unknown",

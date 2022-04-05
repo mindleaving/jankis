@@ -80,7 +80,7 @@ namespace HealthSharingPortal.API.Controllers
             }
         }
 
-        private async Task<List<PersonDataAccessGrant>> GetAccessGrants()
+        private async Task<List<IPersonDataAccessGrant>> GetAccessGrants()
         {
             var claims = ControllerHelpers.GetClaims(httpContextAccessor);
             var accessGrants = await authorizationModule.GetAccessGrants(claims);
@@ -132,11 +132,6 @@ namespace HealthSharingPortal.API.Controllers
                 SearchExpressionBuilder.ContainsAny<Questionnaire>(x => x.Title.ToLower(), searchTerms),
                 SearchExpressionBuilder.ContainsAny<Questionnaire>(x => x.Description.ToLower(), searchTerms)
             );
-        }
-
-        protected override IEnumerable<Questionnaire> PrioritizeItems(List<Questionnaire> items, string searchText)
-        {
-            return items;
         }
 
         protected override Task PublishChange(
