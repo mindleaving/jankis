@@ -4,7 +4,7 @@ using TypescriptGenerator.Attributes;
 
 namespace HealthModels
 {
-    public class Person : IId, IPersonData
+    public class Person : IPersonData
     {
         public Person(
             string id,
@@ -21,7 +21,11 @@ namespace HealthModels
         }
 
         public string Id { get; set; }
-        public string PersonId => Id;
+        public string PersonId
+        {
+            get => Id;
+            set => Id = value;
+        }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime BirthDate { get; set; }

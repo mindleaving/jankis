@@ -72,6 +72,8 @@ namespace HealthSharingPortal.API.Storage
             Expression<Func<T, bool>> filter,
             List<IPersonDataAccessGrant> accessGrants)
         {
+            if(accessGrants.OfType<ReadAnyPersonDataAccessGrant>().Any())
+                return filter;
             if (typeof(T) == typeof(StudyEnrollment) && accessGrants.OfType<StudyEnrollmentStatisticsAccessGrant>().Any())
                 return filter;
             var personFilter = CreatePersonFilter(accessGrants);

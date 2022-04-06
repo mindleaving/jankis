@@ -38,7 +38,7 @@ export const RequestEmergencyAccessPage = (props: RequestEmergencyAccessPageProp
                 targetPersonLastName: personLastName,
                 targetPersonBirthdate: personBirthdate ? new Date(personBirthdate) : undefined
             };
-            const response = await apiClient.instance!.post(`api/accessrequest/create/emergency`, {}, emergencyRequest);
+            const response = await apiClient.instance!.post(`api/accessrequests/create/emergency`, {}, emergencyRequest);
             const emergencyAccess = await response.json() as Models.AccessControl.EmergencyAccess;
             navigate(`/healthrecord/${emergencyAccess.sharerPersonId}`);
         } catch(error: any) {
@@ -54,11 +54,10 @@ export const RequestEmergencyAccessPage = (props: RequestEmergencyAccessPageProp
             <Form onSubmit={establishAccess}>
                 <FormGroup>
                     <FormCheck
+                        label={resolveText("Emergency_TermsOfAccess")}
                         checked={hasAgreedToTerms}
                         onChange={(e:any) => setHasAgreedToTerms(e.target.checked)}
-                    >
-                        {resolveText("Emergency_TermsOfAccess")}
-                    </FormCheck>
+                    />
                 </FormGroup>
                 {hasAgreedToTerms
                 ? <>
@@ -104,6 +103,7 @@ export const RequestEmergencyAccessPage = (props: RequestEmergencyAccessPageProp
                         </Col>
                     </Row>
                     <AsyncButton
+                        className='m-3'
                         type='submit'
                         activeText='Get access'
                         executingText='Please wait...'

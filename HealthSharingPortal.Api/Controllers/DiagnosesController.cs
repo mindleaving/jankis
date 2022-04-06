@@ -53,7 +53,7 @@ namespace HealthSharingPortal.API.Controllers
             }
             catch (SecurityException)
             {
-                Forbid();
+                return Forbid();
             }
             return Ok();
         }
