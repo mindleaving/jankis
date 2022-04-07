@@ -14,3 +14,10 @@ export interface HealthRecordAction {
     path: string;
     textResourceId: string;
 }
+export enum TestResultCategories {
+    All = "All",
+    Imaging = "Imaging",
+    Lab = "Lab",
+    Dental = "Dental",
+    Pathology = "Pathology"
+}

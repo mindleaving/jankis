@@ -43,7 +43,7 @@ export const NonQuantitativeTestResultRow = (props: NonQuantitativeTestResultRow
                 <Table>
                     <tbody>
                         {inverseTimeOrderedTests.map(testResult => (
-                            <tr>
+                            <tr key={testResult.id}>
                                 <td>
                                     {formatDate(new Date(testResult.timestamp))}
                                 </td>

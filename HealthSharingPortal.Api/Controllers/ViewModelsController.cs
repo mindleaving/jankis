@@ -43,6 +43,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IViewModelBuilder<QuestionnaireAnswers> questionnaireAnswersViewModelBuilder;
         private readonly IViewModelBuilder<Diagnosis> diagnosisViewModelBuilder;
         private readonly IReadonlyStore<QuestionnaireAnswers> questionnaireAnswersStore;
+        private readonly IReadonlyStore<GenomeExplorerDeployment> genomeExplorerDeploymentStore;
 
         public ViewModelsController(
             IHttpContextAccessor httpContextAccessor,
@@ -62,7 +63,8 @@ namespace HealthSharingPortal.API.Controllers
             IReadonlyStore<Diagnosis> diagnosesStore,
             IViewModelBuilder<QuestionnaireAnswers> questionnaireAnswersViewModelBuilder,
             IViewModelBuilder<Diagnosis> diagnosisViewModelBuilder,
-            IReadonlyStore<QuestionnaireAnswers> questionnaireAnswersStore)
+            IReadonlyStore<QuestionnaireAnswers> questionnaireAnswersStore,
+            IReadonlyStore<GenomeExplorerDeployment> genomeExplorerDeploymentStore)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.personStore = personStore;
@@ -82,6 +84,7 @@ namespace HealthSharingPortal.API.Controllers
             this.questionnaireAnswersViewModelBuilder = questionnaireAnswersViewModelBuilder;
             this.diagnosisViewModelBuilder = diagnosisViewModelBuilder;
             this.questionnaireAnswersStore = questionnaireAnswersStore;
+            this.genomeExplorerDeploymentStore = genomeExplorerDeploymentStore;
         }
 
         [HttpGet("healthdata/{personId}")]
@@ -89,10 +92,12 @@ namespace HealthSharingPortal.API.Controllers
             [FromRoute] string personId, 
             [FromQuery] Language language = Language.en)
         {
+            var profileData = await personStore.GetByIdAsync(personId);
+            if (profileData == null)
+                return NotFound();
             var claims = ControllerHelpers.GetClaims(httpContextAccessor);
             if (!await authorizationModule.HasPermissionForPerson(personId, claims))
                 return Forbid();
-            var profileData = personStore.GetByIdAsync(personId);
             var admissions = admissionsStore.SearchAsync(x => x.ProfileData.Id == personId);
             var notes = patientNotesStore.SearchAsync(x => x.PersonId == personId);
             var diagnoses = diagnosesStore.SearchAsync(x => x.PersonId == personId)
@@ -107,7 +112,6 @@ namespace HealthSharingPortal.API.Controllers
                 .ContinueWith(result => questionnaireAnswersViewModelBuilder.BatchBuild(result.Result))
                 .Unwrap();
             await Task.WhenAll(
-                profileData,
                 admissions,
                 notes,
                 diagnoses,
@@ -119,7 +123,7 @@ namespace HealthSharingPortal.API.Controllers
                 questionnaireAnswers);
 
             var viewModel = new PatientOverviewViewModel(
-                profileData.Result,
+                profileData,
                 admissions.Result,
                 notes.Result,
                 diagnoses.Result.Cast<DiagnosisViewModel>().ToList(),
@@ -169,6 +173,9 @@ namespace HealthSharingPortal.API.Controllers
         [HttpGet("studies/{studyId}/offerparticipation")]
         public async Task<IActionResult> OfferParticipationInStudy([FromRoute] string studyId, [FromQuery] Language language = Language.en)
         {
+            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
+            if (accountType != AccountType.Sharer)
+                return Forbid("Only sharers can offer participation in a study");
             var study = await studyStore.GetByIdAsync(studyId);
             var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
             var myEnrollments = await studyEnrollmentStore.SearchAsync(x => x.StudyId == studyId && x.PersonId == personId);
@@ -221,5 +228,31 @@ namespace HealthSharingPortal.API.Controllers
             };
             return Ok(viewModel);
         }
+
+        [HttpGet("genomesequences/{personId}")]
+        public async Task<IActionResult> GenomeSequences([FromRoute] string personId)
+        {
+            var claims = ControllerHelpers.GetClaims(httpContextAccessor);
+            if (!await authorizationModule.HasPermissionForPerson(personId, claims))
+                return Forbid();
+            var person = await personStore.GetByIdAsync(personId);
+            if (person == null)
+                return NotFound();
+            var referenceSequences = await testResultsStore.SearchAsync(x => x.PersonId == personId && x.TestCodeLoinc == "62374-4");
+            var sequencingTestResults = await testResultsStore.SearchAsync(x => x.PersonId == personId && x.TestCodeLoinc == "86206-0");
+            var associatedDocumentIds = sequencingTestResults.Cast<DocumentDiagnosticTestResult>().Select(x => x.DocumentId).ToList();
+            var sequencingDocuments = await documentsStore.SearchAsync(x => x.PersonId == personId && associatedDocumentIds.Contains(x.Id));
+            var deployments = await genomeExplorerDeploymentStore.SearchAsync(x => x.PersonId == personId);
+            var viewModel = new PersonGenomeSequencesViewModel
+            {
+                Person = person,
+                ReferenceSequences = referenceSequences.Cast<NominalDiagnosticTestResult>().ToList(),
+                TestResults = sequencingTestResults.Cast<DocumentDiagnosticTestResult>().ToList(),
+                Documents = sequencingDocuments,
+                Deployments = deployments
+            };
+            return Ok(viewModel);
+        }
+
     }
 }

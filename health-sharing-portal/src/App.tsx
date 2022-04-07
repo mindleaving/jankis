@@ -29,10 +29,9 @@ import { HealthProfessionalHomePage } from './localComponents/pages/HealthProfes
 import { HomePage } from './localComponents/pages/HomePage';
 import { StudiesPage } from './localComponents/pages/Researcher/StudiesPage';
 import { StudyPage } from './localComponents/pages/Researcher/StudyPage';
-import { GenomeUploadPage } from './localComponents/pages/Sharer/GenomeUploadPage';
+import { GenomeUploadPage } from './sharedHealthComponents/pages/Patients/GenomeUploadPage';
 import { GiveHealthProfesionalAccessPage } from './localComponents/pages/Sharer/GiveHealthProfesionalAccessPage';
 import { HealthRecordPage } from './localComponents/pages/Sharer/HealthRecordPage';
-import { ImagingUploadPage } from './localComponents/pages/Sharer/ImagingUploadPage';
 import { ReceiveHealthProfessionalAccessPage } from './localComponents/pages/HealthProfessional/ReceiveHealthProfessionalAccessPage';
 import { SharedAccessListPage } from './localComponents/pages/Sharer/SharedAccessListPage';
 import { OfferStudyParticipationPage } from './localComponents/pages/Sharer/OfferStudyParticipationPage';
@@ -46,6 +45,11 @@ import './sharedHealthComponents/styles/healthrecord.css';
 import { CreateDiagnosisPage } from './sharedHealthComponents/pages/Patients/CreateDiagnosisPage';
 import { AnswerQuestionnairePage } from './sharedHealthComponents/pages/Patients/AnswerQuestionnairePage';
 import { AssignQuestionnairePage } from './sharedHealthComponents/pages/Patients/AssignQuestionnairePage';
+import { ImagingUploadPage } from './sharedHealthComponents/pages/Patients/ImagingUploadPage';
+import { GenomeExplorationPage } from './sharedHealthComponents/pages/Patients/GenomeExplorationPage';
+import { ImagingExplorationPage } from './sharedHealthComponents/pages/Patients/ImagingExplorationPage';
+import { differenceInMilliseconds } from 'date-fns';
+import { extractJwtBody } from './sharedCommonComponents/helpers/JwtHelpers';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";
@@ -71,6 +75,11 @@ export const App = (props: AppProps) => {
             sessionStorage.setItem(accessTokenSessionStorageKey, userViewModel.authenticationResult.accessToken!);
             sessionStorage.setItem(userSessionStorageKey, JSON.stringify(userViewModel));
             setLoggedInUser(userViewModel);
+            const jwtBody = extractJwtBody(userViewModel.authenticationResult.accessToken!);
+            const expirationDateTime = new Date(jwtBody.exp*1000);
+            const now = new Date();
+            const millisecondsUntilExpiration = differenceInMilliseconds(expirationDateTime, now);
+            setTimeout(() => onLogOut(), millisecondsUntilExpiration-60*1000);
             navigate("/");
         }
     }
@@ -154,8 +163,10 @@ export const App = (props: AppProps) => {
         { path: '/healthrecord/:personId/create/note', element: <CreatePatientNotePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/add/questionnaire', element: <AssignQuestionnairePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
         { path: '/medicationschedules/:scheduleId/edit', element: <EditMedicationSchedulePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
-        { path: '/healthrecord/upload/imaging', element: <ImagingUploadPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
-        { path: '/healthrecord/upload/genome', element: <GenomeUploadPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/upload/imaging', element: <ImagingUploadPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/imaging/:dicomStudyId', element: <ImagingExplorationPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/upload/genome', element: <GenomeUploadPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/genome', element: <GenomeExplorationPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/questionnaire/:questionnaireId/answer', element: <AnswerQuestionnairePage />, audience: [ AccountType.Sharer ]},
         { path: '/healthrecord/:personId/questionnaire/:questionnaireId/answer/:answerId', element: <AnswerQuestionnairePage />, audience: [ AccountType.Sharer ]}
     ]

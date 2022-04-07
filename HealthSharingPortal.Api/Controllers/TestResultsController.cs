@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels.DiagnosticTestResults;
 using HealthModels.Interview;
+using HealthModels.Services;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
@@ -18,21 +19,30 @@ namespace HealthSharingPortal.API.Controllers
     {
         private readonly IAutocompleteCache autocompleteCache;
         private readonly INotificationDistributor notificationDistributor;
+        private readonly IReadonlyStore<DiagnosticTestDefinition> testDefinitionStore;
 
         public TestResultsController(
             IStore<DiagnosticTestResult> store,
             IAutocompleteCache autocompleteCache,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,
-            INotificationDistributor notificationDistributor)
+            INotificationDistributor notificationDistributor,
+            IReadonlyStore<DiagnosticTestDefinition> testDefinitionStore)
             : base(store, httpContextAccessor, authorizationModule)
         {
             this.autocompleteCache = autocompleteCache;
             this.notificationDistributor = notificationDistributor;
+            this.testDefinitionStore = testDefinitionStore;
         }
 
         public override async Task<IActionResult> CreateOrReplace(string id, DiagnosticTestResult item)
         {
+            var testDefinition = await testDefinitionStore.GetByIdAsync(item.TestCodeLoinc);
+            if (testDefinition != null)
+            {
+                item.TestCategory = testDefinition.Category;
+                item.TestName = testDefinition.Name;
+            }
             var username = ControllerHelpers.GetUsername(httpContextAccessor);
             item.CreatedBy = username;
             item.Timestamp = DateTime.UtcNow;

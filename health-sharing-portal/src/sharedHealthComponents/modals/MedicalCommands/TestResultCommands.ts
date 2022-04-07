@@ -23,8 +23,9 @@ export class TestResultCommands {
             timestamp: new Date(),
             testCodeLoinc: loincCode,
             testName: '',
+            testCategory: '',
             scaleType: DiagnosticTestScaleType.Undefined,
-            text: value
+            text: value,
         };
         let isSuccess = false;
         await sendPutRequest(

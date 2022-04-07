@@ -212,6 +212,7 @@ const DocumentValueEditor = (props: DiagnosticTestValueEditorProps) => {
                 {file.name} 
                 {!isFileUploaded ? <AsyncButton 
                     size="sm"
+                    className='mx-2'
                     activeText={resolveText('Upload')}
                     executingText={resolveText('Uploading...')}
                     isExecuting={isUploading}
@@ -220,10 +221,9 @@ const DocumentValueEditor = (props: DiagnosticTestValueEditorProps) => {
                 /> 
                 : <i className="fa fa-check green" />}
             </Alert>
-        : null}
-        <FileUpload
+        : <FileUpload
             onDrop={files => setFile(files[0])}
-        />
+        />}
     </>
     );
 }

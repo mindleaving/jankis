@@ -5,6 +5,7 @@ import { Models } from '../../../localComponents/types/models';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { formatDate } from '../../helpers/Formatters';
+import { downloadFile } from '../../../sharedCommonComponents/communication/FileDownloader';
 
 interface PatientDocumentsViewProps {
     documents: Models.PatientDocument[];
@@ -30,12 +31,10 @@ const PatientDocumentView = (props: PatientDocumentViewProps) => {
     return (<Alert variant="secondary">
         <Row>
             <Col xs="auto" className="align-self-center">
-                <a 
-                    href={apiClient.instance!.buildUrl(`api/documents/${props.document.id}/download`, {})} 
-                    download
-                >
-                    <i className="fa fa-file clickable timelineItemSymbol" />
-                </a>
+                <i 
+                    className="fa fa-file clickable timelineItemSymbol"
+                    onClick={() => downloadFile(`api/documents/${props.document.id}/download`)}
+                />
             </Col>
             <Col>
                 <Row>

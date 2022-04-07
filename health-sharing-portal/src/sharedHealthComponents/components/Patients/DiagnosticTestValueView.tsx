@@ -3,6 +3,8 @@ import { Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { DiagnosticTestScaleType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
+import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
+import { downloadFile } from '../../../sharedCommonComponents/communication/FileDownloader';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 
 interface DiagnosticTestValueViewProps {
@@ -11,7 +13,6 @@ interface DiagnosticTestValueViewProps {
 
 export const DiagnosticTestValueView = (props: DiagnosticTestValueViewProps) => {
 
-    const navigate = useNavigate();
     const testResult = props.testResult;
     if(testResult.scaleType === DiagnosticTestScaleType.Freetext) {
         const freetextTestResult = testResult as Models.DiagnosticTestResults.FreetextDiagnosticTestResult;
@@ -21,7 +22,12 @@ export const DiagnosticTestValueView = (props: DiagnosticTestValueViewProps) => 
     } else if(testResult.scaleType === DiagnosticTestScaleType.Document) {
         const documentTestResult = testResult as Models.DiagnosticTestResults.DocumentDiagnosticTestResult;
         return (<>
-            <Button onClick={() => navigate(`/documents/${documentTestResult.documentId}`)}>{resolveText('Open')}</Button>
+            <Button 
+                size="sm" 
+                onClick={() => downloadFile(`api/documents/${documentTestResult.documentId}/download`)}
+            >
+                {resolveText('Download')}
+            </Button>
         </>);
     } else if(testResult.scaleType === DiagnosticTestScaleType.Quantitative) {
         const quantitiveResult = testResult as Models.DiagnosticTestResults.QuantitativeDiagnosticTestResult;

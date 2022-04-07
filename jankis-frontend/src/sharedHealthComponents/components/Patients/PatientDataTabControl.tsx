@@ -67,7 +67,10 @@ export const PatientDataTabControl = (props: PatientDataTabControlProps) => {
                 />
             </Tab>
             <Tab eventKey="testResults" title={resolveText('Patient_TestResults')}>
-                <PatientTestResultsView testResults={testResults} />
+                <PatientTestResultsView 
+                    personId={props.personId}
+                    testResults={testResults}
+                />
             </Tab>
             <Tab eventKey="documents" title={resolveText('Patient_Documents')}>
                 <PatientDocumentsView documents={documents} />

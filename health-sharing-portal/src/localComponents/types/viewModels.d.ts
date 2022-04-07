@@ -44,6 +44,14 @@ export namespace ViewModels {
         questionnaires: ViewModels.QuestionnaireAnswersViewModel[];
     }
 
+    interface PersonGenomeSequencesViewModel {
+        person: Models.Person;
+        referenceSequences: Models.DiagnosticTestResults.NominalDiagnosticTestResult[];
+        testResults: Models.DiagnosticTestResults.DocumentDiagnosticTestResult[];
+        documents: Models.PatientDocument[];
+        deployments: Models.GenomeExplorerDeployment[];
+    }
+
     interface QuestionnaireAnswersViewModel extends ViewModels.IViewModel<Models.Interview.QuestionnaireAnswers> {
         questionnaireId: string;
         questionnaireTitle: string;

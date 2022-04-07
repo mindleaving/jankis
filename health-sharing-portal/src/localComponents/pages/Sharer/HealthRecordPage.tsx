@@ -3,7 +3,7 @@ import { Col, Row } from 'react-bootstrap';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { buildAndStoreObject } from '../../../sharedCommonComponents/helpers/StoringHelpers';
-import { BasicInformationBox } from '../../components/HealthData/BasicInformationBox';
+import { BasicInformationBox } from '../../components/Sharer/BasicInformationBox';
 import { Models } from '../../types/models';
 import { ViewModels } from '../../types/viewModels';
 import { NotificationManager } from 'react-notifications';

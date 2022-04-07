@@ -66,6 +66,7 @@ namespace HealthSharingPortal.API.Setups
             services.AddScoped<IFilesStore, FilesStore>();
             SetupTypeStores<IcdCategory>(services);
             SetupTypeStores<Institution>(services);
+            SetupTypeStores<GenomeExplorerDeployment>(services);
             SetupTypeStores<HealthProfessionalAccess>(services);
             services.AddScoped<IHealthProfessionalAccessInviteStore, HealthProfessionalAccessInviteStore>();
             SetupTypeStores<MedicationSchedule>(services);

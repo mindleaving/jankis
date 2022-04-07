@@ -18,9 +18,9 @@ namespace HealthSharingPortal.Tools
             database = mongoClient.GetDatabase("HealthSharingPortal");
         }
         
-        protected IMongoCollection<T> GetCollection<T>(string collectionName)
+        protected IMongoCollection<T> GetCollection<T>(string collectionName = null)
         {
-            return database.GetCollection<T>(collectionName);
+            return database.GetCollection<T>(collectionName ?? typeof(T).Name);
         }
     }
 }
