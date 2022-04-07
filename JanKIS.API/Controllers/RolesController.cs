@@ -67,13 +67,6 @@ namespace JanKIS.API.Controllers
             return SearchExpressionBuilder.ContainsAll<Role>(x => x.Name.ToLower(), searchTerms);
         }
 
-        protected override IEnumerable<Role> PrioritizeItems(List<Role> items, string searchText)
-        {
-            return items
-                .OrderBy(x => x.Name.ToLower().StartsWith(searchText.ToLower()))
-                .ThenBy(x => x.Name.Length);
-        }
-
         protected override Task PublishChange(
             Role item,
             StorageOperation storageOperation,

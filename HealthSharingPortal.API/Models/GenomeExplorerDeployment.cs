@@ -4,7 +4,7 @@ using TypescriptGenerator.Attributes;
 
 namespace HealthSharingPortal.API.Models
 {
-    public class GenomeExplorerDeployment : IId
+    public class GenomeExplorerDeployment : IPersonData
     {
         public string Id { get; set; }
         public string PersonId { get; set; }

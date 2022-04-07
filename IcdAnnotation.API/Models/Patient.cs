@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using HealthModels;
+using HealthModels.Icd.Annotation.Symptoms;
 using HealthModels.Observations;
-using HealthModels.Symptoms;
 
 namespace IcdAnnotation.API.Models
 {

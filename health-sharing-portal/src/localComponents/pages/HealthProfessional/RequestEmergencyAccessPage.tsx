@@ -1,18 +1,20 @@
-import React, { FormEvent, useState } from 'react';
-import { Button, Col, Form, FormCheck, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
+import React, { FormEvent, useContext, useState } from 'react';
+import { Col, Form, FormCheck, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { NotificationManager } from 'react-notifications';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { AsyncButton } from '../../../sharedCommonComponents/components/AsyncButton';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
+import UserContext from '../../contexts/UserContext';
+import { SharedAccessType } from '../../types/enums.d';
+import { Models } from '../../types/models';
 
-interface RequestEmergencyAccessPageProps {
-    userId: string;
-}
+interface RequestEmergencyAccessPageProps {}
 
 export const RequestEmergencyAccessPage = (props: RequestEmergencyAccessPageProps) => {
 
+    const user = useContext(UserContext);
     const [ hasAgreedToTerms, setHasAgreedToTerms ] = useState<boolean>(false);
     const [ personId, setPersonId ] = useState<string>('');
     const [ personFirstName, setPersonFirstName ] = useState<string>('');
@@ -25,13 +27,20 @@ export const RequestEmergencyAccessPage = (props: RequestEmergencyAccessPageProp
         e.preventDefault();
         try {
             setIsEstablishingAccess(true);
-            const emergencyRequest = {
+            const emergencyRequest: Models.AccessControl.EmergencyAccessRequest = {
                 id: uuid(),
-                requesterId: props.userId,
-                targetPersonId: personId
+                type: SharedAccessType.Emergency,
+                accessReceiverUsername: user!.username,
+                sharerPersonId: personId,
+                createdTimestamp: new Date(),
+                isCompleted: false,
+                targetPersonFirstName: personFirstName,
+                targetPersonLastName: personLastName,
+                targetPersonBirthdate: personBirthdate ? new Date(personBirthdate) : undefined
             };
-            const emergencyId = await apiClient.instance!.post(`api/accessrequest/create/emergency`, {}, emergencyRequest);
-            navigate(`/emergency/${emergencyId}`);
+            const response = await apiClient.instance!.post(`api/accessrequests/create/emergency`, {}, emergencyRequest);
+            const emergencyAccess = await response.json() as Models.AccessControl.EmergencyAccess;
+            navigate(`/healthrecord/${emergencyAccess.sharerPersonId}`);
         } catch(error: any) {
             NotificationManager.error(error.message, resolveText('EmergencyAccess_CouldNotEstablishAccess'));
         } finally {
@@ -45,11 +54,10 @@ export const RequestEmergencyAccessPage = (props: RequestEmergencyAccessPageProp
             <Form onSubmit={establishAccess}>
                 <FormGroup>
                     <FormCheck
+                        label={resolveText("Emergency_TermsOfAccess")}
                         checked={hasAgreedToTerms}
                         onChange={(e:any) => setHasAgreedToTerms(e.target.checked)}
-                    >
-                        {resolveText("Emergency_TermsOfAccess")}
-                    </FormCheck>
+                    />
                 </FormGroup>
                 {hasAgreedToTerms
                 ? <>
@@ -95,6 +103,7 @@ export const RequestEmergencyAccessPage = (props: RequestEmergencyAccessPageProp
                         </Col>
                     </Row>
                     <AsyncButton
+                        className='m-3'
                         type='submit'
                         activeText='Get access'
                         executingText='Please wait...'

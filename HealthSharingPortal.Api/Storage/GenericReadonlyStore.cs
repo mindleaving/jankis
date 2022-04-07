@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Security;
 using System.Threading.Tasks;
 using HealthModels;
 using HealthSharingPortal.API.Models;
@@ -13,8 +15,13 @@ namespace HealthSharingPortal.API.Storage
         protected readonly IMongoDatabase database;
         protected readonly IMongoCollection<T> collection;
 
-        public GenericReadonlyStore(IMongoDatabase mongoDatabase, string collectionName = null)
+        public GenericReadonlyStore(
+            IMongoDatabase mongoDatabase, 
+            string collectionName = null,
+            bool bypassPersonDataTypeCheck = false)
         {
+            if (!bypassPersonDataTypeCheck && typeof(T).GetInterfaces().Contains(typeof(IPersonData)))
+                throw new SecurityException("GenericReadonlyStore cannot be used for person data, use GenericPersonDataReadonlyStore instead");
             database = mongoDatabase;
             collection = mongoDatabase.GetCollection<T>(collectionName ?? typeof(T).Name);
         }
@@ -24,16 +31,20 @@ namespace HealthSharingPortal.API.Storage
             return collection.Find(FilterDefinition<T>.Empty).ToListAsync();
         }
 
-        public Task<List<T>> GetMany(
-            int? count,
-            int? skip,
-            Expression<Func<T, object>> orderBy,
-            OrderDirection orderDirection)
+        public Task<List<T>> SearchAsync(
+            Expression<Func<T, bool>> filter,
+            int? count = null,
+            int? skip = null,
+            Expression<Func<T, object>> orderBy = null,
+            OrderDirection orderDirection = OrderDirection.Ascending)
         {
-            var findExpression = collection.Find(x => true);
-            findExpression = orderDirection == OrderDirection.Ascending 
-                ? findExpression.SortBy(orderBy) 
-                : findExpression.SortByDescending(orderBy);
+            var findExpression = collection.Find(filter ?? (x => true));
+            if (orderBy != null)
+            {
+                findExpression = orderDirection == OrderDirection.Ascending 
+                    ? findExpression.SortBy(orderBy) 
+                    : findExpression.SortByDescending(orderBy);
+            }
             return findExpression.Skip(skip).Limit(count).ToListAsync();
         }
 
@@ -45,14 +56,6 @@ namespace HealthSharingPortal.API.Storage
         public Task<T> GetByIdAsync(string id)
         {
             return collection.Find(x => x.Id == id).FirstOrDefaultAsync();
-        }
-
-        public Task<List<T>> SearchAsync(
-            Expression<Func<T, bool>> filter,
-            int? count = null, 
-            int? skip = 0)
-        {
-            return collection.Find(filter).Skip(skip).Limit(count).ToListAsync();
         }
 
         public Task<T> FirstOrDefaultAsync(

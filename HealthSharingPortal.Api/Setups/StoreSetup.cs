@@ -1,4 +1,6 @@
-﻿using Commons.Physics;
+﻿using System.Linq;
+using System.Security;
+using Commons.Physics;
 using HealthModels;
 using HealthModels.AccessControl;
 using HealthModels.Diagnoses;
@@ -53,48 +55,56 @@ namespace HealthSharingPortal.API.Setups
         {
             SetupTypeStores<Account>(services);
             services.AddScoped<IAccountStore, AccountStore>();
-            SetupTypeStores<Admission>(services);
+            SetupPersonDataStores<Admission>(services);
             services.AddScoped<IAutocompleteCache, AutocompleteCache>();
             SetupTypeStores<Contact>(services);
             SetupTypeStores<Department>(services);
-            SetupTypeStores<Diagnosis>(services);
+            SetupPersonDataStores<Diagnosis>(services);
             SetupTypeStores<DiagnosticTestDefinition>(services);
-            SetupTypeStores<DiagnosticTestResult>(services);
+            SetupPersonDataStores<DiagnosticTestResult>(services);
             SetupTypeStores<Drug>(services);
             SetupTypeStores<EmergencyAccess>(services);
             SetupTypeStores<EmergencyAccessRequest>(services);
             services.AddScoped<IFilesStore, FilesStore>();
             SetupTypeStores<IcdCategory>(services);
             SetupTypeStores<Institution>(services);
-            SetupTypeStores<GenomeExplorerDeployment>(services);
+            SetupPersonDataStores<GenomeExplorerDeployment>(services);
             SetupTypeStores<HealthProfessionalAccess>(services);
             services.AddScoped<IHealthProfessionalAccessInviteStore, HealthProfessionalAccessInviteStore>();
-            SetupTypeStores<MedicationSchedule>(services);
-            SetupTypeStores<MedicationDispension>(services);
+            SetupPersonDataStores<MedicationSchedule>(services);
+            SetupPersonDataStores<MedicationDispension>(services);
             SetupTypeStores<MedicalText>(services);
             SetupTypeStores<NotificationBase>(services);
             services.AddScoped<INotificationsStore, NotificationsStore>();
-            SetupTypeStores<Observation>(services);
-            SetupTypeStores<PatientDocument>(services);
-            SetupTypeStores<PatientNote>(services);
-            SetupTypeStores<Person>(services);
+            SetupPersonDataStores<Observation>(services);
+            SetupPersonDataStores<PatientDocument>(services);
+            SetupPersonDataStores<PatientNote>(services);
+            SetupPersonDataStores<Person>(services);
             SetupTypeStores<PersonalizedAbbreviation>(services);
             SetupTypeStores<Questionnaire>(services);
-            SetupTypeStores<QuestionnaireAnswers>(services);
+            SetupPersonDataStores<QuestionnaireAnswers>(services);
             SetupTypeStores<ServiceDefinition>(services);
             SetupTypeStores<ServiceRequest>(services);
             SetupTypeStores<Study>(services);
             SetupTypeStores<StudyAssociation>(services);
-            SetupTypeStores<StudyEnrollment>(services);
+            SetupPersonDataStores<StudyEnrollment>(services);
             SetupTypeStores<SubscriptionBase>(services);
             services.AddScoped<ISubscriptionsStore, SubscriptionsStore>();
         }
 
         private static void SetupTypeStores<T>(IServiceCollection services) where T: IId
         {
+            if (typeof(T).GetInterfaces().Contains(typeof(IPersonData)))
+                throw new SecurityException("SetupTypeStores cannot be used for person data, use SetupPersonDataStores instead");
             services.AddScoped<IReadonlyStore<T>, GenericReadonlyStore<T>>();
             services.AddSingleton<ICachedReadonlyStore<T>, GenericCachedReadonlyStore<T>>();
             services.AddScoped<IStore<T>, GenericStore<T>>();
+        }
+
+        private static void SetupPersonDataStores<T>(IServiceCollection services) where T: IPersonData
+        {
+            services.AddScoped<IPersonDataReadonlyStore<T>, GenericPersonDataReadonlyStore<T>>();
+            services.AddScoped<IPersonDataStore<T>, GenericPersonDataStore<T>>();
         }
 
         private static void SetupInterfaceStores<T>(IServiceCollection services, string collectionName) where T: IId

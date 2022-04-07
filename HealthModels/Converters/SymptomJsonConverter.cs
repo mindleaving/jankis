@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using HealthModels.Symptoms;
+using HealthModels.Icd.Annotation.Symptoms;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

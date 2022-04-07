@@ -1,4 +1,4 @@
-﻿using HealthModels.Symptoms;
+﻿using HealthModels.Icd.Annotation.Symptoms;
 using MongoDB.Driver;
 
 namespace IcdAnnotation.API.Data

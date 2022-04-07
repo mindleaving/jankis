@@ -54,13 +54,6 @@ namespace HealthSharingPortal.API.Controllers
             return SearchExpressionBuilder.ContainsAll<SubscriptionBase>(x => x.Username.ToLower(), searchTerms);
         }
 
-        protected override IEnumerable<SubscriptionBase> PrioritizeItems(
-            List<SubscriptionBase> items,
-            string searchText)
-        {
-            return items;
-        }
-
         protected override Task PublishChange(
             SubscriptionBase item,
             StorageOperation storageOperation,

@@ -22,7 +22,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IReadonlyStore<DiagnosticTestDefinition> testDefinitionStore;
 
         public TestResultsController(
-            IStore<DiagnosticTestResult> store,
+            IPersonDataStore<DiagnosticTestResult> store,
             IAutocompleteCache autocompleteCache,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,
@@ -67,13 +67,6 @@ namespace HealthSharingPortal.API.Controllers
         protected override Expression<Func<DiagnosticTestResult, bool>> BuildSearchExpression(string[] searchTerms)
         {
             return SearchExpressionBuilder.ContainsAll<DiagnosticTestResult>(x => x.Id.ToLower(), searchTerms);
-        }
-
-        protected override IEnumerable<DiagnosticTestResult> PrioritizeItems(
-            List<DiagnosticTestResult> items,
-            string searchText)
-        {
-            return items;
         }
 
         protected override async Task PublishChange(

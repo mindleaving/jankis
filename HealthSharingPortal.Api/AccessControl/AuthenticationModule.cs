@@ -6,7 +6,7 @@ using HealthSharingPortal.API.Storage;
 
 namespace HealthSharingPortal.API.AccessControl
 {
-    public class AuthenticationModule
+    public class AuthenticationModule : IAuthenticationModule
     {
         private readonly IAccountStore accountStore;
         private readonly ISecurityTokenBuilder securityTokenBuilder;
@@ -19,7 +19,10 @@ namespace HealthSharingPortal.API.AccessControl
             this.securityTokenBuilder = securityTokenBuilder;
         }
 
-        public async Task<bool> ChangePasswordAsync(string userId, string password, bool changePasswordOnNextLogin = false)
+        public async Task<bool> ChangePasswordAsync(
+            string userId, 
+            string password,
+            bool changePasswordOnNextLogin = false)
         {
             var matchingAccount = await accountStore.GetByIdAsync(userId);
             if (matchingAccount == null)

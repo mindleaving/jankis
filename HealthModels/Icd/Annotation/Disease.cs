@@ -2,7 +2,7 @@
 using HealthModels.Converters;
 using HealthModels.Icd.Annotation.Diagnostics;
 using HealthModels.Icd.Annotation.Epidemiology;
-using HealthModels.Symptoms;
+using HealthModels.Icd.Annotation.Symptoms;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using TypescriptGenerator.Attributes;

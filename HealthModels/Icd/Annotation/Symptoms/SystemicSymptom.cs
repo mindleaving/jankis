@@ -1,4 +1,4 @@
-﻿namespace HealthModels.Symptoms
+﻿namespace HealthModels.Icd.Annotation.Symptoms
 {
     public class SystemicSymptom : Symptom
     {

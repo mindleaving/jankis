@@ -48,6 +48,8 @@ namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
             List<QuestionnaireAnswers> models,
             IViewModelBuilderOptions<QuestionnaireAnswers> options = null)
         {
+            if (models.Count == 0)
+                return new List<IViewModel<QuestionnaireAnswers>>();
             var questionnaireIds = models.Select(x => x.QuestionnaireId).Distinct().ToList();
             var questionnaires = (await questionnaireStore.SearchAsync(x => questionnaireIds.Contains(x.Id)))
                 .ToDictionary(x => x.Id);

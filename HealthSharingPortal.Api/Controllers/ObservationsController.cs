@@ -20,7 +20,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly INotificationDistributor notificationDistributor;
 
         public ObservationsController(
-            IStore<Observation> store,
+            IPersonDataStore<Observation> store,
             IAutocompleteCache autocompleteCache,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,
@@ -66,13 +66,6 @@ namespace HealthSharingPortal.API.Controllers
         protected override Expression<Func<Observation, bool>> BuildSearchExpression(string[] searchTerms)
         {
             return SearchExpressionBuilder.ContainsAll<Observation>(x => x.Id.ToLower(), searchTerms);
-        }
-
-        protected override IEnumerable<Observation> PrioritizeItems(
-            List<Observation> items,
-            string searchText)
-        {
-            return items;
         }
 
         protected override Task PublishChange(

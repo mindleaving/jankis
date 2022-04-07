@@ -50,6 +50,8 @@ import { GenomeExplorationPage } from './sharedHealthComponents/pages/Patients/G
 import { ImagingExplorationPage } from './sharedHealthComponents/pages/Patients/ImagingExplorationPage';
 import { differenceInMilliseconds } from 'date-fns';
 import { extractJwtBody } from './sharedCommonComponents/helpers/JwtHelpers';
+import { RequestEmergencyAccessPage } from './localComponents/pages/HealthProfessional/RequestEmergencyAccessPage';
+import { EditPersonPage } from './sharedHealthComponents/pages/Patients/EditPersonPage';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";
@@ -145,10 +147,12 @@ export const App = (props: AppProps) => {
             audience: [ AccountType.Sharer, AccountType.HealthProfessional ]
         },
         { path: '/sharedaccess', element: <SharedAccessListPage />, audience: [ AccountType.Sharer ]},
+        { path: '/create/emergency', element: <RequestEmergencyAccessPage />, audience: [ AccountType.HealthProfessional ]},
 
         { path: '/accounts', element: <AccountsPage />, audience: [ AccountType.Admin ]},
         { path: '/create/account', element: <AccountEditPage />, audience: [ AccountType.Admin ]},
         { path: '/edit/account/:username', element: <AccountEditPage />, audience: [ AccountType.Researcher, AccountType.Sharer, AccountType.HealthProfessional, AccountType.Admin ]},
+        { path: '/edit/person/:personId', element: <EditPersonPage />, audience: [ AccountType.Sharer] },
 
         { path: '/patients', element: <PatientsListPage />, audience: [ AccountType.HealthProfessional ]},
 

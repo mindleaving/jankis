@@ -52,6 +52,7 @@ namespace JanKIS.API.Controllers
         }
 
         public override async Task<IActionResult> GetMany(
+            string searchText,
             int? count = null,
             int? skip = null,
             string orderBy = null,
@@ -209,13 +210,6 @@ namespace JanKIS.API.Controllers
                 SearchExpressionBuilder.ContainsAny<ServiceRequest>(x => x.Requester, searchTerms),
                 SearchExpressionBuilder.ContainsAny<ServiceRequest>(x => x.AssignedTo, searchTerms),
                 SearchExpressionBuilder.ContainsAny<ServiceRequest>(x => x.Service.Name, searchTerms));
-        }
-
-        protected override IEnumerable<ServiceRequest> PrioritizeItems(
-            List<ServiceRequest> items,
-            string searchText)
-        {
-            return items.OrderBy(x => x.Timestamps[0].Timestamp);
         }
 
         protected override async Task PublishChange(

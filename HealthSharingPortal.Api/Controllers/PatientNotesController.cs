@@ -17,7 +17,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly INotificationDistributor notificationDistributor;
 
         public PatientNotesController(
-            IStore<PatientNote> store,
+            IPersonDataStore<PatientNote> store,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,
             INotificationDistributor notificationDistributor)
@@ -44,13 +44,6 @@ namespace HealthSharingPortal.API.Controllers
         protected override Expression<Func<PatientNote, bool>> BuildSearchExpression(string[] searchTerms)
         {
             return SearchExpressionBuilder.ContainsAll<PatientNote>(x => x.Id.ToLower(), searchTerms);
-        }
-
-        protected override IEnumerable<PatientNote> PrioritizeItems(
-            List<PatientNote> items,
-            string searchText)
-        {
-            return items;
         }
 
         protected override Task PublishChange(

@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using HealthModels.Symptoms;
+using HealthModels.Icd.Annotation.Symptoms;
 using IcdAnnotation.API.Data;
 using IcdAnnotation.API.Models;
 using Microsoft.AspNetCore.Mvc;

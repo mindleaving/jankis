@@ -116,7 +116,9 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
         <>
             <Row>
                 <Col xl={6} className="mb-2">
-                    <BasicInformationBox />
+                    <BasicInformationBox 
+                        profileData={profileData}
+                    />
                 </Col>
                 <Col xl={6}>
                     <PatientActionsCard 

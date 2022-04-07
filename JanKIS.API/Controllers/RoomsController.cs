@@ -41,13 +41,6 @@ namespace JanKIS.API.Controllers
             return SearchExpressionBuilder.ContainsAll<Room>(x => x.Name.ToLower(), searchTerms);
         }
 
-        protected override IEnumerable<Room> PrioritizeItems(
-            List<Room> items,
-            string searchText)
-        {
-            return items.OrderBy(x => x.Name.Length);
-        }
-
         protected override Task PublishChange(
             Room item,
             StorageOperation storageOperation,

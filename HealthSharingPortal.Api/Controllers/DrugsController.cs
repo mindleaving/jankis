@@ -48,13 +48,6 @@ namespace HealthSharingPortal.API.Controllers
                 SearchExpressionBuilder.ContainsAny<Drug>(x => x.Brand.ToLower(), searchTerms));
         }
 
-        protected override IEnumerable<Drug> PrioritizeItems(
-            List<Drug> items,
-            string searchText)
-        {
-            return items;
-        }
-
         protected override async Task PublishChange(
             Drug item,
             StorageOperation storageOperation,

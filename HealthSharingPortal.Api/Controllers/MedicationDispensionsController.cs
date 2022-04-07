@@ -57,13 +57,6 @@ namespace HealthSharingPortal.API.Controllers
             return SearchExpressionBuilder.ContainsAll<MedicationDispension>(x => x.Drug.ProductName.ToLower(), searchTerms);
         }
 
-        protected override IEnumerable<MedicationDispension> PrioritizeItems(
-            List<MedicationDispension> items,
-            string searchText)
-        {
-            return items.OrderBy(x => x.Timestamp);
-        }
-
         protected override Task PublishChange(
             MedicationDispension item,
             StorageOperation storageOperation,

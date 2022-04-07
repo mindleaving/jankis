@@ -11,8 +11,10 @@ import { NotificationManager } from 'react-notifications';
 import { ViewModels } from '../../types/viewModels.d';
 import { v4 as uuid } from 'uuid';
 import UserContext from '../../contexts/UserContext';
-import { StudyEnrollementState } from '../../types/enums.d';
+import { AccessPermissions, StudyEnrollementState } from '../../types/enums.d';
 import { formDataToQuestionnaireAnswers, questionnaireAnswersToFormData } from '../../../sharedHealthComponents/helpers/QuestionnaireHelpers';
+import { Alert, Col, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
+import { ListFormControl } from '../../../sharedCommonComponents/components/ListFormControl';
 
 interface OfferStudyParticipationPageProps {}
 
@@ -22,12 +24,14 @@ export const OfferStudyParticipationPage = (props: OfferStudyParticipationPagePr
     const user = useContext(UserContext);
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
     const [ study, setStudy ] = useState<Models.Study>();
+    const [ offeredPermissions, setOfferedPermissions ] = useState<AccessPermissions[]>([]);
     const [ inclusionCriteriaQuestionnaires, setInclusionCriteriaQuestionnaires ] = useState<Models.Interview.Questionnaire[]>([]);
     const [ inclusionCriteriaSchemas, setInclusionCriteriaSchemas ] = useState<ViewModels.QuestionnaireSchema[]>([]);
     const [ inclusionCriteriaDatas, setInclusionCriteriaDatas ] = useState<any[]>([]);
     const [ exclusionCriteriaQuestionnaires, setExclusionCriteriaQuestionnaires ] = useState<Models.Interview.Questionnaire[]>([]);
     const [ exclusionCriteriaSchemas, setExclusionCriteriaSchemas ] = useState<ViewModels.QuestionnaireSchema[]>([]);
     const [ exclusionCriteriaDatas, setExclusionCriteriaDatas ] = useState<any[]>([]);
+    const [ errorText, setErrorText ] = useState<string>('');
     const [ isSubmitting, setIsSubmitting ] = useState<boolean>(false);
     const navigate = useNavigate();
 
@@ -68,6 +72,20 @@ export const OfferStudyParticipationPage = (props: OfferStudyParticipationPagePr
     }
 
     const submit = async () => {
+        if(offeredPermissions.length === 0) {
+            setErrorText(resolveText("OfferParticipation_NoPermissionsGranted"));
+            return;
+        }
+        const missingPermissions = study!.requiredPermissions.filter(requiredPermission => !offeredPermissions.includes(requiredPermission));
+        if(missingPermissions.length > 0) {
+            const translatedMissingPermissions = missingPermissions.map(x => resolveText(`AccessPermissions_${x}`));
+            setErrorText(
+                resolveText("OfferParticipation_MissingPermissions")
+                .replace("{0}", translatedMissingPermissions.join(", "))
+            );
+            return;
+        }
+        setErrorText('');
         setIsSubmitting(true);
         try {
             const personId = user!.profileData.id;
@@ -75,6 +93,7 @@ export const OfferStudyParticipationPage = (props: OfferStudyParticipationPagePr
                 id: uuid(), // Is being ignored by API
                 personId: user!.profileData.id,
                 state: StudyEnrollementState.ParticipationOffered,
+                permissions: offeredPermissions,
                 studyId: studyId!,
                 timestamps: [ { 
                     newEnrollmentState: StudyEnrollementState.ParticipationOffered, 
@@ -98,6 +117,13 @@ export const OfferStudyParticipationPage = (props: OfferStudyParticipationPagePr
         }
     }
 
+    const addPermission = (permission: AccessPermissions) => {
+        setOfferedPermissions(state => state.includes(permission) ? state : state.concat(permission));
+    }
+    const removePermission = (permission: AccessPermissions) => {
+        setOfferedPermissions(state => state.filter(x => x !== permission));
+    }
+
     if(isLoading) {
         return (<h3>{resolveText("Loading...")}</h3>);
     }
@@ -108,6 +134,29 @@ export const OfferStudyParticipationPage = (props: OfferStudyParticipationPagePr
     return (
         <>
             <h1>{resolveText("Study_OfferParticipation")} - {resolveText("Study")} '{study.title}'</h1>
+            <FormGroup>
+                <FormLabel>{resolveText('OfferParticipation_Permissions')}</FormLabel>
+                <FormControl
+                    as="select"
+                    value={''}
+                    onChange={(e:any) => addPermission(e.target.value as AccessPermissions)}
+                >
+                    <option value="" disabled>{resolveText('PleaseSelect...')}</option>
+                    <option value={AccessPermissions.Read}>{resolveText(`AccessPermissions_${AccessPermissions.Read}`)}</option>
+                    <option value={AccessPermissions.Create}>{resolveText(`AccessPermissions_${AccessPermissions.Create}`)}</option>
+                    <option value={AccessPermissions.Modify}>{resolveText(`AccessPermissions_${AccessPermissions.Modify}`)}</option>
+                </FormControl>
+            </FormGroup>
+            <Row>
+                <Col>
+                    <ListFormControl
+                        items={offeredPermissions}
+                        idFunc={x => x}
+                        displayFunc={x => resolveText(`AccessPermissions_${x}`)}
+                        removeItem={removePermission}
+                    />
+                </Col>
+            </Row>
             <h2>{resolveText("Study_InclusionCriteria")}</h2>
             {inclusionCriteriaSchemas.map((schema,index) => (
                 <Form
@@ -132,6 +181,11 @@ export const OfferStudyParticipationPage = (props: OfferStudyParticipationPagePr
                     <></>
                 </Form>
             ))}
+            {errorText ? <Alert
+                variant="danger"
+            >
+                {errorText}
+            </Alert> : null}
             <AsyncButton
                 onClick={submit}
                 activeText={resolveText('Submit')}

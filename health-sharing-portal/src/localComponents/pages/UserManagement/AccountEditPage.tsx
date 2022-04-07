@@ -95,8 +95,10 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
         try {
             setIsStoring(true);
             if(isNew) {
+                const id = personId ?? uuid();
                 const person: Models.Person = {
-                    id: personId ?? uuid(), 
+                    id: id, 
+                    personId: id,
                     firstName, 
                     lastName, 
                     birthDate: birthDate!,

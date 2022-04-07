@@ -38,11 +38,6 @@ namespace HealthSharingPortal.API.Controllers
             return SearchExpressionBuilder.ContainsAll<MedicalText>(x => x.Title, searchTerms);
         }
 
-        protected override IEnumerable<MedicalText> PrioritizeItems(List<MedicalText> items, string searchText)
-        {
-            return items;
-        }
-
         protected override Task PublishChange(MedicalText item, StorageOperation storageOperation, string submitterUsername)
         {
             // Nothing to do

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Security;
 using System.Threading.Tasks;
 using HealthModels.Interview;
 using HealthSharingPortal.API.AccessControl;
@@ -12,18 +13,20 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HealthSharingPortal.API.Controllers
 {
-    public class QuestionnairesController : PersonDataRestControllerBase<Questionnaire>
+    public class QuestionnairesController : RestControllerBase<Questionnaire>
     {
-        private readonly IStore<QuestionnaireAnswers> answersStore;
+        private readonly IPersonDataStore<QuestionnaireAnswers> answersStore;
+        private readonly IAuthorizationModule authorizationModule;
 
         public QuestionnairesController(
             IStore<Questionnaire> store,
             IHttpContextAccessor httpContextAccessor,
-            IStore<QuestionnaireAnswers> answersStore,
+            IPersonDataStore<QuestionnaireAnswers> answersStore,
             IAuthorizationModule authorizationModule)
-            : base(store, httpContextAccessor, authorizationModule)
+            : base(store, httpContextAccessor)
         {
             this.answersStore = answersStore;
+            this.authorizationModule = authorizationModule;
         }
 
         [HttpGet("{id}/schema")]
@@ -44,11 +47,20 @@ namespace HealthSharingPortal.API.Controllers
             [FromRoute] string answerId, 
             [FromBody] QuestionnaireAnswers answer)
         {
+            var accessGrants = await GetAccessGrants();
             if (answer.QuestionnaireId != questionnaireId)
                 return BadRequest("Questionnaire ID of body doesn't match route");
             if (answerId != null && answer.Id != answerId)
                 return BadRequest("Answer ID of body doesn't match route");
-            var existingAnswer = await answersStore.GetByIdAsync(answer.Id);
+            QuestionnaireAnswers existingAnswer;
+            try
+            {
+                existingAnswer = await answersStore.GetByIdAsync(answer.Id, accessGrants);
+            }
+            catch (SecurityException)
+            {
+                return Forbid();
+            }
             if (existingAnswer != null)
             {
                 if (existingAnswer.PersonId != answer.PersonId)
@@ -56,12 +68,23 @@ namespace HealthSharingPortal.API.Controllers
                 if (existingAnswer.QuestionnaireId != questionnaireId)
                     return Conflict("An answer with the same ID exists for another questionnaire. Please use another ID");
             }
-            var isAuthorized = await IsAuthorizedToAccessPerson(answer.PersonId);
-            if (!isAuthorized)
-                return Forbid("You are not authorized to submit answers for this person");
-            
-            await answersStore.StoreAsync(answer);
-            return Ok();
+
+            try
+            {
+                await answersStore.StoreAsync(answer, accessGrants);
+                return Ok();
+            }
+            catch (SecurityException)
+            {
+                return Forbid();
+            }
+        }
+
+        private async Task<List<IPersonDataAccessGrant>> GetAccessGrants()
+        {
+            var claims = ControllerHelpers.GetClaims(httpContextAccessor);
+            var accessGrants = await authorizationModule.GetAccessGrants(claims);
+            return accessGrants;
         }
 
 
@@ -70,14 +93,20 @@ namespace HealthSharingPortal.API.Controllers
             [FromRoute] string questionnaireId,
             [FromRoute] string answerId)
         {
-            var answer = await answersStore.GetByIdAsync(answerId);
+            var accessGrants = await GetAccessGrants();
+            QuestionnaireAnswers answer;
+            try
+            {
+                answer = await answersStore.GetByIdAsync(answerId, accessGrants);
+            }
+            catch (SecurityException)
+            {
+                return Forbid();
+            }
             if (answer == null)
                 return NotFound();
             if (answer.QuestionnaireId != questionnaireId)
                 return NotFound();
-            var isAuthorized = await IsAuthorizedToAccessPerson(answer.PersonId);
-            if (!isAuthorized)
-                return Forbid();
             return Ok(answer);
         }
 
@@ -103,11 +132,6 @@ namespace HealthSharingPortal.API.Controllers
                 SearchExpressionBuilder.ContainsAny<Questionnaire>(x => x.Title.ToLower(), searchTerms),
                 SearchExpressionBuilder.ContainsAny<Questionnaire>(x => x.Description.ToLower(), searchTerms)
             );
-        }
-
-        protected override IEnumerable<Questionnaire> PrioritizeItems(List<Questionnaire> items, string searchText)
-        {
-            return items;
         }
 
         protected override Task PublishChange(

@@ -40,5 +40,5 @@ export const IcdAutocompleteWidget = (props: WidgetProps) => {
                 onChange={setIcdCategory}
             />
         </FormGroup>
-    )
+    );
 }

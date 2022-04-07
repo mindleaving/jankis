@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security;
 using System.Threading.Tasks;
-using System.Xml;
 using Commons.Extensions;
 using HealthModels;
 using HealthModels.AccessControl;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
@@ -28,7 +27,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IHealthProfessionalAccessInviteStore healthProfessionalRequestStore;
         private readonly IStore<HealthProfessionalAccess> healthProfessionalAccessStore;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IReadonlyStore<Person> personStore;
+        private readonly IPersonDataReadonlyStore<Person> personStore;
         private readonly IReadonlyStore<Account> accountStore;
         private readonly IAccessRequestDistributor accessRequestDistributor;
 
@@ -38,7 +37,7 @@ namespace HealthSharingPortal.API.Controllers
             IStore<EmergencyAccess> emergencyAccessStore,
             IHealthProfessionalAccessInviteStore healthProfessionalRequestStore, 
             IStore<HealthProfessionalAccess> healthProfessionalAccessStore,
-            IReadonlyStore<Person> personStore,
+            IPersonDataReadonlyStore<Person> personStore,
             IReadonlyStore<Account> accountStore,
             IAccessRequestDistributor accessRequestDistributor)
         {
@@ -89,12 +88,12 @@ namespace HealthSharingPortal.API.Controllers
             var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
             if (accountType != AccountType.HealthProfessional)
                 return StatusCode((int)HttpStatusCode.Forbidden, "Only health professionals can get emergency access");
-            var requesterId = ControllerHelpers.GetPersonId(httpContextAccessor);
-            if (await HasReachedMaximumAllowedEmergencyRequests(requesterId))
+            var requesterUsername = ControllerHelpers.GetUsername(httpContextAccessor);
+            if (await HasReachedMaximumAllowedEmergencyRequests(requesterUsername))
                 return StatusCode((int)HttpStatusCode.TooManyRequests, "You have reached the maximum amount of emergency requests for now");
             accessRequest.Id = Guid.NewGuid().ToString();
             var utcNow = DateTime.UtcNow;
-            accessRequest.AccessReceiverUsername = requesterId;
+            accessRequest.AccessReceiverUsername = requesterUsername;
             accessRequest.CreatedTimestamp = utcNow;
             await emergencyRequestStore.StoreAsync(accessRequest);
             var matchingPerson = await FindMatchingPerson(accessRequest);
@@ -107,11 +106,12 @@ namespace HealthSharingPortal.API.Controllers
             var emergencyAccess = new EmergencyAccess
             {
                 Id = accessRequest.Id,
-                AccessReceiverUsername = requesterId,
+                AccessReceiverUsername = requesterUsername,
                 SharerPersonId = matchingPerson.Id,
                 AccessGrantedTimestamp = utcNow,
                 AccessEndTimestamp = utcNow.AddMinutes(60)
             };
+            await emergencyAccessStore.StoreAsync(emergencyAccess);
             return Ok(emergencyAccess);
         }
 
@@ -119,16 +119,25 @@ namespace HealthSharingPortal.API.Controllers
         {
             if (!string.IsNullOrEmpty(emergencyAccessRequest.SharerPersonId))
             {
-                return await personStore.GetByIdAsync(emergencyAccessRequest.SharerPersonId);
+                var emergencyReadAccessGrant = AccessGrantHelpers.GrantForPersonWithPermission(emergencyAccessRequest.SharerPersonId, AccessPermissions.Read);
+                return await personStore.GetByIdAsync(
+                    emergencyAccessRequest.SharerPersonId,
+                    emergencyReadAccessGrant);
             }
-
-            var matchingPersons = await personStore.SearchAsync(
-                x => x.FirstName.ToLower() == emergencyAccessRequest.TargetPersonFirstName.ToLower()
-                     && x.LastName.ToLower() == emergencyAccessRequest.TargetPersonLastName.ToLower()
-                     && x.BirthDate == emergencyAccessRequest.TargetPersonBirthdate);
-            if (matchingPersons.Count == 1)
-                return matchingPersons[0];
-            return null;
+            else
+            {
+                var emergencyReadAccessGrant = AccessGrantHelpers.GrantReadAccessToAllPersons();
+                var nameMatchingPersons = await personStore.SearchAsync(
+                    x => x.FirstName.ToLower() == emergencyAccessRequest.TargetPersonFirstName.ToLower()
+                         && x.LastName.ToLower() == emergencyAccessRequest.TargetPersonLastName.ToLower(),
+                    emergencyReadAccessGrant);
+                var nameAndBirthdateMatchingPersons = nameMatchingPersons
+                    .Where(x => (x.BirthDate - emergencyAccessRequest.TargetPersonBirthdate).Duration() < TimeSpan.FromHours(24))
+                    .ToList();
+                if (nameAndBirthdateMatchingPersons.Count == 1)
+                    return nameAndBirthdateMatchingPersons[0];
+                return null;
+            }
         }
 
         private async Task<bool> HasReachedMaximumAllowedEmergencyRequests(string requesterId)

@@ -12,14 +12,15 @@ import { SharedAccessesFilterView } from '../../components/Sharer/SharedAccesses
 import { formatAccessType } from '../../helpers/Formatters';
 import { SharedAccessType } from '../../types/enums.d';
 import { Models } from '../../types/models';
+import { ViewModels } from '../../types/viewModels';
 
 interface SharedAccessListProps {}
 
 export const SharedAccessList = (props: SharedAccessListProps) => {
 
-    const [ accesses, setAccesses ] = useState<Models.AccessControl.ISharedAccess[]>([]);
+    const [ accesses, setAccesses ] = useState<ViewModels.AccessViewModel[]>([]);
     const [ filter, setFilter ] = useState<Models.Filters.SharedAccessFilter>({});
-    const accessesLoader = useMemo(() => new PagedTableLoader<Models.AccessControl.ISharedAccess>(
+    const accessesLoader = useMemo(() => new PagedTableLoader<ViewModels.AccessViewModel>(
         `api/accesses`,
         resolveText("SharedAccesses_CouldNotLoad"),
         setAccesses,
@@ -29,13 +30,16 @@ export const SharedAccessList = (props: SharedAccessListProps) => {
     const revokeAccess = async (accessType: SharedAccessType, accessId: string) => {
         await apiClient.instance!.post(`api/accesses/${accessType}/${accessId}/revoke`, {}, null);
         setAccesses(accesses.map(x => {
-            if(x.id !== accessId) {
+            if(x.access.id !== accessId) {
                 return x;
             }
             return {
                 ...x,
-                isRevoked: true,
-                accessEndTimestamp: new Date().toISOString() as unknown as Date,
+                access: {
+                    ...x.access,
+                    isRevoked: true,
+                    accessEndTimestamp: new Date().toISOString() as unknown as Date
+                }
             };
         }));
     }
@@ -58,14 +62,20 @@ export const SharedAccessList = (props: SharedAccessListProps) => {
                 </thead>
                 <tbody>
                     {accesses.length > 0
-                    ? accesses.map(access => {
+                    ? accesses.map(vm => {
+                        const access = vm.access;
+                        const formattedAccessType = formatAccessType(access.type);
                         const now = new Date();
                         const endTime = !!access.accessEndTimestamp ? new Date(access.accessEndTimestamp) : null; 
                         const isExpired = !!endTime ? isAfter(now, endTime) : false;
                         const remainingTimeInMinutes = !isExpired ? differenceInMinutes(endTime!, now) : 0;
                         return (
                         <tr key={access.id}>
-                            <td>{formatAccessType(access.type)}</td>
+                            <td>
+                                {access.type === SharedAccessType.Emergency
+                                ? <b className='red'>{formattedAccessType}</b>
+                                : formattedAccessType}
+                            </td>
                             <td>{access.accessReceiverUsername}</td>
                             <td>
                                 {!access.accessEndTimestamp ? resolveText("SharedAccess_NoExpiration") : formatDate(new Date(access.accessEndTimestamp))}

@@ -15,14 +15,12 @@ namespace HealthSharingPortal.API.Controllers
     public class PersonsController : PersonDataRestControllerBase<Person>
     {
         public PersonsController(
-            IStore<Person> store,
+            IPersonDataStore<Person> store,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule)
             : base(store, httpContextAccessor, authorizationModule)
         {
         }
-
-        // TODO: Restrict access to person data
 
         protected override Task<object> TransformItem(
             Person item,
@@ -50,13 +48,6 @@ namespace HealthSharingPortal.API.Controllers
                 SearchExpressionBuilder.ContainsAny<Person>(x => x.Id.ToLower(), searchTerms),
                 SearchExpressionBuilder.ContainsAny<Person>(x => x.FirstName.ToLower(), searchTerms),
                 SearchExpressionBuilder.ContainsAny<Person>(x => x.LastName.ToLower(), searchTerms));
-        }
-
-        protected override IEnumerable<Person> PrioritizeItems(
-            List<Person> items,
-            string searchText)
-        {
-            return items.OrderBy(x => x.Id);
         }
 
         protected override Task PublishChange(

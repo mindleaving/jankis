@@ -41,11 +41,6 @@ namespace HealthSharingPortal.API.Controllers
             );
         }
 
-        protected override IEnumerable<PersonalizedAbbreviation> PrioritizeItems(List<PersonalizedAbbreviation> items, string searchText)
-        {
-            return items;
-        }
-
         protected override Task PublishChange(PersonalizedAbbreviation item, StorageOperation storageOperation, string submitterUsername)
         {
             // Nothing to publish

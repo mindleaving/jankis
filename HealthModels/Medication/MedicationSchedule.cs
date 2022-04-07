@@ -4,7 +4,7 @@ using TypescriptGenerator.Attributes;
 
 namespace HealthModels.Medication
 {
-    public class MedicationSchedule : IId
+    public class MedicationSchedule : IPersonData
     {
         public MedicationSchedule(
             string personId,
