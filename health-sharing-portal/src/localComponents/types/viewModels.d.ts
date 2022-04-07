@@ -2,6 +2,11 @@ import { Models, MongoDB, Commons, System } from './models.d';
 import * as Enums from './enums.d';
 
 export namespace ViewModels {
+    interface AccessViewModel extends ViewModels.IViewModel<Models.AccessControl.ISharedAccess> {
+        sharerProfileData: Models.Person;
+        access: Models.AccessControl.ISharedAccess;
+    }
+
     interface AccountCreationInfo {
         username: string;
         personId: string;
@@ -90,6 +95,10 @@ export namespace ViewModels {
         enrollmentStatistics: Models.StudyEnrollmentStatistics;
         myAssociation: Models.StudyAssociation;
         myEnrollment: Models.StudyEnrollment;
+    }
+
+    interface IViewModel<ISharedAccess> {
+        
     }
 
     interface IViewModel<Account> {

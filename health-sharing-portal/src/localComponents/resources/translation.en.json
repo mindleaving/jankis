@@ -498,6 +498,7 @@
   "PatientInformationCategory_Notes": "Notes",
   "PatientInformationCategory_Observations": "Observations",
   "PatientInformationCategory_Undefined": "Undefined",
+  "PatientsList_OnlyActiveShown": "NOTE: Only active access grants are shown, regardless of filter settings",
   "Patients": "Patients",
   "Patients_CouldNotLoad": "Could not load patients",
   "Paused": "Paused",

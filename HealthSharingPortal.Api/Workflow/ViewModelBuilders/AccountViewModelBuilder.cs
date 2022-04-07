@@ -28,7 +28,7 @@ namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
             Account account,
             IViewModelBuilderOptions<Account> options = null)
         {
-            if(options == null || options is not AccountViewModelBuilderOptions accountViewModelBuilderOptions)
+            if(options is not AccountViewModelBuilderOptions accountViewModelBuilderOptions)
                 throw new ArgumentException($"{nameof(AccountViewModelBuilder)} was called without options, but they are mandatory and must contain access grants");
             var person = await personsStore.GetByIdAsync(account.PersonId, accountViewModelBuilderOptions.AccessGrants);
             return new AccountViewModel(account.Username, account.AccountType, person);
@@ -38,7 +38,7 @@ namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
             List<Account> models,
             IViewModelBuilderOptions<Account> options = null)
         {
-            if(options == null || options is not AccountViewModelBuilderOptions accountViewModelBuilderOptions)
+            if(options is not AccountViewModelBuilderOptions accountViewModelBuilderOptions)
                 throw new ArgumentException($"{nameof(AccountViewModelBuilder)} was called without options, but they are mandatory and must contain access grants");
             var personIds = models.Select(x => x.PersonId).ToList();
             var persons = personIds.Count > 0

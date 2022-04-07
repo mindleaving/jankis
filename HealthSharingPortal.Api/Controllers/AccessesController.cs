@@ -5,11 +5,13 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 using HealthModels.AccessControl;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Models.Filters;
 using HealthSharingPortal.API.Storage;
 using HealthSharingPortal.API.Workflow;
+using HealthSharingPortal.API.Workflow.ViewModelBuilders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,15 +27,21 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IStore<HealthProfessionalAccess> healthProfessionalAccessStore;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly SharedAccessFilterer accessFilterer;
+        private readonly IViewModelBuilder<ISharedAccess> viewModelBuilder;
+        private readonly IAuthorizationModule authorizationModule;
 
         public AccessesController(
             IStore<EmergencyAccess> emergencyAccessStore,
             IStore<HealthProfessionalAccess> healthProfessionalAccessStore,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IViewModelBuilder<ISharedAccess> viewModelBuilder,
+            IAuthorizationModule authorizationModule)
         {
             this.emergencyAccessStore = emergencyAccessStore;
             this.healthProfessionalAccessStore = healthProfessionalAccessStore;
             this.httpContextAccessor = httpContextAccessor;
+            this.viewModelBuilder = viewModelBuilder;
+            this.authorizationModule = authorizationModule;
             accessFilterer = new SharedAccessFilterer();
         }
 
@@ -69,8 +77,10 @@ namespace HealthSharingPortal.API.Controllers
             else if (accountType == AccountType.HealthProfessional)
             {
                 var username = ControllerHelpers.GetUsername(httpContextAccessor);
+                var emergencyAccesses = await emergencyAccessStore.SearchAsync(x => x.AccessReceiverUsername == username);
                 var healthProfessionalAccesses = await healthProfessionalAccessStore.SearchAsync(x => x.AccessReceiverUsername == username);
-                filteredAccesses = accessFilterer.FilterAccesses(healthProfessionalAccesses, filter);
+                var combinedAccesses = emergencyAccesses.Cast<ISharedAccess>().Concat(healthProfessionalAccesses);
+                filteredAccesses = accessFilterer.FilterAccesses(combinedAccesses, filter);
             }
             else
             {
@@ -85,8 +95,12 @@ namespace HealthSharingPortal.API.Controllers
             filteredAccesses = orderDirection == OrderDirection.Ascending
                 ? filteredAccesses.OrderBy(orderExpression)
                 : filteredAccesses.OrderByDescending(orderExpression);
-
-            return Ok(filteredAccesses);
+            var claims = ControllerHelpers.GetClaims(httpContextAccessor);
+            var accessGrants = await authorizationModule.GetAccessGrants(claims);
+            var transformedAccesses = await viewModelBuilder.BatchBuild(
+                filteredAccesses.ToList(), 
+                new AccessViewModelBuilderOptions { AccessGrants = accessGrants });
+            return Ok(transformedAccesses);
         }
 
         private Func<ISharedAccess, object> BuildOrderByExpression(string orderBy)

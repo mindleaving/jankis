@@ -1,4 +1,5 @@
-﻿using HealthModels.Diagnoses;
+﻿using HealthModels.AccessControl;
+using HealthModels.Diagnoses;
 using HealthModels.Interview;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Workflow.ViewModelBuilders;
@@ -15,6 +16,7 @@ namespace HealthSharingPortal.API.Setups
             services.AddScoped<IViewModelBuilder<StudyEnrollment>, StudyEnrollmentViewModelBuilder>();
             services.AddScoped<IViewModelBuilder<Diagnosis>, DiagnosisViewModelBuilder>();
             services.AddScoped<IViewModelBuilder<QuestionnaireAnswers>, QuestionnaireAnswersViewModelBuilder>();
+            services.AddScoped<IViewModelBuilder<ISharedAccess>, AccessViewModelBuilder>();
         }
     }
 }

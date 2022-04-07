@@ -9,10 +9,10 @@ interface PersonsFilterViewProps {
     setFilter: (filter: PersonsFilter) => void;
 }
 
-let publishFilterTimer: NodeJS.Timeout;
 export const PersonsFilterView = (props: PersonsFilterViewProps) => {
 
     const [ searchText, setSearchText]  = useState<string>(props.filter?.searchText ?? '');
+    const [ publishFilterTimer, setPublishFilterTimer ] = useState<NodeJS.Timeout>();
     
 
     const setFilter = props.setFilter;
@@ -20,12 +20,13 @@ export const PersonsFilterView = (props: PersonsFilterViewProps) => {
         if(publishFilterTimer) {
             clearTimeout(publishFilterTimer);
         }
-        publishFilterTimer = setTimeout(() => {
+        setPublishFilterTimer(setTimeout(() => {
             const filter: PersonsFilter = {
                 searchText: searchText
             };
             setFilter(filter);
-        }, 200);
+        }, 200));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ searchText, setFilter ]);
 
     return (
