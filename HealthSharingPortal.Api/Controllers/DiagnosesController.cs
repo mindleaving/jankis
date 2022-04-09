@@ -7,6 +7,7 @@ using HealthModels.Diagnoses;
 using HealthModels.Interview;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
+using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
 using HealthSharingPortal.API.Workflow;
 using Microsoft.AspNetCore.Http;
@@ -14,7 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HealthSharingPortal.API.Controllers
 {
-    public class DiagnosesController : PersonDataRestControllerBase<Diagnosis>
+    public class DiagnosesController : HealthRecordEntryControllerBase<Diagnosis>
     {
         private readonly INotificationDistributor notificationDistributor;
 

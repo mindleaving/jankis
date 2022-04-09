@@ -36,6 +36,8 @@ export const CreateDiagnosisPage = (props: CreateDiagnosisPageProps) => {
         id: uuid(),
         createdBy: user!.username,
         type: HealthRecordEntryType.Diagnosis,
+        isVerified: false,
+        hasBeenSeenBySharer: user!.profileData.id === personId,
         personId: personId!,
         hasResolved: false,
         icd11Code: '',

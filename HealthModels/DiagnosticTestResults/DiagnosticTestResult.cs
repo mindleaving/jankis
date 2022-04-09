@@ -21,6 +21,8 @@ namespace HealthModels.DiagnosticTestResults
         public string PersonId { get; set; }
         public string CreatedBy { get; set; }
         public DateTime Timestamp { get; set; }
+        public bool IsVerified { get; set; }
+        public bool HasBeenSeenBySharer { get; set; }
         public string TestCodeLoinc { get; set; }
         public string TestCodeLocal { get; set; }
         public string TestName { get; set; }

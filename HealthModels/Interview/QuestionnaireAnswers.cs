@@ -15,6 +15,8 @@ namespace HealthModels.Interview
         /// Time of answer
         /// </summary>
         public DateTime Timestamp { get; set; }
+        public bool IsVerified { get; set; }
+        public bool HasBeenSeenBySharer { get; set; }
         public List<QuestionAnswer> Answers { get; set; }
     }
 }

@@ -33,6 +33,8 @@ export const PulseMeasurementForm = (props: PulseMeasurementFormProps) => {
             createdBy: user!.username,
             personId: props.personId,
             timestamp: new Date(),
+            isVerified: false,
+            hasBeenSeenBySharer: user!.profileData.id === props.personId,
             bpm: bpm,
             location: pulseLocation
         };

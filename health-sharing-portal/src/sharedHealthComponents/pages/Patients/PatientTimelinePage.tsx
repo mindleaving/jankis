@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { ViewModels } from '../../../localComponents/types/viewModels';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
@@ -37,6 +38,15 @@ export const PatientTimelinePage = (props: PatientTimelinePageProps) => {
         loadHealthRecordEntrys();
     }, [ personId ]);
 
+    const onMarkAsSeen = (entryType: HealthRecordEntryType, entryId: string, update: Update<Models.IHealthRecordEntry>) => {
+        setEvents(state => state.map(x => {
+            if(x.type === entryType && x.id === entryId) {
+                return update(x);
+            }
+            return x;
+        }));
+    }
+
     if(!personId) {
         return (<h1>{resolveText('MissingID')}</h1>);
     }
@@ -51,7 +61,10 @@ export const PatientTimelinePage = (props: PatientTimelinePageProps) => {
                 <span className="text-secondary">{resolveText('Now')}</span>
             </div>
             {events.map(event => (
-                <PatientTimelineItem event={event} />
+                <PatientTimelineItem 
+                    entry={event}
+                    onMarkAsSeen={onMarkAsSeen}
+                />
             ))}
         </>
     );

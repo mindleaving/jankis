@@ -7,6 +7,8 @@ import { AsyncButton } from '../../../sharedCommonComponents/components/AsyncBut
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { HealthProfessionalAutocomplete } from '../../components/Autocompletes/HealthProfessionalAutocomplete';
+import { AccessPermissionsFormGroup } from '../../components/Sharer/AccessPermissionsFormGroup';
+import { AccessPermissions } from '../../types/enums.d';
 import { Models } from '../../types/models';
 
 interface GiveHealthProfesionalAccessPageProps {}
@@ -17,6 +19,7 @@ export const GiveHealthProfesionalAccessPage = (props: GiveHealthProfesionalAcce
     const [ isLoading, setIsLoading ] = useState<boolean>(!!accessInviteId);
     const [ healthProfessional, setHealthProfessional ] = useState<Models.HealthProfessionalAccount>();
     const [ expirationTime, setExpirationTime ] = useState<string>('PT1H');
+    const [ permissions, setPermissions ] = useState<AccessPermissions[]>([ AccessPermissions.Read ]);
     const [ isSubmitting, setIsSubmitting ] = useState<boolean>(false);
     const [ accessInvite, setAccessInvite ] = useState<Models.AccessControl.HealthProfessionalAccessInvite>();
     const [ codeForSharer, setCodeForSharer ] = useState<string>('');
@@ -44,7 +47,8 @@ export const GiveHealthProfesionalAccessPage = (props: GiveHealthProfesionalAcce
         try {
             const body: Models.CreateAccessInviteBody = {
                 healthProfessionalUsername: healthProfessional!.username,
-                expirationDuration: expirationTime
+                expirationDuration: expirationTime,
+                permissions: permissions
             };
             const response = await apiClient.instance!.post(`api/accessrequests/create/healthprofessional`, {}, body);
             const item = await response.json() as Models.AccessControl.HealthProfessionalAccessInvite;
@@ -131,6 +135,11 @@ export const GiveHealthProfesionalAccessPage = (props: GiveHealthProfesionalAcce
                             <option value="P6M">6 {resolveText("Months")}</option>
                         </FormControl>
                     </FormGroup>
+                    <AccessPermissionsFormGroup
+                        title={resolveText("GiveAccess_Permissions")}
+                        value={permissions}
+                        onChange={setPermissions}
+                    />
                     <Row className='m-3'>
                         <Col>
                             <AsyncButton

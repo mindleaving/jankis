@@ -53,6 +53,8 @@ export namespace Models {
         type: Enums.HealthRecordEntryType;
         createdBy: string;
         timestamp: Date;
+        isVerified: boolean;
+        hasBeenSeenBySharer: boolean;
     }
 
     interface IId {
@@ -114,6 +116,7 @@ export namespace Models {
     interface CreateAccessInviteBody {
         healthProfessionalUsername: string;
         expirationDuration: string;
+        permissions: Enums.AccessPermissions[];
     }
 
     interface GenomeExplorerDeployment extends Models.IPersonData {

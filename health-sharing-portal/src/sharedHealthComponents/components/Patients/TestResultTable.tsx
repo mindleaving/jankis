@@ -6,13 +6,19 @@ import { DiagnosticTestScaleType } from "../../../localComponents/types/enums.d"
 import { NonQuantitativeTestResultRow } from "./NonQuantitativeTestResultRow";
 import { QuantitativeTestResultRow } from "./QuantitativeTestResultRow";
 import { differenceInSeconds } from "date-fns";
+import { MarkHealthRecordEntryAsSeenCallback } from "../../types/frontendTypes";
+import { needsHiding } from "../../helpers/HealthRecordEntryHelpers";
+import { useContext } from "react";
+import UserContext from "../../../localComponents/contexts/UserContext";
 
 interface TestResultTableProps {
     items: Models.DiagnosticTestResults.DiagnosticTestResult[];
+    onMarkAsSeen: MarkHealthRecordEntryAsSeenCallback;
 }
 
 export const TestResultTable = (props: TestResultTableProps) => {
 
+    const user = useContext(UserContext);
     const inverseTimeOrderedTests = props.items.sort((a,b) => -differenceInSeconds(new Date(a.timestamp), new Date(b.timestamp)));
     const groupedTestResults = groupBy(inverseTimeOrderedTests, x => x.testCodeLoinc);
     return (
@@ -23,6 +29,7 @@ export const TestResultTable = (props: TestResultTableProps) => {
                         return (<NonQuantitativeTestResultRow
                             key={testGroup.key}
                             testResults={testGroup.items}
+                            onMarkAsSeen={props.onMarkAsSeen}
                         />);
                     }
                     const isQuantitativeTest = testGroup.items.every(x => x.scaleType === DiagnosticTestScaleType.Quantitative);
@@ -30,6 +37,7 @@ export const TestResultTable = (props: TestResultTableProps) => {
                         return (<NonQuantitativeTestResultRow
                             key={testGroup.key}
                             testResults={testGroup.items}
+                            onMarkAsSeen={props.onMarkAsSeen}
                         />);
                     }
                     const quantitativeTestResults = testGroup.items.map(x => x as Models.DiagnosticTestResults.QuantitativeDiagnosticTestResult);
@@ -40,12 +48,22 @@ export const TestResultTable = (props: TestResultTableProps) => {
                         return (<NonQuantitativeTestResultRow
                             key={testGroup.key}
                             testResults={quantitativeTestResults}
+                            onMarkAsSeen={props.onMarkAsSeen}
+                        />);
+                    }
+                    const hasHiddenValues = quantitativeTestResults.some(x => needsHiding(x, user!));
+                    if(hasHiddenValues) {
+                        return (<NonQuantitativeTestResultRow
+                            key={testGroup.key}
+                            testResults={quantitativeTestResults}
+                            onMarkAsSeen={props.onMarkAsSeen}
                         />);
                     }
                     return (<QuantitativeTestResultRow
                         key={testGroup.key}
                         commonUnit={commonUnit}
                         testResults={quantitativeTestResults}
+                        onMarkAsSeen={props.onMarkAsSeen}
                     />);
                 })}
             </tbody>

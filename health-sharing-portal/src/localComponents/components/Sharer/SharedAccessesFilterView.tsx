@@ -6,15 +6,16 @@ import Flatpickr from 'react-flatpickr';
 import { Models } from '../../types/models';
 
 interface SharedAccessesFilterViewProps {
+    filter?: Models.Filters.SharedAccessFilter;
     onFilterChanged: (filter: Models.Filters.SharedAccessFilter) => void
 }
 
 export const SharedAccessesFilterView = (props: SharedAccessesFilterViewProps) => {
 
-    const [ searchText, setSearchText ] = useState<string>('');
-    const [ onlyActive, setOnlyActive ] = useState<boolean>(false);
-    const [ startTime, setStartTime ] = useState<Date>();
-    const [ endTime, setEndTime ] = useState<Date>();
+    const [ searchText, setSearchText ] = useState<string>(props.filter?.searchText ?? '');
+    const [ onlyActive, setOnlyActive ] = useState<boolean>(props.filter?.onlyActive ?? false);
+    const [ startTime, setStartTime ] = useState<Date | undefined>(props.filter?.startTime ?? undefined);
+    const [ endTime, setEndTime ] = useState<Date | undefined>(props.filter?.endTime ?? undefined);
 
     useEffect(() => {
         props.onFilterChanged({

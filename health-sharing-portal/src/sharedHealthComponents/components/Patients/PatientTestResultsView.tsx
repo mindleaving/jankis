@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button, ButtonGroup, Col, FormControl, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { HealthRecordEntryType } from "../../../localComponents/types/enums.d";
 import { Models } from "../../../localComponents/types/models";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { TestResultCategories } from "../../types/frontendTypes.d";
@@ -9,6 +10,7 @@ import { TestResultTable } from "./TestResultTable";
 interface PatientTestResultsViewProps {
     personId: string;
     testResults: Models.DiagnosticTestResults.DiagnosticTestResult[];
+    onMarkAsSeen: (entryType: HealthRecordEntryType, entryId: string, update: Update<Models.IHealthRecordEntry>) => void;
 }
 
 export const PatientTestResultsView = (props: PatientTestResultsViewProps) => {
@@ -53,7 +55,7 @@ export const PatientTestResultsView = (props: PatientTestResultsViewProps) => {
     }
     useEffect(() => {
         setFilteredTestResults(props.testResults.filter(isMatch))
-    }, [ searchText, activeCategories ]);
+    }, [ props.testResults, searchText, activeCategories ]);
 
     const toggleCategory = (category: string) => {
         if(category === TestResultCategories.All) {
@@ -100,6 +102,7 @@ export const PatientTestResultsView = (props: PatientTestResultsViewProps) => {
             </div>
             <TestResultTable
                 items={filteredTestResults}
+                onMarkAsSeen={props.onMarkAsSeen}
             />
         </div>
     );

@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HealthSharingPortal.API.Controllers
 {
-    public class DocumentsController : PersonDataRestControllerBase<PatientDocument>
+    public class DocumentsController : HealthRecordEntryControllerBase<PatientDocument>
     {
         private readonly IFilesStore filesStore;
         private readonly INotificationDistributor notificationDistributor;

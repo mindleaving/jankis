@@ -27,7 +27,7 @@ namespace HealthSharingPortal.API.Controllers
     {
         private readonly IStore<EmergencyAccessRequest> emergencyRequestStore;
         private readonly IStore<EmergencyAccess> emergencyAccessStore;
-        private readonly IHealthProfessionalAccessInviteStore healthProfessionalRequestStore;
+        private readonly IHealthProfessionalAccessInviteStore healthProfessionalInviteStore;
         private readonly IStore<HealthProfessionalAccess> healthProfessionalAccessStore;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IPersonDataReadonlyStore<Person> personStore;
@@ -39,7 +39,7 @@ namespace HealthSharingPortal.API.Controllers
             IHttpContextAccessor httpContextAccessor, 
             IStore<EmergencyAccessRequest> emergencyRequestStore, 
             IStore<EmergencyAccess> emergencyAccessStore,
-            IHealthProfessionalAccessInviteStore healthProfessionalRequestStore, 
+            IHealthProfessionalAccessInviteStore healthProfessionalInviteStore, 
             IStore<HealthProfessionalAccess> healthProfessionalAccessStore,
             IPersonDataReadonlyStore<Person> personStore,
             IReadonlyStore<Account> accountStore,
@@ -49,7 +49,7 @@ namespace HealthSharingPortal.API.Controllers
             this.httpContextAccessor = httpContextAccessor;
             this.emergencyRequestStore = emergencyRequestStore;
             this.emergencyAccessStore = emergencyAccessStore;
-            this.healthProfessionalRequestStore = healthProfessionalRequestStore;
+            this.healthProfessionalInviteStore = healthProfessionalInviteStore;
             this.healthProfessionalAccessStore = healthProfessionalAccessStore;
             this.personStore = personStore;
             this.accountStore = accountStore;
@@ -64,7 +64,7 @@ namespace HealthSharingPortal.API.Controllers
             if (accountType == AccountType.Sharer)
             {
                 var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
-                var healthProfessionalRequests = await healthProfessionalRequestStore.SearchAsync(x => 
+                var healthProfessionalRequests = await healthProfessionalInviteStore.SearchAsync(x => 
                         !x.IsCompleted 
                         && !x.IsRejected
                         && !x.IsRevoked
@@ -75,7 +75,7 @@ namespace HealthSharingPortal.API.Controllers
             if (accountType == AccountType.HealthProfessional)
             {
                 var username = ControllerHelpers.GetUsername(httpContextAccessor);
-                var ordinaryRequests = await healthProfessionalRequestStore.SearchAsync(x => 
+                var ordinaryRequests = await healthProfessionalInviteStore.SearchAsync(x => 
                         !x.IsCompleted 
                         && !x.IsRejected
                         && !x.IsRevoked
@@ -233,14 +233,18 @@ namespace HealthSharingPortal.API.Controllers
             if (!DateTimeHelpers.TryParseTimespan(body.ExpirationDuration, out var parsedExpirationDuration))
                 parsedExpirationDuration = TimeSpan.FromMinutes(60);
             var sharerPersonId = ControllerHelpers.GetPersonId(httpContextAccessor);
-            var accessInviteId = await healthProfessionalRequestStore.CreateNew(healthProfessionalUsername, sharerPersonId, parsedExpirationDuration);
+            var accessInviteId = await healthProfessionalInviteStore.CreateNew(
+                healthProfessionalUsername, 
+                sharerPersonId, 
+                parsedExpirationDuration,
+                body.Permissions);
 
             // Distribute to health professional
-            var storedAccessInviteForHealthProfessional = await healthProfessionalRequestStore.GetByIdAndRemoveCode(accessInviteId, AccountType.HealthProfessional);
+            var storedAccessInviteForHealthProfessional = await healthProfessionalInviteStore.GetByIdAndRemoveCode(accessInviteId, AccountType.HealthProfessional);
             await accessRequestDistributor.NotifyHealthProfessionalAboutNewHealthProfessionalAccessInvite(storedAccessInviteForHealthProfessional);
 
             // Return updated access invite to sharer
-            var storedAccessInviteForSharer = await healthProfessionalRequestStore.GetByIdAndRemoveCode(accessInviteId, AccountType.Sharer);
+            var storedAccessInviteForSharer = await healthProfessionalInviteStore.GetByIdAndRemoveCode(accessInviteId, AccountType.Sharer);
             return Ok(storedAccessInviteForSharer);
         }
 
@@ -251,7 +255,7 @@ namespace HealthSharingPortal.API.Controllers
             HealthProfessionalAccessInvite matchingAccessRequest;
             try
             {
-                matchingAccessRequest = await healthProfessionalRequestStore.GetByIdAndRemoveCode(requestId, accountType.Value);
+                matchingAccessRequest = await healthProfessionalInviteStore.GetByIdAndRemoveCode(requestId, accountType.Value);
             }
             catch (SecurityException securityException)
             {
@@ -283,7 +287,7 @@ namespace HealthSharingPortal.API.Controllers
             var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
             if (!accountType.InSet(AccountType.Sharer, AccountType.HealthProfessional))
                 return Forbid();
-            var matchingDatabaseEntry = await healthProfessionalRequestStore.GetByIdAndRemoveCode(accessInvite.Id, accountType.Value);
+            var matchingDatabaseEntry = await healthProfessionalInviteStore.GetByIdAndRemoveCode(accessInvite.Id, accountType.Value);
             if (matchingDatabaseEntry == null)
                 return NotFound();
             if (accountType == AccountType.Sharer)
@@ -307,27 +311,28 @@ namespace HealthSharingPortal.API.Controllers
 
             if (accountType == AccountType.Sharer)
             {
-                if (!await healthProfessionalRequestStore.CheckCodeFromSharer(accessInvite.Id, accessInvite.CodeForSharer))
+                if (!await healthProfessionalInviteStore.CheckCodeFromSharer(accessInvite.Id, accessInvite.CodeForSharer))
                     return Unauthorized();
-                await healthProfessionalRequestStore.SetSharerHasAccepted(matchingDatabaseEntry.Id);
+                await healthProfessionalInviteStore.SetSharerHasAccepted(matchingDatabaseEntry.Id);
             }
             if (accountType == AccountType.HealthProfessional)
             {
-                if (!await healthProfessionalRequestStore.CheckCodeFromHealthProfessional(accessInvite.Id, accessInvite.CodeForHealthProfessional))
+                if (!await healthProfessionalInviteStore.CheckCodeFromHealthProfessional(accessInvite.Id, accessInvite.CodeForHealthProfessional))
                     return Unauthorized();
-                await healthProfessionalRequestStore.SetHealthProfessionalHasAccepted(matchingDatabaseEntry.Id);
+                await healthProfessionalInviteStore.SetHealthProfessionalHasAccepted(matchingDatabaseEntry.Id);
             }
 
-            matchingDatabaseEntry = await healthProfessionalRequestStore.GetByIdAndRemoveCode(accessInvite.Id, accountType.Value);
-            if (await healthProfessionalRequestStore.TryMarkAsCompleted(matchingDatabaseEntry.Id))
+            matchingDatabaseEntry = await healthProfessionalInviteStore.GetByIdAndRemoveCode(accessInvite.Id, accountType.Value);
+            if (await healthProfessionalInviteStore.TryMarkAsCompleted(matchingDatabaseEntry.Id))
             {
                 var utcNow = DateTime.UtcNow;
-                await healthProfessionalRequestStore.TryMarkAsCompleted(matchingDatabaseEntry.Id);
+                await healthProfessionalInviteStore.TryMarkAsCompleted(matchingDatabaseEntry.Id);
                 var healthProfessionalAccess = new HealthProfessionalAccess
                 {
                     Id = accessInvite.Id,
                     AccessReceiverUsername = accessInvite.AccessReceiverUsername,
                     SharerPersonId = accessInvite.SharerPersonId,
+                    Permissions = matchingDatabaseEntry.Permissions,
                     AccessGrantedTimestamp = utcNow,
                     AccessEndTimestamp = utcNow.Add(accessInvite.ExpirationDuration)
                 };
@@ -343,7 +348,7 @@ namespace HealthSharingPortal.API.Controllers
         public async Task<IActionResult> Revoke([FromRoute] string inviteId)
         {
             var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
-            var accessInvite = await healthProfessionalRequestStore.GetByIdAndRemoveCode(inviteId, accountType.Value);
+            var accessInvite = await healthProfessionalInviteStore.GetByIdAndRemoveCode(inviteId, accountType.Value);
             if (accessInvite == null)
                 return NotFound();
             if (accessInvite.IsCompleted)
@@ -353,7 +358,7 @@ namespace HealthSharingPortal.API.Controllers
                 var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
                 if (accessInvite.SharerPersonId != personId)
                     return Forbid();
-                if (!await healthProfessionalRequestStore.Revoke(inviteId))
+                if (!await healthProfessionalInviteStore.Revoke(inviteId))
                     return StatusCode((int)HttpStatusCode.InternalServerError, "Could not revoke for an unknown reason");
             }
             else if (accountType == AccountType.HealthProfessional)
@@ -361,7 +366,7 @@ namespace HealthSharingPortal.API.Controllers
                 var username = ControllerHelpers.GetUsername(httpContextAccessor);
                 if (accessInvite.AccessReceiverUsername != username)
                     return Forbid();
-                if(!await healthProfessionalRequestStore.Reject(inviteId))
+                if(!await healthProfessionalInviteStore.Reject(inviteId))
                     return StatusCode((int)HttpStatusCode.InternalServerError, "Could not reject for an unknown reason");
             }
             else

@@ -110,14 +110,14 @@ namespace HealthSharingPortal.API.Controllers
                 filteredAccesses = Enumerable.Empty<ISharedAccess>();
             }
 
-            if (skip.HasValue)
-                filteredAccesses = filteredAccesses.Skip(skip.Value);
-            if (count.HasValue)
-                filteredAccesses = filteredAccesses.Take(count.Value);
             var orderExpression = BuildOrderByExpression(orderBy);
             filteredAccesses = orderDirection == OrderDirection.Ascending
                 ? filteredAccesses.OrderBy(orderExpression)
                 : filteredAccesses.OrderByDescending(orderExpression);
+            if (skip.HasValue)
+                filteredAccesses = filteredAccesses.Skip(skip.Value);
+            if (count.HasValue)
+                filteredAccesses = filteredAccesses.Take(count.Value);
             var claims = ControllerHelpers.GetClaims(httpContextAccessor);
             var accessGrants = await authorizationModule.GetAccessGrants(claims);
             var transformedAccesses = await viewModelBuilder.BatchBuild(
@@ -194,7 +194,7 @@ namespace HealthSharingPortal.API.Controllers
                 "type" => x => x.Type,
                 "receiver" => x => x.AccessReceiverUsername,
                 "starttime" => x => x.AccessGrantedTimestamp,
-                "endtime" => x => x.AccessEndTimestamp,
+                "endtime" => x => x.AccessEndTimestamp ?? DateTime.MaxValue,
                 _ => x => x.AccessGrantedTimestamp
             };
         }

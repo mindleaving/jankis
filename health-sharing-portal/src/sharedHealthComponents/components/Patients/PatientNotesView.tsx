@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Alert } from 'react-bootstrap';
 import { compareDesc } from 'date-fns';
 import { Models } from '../../../localComponents/types/models';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { formatDate } from '../../helpers/Formatters';
+import { HidableHealthRecordEntryValue } from './HidableHealthRecordEntryValue';
+import { needsHiding, unhideHealthRecordEntry } from '../../helpers/HealthRecordEntryHelpers';
+import { MarkHealthRecordEntryAsSeenCallback } from '../../types/frontendTypes';
+import UserContext from '../../../localComponents/contexts/UserContext';
 
 interface PatientNotesViewProps {
     notes: Models.PatientNote[];
+    onMarkAsSeen: MarkHealthRecordEntryAsSeenCallback;
 }
 
 export const PatientNotesView = (props: PatientNotesViewProps) => {
@@ -16,7 +21,11 @@ export const PatientNotesView = (props: PatientNotesViewProps) => {
             <span className="text-secondary">{resolveText('Now')}</span>
         </div>
         {props.notes.sort((a,b) => compareDesc(new Date(a.timestamp), new Date(b.timestamp))).map(note => (
-            <PatientNoteView key={note.id} note={note} />
+            <PatientNoteView 
+                key={note.id} 
+                note={note}
+                onMarkAsSeen={props.onMarkAsSeen}
+            />
         ))}
     </div>);
 
@@ -24,10 +33,21 @@ export const PatientNotesView = (props: PatientNotesViewProps) => {
 
 interface PatientNoteViewProps {
     note: Models.PatientNote;
+    onMarkAsSeen: MarkHealthRecordEntryAsSeenCallback;
 }
 const PatientNoteView = (props: PatientNoteViewProps) => {
+
+    const note = props.note;
+    const user = useContext(UserContext);
+    const unhide = () => unhideHealthRecordEntry(note, props.onMarkAsSeen);
+
     return (<Alert variant="primary">
         <div><small>{formatDate(new Date(props.note.timestamp))} {resolveText('by')} {props.note.createdBy}</small></div>
-        {props.note.message}
+        <HidableHealthRecordEntryValue
+            hideValue={needsHiding(note, user!)}
+            onMarkAsSeen={unhide}
+        >
+            {props.note.message}
+        </HidableHealthRecordEntryValue>
     </Alert>);
 }

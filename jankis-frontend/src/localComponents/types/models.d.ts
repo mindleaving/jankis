@@ -53,6 +53,8 @@ export namespace Models {
         type: Enums.HealthRecordEntryType;
         createdBy: string;
         timestamp: Date;
+        isVerified: boolean;
+        hasBeenSeenBySharer: boolean;
     }
 
     interface IId {

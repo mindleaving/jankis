@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HealthSharingPortal.API.Controllers
 {
-    public class TestResultsController : PersonDataRestControllerBase<DiagnosticTestResult>
+    public class TestResultsController : HealthRecordEntryControllerBase<DiagnosticTestResult>
     {
         private readonly IAutocompleteCache autocompleteCache;
         private readonly INotificationDistributor notificationDistributor;

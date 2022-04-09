@@ -41,6 +41,8 @@ export const TestResultsForm = (props: TestResultsFormProps) => {
             testName: testDefinition.name,
             testCategory: testDefinition.category,
             timestamp: new Date(),
+            isVerified: false,
+            hasBeenSeenBySharer: user!.profileData.id === props.personId,
         };
         setTestResults(state => state.concat(testResult));
     }

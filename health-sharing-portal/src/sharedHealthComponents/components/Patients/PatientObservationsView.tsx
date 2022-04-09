@@ -1,4 +1,4 @@
-import React from 'react';
+import { useContext } from 'react';
 import { Table } from 'react-bootstrap';
 import { formatDate, formatMeasurementType, formatObservationValue } from '../../helpers/Formatters';
 import Chart from 'react-apexcharts';
@@ -7,9 +7,14 @@ import { MeasurementType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { groupBy } from '../../../sharedCommonComponents/helpers/CollectionHelpers';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
+import { MarkHealthRecordEntryAsSeenCallback } from '../../types/frontendTypes';
+import UserContext from '../../../localComponents/contexts/UserContext';
+import { needsHiding, unhideHealthRecordEntry } from '../../helpers/HealthRecordEntryHelpers';
+import { HidableHealthRecordEntryValue } from './HidableHealthRecordEntryValue';
 
 interface PatientObservationsViewProps {
     observations: Models.Observations.Observation[];
+    onMarkAsSeen: MarkHealthRecordEntryAsSeenCallback;
 }
 interface ObservationDataPoint {
     measurementType: MeasurementType;
@@ -24,7 +29,10 @@ interface Group<T> {
 }
 export const PatientObservationsView = (props: PatientObservationsViewProps) => {
     
-    const observationDataPoints = props.observations.flatMap((observation): ObservationDataPoint[] => {
+    const user = useContext(UserContext);
+    const observationDataPoints = props.observations
+    .filter(observation => !needsHiding(observation, user!))
+    .flatMap((observation): ObservationDataPoint[] => {
         const measurementType = observation.measurementType as MeasurementType;
         if(observation.measurementType === MeasurementType.Pulse) {
             const pulseObservation = observation as Models.Observations.PulseObservation;
@@ -191,7 +199,14 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
                     <tr key={observation.id}>
                         <td>{formatDate(new Date(observation.timestamp))}</td>
                         <td>{formatMeasurementType(observation.measurementType)}</td>
-                        <td>{formatObservationValue(observation)}</td>
+                        <td>
+                            <HidableHealthRecordEntryValue
+                                hideValue={needsHiding(observation, user!)}
+                                onMarkAsSeen={() => unhideHealthRecordEntry(observation, props.onMarkAsSeen)}
+                            >
+                                {formatObservationValue(observation)}
+                            </HidableHealthRecordEntryValue>
+                        </td>
                         <td>{observation.createdBy}</td>
                     </tr>
                 ))}
