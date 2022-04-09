@@ -7,9 +7,9 @@ import { NonQuantitativeTestResultRow } from "./NonQuantitativeTestResultRow";
 import { QuantitativeTestResultRow } from "./QuantitativeTestResultRow";
 import { differenceInSeconds } from "date-fns";
 import { MarkHealthRecordEntryAsSeenCallback } from "../../types/frontendTypes";
-import { needsHiding } from "../../helpers/HealthRecordEntryHelpers";
 import { useContext } from "react";
 import UserContext from "../../../localComponents/contexts/UserContext";
+import { needsHiding } from "../../../localComponents/helpers/HealthRecordEntryHelpers";
 
 interface TestResultTableProps {
     items: Models.DiagnosticTestResults.DiagnosticTestResult[];

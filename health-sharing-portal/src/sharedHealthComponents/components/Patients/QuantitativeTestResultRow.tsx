@@ -6,8 +6,8 @@ import { Models } from '../../../localComponents/types/models';
 import { mathjs } from '../../../sharedCommonComponents/helpers/mathjs';
 import { formatDate, formatDiagnosticTestNameOfResult } from '../../helpers/Formatters';
 import { MarkHealthRecordEntryAsSeenCallback } from '../../types/frontendTypes';
-import { needsHiding } from '../../helpers/HealthRecordEntryHelpers';
 import UserContext from '../../../localComponents/contexts/UserContext';
+import { needsHiding } from '../../../localComponents/helpers/HealthRecordEntryHelpers';
 
 interface QuantitativeTestResultRowProps {
     commonUnit: string;

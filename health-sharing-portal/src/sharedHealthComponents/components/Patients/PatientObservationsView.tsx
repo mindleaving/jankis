@@ -9,8 +9,9 @@ import { groupBy } from '../../../sharedCommonComponents/helpers/CollectionHelpe
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { MarkHealthRecordEntryAsSeenCallback } from '../../types/frontendTypes';
 import UserContext from '../../../localComponents/contexts/UserContext';
-import { needsHiding, unhideHealthRecordEntry } from '../../helpers/HealthRecordEntryHelpers';
+import { unhideHealthRecordEntry } from '../../helpers/HealthRecordEntryHelpers';
 import { HidableHealthRecordEntryValue } from './HidableHealthRecordEntryValue';
+import { needsHiding } from '../../../localComponents/helpers/HealthRecordEntryHelpers';
 
 interface PatientObservationsViewProps {
     observations: Models.Observations.Observation[];

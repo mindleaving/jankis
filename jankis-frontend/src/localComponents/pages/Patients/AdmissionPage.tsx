@@ -64,7 +64,10 @@ export const AdmissionPage = (props: AdmissionPageProps) => {
             </Row>
             {viewType === AdmissionViewType.Cards 
                 ? <CardsAdmissionView admission={admission!} />
-                : <TimelineAdmissionView admission={admission!} />
+                : <TimelineAdmissionView 
+                    admission={admission!}
+                    onMarkAsSeen={() => { throw new Error("Not implemented"); }}
+                />
             }
         </>
     );

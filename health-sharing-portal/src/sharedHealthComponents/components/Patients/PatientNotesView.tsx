@@ -5,9 +5,10 @@ import { Models } from '../../../localComponents/types/models';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { formatDate } from '../../helpers/Formatters';
 import { HidableHealthRecordEntryValue } from './HidableHealthRecordEntryValue';
-import { needsHiding, unhideHealthRecordEntry } from '../../helpers/HealthRecordEntryHelpers';
+import { unhideHealthRecordEntry } from '../../helpers/HealthRecordEntryHelpers';
 import { MarkHealthRecordEntryAsSeenCallback } from '../../types/frontendTypes';
 import UserContext from '../../../localComponents/contexts/UserContext';
+import { needsHiding } from '../../../localComponents/helpers/HealthRecordEntryHelpers';
 
 interface PatientNotesViewProps {
     notes: Models.PatientNote[];

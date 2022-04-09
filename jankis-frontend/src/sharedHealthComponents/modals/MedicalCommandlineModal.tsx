@@ -31,10 +31,10 @@ export const MedicalCommandlineModal = (props: MedicalCommandlineModalProps) => 
     const user = useContext(UserContext);
     const personId = props.personId;
 
-    const diagnosisCommands = useMemo(() => new DiagnosisCommands(personId, user!.username, navigate), [ personId, user, navigate ]);
-    const observationCommands = useMemo(() => new ObservationCommands(personId, user!.username, navigate), [ personId, user, navigate ]);
-    const medicationCommands = useMemo(() => new MedicationCommands(personId, user!.username, navigate), [ personId, user, navigate ]);
-    const testResultCommands = useMemo(() => new TestResultCommands(personId, user!.username, navigate), [ personId, user, navigate ]);
+    const diagnosisCommands = useMemo(() => new DiagnosisCommands(personId, user!, navigate), [ personId, user, navigate ]);
+    const observationCommands = useMemo(() => new ObservationCommands(personId, user!, navigate), [ personId, user, navigate ]);
+    const medicationCommands = useMemo(() => new MedicationCommands(personId, user!, navigate), [ personId, user, navigate ]);
+    const testResultCommands = useMemo(() => new TestResultCommands(personId, user!, navigate), [ personId, user, navigate ]);
     const commandHierarchy: MedicalCommands.CommandPart[] = useMemo(() => [
         diagnosisCommands.commandHierarchy,
         observationCommands.commandHierarchy,

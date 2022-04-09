@@ -8,8 +8,9 @@ import { downloadFile } from '../../../sharedCommonComponents/communication/File
 import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
 import { HidableHealthRecordEntryValue } from './HidableHealthRecordEntryValue';
 import { MarkHealthRecordEntryAsSeenCallback } from '../../types/frontendTypes';
-import { needsHiding, unhideHealthRecordEntry } from '../../helpers/HealthRecordEntryHelpers';
+import { unhideHealthRecordEntry } from '../../helpers/HealthRecordEntryHelpers';
 import UserContext from '../../../localComponents/contexts/UserContext';
+import { needsHiding } from '../../../localComponents/helpers/HealthRecordEntryHelpers';
 
 interface PatientDocumentsViewProps {
     documents: Models.PatientDocument[];

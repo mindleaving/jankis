@@ -5,10 +5,11 @@ import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer"
 import { getObjectReferenceValue } from "../../helpers/MedicalCommandHelpers";
 import { Models } from "../../../localComponents/types/models";
 import { formatDrug } from "../../helpers/Formatters";
+import { ViewModels } from "../../../localComponents/types/viewModels";
 
 export class MedicationCommands {
     personId: string;
-    username: string;
+    user: ViewModels.LoggedInUserViewModel;
     navigate: (path: string) => void;
     commandHierarchy: MedicalCommands.CommandPart;
 
@@ -63,10 +64,10 @@ export class MedicationCommands {
 
     constructor(
         personId: string, 
-        username: string, 
+        user: ViewModels.LoggedInUserViewModel, 
         navigate: (path: string) => void) {
             this.personId = personId;
-            this.username = username;
+            this.user = user;
             this.navigate = navigate;
             this.commandHierarchy = {
                 type: CommandPartType.Keyword,
