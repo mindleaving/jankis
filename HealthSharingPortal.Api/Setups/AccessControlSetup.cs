@@ -23,6 +23,7 @@ namespace HealthSharingPortal.API.Setups
             services.AddScoped<IAuthorizationHandler, AdminRequirementHandler>();
             services.AddAuthorization();
             services.AddScoped<IAuthorizationModule, AuthorizationModule>();
+            services.AddSingleton<IEmergencyTokenGenerator, EmergencyTokenGenerator>();
         }
 
         private void SetupJwtTokenAuthentication(IServiceCollection services, IConfiguration configuration)

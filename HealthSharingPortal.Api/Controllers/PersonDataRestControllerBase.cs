@@ -42,7 +42,15 @@ namespace HealthSharingPortal.API.Controllers
             [FromQuery] Language language = Language.en)
         {
             var accessGrants = await GetAccessGrants();
-            var item = await store.GetByIdAsync(id, accessGrants);
+            T item;
+            try
+            {
+                item = await store.GetByIdAsync(id, accessGrants);
+            }
+            catch (SecurityException)
+            {
+                return Forbid();
+            }
             if (item == null)
                 return NotFound();
             var transformedItem = await TransformItem(item, language);
@@ -83,9 +91,16 @@ namespace HealthSharingPortal.API.Controllers
                 return BadRequest("ID of route doesn't match body");
             var username = ControllerHelpers.GetUsername(httpContextAccessor);
             var accessGrants = await GetAccessGrants();
-            var storageOperation = await store.StoreAsync(item, accessGrants);
-            await PublishChange(item, storageOperation, username);
-            return Ok(id);
+            try
+            {
+                var storageOperation = await store.StoreAsync(item, accessGrants);
+                await PublishChange(item, storageOperation, username);
+                return Ok(id);
+            }
+            catch (SecurityException)
+            {
+                return Forbid();
+            }
         }
 
         [HttpPatch("{id}")]

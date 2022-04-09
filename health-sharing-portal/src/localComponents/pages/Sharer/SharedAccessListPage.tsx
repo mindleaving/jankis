@@ -22,7 +22,10 @@ export const SharedAccessListPage = (props: SharedAccessListPageProps) => {
             </Row>
             <AccessRequestList />
             <h2>{resolveText("SharedAccess_GrantedAccess")}</h2>
-            <SharedAccessList />
+            <SharedAccessList
+                hasCreateNewButton
+                onCreateNew={() => navigate("/create/emergency")}
+            />
         </>
     );
 

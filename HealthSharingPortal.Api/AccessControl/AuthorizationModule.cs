@@ -58,6 +58,19 @@ namespace HealthSharingPortal.API.AccessControl
                     return new PersonDataAccessGrant(personId, allPermissions);
                 }
             }
+            else if (accountType == AccountType.EmergencyGuest)
+            {
+                var emergencyAccessId = claims.TryGetValue(JwtSecurityTokenBuilder.EmergencyAccessIdClaimName);
+                var emergencyAccess = await emergencyAccessStore.GetByIdAsync(emergencyAccessId);
+                if (!IsEmergencyAccessActive(emergencyAccess))
+                    return new PersonDataAccessGrant(personId, new List<AccessPermissions>());
+                var emergencyPersonId = claims.TryGetValue(JwtSecurityTokenBuilder.EmergencyPersonIdClaimName);
+                if (emergencyPersonId == personId)
+                {
+                    var emergencyPermissions = claims.TryGetEmergencyPermissions(JwtSecurityTokenBuilder.EmergencyPermissionsClaimName);
+                    return new PersonDataAccessGrant(personId, emergencyPermissions);
+                }
+            }
             else if (accountType == AccountType.HealthProfessional)
             {
                 var utcNow = DateTime.UtcNow;
@@ -129,6 +142,20 @@ namespace HealthSharingPortal.API.AccessControl
                     new PersonDataAccessGrant(currentUserPersonId, allPermissions)
                 };
             }
+
+            if (accountType == AccountType.EmergencyGuest)
+            {
+                var emergencyAccessId = claims.TryGetValue(JwtSecurityTokenBuilder.EmergencyAccessIdClaimName);
+                var emergencyAccess = await emergencyAccessStore.GetByIdAsync(emergencyAccessId);
+                if (!IsEmergencyAccessActive(emergencyAccess))
+                    return new List<IPersonDataAccessGrant>();
+                var emergencyPersonId = claims.TryGetValue(JwtSecurityTokenBuilder.EmergencyPersonIdClaimName);
+                var emergencyPermissions = claims.TryGetEmergencyPermissions(JwtSecurityTokenBuilder.EmergencyPermissionsClaimName);
+                return new List<IPersonDataAccessGrant>
+                {
+                    new PersonDataAccessGrant(emergencyPersonId, emergencyPermissions)
+                };
+            }
             if (accountType == AccountType.HealthProfessional)
             {
                 var utcNow = DateTime.UtcNow;
@@ -163,6 +190,17 @@ namespace HealthSharingPortal.API.AccessControl
             }
 
             return new List<IPersonDataAccessGrant>();
+        }
+
+        private bool IsEmergencyAccessActive(EmergencyAccess emergencyAccess)
+        {
+            if (emergencyAccess == null)
+                return false;
+            if (emergencyAccess.IsRevoked)
+                return false;
+            if (emergencyAccess.AccessEndTimestamp != null && emergencyAccess.AccessEndTimestamp < DateTime.UtcNow)
+                return false;
+            return true;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TypescriptGenerator.Attributes;
 
 namespace HealthModels.AccessControl
 {
@@ -7,6 +8,7 @@ namespace HealthModels.AccessControl
     {
         SharedAccessType Type { get; }
         List<AccessPermissions> Permissions { get; }
+        [TypescriptIsOptional]
         string AccessReceiverUsername { get; }
         string SharerPersonId { get; }
         DateTime AccessGrantedTimestamp { get; }

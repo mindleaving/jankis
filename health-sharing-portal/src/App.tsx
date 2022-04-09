@@ -1,7 +1,6 @@
 import { ReactNode, useState } from 'react';
-import { Col, Container, Row } from 'react-bootstrap';
 import { Route, Routes, useNavigate } from 'react-router-dom';
-import { Layout } from './Layout';
+import { Layout } from './localComponents/components/Layout';
 import UserContext from './localComponents/contexts/UserContext';
 import { AccountsPage } from './localComponents/pages/UserManagement/AccountsPage';
 import { AdminHomePage } from './localComponents/pages/Admin/AdminHomePage';
@@ -52,6 +51,9 @@ import { differenceInMilliseconds } from 'date-fns';
 import { extractJwtBody } from './sharedCommonComponents/helpers/JwtHelpers';
 import { RequestEmergencyAccessPage } from './localComponents/pages/HealthProfessional/RequestEmergencyAccessPage';
 import { EditPersonPage } from './sharedHealthComponents/pages/Patients/EditPersonPage';
+import { CreateEmergencyAccessTokenPage } from './localComponents/pages/Sharer/CreateEmergencyAccessTokenPage';
+import { EmergencyPage } from './localComponents/pages/EmergencyPage';
+import { NoUserLayout } from './localComponents/components/NoUserLayout';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";
@@ -71,7 +73,7 @@ export const App = (props: AppProps) => {
             : undefined
         );
     const navigate = useNavigate();
-    const onLoggedIn = (userViewModel: ViewModels.LoggedInUserViewModel) => {
+    const onLoggedIn = (userViewModel: ViewModels.LoggedInUserViewModel, redirectUrl?: string) => {
         if (userViewModel.authenticationResult.isAuthenticated) {
             apiClient.instance!.setAccessToken(userViewModel.authenticationResult.accessToken!);
             sessionStorage.setItem(accessTokenSessionStorageKey, userViewModel.authenticationResult.accessToken!);
@@ -82,7 +84,7 @@ export const App = (props: AppProps) => {
             const now = new Date();
             const millisecondsUntilExpiration = differenceInMilliseconds(expirationDateTime, now);
             setTimeout(() => onLogOut(), millisecondsUntilExpiration-60*1000);
-            navigate("/");
+            navigate(redirectUrl ?? "/");
         }
     }
     const onLogOut = () => {
@@ -94,18 +96,15 @@ export const App = (props: AppProps) => {
 
     if (!loggedInUser) {
         return (
-            <Container>
-                <Row>
-                    <Col>
-                        <Routes>
-                            <Route path="/login/:role" element={<LoginPage onLoggedIn={onLoggedIn} />} />
-                            <Route path="/register/:role" element={<RegisterAccountPage />} />
-                            <Route path="/create/account" element={<AccountEditPage />} />
-                            <Route path="/" element={<HomePage />} />
-                        </Routes>
-                    </Col>
-                </Row>
-            </Container>
+            <NoUserLayout>
+                <Routes>
+                    <Route path="/emergency/:emergencyToken" element={<EmergencyPage onGuestLogin={onLoggedIn} />} />
+                    <Route path="/login/:role" element={<LoginPage onLoggedIn={onLoggedIn} />} />
+                    <Route path="/register/:role" element={<RegisterAccountPage />} />
+                    <Route path="/create/account" element={<AccountEditPage />} />
+                    <Route path="/" element={<HomePage />} />
+                </Routes>
+            </NoUserLayout>
         );
     }
 
@@ -148,6 +147,9 @@ export const App = (props: AppProps) => {
         },
         { path: '/sharedaccess', element: <SharedAccessListPage />, audience: [ AccountType.Sharer ]},
         { path: '/create/emergency', element: <RequestEmergencyAccessPage />, audience: [ AccountType.HealthProfessional ]},
+        { path: '/emergency/:emergencyToken', element: <RequestEmergencyAccessPage />, audience: [ AccountType.HealthProfessional ]},
+        { path: '/create/emergency', element: <CreateEmergencyAccessTokenPage />, audience: [ AccountType.Sharer ]},
+        { path: '/show/emergencytoken/:accessId', element: <CreateEmergencyAccessTokenPage />, audience: [ AccountType.Sharer ]},
 
         { path: '/accounts', element: <AccountsPage />, audience: [ AccountType.Admin ]},
         { path: '/create/account', element: <AccountEditPage />, audience: [ AccountType.Admin ]},
@@ -156,19 +158,19 @@ export const App = (props: AppProps) => {
 
         { path: '/patients', element: <PatientsListPage />, audience: [ AccountType.HealthProfessional ]},
 
-        { path: '/healthrecord/:personId', element: <HealthRecordPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
-        { path: '/healthrecord/:personId/timeline', element: <PatientTimelinePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
-        { path: '/healthrecord/:personId/medications', element: <PatientMedicationsPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
-        { path: '/healthrecord/:personId/create/testresult', element: <CreatePatientTestResultPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
-        { path: '/healthrecord/:personId/create/observation', element: <CreatePatientObservationPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
-        { path: '/healthrecord/:personId/create/diagnosis', element: <CreateDiagnosisPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
-        { path: '/healthrecord/:personId/edit/diagnosis/:diagnosisId', element: <CreateDiagnosisPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
-        { path: '/healthrecord/:personId/create/document', element: <CreatePatientDocumentPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
-        { path: '/healthrecord/:personId/create/note', element: <CreatePatientNotePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
-        { path: '/healthrecord/:personId/add/questionnaire', element: <AssignQuestionnairePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
-        { path: '/medicationschedules/:scheduleId/edit', element: <EditMedicationSchedulePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId', element: <HealthRecordPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/timeline', element: <PatientTimelinePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/medications', element: <PatientMedicationsPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/create/testresult', element: <CreatePatientTestResultPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/create/observation', element: <CreatePatientObservationPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/create/diagnosis', element: <CreateDiagnosisPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/edit/diagnosis/:diagnosisId', element: <CreateDiagnosisPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/create/document', element: <CreatePatientDocumentPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/create/note', element: <CreatePatientNotePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/add/questionnaire', element: <AssignQuestionnairePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
+        { path: '/medicationschedules/:scheduleId/edit', element: <EditMedicationSchedulePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/upload/imaging', element: <ImagingUploadPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
-        { path: '/healthrecord/:personId/imaging/:dicomStudyId', element: <ImagingExplorationPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/imaging/:dicomStudyId', element: <ImagingExplorationPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/upload/genome', element: <GenomeUploadPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/genome', element: <GenomeExplorationPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/questionnaire/:questionnaireId/answer', element: <AnswerQuestionnairePage />, audience: [ AccountType.Sharer ]},

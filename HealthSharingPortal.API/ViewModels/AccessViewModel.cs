@@ -7,5 +7,6 @@ namespace HealthSharingPortal.API.ViewModels
     {
         public Person SharerProfileData { get; set; }
         public ISharedAccess Access { get; set; }
+        public bool HasEmergencyToken { get; set; }
     }
 }

@@ -2,13 +2,14 @@ import React, { PropsWithChildren, useContext } from 'react';
 import { Container, Row, Col, Navbar, Nav } from 'react-bootstrap';
 import { NotificationContainer } from 'react-notifications';
 import { useNavigate } from 'react-router-dom';
-import { AdminMenu } from './localComponents/components/Menus/AdminMenu';
-import { HealthProfessionalMenu } from './localComponents/components/Menus/HealthProfessionalMenu';
-import { LoggedInUser } from './localComponents/components/Menus/LoggedInUser';
-import { ResearcherMenu } from './localComponents/components/Menus/ResearcherMenu';
-import { SharerMenu } from './localComponents/components/Menus/SharerMenu';
-import UserContext from './localComponents/contexts/UserContext';
-import { AccountType } from './localComponents/types/enums.d';
+import { AdminMenu } from './Menus/AdminMenu';
+import { HealthProfessionalMenu } from './Menus/HealthProfessionalMenu';
+import { LoggedInUser } from './Menus/LoggedInUser';
+import { ResearcherMenu } from './Menus/ResearcherMenu';
+import { SharerMenu } from './Menus/SharerMenu';
+import UserContext from '../contexts/UserContext';
+import { AccountType } from '../types/enums.d';
+import { EmergencyGuestMenu } from './Menus/EmergencyGuestMenu';
 
 interface LayoutProps extends React.PropsWithChildren<{}> {
     onLogOut: () => void;
@@ -32,6 +33,9 @@ export const Layout = (props: PropsWithChildren<LayoutProps>) => {
             break;
         case AccountType.Sharer:
             userTypeMenus = (<SharerMenu />);
+            break;
+        case AccountType.EmergencyGuest:
+            userTypeMenus = (<EmergencyGuestMenu />);
             break;
     }
     if(user?.accountType === AccountType.Sharer) {

@@ -331,6 +331,7 @@ export enum AccountType {
     Sharer = "Sharer",
     HealthProfessional = "HealthProfessional",
     Researcher = "Researcher",
+    EmergencyGuest = "EmergencyGuest",
     Admin = "Admin"
 }
 export enum AuthenticationErrorType {

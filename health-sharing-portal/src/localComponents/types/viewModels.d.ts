@@ -5,6 +5,7 @@ export namespace ViewModels {
     interface AccessViewModel extends ViewModels.IViewModel<Models.AccessControl.ISharedAccess> {
         sharerProfileData: Models.Person;
         access: Models.AccessControl.ISharedAccess;
+        hasEmergencyToken: boolean;
     }
 
     interface AccountCreationInfo {
@@ -21,6 +22,11 @@ export namespace ViewModels {
 
     interface DiagnosisViewModel extends Models.Diagnoses.Diagnosis, ViewModels.IViewModel<Models.Diagnoses.Diagnosis> {
         name: string;
+    }
+
+    interface GuestEmergencyAccessViewModel {
+        user: ViewModels.LoggedInUserViewModel;
+        accessInfo: Models.AccessControl.EmergencyAccess;
     }
 
     interface IViewModel<T> {

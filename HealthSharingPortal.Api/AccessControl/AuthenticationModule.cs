@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthModels.AccessControl;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
 
@@ -54,6 +56,15 @@ namespace HealthSharingPortal.API.AccessControl
         public async Task<AuthenticationResult> BuildSecurityTokenForUser(Person person, Account account)
         {
             var token = await securityTokenBuilder.BuildForUser(person, account);
+            return AuthenticationResult.Success(token);
+        }
+
+        public async Task<AuthenticationResult> BuildSecurityTokenForGuest(
+            string emergencyPersonId,
+            IList<AccessPermissions> permissions,
+            string emergencyAccessId)
+        {
+            var token = await securityTokenBuilder.BuildForGuest(emergencyPersonId, permissions, emergencyAccessId);
             return AuthenticationResult.Success(token);
         }
     }

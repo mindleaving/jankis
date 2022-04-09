@@ -1,6 +1,7 @@
 import { differenceInMinutes, isAfter } from 'date-fns';
 import { useMemo, useState } from 'react';
-import { Badge } from 'react-bootstrap';
+import { Badge, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { PagedTable } from '../../../sharedCommonComponents/components/PagedTable';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
@@ -14,10 +15,14 @@ import { SharedAccessType } from '../../types/enums.d';
 import { Models } from '../../types/models';
 import { ViewModels } from '../../types/viewModels';
 
-interface SharedAccessListProps {}
+interface SharedAccessListProps {
+    hasCreateNewButton?: boolean;
+    onCreateNew?: () => void;
+}
 
 export const SharedAccessList = (props: SharedAccessListProps) => {
 
+    const navigate = useNavigate();
     const [ accesses, setAccesses ] = useState<ViewModels.AccessViewModel[]>([]);
     const [ filter, setFilter ] = useState<Models.Filters.SharedAccessFilter>({});
     const accessesLoader = useMemo(() => new PagedTableLoader<ViewModels.AccessViewModel>(
@@ -51,6 +56,8 @@ export const SharedAccessList = (props: SharedAccessListProps) => {
                 onPageChanged={accessesLoader.load}
                 orderBy="endTime"
                 orderDirection={OrderDirection.Descending}
+                hasCreateNewButton={props.hasCreateNewButton}
+                onCreateNew={props.onCreateNew}
             >
                 <thead>
                     <tr>
@@ -68,7 +75,7 @@ export const SharedAccessList = (props: SharedAccessListProps) => {
                         const now = new Date();
                         const endTime = !!access.accessEndTimestamp ? new Date(access.accessEndTimestamp) : null; 
                         const isExpired = !!endTime ? isAfter(now, endTime) : false;
-                        const remainingTimeInMinutes = !isExpired ? differenceInMinutes(endTime!, now) : 0;
+                        const remainingTimeInMinutes = !isExpired && endTime ? differenceInMinutes(endTime!, now) : 0;
                         return (
                         <tr key={access.id}>
                             <td>
@@ -78,12 +85,25 @@ export const SharedAccessList = (props: SharedAccessListProps) => {
                             </td>
                             <td>{access.accessReceiverUsername}</td>
                             <td>
-                                {!access.accessEndTimestamp ? resolveText("SharedAccess_NoExpiration") : formatDate(new Date(access.accessEndTimestamp))}
-                                <div>
+                                {!endTime ? resolveText("SharedAccess_NoExpiration") : formatDate(endTime)}
+                                {endTime 
+                                ? <div>
                                     {access.isRevoked   ? <Badge pill bg="danger">{resolveText("Revoked")}</Badge> 
                                     : isExpired         ? <Badge pill bg="danger">{resolveText("Expired")}</Badge> 
                                     : <small>{resolveText("Remaining")}: {remainingTimeInMinutes} min.</small>}
                                 </div>
+                                : null}
+                                {vm.hasEmergencyToken 
+                                ? <div>
+                                    <Button
+                                        className="py-0"
+                                        size="sm"
+                                        onClick={() => navigate(`/show/emergencytoken/${access.id}`)}
+                                    >
+                                        {resolveText("EmergencyAccess_ShowToken")}
+                                    </Button>
+                                </div> 
+                                : null}
                             </td>
                             <td>
                                 {!isExpired
@@ -91,7 +111,7 @@ export const SharedAccessList = (props: SharedAccessListProps) => {
                                     onClick={() => revokeAccess(access.type, access.id)}
                                     requireConfirm
                                     confirmDialogTitle={resolveText("SharedAccess_ConfirmRevoke_Title")}
-                                    confirmDialogMessage={resolveText("SharedAccess_ConfirmRevoke_Message").replace("{0}", access.accessReceiverUsername)}
+                                    confirmDialogMessage={resolveText("SharedAccess_ConfirmRevoke_Message").replace("{0}", access.accessReceiverUsername ?? '')}
                                 />
                                 : null}
                             </td>

@@ -1,7 +1,7 @@
-import React, { FormEvent, useContext, useState } from 'react';
+import React, { FormEvent, useContext, useEffect, useState } from 'react';
 import { Col, Form, FormCheck, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { NotificationManager } from 'react-notifications';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { AsyncButton } from '../../../sharedCommonComponents/components/AsyncButton';
@@ -15,6 +15,7 @@ interface RequestEmergencyAccessPageProps {}
 export const RequestEmergencyAccessPage = (props: RequestEmergencyAccessPageProps) => {
 
     const user = useContext(UserContext);
+    const { emergencyToken } = useParams();
     const [ hasAgreedToTerms, setHasAgreedToTerms ] = useState<boolean>(false);
     const [ personId, setPersonId ] = useState<string>('');
     const [ personFirstName, setPersonFirstName ] = useState<string>('');
@@ -23,17 +24,18 @@ export const RequestEmergencyAccessPage = (props: RequestEmergencyAccessPageProp
     const [ isEstablishingAccess, setIsEstablishingAccess ] = useState<boolean>(false);
 
     const navigate = useNavigate();
-    const establishAccess = async (e:FormEvent) => {
-        e.preventDefault();
+    const establishAccess = async (e?: FormEvent) => {
+        e?.preventDefault();
         try {
             setIsEstablishingAccess(true);
             const emergencyRequest: Models.AccessControl.EmergencyAccessRequest = {
                 id: uuid(),
                 type: SharedAccessType.Emergency,
-                accessReceiverUsername: user!.username,
-                sharerPersonId: personId,
                 createdTimestamp: new Date(),
                 isCompleted: false,
+                accessReceiverUsername: user!.username,
+                sharerPersonId: personId,
+                emergencyToken: emergencyToken,
                 targetPersonFirstName: personFirstName,
                 targetPersonLastName: personLastName,
                 targetPersonBirthdate: personBirthdate ? new Date(personBirthdate) : undefined
@@ -47,6 +49,13 @@ export const RequestEmergencyAccessPage = (props: RequestEmergencyAccessPageProp
             setIsEstablishingAccess(false);
         }
     }
+
+    useEffect(() => {
+        if(!emergencyToken) {
+            return;
+        }
+        establishAccess();
+    }, [ emergencyToken ]);
 
     return (
         <>

@@ -6,14 +6,17 @@ using System.Threading.Tasks;
 using Commons.Extensions;
 using HealthModels;
 using HealthModels.AccessControl;
+using HealthModels.Interview;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
+using HealthSharingPortal.API.ViewModels;
 using HealthSharingPortal.API.Workflow;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using IAuthenticationModule = HealthSharingPortal.API.AccessControl.IAuthenticationModule;
 
 namespace HealthSharingPortal.API.Controllers
 {
@@ -30,6 +33,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IPersonDataReadonlyStore<Person> personStore;
         private readonly IReadonlyStore<Account> accountStore;
         private readonly IAccessRequestDistributor accessRequestDistributor;
+        private readonly IAuthenticationModule authenticationModule;
 
         public AccessRequestsController(
             IHttpContextAccessor httpContextAccessor, 
@@ -39,7 +43,8 @@ namespace HealthSharingPortal.API.Controllers
             IStore<HealthProfessionalAccess> healthProfessionalAccessStore,
             IPersonDataReadonlyStore<Person> personStore,
             IReadonlyStore<Account> accountStore,
-            IAccessRequestDistributor accessRequestDistributor)
+            IAccessRequestDistributor accessRequestDistributor,
+            IAuthenticationModule authenticationModule)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.emergencyRequestStore = emergencyRequestStore;
@@ -49,6 +54,7 @@ namespace HealthSharingPortal.API.Controllers
             this.personStore = personStore;
             this.accountStore = accountStore;
             this.accessRequestDistributor = accessRequestDistributor;
+            this.authenticationModule = authenticationModule;
         }
 
         [HttpGet]
@@ -115,6 +121,61 @@ namespace HealthSharingPortal.API.Controllers
             return Ok(emergencyAccess);
         }
 
+        [AllowAnonymous]
+        [HttpPost("guest/create/emergency")]
+        public async Task<IActionResult> CreateEmergencyGuestAccess(
+            [FromBody] EmergencyAccessRequest guestAccessRequest,
+            [FromQuery] Language language = Language.en)
+        {
+            if (string.IsNullOrWhiteSpace(guestAccessRequest.EmergencyToken))
+                return BadRequest("Guest access can only be granted by providing an emergency token, but it was empty");
+            var utcNow = DateTime.UtcNow;
+            guestAccessRequest.Id = Guid.NewGuid().ToString();
+            guestAccessRequest.AccessReceiverUsername = "guest";
+            guestAccessRequest.CreatedTimestamp = utcNow;
+            await emergencyRequestStore.StoreAsync(guestAccessRequest);
+            var emergencyToken = await emergencyAccessStore.FirstOrDefaultAsync(x => 
+                x.Token == guestAccessRequest.EmergencyToken
+                && !x.IsRevoked
+                && (x.AccessEndTimestamp == null || x.AccessEndTimestamp > utcNow));
+            if (emergencyToken == null)
+                return NotFound("Invalid emergency token");
+            var matchingPerson = await personStore.GetByIdAsync(emergencyToken.SharerPersonId, AccessGrantHelpers.GrantReadAccessToAllPersons());
+            if (matchingPerson == null)
+                return NotFound("No matching person");
+            guestAccessRequest.SharerPersonId = matchingPerson.Id;
+            guestAccessRequest.IsCompleted = true;
+            guestAccessRequest.CompletedTimestamp = utcNow;
+            await emergencyRequestStore.StoreAsync(guestAccessRequest);
+            var guestEmergencyAccess = new EmergencyAccess
+            {
+                Id = guestAccessRequest.Id,
+                AccessReceiverUsername = "guest",
+                SharerPersonId = matchingPerson.Id,
+                AccessGrantedTimestamp = utcNow,
+                AccessEndTimestamp = utcNow.AddMinutes(60)
+            };
+            await emergencyAccessStore.StoreAsync(guestEmergencyAccess);
+            var profileData = new Person(null, "Guest", "Guest", DateTime.UtcNow, Sex.Other);
+            var authenticationResult = await authenticationModule.BuildSecurityTokenForGuest(
+                matchingPerson.Id, 
+                emergencyToken.Permissions, 
+                emergencyToken.Id);
+            var userViewModel = new LoggedInUserViewModel(
+                profileData,
+                authenticationResult,
+                "guest",
+                false,
+                AccountType.EmergencyGuest,
+                language);
+            var guestEmergencyAccessViewModel = new GuestEmergencyAccessViewModel
+            {
+                User = userViewModel,
+                AccessInfo = guestEmergencyAccess
+            };
+            return Ok(guestEmergencyAccessViewModel);
+        }
+
         private async Task<Person> FindMatchingPerson(EmergencyAccessRequest emergencyAccessRequest)
         {
             if (!string.IsNullOrEmpty(emergencyAccessRequest.SharerPersonId))
@@ -123,6 +184,15 @@ namespace HealthSharingPortal.API.Controllers
                 return await personStore.GetByIdAsync(
                     emergencyAccessRequest.SharerPersonId,
                     emergencyReadAccessGrant);
+            }
+            if (!string.IsNullOrWhiteSpace(emergencyAccessRequest.EmergencyToken))
+            {
+                var emergencyAccess = await emergencyAccessStore.FirstOrDefaultAsync(x => x.Token == emergencyAccessRequest.EmergencyToken);
+                if (emergencyAccess == null)
+                    return null;
+                var emergencyReadAccessGrant = AccessGrantHelpers.GrantReadAccessToAllPersons();
+                var matchingPerson = await personStore.GetByIdAsync(emergencyAccess.SharerPersonId, emergencyReadAccessGrant);
+                return matchingPerson;
             }
             else
             {

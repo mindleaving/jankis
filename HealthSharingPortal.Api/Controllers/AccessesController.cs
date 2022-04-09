@@ -29,21 +29,43 @@ namespace HealthSharingPortal.API.Controllers
         private readonly SharedAccessFilterer accessFilterer;
         private readonly IViewModelBuilder<ISharedAccess> viewModelBuilder;
         private readonly IAuthorizationModule authorizationModule;
+        private readonly IEmergencyTokenGenerator emergencyTokenGenerator;
 
         public AccessesController(
             IStore<EmergencyAccess> emergencyAccessStore,
             IStore<HealthProfessionalAccess> healthProfessionalAccessStore,
             IHttpContextAccessor httpContextAccessor,
             IViewModelBuilder<ISharedAccess> viewModelBuilder,
-            IAuthorizationModule authorizationModule)
+            IAuthorizationModule authorizationModule,
+            IEmergencyTokenGenerator emergencyTokenGenerator)
         {
             this.emergencyAccessStore = emergencyAccessStore;
             this.healthProfessionalAccessStore = healthProfessionalAccessStore;
             this.httpContextAccessor = httpContextAccessor;
             this.viewModelBuilder = viewModelBuilder;
             this.authorizationModule = authorizationModule;
+            this.emergencyTokenGenerator = emergencyTokenGenerator;
             accessFilterer = new SharedAccessFilterer();
         }
+
+        [HttpGet("emergency/{id}")]
+        public async Task<IActionResult> GetEmergencyAccessById([FromRoute] string id,
+            [FromQuery] bool includeToken = false)
+        {
+            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
+            if (accountType != AccountType.Sharer)
+                return Forbid("Only sharers can access their own emergency accesses");
+            var emergencyAccess = await emergencyAccessStore.GetByIdAsync(id);
+            if (emergencyAccess == null)
+                return NotFound();
+            var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
+            if (emergencyAccess.SharerPersonId != personId)
+                return NotFound();
+            if (!includeToken)
+                emergencyAccess.Token = null;
+            return Ok(emergencyAccess);
+        }
+
 
         [HttpGet]
         [HttpGet("search")]
@@ -55,7 +77,8 @@ namespace HealthSharingPortal.API.Controllers
             int? count = null,
             int? skip = null,
             string orderBy = null,
-            OrderDirection orderDirection = OrderDirection.Ascending)
+            OrderDirection orderDirection = OrderDirection.Ascending,
+            bool includeEmergencyTokens = false)
         {
             var filter = new SharedAccessFilter
             {
@@ -99,21 +122,34 @@ namespace HealthSharingPortal.API.Controllers
             var accessGrants = await authorizationModule.GetAccessGrants(claims);
             var transformedAccesses = await viewModelBuilder.BatchBuild(
                 filteredAccesses.ToList(), 
-                new AccessViewModelBuilderOptions { AccessGrants = accessGrants });
+                new AccessViewModelBuilderOptions
+                {
+                    AccessGrants = accessGrants,
+                    IncludeEmergencyTokens = includeEmergencyTokens
+                });
             return Ok(transformedAccesses);
         }
 
-        private Func<ISharedAccess, object> BuildOrderByExpression(string orderBy)
+        [HttpPost("create/emergency")]
+        public async Task<IActionResult> CreateEmergencyToken([FromBody] EmergencyAccess access)
         {
-            return orderBy?.ToLower() switch
-            {
-                "type" => x => x.Type,
-                "receiver" => x => x.AccessReceiverUsername,
-                "starttime" => x => x.AccessGrantedTimestamp,
-                "endtime" => x => x.AccessEndTimestamp,
-                _ => x => x.AccessGrantedTimestamp
-            };
+            if (access == null)
+                return BadRequest("Missing body");
+            var isExpired = access.AccessEndTimestamp != null && access.AccessEndTimestamp < DateTime.UtcNow;
+            if (access.IsRevoked || isExpired)
+                return BadRequest("Access is marked as revoked or is already expired, which is not valid for creating emergency tokens");
+            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
+            if (accountType != AccountType.Sharer)
+                return Forbid("Only sharers can create emergency tokens to their profiles");
+            access.Id = Guid.NewGuid().ToString();
+            var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
+            access.SharerPersonId = personId;
+            access.Token = emergencyTokenGenerator.Generate();
+            access.AccessGrantedTimestamp = DateTime.UtcNow;
+            await emergencyAccessStore.StoreAsync(access);
+            return Ok(access);
         }
+
 
         [HttpPost("{accessType}/{accessId}/revoke")]
         public async Task<IActionResult> RevokeAccess([FromRoute] SharedAccessType accessType, [FromRoute] string accessId)
@@ -151,13 +187,21 @@ namespace HealthSharingPortal.API.Controllers
             return Ok();
         }
 
+        private Func<ISharedAccess, object> BuildOrderByExpression(string orderBy)
+        {
+            return orderBy?.ToLower() switch
+            {
+                "type" => x => x.Type,
+                "receiver" => x => x.AccessReceiverUsername,
+                "starttime" => x => x.AccessGrantedTimestamp,
+                "endtime" => x => x.AccessEndTimestamp,
+                _ => x => x.AccessGrantedTimestamp
+            };
+        }
+
         private bool CanModifyAccess(ISharedAccess access, string personId)
         {
-            if(access.SharerPersonId == personId)
-                return true;
-            if (access.AccessReceiverUsername == personId)
-                return true;
-            return false;
+            return access.SharerPersonId == personId;
         }
     }
 }

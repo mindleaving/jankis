@@ -1,19 +1,21 @@
-import React, { FormEvent, useState } from 'react';
-import { Button, Col, Container, Form, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
-import { NotificationManager, NotificationContainer } from 'react-notifications';
+import { FormEvent, useState } from 'react';
+import { Button, Col, Form, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
+import { NotificationManager } from 'react-notifications';
 import { ViewModels } from '../types/viewModels';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { apiClient } from '../../sharedCommonComponents/communication/ApiClient';
 import { AsyncButton } from '../../sharedCommonComponents/components/AsyncButton';
 import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
 
 interface LoginPageProps {
-    onLoggedIn: (userViewModel: ViewModels.LoggedInUserViewModel) => void;
+    onLoggedIn: (userViewModel: ViewModels.LoggedInUserViewModel, redirectUrl?: string) => void;
 }
 
 export const LoginPage = (props: LoginPageProps) => {
 
     const { role } = useParams();
+    const [ query ] = useSearchParams();
+    const redirectUrl = query.get("redirectUrl");
     const [ username, setUsername ] = useState<string>('');
     const [ password, setPassword ] = useState<string>('');
     const [ isLoggingIn, setIsLoggingIn ] = useState<boolean>(false);
@@ -24,7 +26,7 @@ export const LoginPage = (props: LoginPageProps) => {
             setIsLoggingIn(true);
             const response = await apiClient.instance!.post(`api/accounts/${username}/login`, {}, `"${password}"`);
             const userViewModel = await response.json() as ViewModels.LoggedInUserViewModel;
-            props.onLoggedIn(userViewModel);
+            props.onLoggedIn(userViewModel, redirectUrl ?? undefined);
         } catch(error: any) {
             NotificationManager.error(error.message, resolveText('Login_CouldNotLogIn'));
         } finally {
@@ -35,9 +37,7 @@ export const LoginPage = (props: LoginPageProps) => {
     const navigate = useNavigate();
     return (
         <>
-            <NotificationContainer />
             <Form onSubmit={login}>
-            <Container>
                 <Row style={{ marginTop: '200px' }}>
                     <Col>
                         <h1>{resolveText('HealthSharingPortal')}</h1>
@@ -84,7 +84,6 @@ export const LoginPage = (props: LoginPageProps) => {
                     </Col>
                     <Col></Col>
                 </Row>
-            </Container>
             </Form>
         </>
     );

@@ -684,13 +684,14 @@ export namespace Models {
         }
     
         interface EmergencyAccess extends Models.AccessControl.ISharedAccess {
-            
+            token?: string;
         }
     
         interface EmergencyAccessRequest extends Models.IId {
             type: Enums.SharedAccessType;
             accessReceiverUsername: string;
             sharerPersonId?: string;
+            emergencyToken?: string;
             createdTimestamp: Date;
             isCompleted: boolean;
             completedTimestamp?: Date | null;
@@ -738,7 +739,7 @@ export namespace Models {
         interface ISharedAccess extends Models.IId {
             type: Enums.SharedAccessType;
             permissions: Enums.AccessPermissions[];
-            accessReceiverUsername: string;
+            accessReceiverUsername?: string;
             sharerPersonId: string;
             accessGrantedTimestamp: Date;
             accessEndTimestamp?: Date | null;

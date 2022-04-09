@@ -13,10 +13,12 @@ namespace HealthModels.AccessControl
         public string AccessReceiverUsername { get; set; }
         /// <summary>
         /// Person ID of person that is in distress and which profile is requested.
-        /// If the person ID is not provided, the first name, last name and birthdate must be provided
+        /// Either the person ID, an emergency token or first name, last name and birthdate must be provided
         /// </summary>
         [TypescriptIsOptional]
         public string SharerPersonId { get; set; }
+        [TypescriptIsOptional]
+        public string EmergencyToken { get; set; }
         public DateTime CreatedTimestamp { get; set; }
         public bool IsCompleted { get; set; }
         public DateTime? CompletedTimestamp { get; set; }

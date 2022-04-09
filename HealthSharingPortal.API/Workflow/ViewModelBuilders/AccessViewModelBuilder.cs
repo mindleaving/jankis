@@ -14,6 +14,7 @@ namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
     public class AccessViewModelBuilderOptions : IViewModelBuilderOptions<ISharedAccess>
     {
         public List<IPersonDataAccessGrant> AccessGrants { get; set; }
+        public bool IncludeEmergencyTokens { get; set; }
     }
     public class AccessViewModelBuilder : IViewModelBuilder<ISharedAccess>
     {
@@ -53,10 +54,17 @@ namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
                 if(!personDictionary.ContainsKey(model.SharerPersonId))
                     continue;
                 var sharer = personDictionary[model.SharerPersonId];
+                var hasEmergencyToken = false;
+                if (model is EmergencyAccess emergencyAccess && !typedOptions.IncludeEmergencyTokens)
+                {
+                    hasEmergencyToken = emergencyAccess.Token != null;
+                    emergencyAccess.Token = null;
+                }
                 var viewModel = new AccessViewModel
                 {
                     SharerProfileData = sharer,
-                    Access = model
+                    Access = model,
+                    HasEmergencyToken = hasEmergencyToken
                 };
                 viewModels.Add(viewModel);
             }

@@ -2,9 +2,10 @@
 {
     public enum AccountType
     {
-        Sharer,
-        HealthProfessional,
-        Researcher,
-        Admin
+        Sharer = 1,
+        HealthProfessional = 2,
+        Researcher = 3,
+        EmergencyGuest = 4,
+        Admin = 5
     }
 }
