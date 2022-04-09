@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels.Interview;
 using HealthModels.Services;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Controllers;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
@@ -32,6 +33,7 @@ namespace JanKIS.API.Controllers
         private readonly ServiceRequestChangePolicy serviceRequestChangePolicy;
         private readonly INotificationDistributor notificationDistributor;
         private readonly ISubscriptionsStore subscriptionsStore;
+        private readonly IAuthorizationModule authorizationModule;
 
         public ServiceRequestsController(
             IServiceRequestsStore serviceRequestsStore,
@@ -40,7 +42,8 @@ namespace JanKIS.API.Controllers
             IReadonlyStore<InstitutionPolicy> institutionPolicyStore,
             ServiceRequestChangePolicy serviceRequestChangePolicy,
             INotificationDistributor notificationDistributor,
-            ISubscriptionsStore subscriptionsStore)
+            ISubscriptionsStore subscriptionsStore,
+            IAuthorizationModule authorizationModule)
             : base(serviceRequestsStore, httpContextAccessor)
         {
             this.serviceRequestsStore = serviceRequestsStore;
@@ -48,6 +51,7 @@ namespace JanKIS.API.Controllers
             this.serviceRequestChangePolicy = serviceRequestChangePolicy;
             this.notificationDistributor = notificationDistributor;
             this.subscriptionsStore = subscriptionsStore;
+            this.authorizationModule = authorizationModule;
             this.accountsStore = accountsStore;
         }
 
@@ -78,8 +82,10 @@ namespace JanKIS.API.Controllers
                 return NotFound();
             var username = ControllerHelpers.GetUsername(httpContextAccessor);
             var account = await accountsStore.GetByIdAsync(username);
+            var claims = ControllerHelpers.GetClaims(httpContextAccessor);
+            var accessGrants = await authorizationModule.GetAccessGrants(claims);
             var institutionPolicy = await institutionPolicyStore.GetByIdAsync(InstitutionPolicy.DefaultId);
-            if (!await serviceRequestChangePolicy.CanChange(existingRequest, account, institutionPolicy))
+            if (!await serviceRequestChangePolicy.CanChange(existingRequest, account, institutionPolicy, accessGrants))
                 return Forbid();
             if (!existingRequest.TrySetState(request.State, out var stateChangeError))
                 return BadRequest(stateChangeError);

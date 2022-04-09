@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using HealthModels;
 using HealthModels.Services;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Storage;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
@@ -12,19 +12,13 @@ namespace JanKIS.API.Workflow
 {
     public class ServiceRequestChangePolicy
     {
-        private readonly IReadonlyStore<ServiceDefinition> servicesStore;
-        private readonly IReadonlyStore<Person> personsStore;
         private readonly IReadonlyStore<Account> accountsStore;
         private readonly IAdmissionsStore admissionsStore;
 
         public ServiceRequestChangePolicy(
-            IReadonlyStore<ServiceDefinition> servicesStore,
-            IReadonlyStore<Person> personsStore,
             IReadonlyStore<Account> accountsStore,
             IAdmissionsStore admissionsStore)
         {
-            this.servicesStore = servicesStore;
-            this.personsStore = personsStore;
             this.accountsStore = accountsStore;
             this.admissionsStore = admissionsStore;
         }
@@ -32,7 +26,8 @@ namespace JanKIS.API.Workflow
         public async Task<bool> CanChange(
             ServiceRequest request,
             Account account,
-            InstitutionPolicy institutionPolicy)
+            InstitutionPolicy institutionPolicy,
+            List<IPersonDataAccessGrant> accessGrants)
         {
             if (request.State != ServiceRequestState.Requested)
                 return false;
@@ -42,7 +37,7 @@ namespace JanKIS.API.Workflow
             {
                 if (!institutionPolicy.UsersFromSameDepartmentCanChangeServiceRequests)
                     return false;
-                var requesterDepartmentIds = await GetDepartmentIds(request.Requester);
+                var requesterDepartmentIds = await GetDepartmentIds(request.Requester, accessGrants);
                 var employeeAccount = (EmployeeAccount) account;
                 if (employeeAccount.DepartmentIds.Intersect(requesterDepartmentIds).Any())
                     return true;
@@ -50,7 +45,7 @@ namespace JanKIS.API.Workflow
             return false;
         }
 
-        private async Task<List<string>> GetDepartmentIds(string personId)
+        private async Task<List<string>> GetDepartmentIds(string personId, List<IPersonDataAccessGrant> accessGrants)
         {
             var departmentIds = new List<string>();
             var account = await accountsStore.GetByIdAsync(personId);
@@ -59,7 +54,7 @@ namespace JanKIS.API.Workflow
             if (account.AccountType == AccountType.Patient)
             {
                 throw new NotImplementedException();
-                var currentAdmission = await admissionsStore.GetCurrentAdmissionAsync(personId);
+                var currentAdmission = await admissionsStore.GetCurrentAdmissionAsync(personId, accessGrants);
                 if (currentAdmission != null)
                 {
                     //departmentIds.AddRange(currentAdmission.BedOccupancies.Select(bedOccupancy => bedOccupancy.DepartmentId));

@@ -1,9 +1,6 @@
-import React from 'react';
 import { Button } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
 import { DiagnosticTestScaleType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
-import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { downloadFile } from '../../../sharedCommonComponents/communication/FileDownloader';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 

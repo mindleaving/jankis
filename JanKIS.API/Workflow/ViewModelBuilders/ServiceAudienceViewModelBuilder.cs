@@ -3,22 +3,26 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using HealthModels;
 using HealthModels.Services;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Storage;
 using HealthSharingPortal.API.ViewModels;
 using HealthSharingPortal.API.Workflow.ViewModelBuilders;
 using JanKIS.API.Models;
-using JanKIS.API.Storage;
 using JanKIS.API.ViewModels;
 
 namespace JanKIS.API.Workflow.ViewModelBuilders
 {
+    public class ServiceAudienceViewModelBuilderOptions : IViewModelBuilderOptions<ServiceAudience>
+    {
+        public List<IPersonDataAccessGrant> AccessGrants { get; set; }
+    }
     public class ServiceAudienceViewModelBuilder : IViewModelBuilder<ServiceAudience>
     {
-        private readonly ICachedReadonlyStore<Person> personsStore;
+        private readonly IPersonDataReadonlyStore<Person> personsStore;
         private readonly ICachedReadonlyStore<Role> rolesStore;
 
         public ServiceAudienceViewModelBuilder(
-            ICachedReadonlyStore<Person> personsStore,
+            IPersonDataReadonlyStore<Person> personsStore,
             ICachedReadonlyStore<Role> rolesStore)
         {
             this.personsStore = personsStore;
@@ -33,8 +37,10 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
             }
             if (model.Type == ServiceAudienceType.Person)
             {
+                if (options is not ServiceAudienceViewModelBuilderOptions typedOptions)
+                    throw new ArgumentException($"{nameof(ServiceAudienceViewModelBuilder)} was called without options, but this is required");
                 var personAudience = (PersonServiceAudience) model;
-                var person = await personsStore.CachedGetByIdAsync(personAudience.PersonId);
+                var person = await personsStore.GetByIdAsync(personAudience.PersonId, typedOptions.AccessGrants);
                 return new ServiceAudienceViewModel(model)
                 {
                     Person = person

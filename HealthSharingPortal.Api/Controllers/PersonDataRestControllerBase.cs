@@ -42,15 +42,7 @@ namespace HealthSharingPortal.API.Controllers
             [FromQuery] Language language = Language.en)
         {
             var accessGrants = await GetAccessGrants();
-            T item;
-            try
-            {
-                item = await store.GetByIdAsync(id, accessGrants);
-            }
-            catch (SecurityException)
-            {
-                return Forbid();
-            }
+            var item = await store.GetByIdAsync(id, accessGrants);
             if (item == null)
                 return NotFound();
             var transformedItem = await TransformItem(item, language);
@@ -91,47 +83,25 @@ namespace HealthSharingPortal.API.Controllers
                 return BadRequest("ID of route doesn't match body");
             var username = ControllerHelpers.GetUsername(httpContextAccessor);
             var accessGrants = await GetAccessGrants();
-            try
-            {
-                var storageOperation = await store.StoreAsync(item, accessGrants);
-                await PublishChange(item, storageOperation, username);
-                return Ok(id);
-            }
-            catch (SecurityException)
-            {
-                return Forbid();
-            }
+            var storageOperation = await store.StoreAsync(item, accessGrants);
+            await PublishChange(item, storageOperation, username);
+            return Ok(id);
         }
 
         [HttpPatch("{id}")]
         public async Task<IActionResult> PartialUpdate([FromRoute] string id, [FromBody] JsonPatchDocument<T> updates)
         {
             var accessGrants = await GetAccessGrants();
-            T item;
-            try
-            {
-                item = await store.GetByIdAsync(id, accessGrants);
-            }
-            catch (SecurityException)
-            {
-                return Forbid();
-            }
+            var item = await store.GetByIdAsync(id, accessGrants);
             if (item == null)
                 return NotFound();
             updates.ApplyTo(item, ModelState);
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            try
-            {
-                await store.StoreAsync(item, accessGrants);
-                var username = ControllerHelpers.GetUsername(httpContextAccessor);
-                await PublishChange(item, StorageOperation.Changed, username);
-                return Ok();
-            }
-            catch (SecurityException)
-            {
-                return Forbid();
-            }
+            await store.StoreAsync(item, accessGrants);
+            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            await PublishChange(item, StorageOperation.Changed, username);
+            return Ok();
         }
 
 
@@ -139,15 +109,8 @@ namespace HealthSharingPortal.API.Controllers
         public virtual async Task<IActionResult> Delete([FromRoute] string id)
         {
             var accessGrants = await GetAccessGrants();
-            try
-            {
-                await store.DeleteAsync(id, accessGrants);
-                return Ok();
-            }
-            catch (SecurityException)
-            {
-                return Forbid();
-            }
+            await store.DeleteAsync(id, accessGrants);
+            return Ok();
         }
 
         protected async Task<List<IPersonDataAccessGrant>> GetAccessGrants()

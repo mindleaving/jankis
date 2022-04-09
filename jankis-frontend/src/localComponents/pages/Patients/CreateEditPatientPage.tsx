@@ -72,6 +72,7 @@ export const CreateEditPatientPage = (props: CreateEditPatientPageProps) => {
     const buildPatient = (): Models.Person => {
         return {
             id,
+            personId: id,
             firstName,
             lastName,
             birthDate: birthday!,

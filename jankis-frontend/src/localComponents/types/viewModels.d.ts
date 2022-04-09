@@ -98,8 +98,19 @@ export namespace ViewModels {
         locationViewModel: ViewModels.LocationViewModel;
     }
 
+    interface AccessViewModel extends ViewModels.IViewModel<Models.AccessControl.ISharedAccess> {
+        sharerProfileData: Models.Person;
+        access: Models.AccessControl.ISharedAccess;
+        hasEmergencyToken: boolean;
+    }
+
     interface DiagnosisViewModel extends Models.Diagnoses.Diagnosis, ViewModels.IViewModel<Models.Diagnoses.Diagnosis> {
         name: string;
+    }
+
+    interface GuestEmergencyAccessViewModel {
+        user: ViewModels.LoggedInUserViewModel;
+        accessInfo: Models.AccessControl.EmergencyAccess;
     }
 
     interface IViewModel<T> {
@@ -121,9 +132,10 @@ export namespace ViewModels {
 
     interface PersonGenomeSequencesViewModel {
         person: Models.Person;
-        referenceSequences: Models.DiagnosticTestResults.DiagnosticTestResult[];
-        testResults: Models.DiagnosticTestResults.DiagnosticTestResult[];
+        referenceSequences: Models.DiagnosticTestResults.NominalDiagnosticTestResult[];
+        testResults: Models.DiagnosticTestResults.DocumentDiagnosticTestResult[];
         documents: Models.PatientDocument[];
+        deployments: Models.GenomeExplorerDeployment[];
     }
 
     interface QuestionnaireAnswersViewModel extends ViewModels.IViewModel<Models.Interview.QuestionnaireAnswers> {
@@ -189,6 +201,10 @@ export namespace ViewModels {
     }
 
     interface IViewModel<Stock> {
+        
+    }
+
+    interface IViewModel<ISharedAccess> {
         
     }
 

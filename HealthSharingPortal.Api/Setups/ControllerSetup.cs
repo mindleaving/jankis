@@ -1,4 +1,5 @@
 ﻿using HealthSharingPortal.API.Converters;
+using HealthSharingPortal.API.Workflow;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -11,7 +12,11 @@ namespace HealthSharingPortal.API.Setups
         public void Run(IServiceCollection services, IConfiguration configuration)
         {
             services.AddHttpContextAccessor();
-            services.AddControllers()
+            services.AddControllers(
+                    options =>
+                    {
+                        options.Filters.Add<SecurityExceptionFilter>();
+                    })
                 .AddNewtonsoftJson(
                     options =>
                     {

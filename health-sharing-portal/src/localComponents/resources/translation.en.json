@@ -148,6 +148,7 @@
   "EmergencyAccess_CouldNotLoad": "Could not load emergency token",
   "EmergencyAccess_Permissions": "Permissions",
   "EmergencyAccess_ShowToken": "Show token",
+  "Exception_NotEnoughPermissions": "You do not have the necessary access rights for that person",
   "Execute": "Execute",
   "Expired": "Expired",
   "Filters": "Filters",

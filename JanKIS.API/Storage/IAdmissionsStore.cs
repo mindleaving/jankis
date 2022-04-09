@@ -1,30 +1,31 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Storage;
-using JanKIS.API.Models;
 using MongoDB.Driver;
 
 namespace JanKIS.API.Storage
 {
-    public interface IAdmissionsStore : IStore<Admission>
+    public interface IAdmissionsStore : IPersonDataStore<Admission>
     {
-        Task<Admission> GetCurrentAdmissionAsync(string personId);
+        Task<Admission> GetCurrentAdmissionAsync(string personId, List<IPersonDataAccessGrant> accessGrants);
     }
 
-    public class AdmissionsStore : GenericStore<Admission>, IAdmissionsStore
+    public class AdmissionsStore : GenericPersonDataStore<Admission>, IAdmissionsStore
     {
         public AdmissionsStore(IMongoDatabase mongoDatabase)
             : base(mongoDatabase)
         {
         }
 
-        public async Task<Admission> GetCurrentAdmissionAsync(string personId)
+        public async Task<Admission> GetCurrentAdmissionAsync(string personId, List<IPersonDataAccessGrant> accessGrants)
         {
             var utcNow = DateTime.UtcNow;
-            return await collection
-                .Find(x => x.AdmissionTime <= utcNow && (x.DischargeTime == null || x.DischargeTime > utcNow))
-                .FirstOrDefaultAsync();
+            return await FirstOrDefaultAsync(
+                x => x.AdmissionTime <= utcNow && (x.DischargeTime == null || x.DischargeTime > utcNow),
+                accessGrants);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
-using Commons.Extensions;
 using HealthSharingPortal.API.Controllers;
+using HealthSharingPortal.API.Workflow;
 using JanKIS.API.Converters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +14,11 @@ namespace JanKIS.API.Setups
         public void Run(IServiceCollection services, IConfiguration configuration)
         {
             services.AddHttpContextAccessor();
-            services.AddControllers()
+            services.AddControllers(
+                    options =>
+                    {
+                        options.Filters.Add<SecurityExceptionFilter>();
+                    })
                 .AddApplicationPart(Assembly.GetAssembly(typeof(ObservationsController)))
                 .ConfigureApplicationPartManager(
                     manager =>

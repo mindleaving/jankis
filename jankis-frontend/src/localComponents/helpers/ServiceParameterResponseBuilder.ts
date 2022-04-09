@@ -41,6 +41,7 @@ export const buildTemporaryParameterResponse = (parameter: Models.Services.Servi
             valueType: parameter.valueType,
             patient: {
                 id: '',
+                personId: '',
                 firstName: '',
                 lastName: '',
                 birthDate: new Date(),

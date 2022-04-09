@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthModels.AccessControl;
 using HealthModels.Services;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Hubs;
 using HealthSharingPortal.API.Models.Subscriptions;
 using HealthSharingPortal.API.Storage;
@@ -23,13 +25,13 @@ namespace JanKIS.API.Workflow
         private readonly Storage.INotificationsStore notificationsStore;
         private readonly Storage.ISubscriptionsStore subscriptionsStore;
         private readonly IHubContext<NotificationsHub, INotificationsClient> notificationsHub;
-        private readonly IReadonlyStore<Person> personsStore;
+        private readonly IPersonDataReadonlyStore<Person> personsStore;
 
         public NotificationDistributor(
             Storage.INotificationsStore notificationsStore,
             Storage.ISubscriptionsStore subscriptionsStore,
             IHubContext<NotificationsHub, INotificationsClient> notificationsHub,
-            IReadonlyStore<Person> personsStore)
+            IPersonDataReadonlyStore<Person> personsStore)
         {
             this.notificationsStore = notificationsStore;
             this.subscriptionsStore = subscriptionsStore;
@@ -43,7 +45,9 @@ namespace JanKIS.API.Workflow
             string submitterUsername)
         {
             var now = DateTime.UtcNow;
-            var patient = await personsStore.GetByIdAsync(healthRecordEntry.PersonId);
+            var patient = await personsStore.GetByIdAsync(
+                healthRecordEntry.PersonId,
+                AccessGrantHelpers.GrantForPersonWithPermission(healthRecordEntry.PersonId, AccessPermissions.Read));
             var matchingSubscriptions = await subscriptionsStore.GetPatientSubscriptions(healthRecordEntry.PersonId);
             foreach (var subscription in matchingSubscriptions)
             {

@@ -37,15 +37,7 @@ namespace HealthSharingPortal.API.Controllers
         public async Task<IActionResult> Upload([FromRoute] string documentId)
         {
             var accessGrants = await GetAccessGrants();
-            PatientDocument document;
-            try
-            {
-                document = await store.GetByIdAsync(documentId, accessGrants);
-            }
-            catch (SecurityException)
-            {
-                return Forbid();
-            }
+            var document = await store.GetByIdAsync(documentId, accessGrants);
             if (document == null)
                 return BadRequest($"No document exists with ID '{documentId}'. It must be created before uploading the file content");
             await filesStore.StoreAsync(documentId, Request.Body);
@@ -56,15 +48,7 @@ namespace HealthSharingPortal.API.Controllers
         public async Task<IActionResult> Download([FromRoute] string documentId)
         {
             var accessGrants = await GetAccessGrants();
-            PatientDocument document;
-            try
-            {
-                document = await store.GetByIdAsync(documentId, accessGrants);
-            }
-            catch (SecurityException)
-            {
-                return Forbid();
-            }
+            var document = await store.GetByIdAsync(documentId, accessGrants);
             if (document == null)
                 return NotFound();
             var fileStream = filesStore.GetById(documentId);

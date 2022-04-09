@@ -52,15 +52,7 @@ namespace HealthSharingPortal.API.Controllers
                 return BadRequest("Questionnaire ID of body doesn't match route");
             if (answerId != null && answer.Id != answerId)
                 return BadRequest("Answer ID of body doesn't match route");
-            QuestionnaireAnswers existingAnswer;
-            try
-            {
-                existingAnswer = await answersStore.GetByIdAsync(answer.Id, accessGrants);
-            }
-            catch (SecurityException)
-            {
-                return Forbid();
-            }
+            var existingAnswer = await answersStore.GetByIdAsync(answer.Id, accessGrants);
             if (existingAnswer != null)
             {
                 if (existingAnswer.PersonId != answer.PersonId)
@@ -69,15 +61,8 @@ namespace HealthSharingPortal.API.Controllers
                     return Conflict("An answer with the same ID exists for another questionnaire. Please use another ID");
             }
 
-            try
-            {
-                await answersStore.StoreAsync(answer, accessGrants);
-                return Ok();
-            }
-            catch (SecurityException)
-            {
-                return Forbid();
-            }
+            await answersStore.StoreAsync(answer, accessGrants);
+            return Ok();
         }
 
         private async Task<List<IPersonDataAccessGrant>> GetAccessGrants()
@@ -94,15 +79,7 @@ namespace HealthSharingPortal.API.Controllers
             [FromRoute] string answerId)
         {
             var accessGrants = await GetAccessGrants();
-            QuestionnaireAnswers answer;
-            try
-            {
-                answer = await answersStore.GetByIdAsync(answerId, accessGrants);
-            }
-            catch (SecurityException)
-            {
-                return Forbid();
-            }
+            var answer = await answersStore.GetByIdAsync(answerId, accessGrants);
             if (answer == null)
                 return NotFound();
             if (answer.QuestionnaireId != questionnaireId)
@@ -113,7 +90,7 @@ namespace HealthSharingPortal.API.Controllers
 
         protected override Task<object> TransformItem(
             Questionnaire item,
-            Language language)
+            Language language = Language.en)
         {
             return Task.FromResult<object>(item);
         }

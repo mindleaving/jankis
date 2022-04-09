@@ -32,29 +32,14 @@ namespace HealthSharingPortal.API.Controllers
         public async Task<IActionResult> MarkAsResolve([FromRoute] string diagnosisId)
         {
             var accessGrants = await GetAccessGrants();
-            Diagnosis diagnosis;
-            try
-            {
-                diagnosis = await store.GetByIdAsync(diagnosisId, accessGrants);
-            }
-            catch (SecurityException)
-            {
-                return Forbid();
-            }
+            var diagnosis = await store.GetByIdAsync(diagnosisId, accessGrants);
             if (diagnosis == null)
                 return NotFound();
             if (diagnosis.HasResolved)
                 return Ok();
             diagnosis.HasResolved = true;
             diagnosis.ResolvedTimestamp = DateTime.UtcNow;
-            try
-            {
-                await store.StoreAsync(diagnosis, accessGrants);
-            }
-            catch (SecurityException)
-            {
-                return Forbid();
-            }
+            await store.StoreAsync(diagnosis, accessGrants);
             return Ok();
         }
 

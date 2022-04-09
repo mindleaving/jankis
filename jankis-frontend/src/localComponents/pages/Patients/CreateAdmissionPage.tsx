@@ -47,6 +47,7 @@ export const CreateAdmissionPage = (props: CreateAdmissionPageProps) => {
     const buildAdmission = (): Models.Admission => {
         return {
             id: id,
+            personId: person!.id,
             admissionTime: admissionDate!,
             isReadmission: isReadmission,
             profileData: person!,

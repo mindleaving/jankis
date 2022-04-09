@@ -29,54 +29,24 @@ namespace HealthSharingPortal.API.Controllers
             if (itemId != medication.Id)
                 return BadRequest("ID of route doesn't match ID of body");
             var accessGrants = await GetAccessGrants();
-            MedicationSchedule medicationSchedule;
-            try
-            {
-                medicationSchedule = await store.GetByIdAsync(scheduleId, accessGrants);
-            }
-            catch (SecurityException)
-            {
-                return Forbid();
-            }
+            var medicationSchedule = await store.GetByIdAsync(scheduleId, accessGrants);
             if (medicationSchedule == null)
                 return NotFound();
             medicationSchedule.Items.Add(medication);
-            try
-            {
-                await store.StoreAsync(medicationSchedule, accessGrants);
-                return Ok();
-            }
-            catch (SecurityException)
-            {
-                return Forbid();
-            }
+            await store.StoreAsync(medicationSchedule, accessGrants);
+            return Ok();
         }
 
         [HttpDelete("{scheduleId}/items/{itemId}")]
         public async Task<IActionResult> RemoveMedication([FromRoute] string scheduleId, [FromRoute] string itemId)
         {
             var accessGrants = await GetAccessGrants();
-            MedicationSchedule medicationSchedule;
-            try
-            {
-                medicationSchedule = await store.GetByIdAsync(scheduleId, accessGrants);
-            }
-            catch (SecurityException)
-            {
-                return Forbid();
-            }
+            var medicationSchedule = await store.GetByIdAsync(scheduleId, accessGrants);
             if (medicationSchedule == null)
                 return NotFound();
             medicationSchedule.Items.RemoveAll(x => x.Id == itemId);
-            try
-            {
-                await store.StoreAsync(medicationSchedule, accessGrants);
-                return Ok();
-            }
-            catch (SecurityException)
-            {
-                return Forbid();
-            }
+            await store.StoreAsync(medicationSchedule, accessGrants);
+            return Ok();
         }
 
         protected override Task<object> TransformItem(

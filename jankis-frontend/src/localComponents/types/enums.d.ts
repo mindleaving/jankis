@@ -20,11 +20,6 @@ export enum Sex {
     Female = "Female",
     Other = "Other"
 }
-export enum SymptomType {
-    Undefined = "Undefined",
-    Localized = "Localized",
-    Systemic = "Systemic"
-}
 export enum ServiceAudienceType {
     All = "All",
     Role = "Role",
@@ -264,6 +259,11 @@ export enum IcdSectionType {
     Block = "Block",
     Category = "Category"
 }
+export enum SymptomType {
+    Undefined = "Undefined",
+    Localized = "Localized",
+    Systemic = "Systemic"
+}
 export enum LocationType {
     Country = "Country",
     City = "City"
@@ -303,6 +303,12 @@ export enum AccessFilterType {
     Undefined = "Undefined",
     Date = "Date",
     Category = "Category"
+}
+export enum AccessPermissions {
+    None = "None",
+    Read = "Read",
+    Create = "Create",
+    Modify = "Modify"
 }
 export enum PatientInformationCategory {
     Undefined = "Undefined",
