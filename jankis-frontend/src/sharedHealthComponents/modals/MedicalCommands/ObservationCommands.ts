@@ -7,10 +7,11 @@ import { sendPutRequest } from "../../../sharedCommonComponents/helpers/StoringH
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { getObjectReferenceValue } from "../../helpers/MedicalCommandHelpers";
 import { formatObservation } from "../../helpers/Formatters";
+import { ViewModels } from "../../../localComponents/types/viewModels";
 
 export class ObservationCommands {
     personId: string;
-    username: string;
+    user: ViewModels.LoggedInUserViewModel;
     navigate: (path: string) => void;
     commandHierarchy: MedicalCommands.CommandPart;
 
@@ -19,9 +20,11 @@ export class ObservationCommands {
         const pulseObservation: Models.Observations.PulseObservation = {
             id: uuid(),
             type: HealthRecordEntryType.Observation,
-            createdBy: this.username,
+            createdBy: this.user.username,
             personId: this.personId,
             timestamp: new Date(),
+            isVerified: false,
+            hasBeenSeenBySharer: this.user.profileData.id === this.personId,
             measurementType: MeasurementType.Pulse,
             bpm: bpm
         };
@@ -41,9 +44,11 @@ export class ObservationCommands {
         const bloodPressureObservation: Models.Observations.BloodPressureObservation = {
             id: uuid(),
             type: HealthRecordEntryType.Observation,
-            createdBy: this.username,
+            createdBy: this.user.username,
             personId: this.personId,
             timestamp: new Date(),
+            isVerified: false,
+            hasBeenSeenBySharer: this.user.profileData.id === this.personId,
             measurementType: MeasurementType.BloodPressure,
             systolic: systolic,
             diastolic: diastolic
@@ -62,9 +67,11 @@ export class ObservationCommands {
         const temperatureObservation: Models.Observations.TemperatureObservation = {
             id: uuid(),
             type: HealthRecordEntryType.Observation,
-            createdBy: this.username,
+            createdBy: this.user.username,
             personId: this.personId,
             timestamp: new Date(),
+            isVerified: false,
+            hasBeenSeenBySharer: this.user.profileData.id === this.personId,
             measurementType: MeasurementType.Temperature,
             value: temperature,
             unit: '°C'
@@ -85,9 +92,11 @@ export class ObservationCommands {
         const genericObservation: Models.Observations.GenericObservation = {
             id: uuid(),
             type: HealthRecordEntryType.Observation,
-            createdBy: this.username,
+            createdBy: this.user.username,
             personId: this.personId,
             timestamp: new Date(),
+            isVerified: false,
+            hasBeenSeenBySharer: this.user.profileData.id === this.personId,
             measurementType: measurementType,
             value: value,
             unit: unit
@@ -111,10 +120,10 @@ export class ObservationCommands {
 
     constructor(
         personId: string, 
-        username: string, 
+        user: ViewModels.LoggedInUserViewModel, 
         navigate: (path: string) => void) {
             this.personId = personId;
-            this.username = username;
+            this.user = user;
             this.navigate = navigate;
             this.commandHierarchy = {
                 type: CommandPartType.Keyword,

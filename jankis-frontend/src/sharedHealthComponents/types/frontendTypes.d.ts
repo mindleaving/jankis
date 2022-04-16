@@ -21,3 +21,5 @@ export enum TestResultCategories {
     Dental = "Dental",
     Pathology = "Pathology"
 }
+export type MarkHealthRecordEntryAsSeenCallback = (entryType: HealthRecordEntryType, entryId: string, update: Update<Models.IHealthRecordEntry>) => void;
+export type MarkHealthRecordEntryAsVerifiedCallback = (entryType: HealthRecordEntryType, entryId: string, update: Update<Models.IHealthRecordEntry>) => void;

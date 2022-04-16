@@ -37,7 +37,7 @@ export const CreateEmergencyAccessTokenPage = (props: CreateEmergencyAccessToken
                 </Col>
             </Row>
             <Row>
-                <Col>
+                <Col className='text-center'>
                     <QRCode
                         className='m-3'
                         value={tokenUrl} 

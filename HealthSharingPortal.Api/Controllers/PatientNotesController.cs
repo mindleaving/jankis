@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace HealthSharingPortal.API.Controllers
 {
-    public class PatientNotesController : PersonDataRestControllerBase<PatientNote>
+    public class PatientNotesController : HealthRecordEntryControllerBase<PatientNote>
     {
         private readonly INotificationDistributor notificationDistributor;
 

@@ -32,6 +32,8 @@ export const GenericMeasurementForm = (props: GenericMeasurementFormProps) => {
             createdBy: user!.username,
             personId: props.personId,
             timestamp: new Date(),
+            isVerified: false,
+            hasBeenSeenBySharer: user!.profileData.id === props.personId,
             value: value,
             unit: unit
         };

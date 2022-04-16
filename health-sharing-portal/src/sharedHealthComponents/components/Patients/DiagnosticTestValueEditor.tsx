@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Alert, FormControl, InputGroup } from 'react-bootstrap';
 import { getAutoCompleteContextForDiagnosticTestOptions, getAutoCompleteContextForDiagnosticTestUnit } from '../../helpers/AutoCompleteContexts';
 import { v4 as uuid } from 'uuid';
@@ -10,6 +10,7 @@ import { AsyncButton } from '../../../sharedCommonComponents/components/AsyncBut
 import { FileUpload } from '../../../sharedCommonComponents/components/FileUpload';
 import { MemoryFormControl } from '../../../sharedCommonComponents/components/MemoryFormControl';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
+import UserContext from '../../../localComponents/contexts/UserContext';
 
 interface DiagnosticTestValueEditorProps {
     testResult: Models.DiagnosticTestResults.DiagnosticTestResult;
@@ -160,11 +161,14 @@ const FreetextValueEditor = (props: DiagnosticTestValueEditorProps) => {
     )
 }
 const DocumentValueEditor = (props: DiagnosticTestValueEditorProps) => {
+
+    const user = useContext(UserContext);
     const documentTestResult = props.testResult as Models.DiagnosticTestResults.DocumentDiagnosticTestResult;
     const [ documentId, setDocumentId] = useState<string>(documentTestResult.documentId);
     const [ file, setFile ] = useState<File>();
     const [ isUploading, setIsUploading ] = useState<boolean>(false);
     const [ isFileUploaded, setIsFileUploaded ] = useState<boolean>(false);
+
     const onChange = props.onChange;
     useEffect(() => {
         if(!documentId) return;
@@ -184,6 +188,8 @@ const DocumentValueEditor = (props: DiagnosticTestValueEditorProps) => {
             const document: Models.PatientDocument = {
                 id: uuid(),
                 type: HealthRecordEntryType.Document,
+                isVerified: false,
+                hasBeenSeenBySharer: user!.profileData.id === props.testResult.personId,
                 fileName: file.name,
                 createdBy: '',
                 timestamp: new Date(),

@@ -27,6 +27,8 @@ export const TemperatureMeasurementForm = (props: TemperatureMeasurementFormProp
         const observation: Models.Observations.TemperatureObservation = {
             id: uuid(),
             type: HealthRecordEntryType.Observation,
+            isVerified: false,
+            hasBeenSeenBySharer: user!.profileData.id === props.personId,
             measurementType: MeasurementType.Temperature,
             createdBy: user!.username,
             personId: props.personId,

@@ -50,7 +50,9 @@ export const MedicationScheduleItemEditTableRow = (props: MedicationScheduleItem
             value: 0,
             unit: medication.drug.amountUnit,
             timestamp: timestamp,
-            createdBy: user!.username
+            createdBy: user!.username,
+            isVerified: false,
+            hasBeenSeenBySharer: user!.profileData.id === props.personId
         };
         setDispensions(dispensions.concat([dispension]));
     }

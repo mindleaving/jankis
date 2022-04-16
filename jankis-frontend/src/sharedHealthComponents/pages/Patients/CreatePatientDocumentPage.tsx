@@ -69,6 +69,8 @@ export const CreatePatientDocumentPage = (props: CreatePatientDocumentPageProps)
             personId: profileData!.id,
             createdBy: user!.username,
             timestamp: new Date(),
+            isVerified: false,
+            hasBeenSeenBySharer: user!.profileData.id === profileData!.id,
             note: note,
             fileName: file!.name
         };

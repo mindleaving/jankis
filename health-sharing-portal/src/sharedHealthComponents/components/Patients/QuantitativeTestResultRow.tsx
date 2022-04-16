@@ -1,18 +1,23 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { differenceInSeconds } from 'date-fns';
 import { Models } from '../../../localComponents/types/models';
 import { mathjs } from '../../../sharedCommonComponents/helpers/mathjs';
 import { formatDate, formatDiagnosticTestNameOfResult } from '../../helpers/Formatters';
+import { MarkHealthRecordEntryAsSeenCallback } from '../../types/frontendTypes';
+import UserContext from '../../../localComponents/contexts/UserContext';
+import { needsHiding } from '../../../localComponents/helpers/HealthRecordEntryHelpers';
 
 interface QuantitativeTestResultRowProps {
     commonUnit: string;
     testResults: Models.DiagnosticTestResults.QuantitativeDiagnosticTestResult[];
+    onMarkAsSeen: MarkHealthRecordEntryAsSeenCallback;
 }
 
 export const QuantitativeTestResultRow = (props: QuantitativeTestResultRowProps) => {
 
+    const user = useContext(UserContext);
     const commonUnit = props.commonUnit;
     const timeOrderedTests = props.testResults.sort((a,b) => differenceInSeconds(new Date(a.timestamp), new Date(b.timestamp)));
     const firstTest = timeOrderedTests[0];
@@ -79,10 +84,11 @@ export const QuantitativeTestResultRow = (props: QuantitativeTestResultRowProps)
         }
     };
     
+    const unhiddenTests = timeOrderedTests.filter(testResult => !needsHiding(testResult, user!));
     const series: ApexAxisChartSeries = [
         {
             name: testName,
-            data: timeOrderedTests.map(x => {
+            data: unhiddenTests.map(x => {
                 const value = mathjs
                     .unit(x.value, x.unit!)
                     .to(commonUnit)

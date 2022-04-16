@@ -1,6 +1,7 @@
 import { Models } from "../../localComponents/types/models";
 import { v4 as uuid } from 'uuid';
 import { HealthRecordEntryType } from "../../localComponents/types/enums.d";
+import { ViewModels } from "../../localComponents/types/viewModels";
 
 export const questionnaireAnswersToFormData = (questionnaireAnswers: Models.Interview.QuestionnaireAnswers): { [key: string]: string } => {
     const formData: { [key: string]: string } = {};
@@ -17,7 +18,7 @@ export const formDataToQuestionnaireAnswers = (
     formData: { [key:string]: string }, 
     questionnaire: Models.Interview.Questionnaire,
     personId: string,
-    currentUsername: string)
+    currentUser: ViewModels.LoggedInUserViewModel)
     : Models.Interview.QuestionnaireAnswers => {
 
     const answers = questionnaire.questions.map((question, questionIndex) => {
@@ -35,8 +36,10 @@ export const formDataToQuestionnaireAnswers = (
     return {
         id: uuid(),
         type: HealthRecordEntryType.Questionnaire,
-        createdBy: currentUsername,
+        createdBy: currentUser.username,
         createdTimestamp: new Date(),
+        isVerified: false,
+        hasBeenSeenBySharer: currentUser.profileData.id === personId,
         personId: personId,
         questionnaireId: questionnaire.id,
         timestamp: new Date(),

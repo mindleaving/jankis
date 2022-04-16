@@ -52,6 +52,8 @@ export const AssignQuestionnairePage = (props: AssignQuestionnairePageProps) => 
             createdBy: user!.username,
             createdTimestamp: new Date(),
             timestamp: new Date(),
+            isVerified: false,
+            hasBeenSeenBySharer: user!.profileData.id === person.id,
             answers: []
         };
         setIsStoring(true);

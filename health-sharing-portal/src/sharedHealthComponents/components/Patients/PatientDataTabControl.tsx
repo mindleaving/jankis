@@ -11,6 +11,7 @@ import { PatientTestResultsView } from './PatientTestResultsView';
 import { PatientDiagnosesView } from './PatientDiagnosesView';
 import { ViewModels } from '../../../localComponents/types/viewModels';
 import { PatientQuestionnairesView } from './PatientQuestionnairesView';
+import { HealthRecordEntryType } from '../../../localComponents/types/enums';
 
 interface PatientDataTabControlProps {
     personId: string;
@@ -24,6 +25,7 @@ interface PatientDataTabControlProps {
     medicationDispensions: Models.Medication.MedicationDispension[];
     createNewMedicationSchedule: () => void;
     onDiagnosisMarkedAsResolved: (diagnosisId: string) => void;
+    onMarkAsSeen: (entryType: HealthRecordEntryType, entryId: string, update: Update<Models.IHealthRecordEntry>) => void;
 }
 
 export const PatientDataTabControl = (props: PatientDataTabControlProps) => {
@@ -35,20 +37,28 @@ export const PatientDataTabControl = (props: PatientDataTabControlProps) => {
             <Tab eventKey="overview" title={resolveText('Patient_Overview')}>
                 <HealthRecordOverview
                     events={(notes as Models.IHealthRecordEntry[]).concat(diagnoses).concat(observations).concat(documents).concat(testResults)}
+                    onMarkAsSeen={props.onMarkAsSeen}
                 />
             </Tab>
             <Tab eventKey="notes" title={resolveText('Patient_Notes')}>
-                <PatientNotesView notes={notes} />
+                <PatientNotesView 
+                    notes={notes}
+                    onMarkAsSeen={props.onMarkAsSeen}
+                />
             </Tab>
             <Tab eventKey="diagnosis" title={resolveText("Patient_Diagnosis")}>
                 <PatientDiagnosesView 
                     personId={props.personId}
                     diagnoses={diagnoses} 
                     onMarkAsResolved={props.onDiagnosisMarkedAsResolved}
+                    onMarkAsSeen={props.onMarkAsSeen}
                 />
             </Tab>
             <Tab eventKey="observations" title={resolveText('Patient_Observations')}>
-                <PatientObservationsView observations={observations} />
+                <PatientObservationsView 
+                    observations={observations}
+                    onMarkAsSeen={props.onMarkAsSeen}
+                />
             </Tab>
             <Tab eventKey="medications" title={resolveText('Patient_Medications')}>
                 <PatientMedicationView
@@ -70,10 +80,14 @@ export const PatientDataTabControl = (props: PatientDataTabControlProps) => {
                 <PatientTestResultsView 
                     personId={props.personId}
                     testResults={testResults}
+                    onMarkAsSeen={props.onMarkAsSeen}
                 />
             </Tab>
             <Tab eventKey="documents" title={resolveText('Patient_Documents')}>
-                <PatientDocumentsView documents={documents} />
+                <PatientDocumentsView 
+                    documents={documents}
+                    onMarkAsSeen={props.onMarkAsSeen}
+                />
             </Tab>
         </Tabs>
     );

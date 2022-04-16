@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Alert, Button, FormControl, InputGroup } from 'react-bootstrap';
 import { Row, Col } from 'react-bootstrap';
 import { useParams } from 'react-router';
@@ -9,11 +9,13 @@ import { v4 as uuid } from 'uuid';
 import { NotificationManager } from 'react-notifications';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
-import { buildAndStoreObject } from '../../../sharedCommonComponents/helpers/StoringHelpers';
+import { buildAndStoreObject, sendPostRequest } from '../../../sharedCommonComponents/helpers/StoringHelpers';
 import { formatAdmission } from '../../../sharedHealthComponents/helpers/Formatters';
 import { PatientDataTabControl } from '../../../sharedHealthComponents/components/Patients/PatientDataTabControl';
 import { PatientActionsCard } from '../../../sharedHealthComponents/components/Patients/PatientActionsCard';
 import { HealthRecordAction } from '../../../sharedHealthComponents/types/frontendTypes';
+import { confirmUnhide } from '../../../sharedHealthComponents/helpers/HealthRecordEntryHelpers';
+import { HealthRecordEntryType } from '../../types/enums.d';
 
 import '../../../sharedHealthComponents/styles/healthrecord.css';
 
@@ -100,6 +102,90 @@ export const PatientPage = (props: PatientPageProps) => {
         }));
     }
 
+    const markHealthRecordEntryAsSeen = async (
+        entryType: HealthRecordEntryType, 
+        entryId: string, 
+        update: Update<Models.IHealthRecordEntry>, 
+        force: boolean = false) => {
+        if(!force) {
+            confirmUnhide(() => markHealthRecordEntryAsSeen(entryType, entryId, update, true));
+            return;
+        }
+        await sendPostRequest(
+            `api/${getControllerName(entryType)}/${entryId}/seen`,
+            resolveText('HealthRecordEntry_CouldNotMarkAsSeen'),
+            null
+        );
+        updateHealthRecordEntry(entryType, entryId, update);
+    }
+    const markHealthRecordEntryAsVerified = async (
+        entryType: HealthRecordEntryType, 
+        entryId: string, 
+        update: Update<Models.IHealthRecordEntry>, 
+        force: boolean = false) => {
+        if(!force) {
+            confirmUnhide(() => markHealthRecordEntryAsVerified(entryType, entryId, update, true));
+            return;
+        }
+        await sendPostRequest(
+            `api/${getControllerName(entryType)}/${entryId}/verified`,
+            resolveText('HealthRecordEntry_CouldNotMarkAsVerified'),
+            null
+        );
+        updateHealthRecordEntry(entryType, entryId, update);
+    }
+    const updateHealthRecordEntry = (entryType: HealthRecordEntryType, entryId: string, update: Update<Models.IHealthRecordEntry>) => {
+        const setFunction = getSetFunction(entryType);
+        if(setFunction) {
+            setFunction((state: Models.IHealthRecordEntry[]) => state.map(x => {
+                if(x.type === entryType && x.id === entryId) {
+                    return update(x);
+                }
+                return x;
+            }));
+        }
+    }
+    const getSetFunction = (entryType: HealthRecordEntryType): Dispatch<SetStateAction<any>> | null => {
+        switch(entryType) {
+            case HealthRecordEntryType.Diagnosis:
+                return setDiagnoses;
+            case HealthRecordEntryType.Document:
+                return setDocuments;
+            case HealthRecordEntryType.Equipment:
+                return null;
+            case HealthRecordEntryType.Note:
+                return setNotes;
+            case HealthRecordEntryType.Observation:
+                return setObservations;
+            case HealthRecordEntryType.Questionnaire:
+                return setQuestionnaires;
+            case HealthRecordEntryType.TestResult:
+                return setTestResults;
+            default:
+                throw new Error(`HealthRecordEntryType '${entryType}' has no set-function in HealthRecordPage`);
+        }
+    }
+    const getControllerName = (entryType: HealthRecordEntryType) => {
+        switch(entryType) {
+            case HealthRecordEntryType.Diagnosis:
+                return "diagnoses";
+            case HealthRecordEntryType.Document:
+                return "documents";
+            case HealthRecordEntryType.Equipment:
+                return "patientequipment";
+            case HealthRecordEntryType.Note:
+                return "patientnotes";
+            case HealthRecordEntryType.Observation:
+                return "observations";
+            case HealthRecordEntryType.Questionnaire:
+                return "questionnaires";
+            case HealthRecordEntryType.TestResult:
+                return "testresults";
+            default:
+                throw new Error(`HealthRecordEntryType '${entryType}' cannot be converted to controller name`);
+        }
+    }
+
     if(!personId) {
         return (<h1>{resolveText('MissingID')}</h1>);
     }
@@ -177,6 +263,7 @@ export const PatientPage = (props: PatientPageProps) => {
                 medicationDispensions={medicationDispensions}
                 createNewMedicationSchedule={createNewMedicationSchedule}
                 onDiagnosisMarkedAsResolved={onDiagnosisMarkedAsResolved}
+                onMarkAsSeen={markHealthRecordEntryAsSeen}
             />
         </>
     );

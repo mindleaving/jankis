@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using HealthModels.AccessControl;
 
@@ -10,8 +11,8 @@ namespace HealthSharingPortal.API.AccessControl
             string personId,
             IList<AccessPermissions> permissions)
         {
-            PersonId = personId;
-            Permissions = permissions;
+            PersonId = personId ?? throw new ArgumentNullException(nameof(personId));
+            Permissions = permissions ?? throw new ArgumentNullException(nameof(permissions));
         }
 
         public string PersonId { get; }

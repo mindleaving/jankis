@@ -12,7 +12,8 @@ namespace HealthSharingPortal.API.Storage
         Task<string> CreateNew(
             string accessReceiverUsername,
             string sharerPersonId,
-            TimeSpan expirationDuration);
+            TimeSpan expirationDuration,
+            List<AccessPermissions> permissions);
         Task<bool> SetSharerHasAccepted(string inviteId);
         Task<bool> SetHealthProfessionalHasAccepted(string inviteId);
         Task<bool> Revoke(string inviteId);

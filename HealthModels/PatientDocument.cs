@@ -9,6 +9,8 @@ namespace HealthModels
         public string PersonId { get; set; }
         public string CreatedBy { get; set; }
         public DateTime Timestamp { get; set; }
+        public bool IsVerified { get; set; }
+        public bool HasBeenSeenBySharer { get; set; }
         public string Note { get; set; }
         public string FileName { get; set; }
     }

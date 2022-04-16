@@ -83,6 +83,8 @@ export const GenomeUploadPage = (props: GenomeUploadPageProps) => {
             type: HealthRecordEntryType.TestResult,
             createdBy: user!.username,
             timestamp: new Date(),
+            isVerified: false,
+            hasBeenSeenBySharer: user!.profileData.id === profileData!.id,
             personId: profileData!.id,
             scaleType: DiagnosticTestScaleType.Nominal,
             testCodeLoinc: "62374-4",
@@ -97,6 +99,8 @@ export const GenomeUploadPage = (props: GenomeUploadPageProps) => {
             type: HealthRecordEntryType.TestResult,
             createdBy: user!.username,
             timestamp: new Date(),
+            isVerified: false,
+            hasBeenSeenBySharer: user!.profileData.id === profileData!.id,
             documentId: documentId,
             personId: profileData!.id,
             scaleType: DiagnosticTestScaleType.Document,
@@ -112,6 +116,8 @@ export const GenomeUploadPage = (props: GenomeUploadPageProps) => {
             personId: profileData!.id,
             createdBy: user!.username,
             timestamp: new Date(),
+            isVerified: false,
+            hasBeenSeenBySharer: user!.profileData.id === profileData!.id,
             note: note,
             fileName: fileName
         };

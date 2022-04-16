@@ -50,7 +50,9 @@ namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
                 Icd10Code = model.Icd10Code,
                 Name = name,
                 HasResolved = model.HasResolved,
-                ResolvedTimestamp = model.ResolvedTimestamp
+                ResolvedTimestamp = model.ResolvedTimestamp,
+                HasBeenSeenBySharer = model.HasBeenSeenBySharer,
+                IsVerified = model.IsVerified
             };
         }
 

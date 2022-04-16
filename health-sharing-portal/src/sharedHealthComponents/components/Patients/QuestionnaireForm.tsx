@@ -85,7 +85,7 @@ export const QuestionnaireForm = (props: QuestionnaireFormProps) => {
             resolveText("Questionnaire_SuccessfullyStored"),
             resolveText("Questionnaire_CouldNotSubmit"),
             () => {
-                const questionnaireAnswers = formDataToQuestionnaireAnswers(answers, questionnaire!, props.personId, user!.username);
+                const questionnaireAnswers = formDataToQuestionnaireAnswers(answers, questionnaire!, props.personId, user!);
                 questionnaireAnswers.id = answerId;
                 return questionnaireAnswers;
             },

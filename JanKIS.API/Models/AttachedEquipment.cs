@@ -30,6 +30,8 @@ namespace JanKIS.API.Models
         public string PersonId { get; set; }
         public string CreatedBy { get; set; }
         public DateTime Timestamp { get; set; }
+        public bool IsVerified { get; set; }
+        public bool HasBeenSeenBySharer { get; set; }
 
         public string EquipmentType { get; set; }
         public List<MaterialReference> Materials { get; set; }

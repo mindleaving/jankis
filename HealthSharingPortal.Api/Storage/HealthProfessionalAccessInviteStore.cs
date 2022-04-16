@@ -25,14 +25,19 @@ namespace HealthSharingPortal.API.Storage
         public async Task<string> CreateNew(
             string accessReceiverUsername,
             string sharerPersonId,
-            TimeSpan expirationDuration)
+            TimeSpan expirationDuration,
+            List<AccessPermissions> permissions)
         {
+            if (accessReceiverUsername == null) throw new ArgumentNullException(nameof(accessReceiverUsername));
+            if (sharerPersonId == null) throw new ArgumentNullException(nameof(sharerPersonId));
+            if (permissions == null) throw new ArgumentNullException(nameof(permissions));
             var utcNow = DateTime.UtcNow;
             var accessInvite = new HealthProfessionalAccessInvite
             {
                 Id = Guid.NewGuid().ToString(),
                 SharerPersonId = sharerPersonId,
                 AccessReceiverUsername = accessReceiverUsername,
+                Permissions = permissions,
                 CreatedTimestamp = utcNow,
                 ExpirationDuration = expirationDuration,
                 CodeForSharer = GenerateHealthProfessionalAccessInviteCode(),

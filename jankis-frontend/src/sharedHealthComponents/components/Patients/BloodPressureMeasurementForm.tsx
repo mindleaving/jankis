@@ -28,6 +28,8 @@ export const BloodPressureMeasurementForm = (props: BloodPressureMeasurementForm
             measurementType: MeasurementType.BloodPressure,
             personId: props.personId,
             timestamp: new Date(),
+            isVerified: false,
+            hasBeenSeenBySharer: user!.profileData.id === props.personId,
             createdBy: user!.username,
             systolic: systolic,
             diastolic: diastolic

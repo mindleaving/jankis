@@ -5,10 +5,11 @@ import { MedicalCommands } from "../../types/medicalCommandTypes";
 import { v4 as uuid } from 'uuid';
 import { sendPutRequest } from "../../../sharedCommonComponents/helpers/StoringHelpers";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
+import { ViewModels } from "../../../localComponents/types/viewModels";
 
 export class TestResultCommands {
     personId: string;
-    username: string;
+    user: ViewModels.LoggedInUserViewModel;
     navigate: (path: string) => void;
     commandHierarchy: MedicalCommands.CommandPart;
 
@@ -18,9 +19,11 @@ export class TestResultCommands {
         const testResult: Models.DiagnosticTestResults.FreetextDiagnosticTestResult = {
             id: uuid(),
             type: HealthRecordEntryType.TestResult,
-            createdBy: this.username,
+            createdBy: this.user.username,
             personId: this.personId,
             timestamp: new Date(),
+            isVerified: false,
+            hasBeenSeenBySharer: this.user!.profileData.id === this.personId,
             testCodeLoinc: loincCode,
             testName: '',
             testCategory: '',
@@ -43,10 +46,10 @@ export class TestResultCommands {
 
     constructor(
         personId: string, 
-        username: string, 
+        user: ViewModels.LoggedInUserViewModel, 
         navigate: (path: string) => void) {
             this.personId = personId;
-            this.username = username;
+            this.user = user;
             this.navigate = navigate;
             this.commandHierarchy = {
                 type: CommandPartType.Keyword,

@@ -31,6 +31,8 @@ namespace HealthModels.Medication
         public string PersonId { get; set; }
         public string CreatedBy { get; set; }
         public DateTime Timestamp { get; set; }
+        public bool IsVerified { get; set; }
+        public bool HasBeenSeenBySharer { get; set; }
 
         [Required]
         public Drug Drug { get; set; }
