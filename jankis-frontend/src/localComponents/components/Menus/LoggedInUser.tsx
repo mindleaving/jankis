@@ -4,7 +4,7 @@ import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer'
 import { ViewModels } from '../../types/viewModels';
 
 interface LoggedInUserProps {
-    user: ViewModels.LoggedInUserViewModel;
+    user: ViewModels.IUserViewModel;
     onLogOut: () => void;
 }
 

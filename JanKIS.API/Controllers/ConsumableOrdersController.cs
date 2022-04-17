@@ -79,7 +79,7 @@ namespace JanKIS.API.Controllers
             var serviceRequest = await store.GetByIdAsync(orderId);
             if (serviceRequest == null)
                 return NotFound();
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var username = ControllerHelpers.GetAccountId(httpContextAccessor);
             var subscription = new ConsumableOrderSubscription(
                 Guid.NewGuid().ToString(),
                 username,
@@ -91,7 +91,7 @@ namespace JanKIS.API.Controllers
         [HttpPost("{orderId}/unsubscribe")]
         public async Task<IActionResult> Unsubscribe([FromRoute] string orderId)
         {
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var username = ControllerHelpers.GetAccountId(httpContextAccessor);
             var existingSubscription = await subscriptionsStore.GetConsumableOrderSubscription(orderId, username);
             if (existingSubscription == null)
                 return Ok();

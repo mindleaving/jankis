@@ -9,9 +9,9 @@ namespace JanKIS.API.Models.Subscriptions
         }
 
         public InstitutionSubscription(string id,
-            string username,
+            string accountId,
             string institutionId)
-            : base(id, username)
+            : base(id, accountId)
         {
             InstitutionId = institutionId;
         }

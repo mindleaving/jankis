@@ -9,6 +9,7 @@ using HealthModels.MedicalTextEditor;
 using HealthModels.Medication;
 using HealthModels.Observations;
 using HealthModels.Services;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Models.Subscriptions;
 using HealthSharingPortal.API.Storage;
@@ -92,6 +93,8 @@ namespace JanKIS.API.Setups
             SetupTypeStores<InstitutionPolicy>(services);
             SetupPersonDataStores<GenomeExplorerDeployment>(services);
             SetupTypeStores<HealthProfessionalAccess>(services);
+            SetupTypeStores<Login>(services);
+            services.AddScoped<ILoginStore, LoginStore>();
             SetupPersonDataStores<MedicationSchedule>(services);
             SetupPersonDataStores<MedicationDispension>(services);
             SetupTypeStores<MedicalText>(services);

@@ -1,3 +1,7 @@
+import './localComponents/styles/App.css';
+import './sharedCommonComponents/styles/common.css';
+import './sharedHealthComponents/styles/healthrecord.css';
+
 import { ReactNode, useState } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { Layout } from './localComponents/components/Layout';
@@ -23,7 +27,6 @@ import { CreatePatientTestResultPage } from './sharedHealthComponents/pages/Pati
 import { EditMedicationSchedulePage } from './sharedHealthComponents/pages/Patients/EditMedicationSchedulePage';
 import { PatientMedicationsPage } from './sharedHealthComponents/pages/Patients/PatientMedicationsPage';
 import { PatientTimelinePage } from './sharedHealthComponents/pages/Patients/PatientTimelinePage';
-import { AccountEditPage } from './localComponents/pages/UserManagement/AccountEditPage';
 import { HealthProfessionalHomePage } from './localComponents/pages/HealthProfessional/HealthProfessionalHomePage';
 import { HomePage } from './localComponents/pages/HomePage';
 import { StudiesPage } from './localComponents/pages/Researcher/StudiesPage';
@@ -37,10 +40,6 @@ import { OfferStudyParticipationPage } from './localComponents/pages/Sharer/Offe
 import { CreateEditStudyPage } from './localComponents/pages/Researcher/CreateEditStudyPage';
 import { CreateEditQuestionnairePage } from './sharedHealthComponents/pages/CreateEditQuestionnairePage';
 import { StudyEnrollmentReviewPage } from './localComponents/pages/Researcher/StudyEnrollmentReviewPage';
-
-import './localComponents/styles/App.css';
-import './sharedCommonComponents/styles/common.css';
-import './sharedHealthComponents/styles/healthrecord.css';
 import { CreateDiagnosisPage } from './sharedHealthComponents/pages/Patients/CreateDiagnosisPage';
 import { AnswerQuestionnairePage } from './sharedHealthComponents/pages/Patients/AnswerQuestionnairePage';
 import { AssignQuestionnairePage } from './sharedHealthComponents/pages/Patients/AssignQuestionnairePage';
@@ -54,6 +53,7 @@ import { EditPersonPage } from './sharedHealthComponents/pages/Patients/EditPers
 import { CreateEmergencyAccessTokenPage } from './localComponents/pages/Sharer/CreateEmergencyAccessTokenPage';
 import { EmergencyPage } from './localComponents/pages/EmergencyPage';
 import { NoUserLayout } from './localComponents/components/NoUserLayout';
+import { Models } from './localComponents/types/models';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";
@@ -67,25 +67,27 @@ if(!!sessionStorage.getItem(accessTokenSessionStorageKey)) {
 interface AppProps {}
 export const App = (props: AppProps) => {
 
-    const [loggedInUser, setLoggedInUser] = useState<ViewModels.LoggedInUserViewModel | undefined>(
+    const [loggedInUser, setLoggedInUser] = useState<ViewModels.IUserViewModel | undefined>(
         !!sessionStorage.getItem(userSessionStorageKey) 
             ? JSON.parse(sessionStorage.getItem(userSessionStorageKey)!)
             : undefined
         );
     const navigate = useNavigate();
-    const onLoggedIn = (userViewModel: ViewModels.LoggedInUserViewModel, redirectUrl?: string) => {
-        if (userViewModel.authenticationResult.isAuthenticated) {
-            apiClient.instance!.setAccessToken(userViewModel.authenticationResult.accessToken!);
-            sessionStorage.setItem(accessTokenSessionStorageKey, userViewModel.authenticationResult.accessToken!);
-            sessionStorage.setItem(userSessionStorageKey, JSON.stringify(userViewModel));
-            setLoggedInUser(userViewModel);
-            const jwtBody = extractJwtBody(userViewModel.authenticationResult.accessToken!);
+    const onNewAccessToken = (authenticationResult: Models.AuthenticationResult) => {
+        if (authenticationResult.isAuthenticated) {
+            apiClient.instance!.setAccessToken(authenticationResult.accessToken!);
+            sessionStorage.setItem(accessTokenSessionStorageKey, authenticationResult.accessToken!);
+            const jwtBody = extractJwtBody(authenticationResult.accessToken!);
             const expirationDateTime = new Date(jwtBody.exp*1000);
             const now = new Date();
             const millisecondsUntilExpiration = differenceInMilliseconds(expirationDateTime, now);
             setTimeout(() => onLogOut(), millisecondsUntilExpiration-60*1000);
-            navigate(redirectUrl ?? "/");
         }
+    }
+    const onLoggedIn = (userViewModel: ViewModels.IUserViewModel, redirectUrl?: string) => {
+        sessionStorage.setItem(userSessionStorageKey, JSON.stringify(userViewModel));
+        setLoggedInUser(userViewModel);
+        navigate(redirectUrl ?? "/");
     }
     const onLogOut = () => {
         setLoggedInUser(undefined);
@@ -94,14 +96,13 @@ export const App = (props: AppProps) => {
         navigate("/");
     }
 
-    if (!loggedInUser) {
+    if (!loggedInUser || !loggedInUser.accountId || !loggedInUser.profileData) {
         return (
             <NoUserLayout>
                 <Routes>
-                    <Route path="/emergency/:emergencyToken" element={<EmergencyPage onGuestLogin={onLoggedIn} />} />
-                    <Route path="/login/:role" element={<LoginPage onLoggedIn={onLoggedIn} />} />
-                    <Route path="/register/:role" element={<RegisterAccountPage />} />
-                    <Route path="/create/account" element={<AccountEditPage />} />
+                    <Route path="/emergency/:emergencyToken" element={<EmergencyPage onNewAccessToken={onNewAccessToken} onGuestLogin={onLoggedIn} />} />
+                    <Route path="/login/:accountType" element={<LoginPage onNewAccessToken={onNewAccessToken} onLoggedIn={onLoggedIn} />} />
+                    <Route path="/register/:accountType" element={<RegisterAccountPage />} />
                     <Route path="/" element={<HomePage />} />
                 </Routes>
             </NoUserLayout>
@@ -152,8 +153,6 @@ export const App = (props: AppProps) => {
         { path: '/show/emergencytoken/:accessId', element: <CreateEmergencyAccessTokenPage />, audience: [ AccountType.Sharer ]},
 
         { path: '/accounts', element: <AccountsPage />, audience: [ AccountType.Admin ]},
-        { path: '/create/account', element: <AccountEditPage />, audience: [ AccountType.Admin ]},
-        { path: '/edit/account/:username', element: <AccountEditPage />, audience: [ AccountType.Researcher, AccountType.Sharer, AccountType.HealthProfessional, AccountType.Admin ]},
         { path: '/edit/person/:personId', element: <EditPersonPage />, audience: [ AccountType.Sharer] },
 
         { path: '/patients', element: <PatientsListPage />, audience: [ AccountType.HealthProfessional ]},

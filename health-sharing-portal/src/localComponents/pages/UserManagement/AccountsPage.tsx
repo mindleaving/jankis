@@ -49,7 +49,7 @@ export const AccountsPage = (props: AccountsPageProps) => {
                     {accounts.map(account => (
                         <tr key={account.id}>
                             <td>{account.id}</td>
-                            <td>{account.username}</td>
+                            <td>{account.personId}</td>
                             <td>{resolveText(account.accountType)}</td>
                             <td>
                                 <Button onClick={() => navigate(`/account/${account.id}`)}>{resolveText("Open")}</Button>

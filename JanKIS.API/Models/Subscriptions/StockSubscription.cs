@@ -9,9 +9,9 @@ namespace JanKIS.API.Models.Subscriptions
         }
 
         public StockSubscription(string id,
-            string username,
+            string accountId,
             string stockId)
-            : base(id, username)
+            : base(id, accountId)
         {
             StockId = stockId;
         }

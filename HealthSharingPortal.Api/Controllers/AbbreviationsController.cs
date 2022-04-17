@@ -28,7 +28,7 @@ namespace HealthSharingPortal.API.Controllers
         {
             return orderBy?.ToLower() switch
             {
-                "username" => x => x.Username,
+                "username" => x => x.AccountId,
                 _ => x => x.Abbreviation
             };
         }

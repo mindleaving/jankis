@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Storage;
 using JanKIS.API.Models;
 using MongoDB.Driver;
@@ -8,27 +10,14 @@ namespace JanKIS.API.Storage
 {
     public class AccountStore: GenericStore<Account>, IAccountStore
     {
+        private readonly IMongoCollection<Login> loginCollection;
+
         public AccountStore(IMongoDatabase mongoDatabase)
             : base(mongoDatabase)
         {
+            loginCollection = mongoDatabase.GetCollection<Login>(nameof(Login));
         }
 
-        public async Task<StorageResult> ChangePasswordAsync(
-            string username,
-            string passwordBase64,
-            bool changePasswordOnNextLogin)
-        {
-            var result = await collection.UpdateOneAsync(
-                x => x.Id == username, 
-                Builders<Account>.Update
-                    .Set(x => x.PasswordHash, passwordBase64)
-                    .Set(x => x.IsPasswordChangeRequired, changePasswordOnNextLogin));
-            if(!result.IsAcknowledged)
-                return StorageResult.Error(StoreErrorType.UnknownDatabaseError);
-            if(result.MatchedCount == 0)
-                return StorageResult.Error(StoreErrorType.NoMatch);
-            return StorageResult.Success();
-        }
 
         public async Task<StorageResult> SetRoles(
             string username,
@@ -122,9 +111,12 @@ namespace JanKIS.API.Storage
             return account.AccountType == AccountType.Employee;
         }
 
-        public Task DeleteAllForPerson(string personId)
+        public async Task DeleteAllForPerson(string personId)
         {
-            return collection.DeleteManyAsync(x => x.PersonId == personId);
+            var matchingAccounts = await collection.Find(x => x.PersonId == personId).ToListAsync();
+            var loginIds = matchingAccounts.SelectMany(x => x.LoginIds).ToList();
+            await loginCollection.DeleteManyAsync(x => loginIds.Contains(x.Id));
+            await collection.DeleteManyAsync(x => x.PersonId == personId);
         }
     }
 }

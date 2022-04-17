@@ -12,7 +12,7 @@ namespace HealthModels.AccessControl
 
         public SharedAccessType Type => SharedAccessType.Emergency;
         public List<AccessPermissions> Permissions { get; set; }
-        public string AccessReceiverUsername { get; set; }
+        public string AccessReceiverAccountId { get; set; }
         public string SharerPersonId { get; set; }
         public DateTime AccessGrantedTimestamp { get; set; }
         public DateTime? AccessEndTimestamp { get; set; }

@@ -3,6 +3,7 @@
   <PropertyGroup>
 	  <TargetFramework>net5.0</TargetFramework>
 	  <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+	  <UserSecretsId>bcbba994-47a8-4e82-a7a1-2383d1bfc07f</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

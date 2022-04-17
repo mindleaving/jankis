@@ -9,7 +9,7 @@ import { ViewModels } from "../../../localComponents/types/viewModels";
 
 export class TestResultCommands {
     personId: string;
-    user: ViewModels.LoggedInUserViewModel;
+    user: ViewModels.IUserViewModel;
     navigate: (path: string) => void;
     commandHierarchy: MedicalCommands.CommandPart;
 
@@ -19,7 +19,7 @@ export class TestResultCommands {
         const testResult: Models.DiagnosticTestResults.FreetextDiagnosticTestResult = {
             id: uuid(),
             type: HealthRecordEntryType.TestResult,
-            createdBy: this.user.username,
+            createdBy: this.user.accountId,
             personId: this.personId,
             timestamp: new Date(),
             isVerified: false,
@@ -46,7 +46,7 @@ export class TestResultCommands {
 
     constructor(
         personId: string, 
-        user: ViewModels.LoggedInUserViewModel, 
+        user: ViewModels.IUserViewModel, 
         navigate: (path: string) => void) {
             this.personId = personId;
             this.user = user;

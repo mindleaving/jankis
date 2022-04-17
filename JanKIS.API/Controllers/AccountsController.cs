@@ -73,7 +73,7 @@ namespace JanKIS.API.Controllers
             if (!string.IsNullOrWhiteSpace(searchText))
             {
                 searchTerms = SearchTermSplitter.SplitAndToLower(searchText);
-                searchExpression = SearchExpressionBuilder.ContainsAll<Account>(x => x.Username.ToLower(), searchTerms);
+                searchExpression = SearchExpressionBuilder.ContainsAll<Account>(x => x.PersonId.ToLower(), searchTerms);
             }
             else
             {
@@ -83,10 +83,9 @@ namespace JanKIS.API.Controllers
             Expression<Func<Account, object>> orderByExpression = orderBy?.ToLower() switch
             {
                 "id" => x => x.Id,
-                "username" => x => x.Username,
                 "accounttype" => x => x.AccountType,
                 "personid" => x => x.PersonId,
-                _ => x => x.Username
+                _ => x => x.Id
             };
             var accessGrants = await GetAccessGrants();
             var items = await accountsStore.SearchAsync(searchExpression, count, skip, orderByExpression, orderDirection);
@@ -135,14 +134,8 @@ namespace JanKIS.API.Controllers
             var password = new TemporaryPasswordGenerator().Generate();
             Account account = creationInfo.AccountType switch
             {
-                AccountType.Employee => AccountFactory.CreateEmployeeAccount(
-                    creationInfo.PersonId,
-                    creationInfo.Username,
-                    password),
-                AccountType.Patient => AccountFactory.CreatePatientAccount(
-                    creationInfo.PersonId,
-                    creationInfo.Username,
-                    password),
+                AccountType.Employee => AccountFactory.CreateEmployeeAccount(creationInfo.PersonId),
+                AccountType.Patient => AccountFactory.CreatePatientAccount(creationInfo.PersonId),
                 _ => throw new NotSupportedException($"Account creation is not implemented for account type '{creationInfo.AccountType}'")
             };
             await accountsStore.StoreAsync(account);
@@ -175,9 +168,7 @@ namespace JanKIS.API.Controllers
             var userViewModel = new LoggedInUserViewModel(
                 person,
                 authenticationResult,
-                username,
-                account.IsPasswordChangeRequired,
-                account.AccountType,
+                account,
                 userRoles,
                 userPermissions,
                 departments);

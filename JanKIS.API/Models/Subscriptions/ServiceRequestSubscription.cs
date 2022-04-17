@@ -9,9 +9,9 @@ namespace JanKIS.API.Models.Subscriptions
         }
 
         public ServiceRequestSubscription(string id,
-            string username,
+            string accountId,
             string requestId)
-            : base(id, username)
+            : base(id, accountId)
         {
             RequestId = requestId;
         }

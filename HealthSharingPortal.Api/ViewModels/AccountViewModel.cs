@@ -5,17 +5,19 @@ namespace HealthSharingPortal.API.ViewModels
 {
     public class AccountViewModel : IViewModel<Account>
     {
-        public AccountViewModel(string username,
+        public AccountViewModel(
+            string accountId,
             AccountType accountType,
             Person profileData)
         {
-            Username = username;
+            AccountId = accountId;
             AccountType = accountType;
             ProfileData = profileData;
         }
 
-        public string Username { get; }
+        public string AccountId { get; }
         public AccountType AccountType { get; }
         public Person ProfileData { get; }
+        public bool IsPasswordChangeRequired { get; set; }
     }
 }

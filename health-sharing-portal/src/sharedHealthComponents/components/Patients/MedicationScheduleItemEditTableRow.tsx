@@ -50,7 +50,7 @@ export const MedicationScheduleItemEditTableRow = (props: MedicationScheduleItem
             value: 0,
             unit: medication.drug.amountUnit,
             timestamp: timestamp,
-            createdBy: user!.username,
+            createdBy: user!.accountId,
             isVerified: false,
             hasBeenSeenBySharer: user!.profileData.id === props.personId
         };

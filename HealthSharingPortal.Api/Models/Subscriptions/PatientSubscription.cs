@@ -4,10 +4,10 @@
     {
         public PatientSubscription() {}
         public PatientSubscription(string id,
-            string username,
+            string accountId,
             string personId,
             bool cancelSubscriptionOnDischarge)
-            : base(id, username)
+            : base(id, accountId)
         {
             PersonId = personId;
             CancelSubscriptionOnDischarge = cancelSubscriptionOnDischarge;

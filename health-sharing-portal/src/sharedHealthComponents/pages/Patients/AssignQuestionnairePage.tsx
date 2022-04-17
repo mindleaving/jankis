@@ -49,7 +49,7 @@ export const AssignQuestionnairePage = (props: AssignQuestionnairePageProps) => 
             type: HealthRecordEntryType.Questionnaire,
             personId: person.id,
             questionnaireId: questionnaire.id,
-            createdBy: user!.username,
+            createdBy: user!.accountId,
             createdTimestamp: new Date(),
             timestamp: new Date(),
             isVerified: false,

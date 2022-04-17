@@ -10,7 +10,8 @@ import { v4 as uuid } from 'uuid';
 import { SharedAccessType } from '../types/enums.d';
 
 interface EmergencyPageProps {
-    onGuestLogin: (guestAccount: ViewModels.LoggedInUserViewModel, redirectUrl?: string) => void;
+    onNewAccessToken: (authenticationResult: Models.AuthenticationResult) => void;
+    onGuestLogin: (guestAccount: ViewModels.GuestViewModel, redirectUrl?: string) => void;
 }
 
 export const EmergencyPage = (props: EmergencyPageProps) => {
@@ -24,6 +25,7 @@ export const EmergencyPage = (props: EmergencyPageProps) => {
         const vm = await response.json() as ViewModels.GuestEmergencyAccessViewModel;
         const redirectUrl = `/healthrecord/${vm.accessInfo.sharerPersonId}`;
         sessionStorage.setItem("emergencyPersonId", vm.accessInfo.sharerPersonId);
+        props.onNewAccessToken(vm.user.authenticationResult);
         props.onGuestLogin(vm.user, redirectUrl);
     }
     const establishGuestAccess = async () => {

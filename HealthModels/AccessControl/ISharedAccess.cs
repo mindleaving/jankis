@@ -9,7 +9,7 @@ namespace HealthModels.AccessControl
         SharedAccessType Type { get; }
         List<AccessPermissions> Permissions { get; }
         [TypescriptIsOptional]
-        string AccessReceiverUsername { get; }
+        string AccessReceiverAccountId { get; }
         string SharerPersonId { get; }
         DateTime AccessGrantedTimestamp { get; }
         DateTime? AccessEndTimestamp { get; set; }

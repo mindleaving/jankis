@@ -11,7 +11,7 @@ namespace JanKIS.API.Helpers
             SubscriptionBase a,
             SubscriptionBase b)
         {
-            if (a.Username != b.Username)
+            if (a.AccountId != b.AccountId)
                 return false;
             if (a.Type != b.Type)
                 return false;

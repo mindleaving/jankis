@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { AccordionCard } from '../../../sharedCommonComponents/components/AccordionCard';
+import { CopyButton } from '../../../sharedCommonComponents/components/CopyButton';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import UserContext from '../../contexts/UserContext';
 import { Models } from '../../types/models';
@@ -14,6 +15,7 @@ export const BasicInformationBox = (props: BasicInformationBoxProps) => {
 
     const user = useContext(UserContext);
     const profileData = props.profileData;
+    const menschId = profileData.id;
     const name = `${profileData.firstName} ${profileData.lastName}`;
     const birthday = new Date(profileData.birthDate);
     const addresses = profileData.addresses;
@@ -37,18 +39,29 @@ export const BasicInformationBox = (props: BasicInformationBoxProps) => {
                 </Col>
             </Row>
             <Row>
-                <Col>Birthday</Col>
+                <Col>웃ID</Col>
+                <Col>
+                    {menschId}
+                    <CopyButton
+                        size="sm"
+                        className="mx-2 py-1"
+                        value={menschId}
+                    />
+                </Col>
+            </Row>
+            <Row>
+                <Col>{resolveText("Person_BirthDate")}</Col>
                 <Col>{birthday.toISOString().substring(0, 10)}</Col>
             </Row>
             <Row>
-                <Col>Address</Col>
+                <Col>{resolveText("Person_Addresses")}</Col>
                 <Col>
                     {addresses?.length > 0
                     ? <Address address={addresses[0]} /> : resolveText("None")}
                 </Col>
             </Row>
             <Row>
-                <Col>Telephone</Col>
+                <Col>{resolveText("Person_PhoneNumber")}</Col>
                 <Col>{telephone ?? resolveText('None')}</Col>
             </Row>
         </AccordionCard>

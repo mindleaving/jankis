@@ -40,16 +40,11 @@ namespace HealthSharingPortal.API.Storage
                 Permissions = permissions,
                 CreatedTimestamp = utcNow,
                 ExpirationDuration = expirationDuration,
-                CodeForSharer = GenerateHealthProfessionalAccessInviteCode(),
-                CodeForHealthProfessional = GenerateHealthProfessionalAccessInviteCode()
+                CodeForSharer = ChallengeSecretGenerator.Generate(),
+                CodeForHealthProfessional = ChallengeSecretGenerator.Generate()
             };
             await collection.InsertOneAsync(accessInvite);
             return accessInvite.Id;
-        }
-        private string GenerateHealthProfessionalAccessInviteCode()
-        {
-            var passwordGenerator = new TemporaryPasswordGenerator { AllowedCharacters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789" };
-            return passwordGenerator.Generate(length: 6).ToUpper();
         }
 
         public async Task<bool> SetSharerHasAccepted(string inviteId)

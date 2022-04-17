@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using HealthModels;
-using JanKIS.API.AccessManagement;
+using HealthSharingPortal.API.AccessControl;
 using JanKIS.API.Models;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
 using NUnit.Framework;
+using AccountFactory = JanKIS.API.AccessManagement.AccountFactory;
 
 namespace JanKIS.Tools
 {
@@ -91,11 +92,15 @@ namespace JanKIS.Tools
             var adminEmployee = new Person(Guid.NewGuid().ToString(), adminFirstName, adminLastName, adminBirthday, adminSex);
             personsCollection.InsertOne(adminEmployee);
 
+            var loginCollection = database.GetCollection<Login>(nameof(Login));
+            var login = LocalLoginFactory.Create(adminUsername, adminPassword);
+            login.IsPasswordChangeRequired = false;
+
             var accountsCollection = database.GetCollection<Account>(nameof(Account));
-            var adminAccount = AccountFactory.CreateEmployeeAccount(adminEmployee.Id, adminUsername, adminPassword);
+            var adminAccount = AccountFactory.CreateEmployeeAccount(adminEmployee.Id);
             adminAccount.Roles.Add(SystemRoles.Admin.Id);
-            adminAccount.IsPasswordChangeRequired = false;
             accountsCollection.InsertOne(adminAccount);
+            loginCollection.InsertOne(login);
         }
     }
 }

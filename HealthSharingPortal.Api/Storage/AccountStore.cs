@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Models;
 using MongoDB.Driver;
 
@@ -6,31 +9,26 @@ namespace HealthSharingPortal.API.Storage
 {
     public class AccountStore: GenericStore<Account>, IAccountStore
     {
+        private readonly IMongoCollection<Login> loginCollection;
+
         public AccountStore(IMongoDatabase mongoDatabase)
             : base(mongoDatabase)
         {
+            loginCollection = mongoDatabase.GetCollection<Login>(nameof(Login));
         }
 
-        public async Task<StorageResult> ChangePasswordAsync(
-            string username,
-            string passwordBase64,
-            bool changePasswordOnNextLogin)
+
+        public async Task DeleteAllForPerson(string personId)
         {
-            var result = await collection.UpdateOneAsync(
-                x => x.Id == username, 
-                Builders<Account>.Update
-                    .Set(x => x.PasswordHash, passwordBase64)
-                    .Set(x => x.IsPasswordChangeRequired, changePasswordOnNextLogin));
-            if(!result.IsAcknowledged)
-                return StorageResult.Error(StoreErrorType.UnknownDatabaseError);
-            if(result.MatchedCount == 0)
-                return StorageResult.Error(StoreErrorType.NoMatch);
-            return StorageResult.Success();
+            var matchingAccounts = await collection.Find(x => x.PersonId == personId).ToListAsync();
+            var loginIds = matchingAccounts.SelectMany(x => x.LoginIds).ToList();
+            await loginCollection.DeleteManyAsync(x => loginIds.Contains(x.Id));
+            await collection.DeleteManyAsync(x => x.PersonId == personId);
         }
 
-        public Task DeleteAllForPerson(string personId)
+        public Task<List<Account>> GetForLoginAsync(Login login)
         {
-            return collection.DeleteManyAsync(x => x.PersonId == personId);
+            return collection.Find(x => x.LoginIds.Contains(login.Id)).ToListAsync();
         }
     }
 }

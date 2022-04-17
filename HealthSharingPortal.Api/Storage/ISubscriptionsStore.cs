@@ -27,7 +27,7 @@ namespace HealthSharingPortal.API.Storage
             string personId,
             string username)
         {
-            return collection.OfType<PatientSubscription>().Find(x => x.PersonId == personId && x.Username == username).FirstOrDefaultAsync();
+            return collection.OfType<PatientSubscription>().Find(x => x.PersonId == personId && x.AccountId == username).FirstOrDefaultAsync();
         }
     }
 }

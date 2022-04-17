@@ -84,7 +84,7 @@ namespace JanKIS.API.Controllers
             var institution = await store.GetByIdAsync(institutionId);
             if (institution == null)
                 return NotFound();
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var username = ControllerHelpers.GetAccountId(httpContextAccessor);
             var subscription = new InstitutionSubscription(
                 Guid.NewGuid().ToString(),
                 username,
@@ -96,7 +96,7 @@ namespace JanKIS.API.Controllers
         [HttpPost("{institutionId}/unsubscribe")]
         public async Task<IActionResult> Unsubscribe([FromRoute] string institutionId)
         {
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var username = ControllerHelpers.GetAccountId(httpContextAccessor);
             var existingSubscription = await subscriptionsStore.GetInstitutionSubscription(institutionId, username);
             if (existingSubscription == null)
                 return Ok();

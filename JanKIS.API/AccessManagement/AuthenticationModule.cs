@@ -1,36 +1,40 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using HealthModels;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Models;
-using JanKIS.API.Storage;
+using HealthSharingPortal.API.Storage;
 using Account = JanKIS.API.Models.Account;
 
 namespace JanKIS.API.AccessManagement
 {
     public class AuthenticationModule
     {
-        private readonly IAccountStore accountStore;
+        private readonly ILoginStore loginStore;
         private readonly ISecurityTokenBuilder securityTokenBuilder;
 
         public AuthenticationModule(
-            IAccountStore accountStore,
-            ISecurityTokenBuilder securityTokenBuilder)
+            ISecurityTokenBuilder securityTokenBuilder,
+            ILoginStore loginStore)
         {
-            this.accountStore = accountStore;
             this.securityTokenBuilder = securityTokenBuilder;
+            this.loginStore = loginStore;
         }
 
-        public async Task<bool> ChangePasswordAsync(string userId, string password, bool changePasswordOnNextLogin = false)
+        public async Task<bool> ChangePasswordAsync(
+            string username, 
+            string password,
+            bool changePasswordOnNextLogin = false)
         {
-            var matchingAccount = await accountStore.GetByIdAsync(userId);
-            if (matchingAccount == null)
+            var login = await loginStore.GetByIdAsync(username);
+            if (login == null || login is not LocalLogin localLogin)
                 return false;
-            var saltBytes = Convert.FromBase64String(matchingAccount.Salt);
+            var saltBytes = Convert.FromBase64String(localLogin.Salt);
             var passwordHash = PasswordHasher.Hash(password, saltBytes, PasswordHasher.RecommendedHashLength);
             var passwordBase64 = Convert.ToBase64String(passwordHash);
 
-            var result = await accountStore.ChangePasswordAsync(userId, passwordBase64, changePasswordOnNextLogin);
+            var result = await loginStore.ChangePasswordAsync(username, passwordBase64, changePasswordOnNextLogin);
             return result.IsSuccess;
         }
 
@@ -38,22 +42,30 @@ namespace JanKIS.API.AccessManagement
         {
             if(string.IsNullOrEmpty(password))
                 return AuthenticationResult.Failed(AuthenticationErrorType.InvalidPassword);
-            var salt = Convert.FromBase64String(account.Salt);
-            var storedPasswordHash = Convert.FromBase64String(account.PasswordHash);
-            var providedPasswordHash = PasswordHasher.Hash(password, salt, 8 * storedPasswordHash.Length);
-            var isMatch = HashComparer.Compare(providedPasswordHash, storedPasswordHash);
-            if (!isMatch)
+            var logins = await loginStore.SearchAsync(x => account.LoginIds.Contains(x.Id));
+            var localLogins = logins.OfType<LocalLogin>().ToList();
+            if(!localLogins.Any())
+                return AuthenticationResult.Failed(AuthenticationErrorType.AuthenticationMethodNotAvailable);
+            foreach (var localLogin in localLogins)
             {
-                return AuthenticationResult.Failed(AuthenticationErrorType.InvalidPassword);
+                var salt = Convert.FromBase64String(localLogin.Salt);
+                var storedPasswordHash = Convert.FromBase64String(localLogin.PasswordHash);
+                var providedPasswordHash = PasswordHasher.Hash(password, salt, 8 * storedPasswordHash.Length);
+                var isMatch = HashComparer.Compare(providedPasswordHash, storedPasswordHash);
+                if (isMatch)
+                {
+                    var authenticationResult = await BuildSecurityTokenForUser(person, account, localLogin);
+                    return authenticationResult;
+                }
             }
-
-            return await BuildSecurityTokenForUser(person, account);
+            return AuthenticationResult.Failed(AuthenticationErrorType.InvalidPassword);
         }
 
-        public async Task<AuthenticationResult> BuildSecurityTokenForUser(Person person, Account account)
+        public async Task<AuthenticationResult> BuildSecurityTokenForUser(Person person, Account account, Login login)
         {
-            var token = await securityTokenBuilder.BuildForUser(person, account);
-            return AuthenticationResult.Success(token);
+            var token = await securityTokenBuilder.BuildForUser(person, account, login);
+            var isPasswordChangeRequired = (login as LocalLogin)?.IsPasswordChangeRequired ?? false;
+            return AuthenticationResult.Success(token, isPasswordChangeRequired);
         }
     }
 }

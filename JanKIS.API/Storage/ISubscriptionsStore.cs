@@ -70,49 +70,49 @@ namespace JanKIS.API.Storage
             string serviceId,
             string username)
         {
-            return collection.OfType<ServiceSubscription>().Find(x => x.ServiceId == serviceId && x.Username == username).FirstOrDefaultAsync();
+            return collection.OfType<ServiceSubscription>().Find(x => x.ServiceId == serviceId && x.AccountId == username).FirstOrDefaultAsync();
         }
 
         public Task<ServiceRequestSubscription> GetServiceRequestSubscription(
             string requestId,
             string username)
         {
-            return collection.OfType<ServiceRequestSubscription>().Find(x => x.RequestId == requestId && x.Username == username).FirstOrDefaultAsync();
+            return collection.OfType<ServiceRequestSubscription>().Find(x => x.RequestId == requestId && x.AccountId == username).FirstOrDefaultAsync();
         }
 
         public Task<DepartmentSubscription> GetDepartmentSubscription(
             string departmentId,
             string username)
         {
-            return collection.OfType<DepartmentSubscription>().Find(x => x.DepartmentId == departmentId && x.Username == username).FirstOrDefaultAsync();
+            return collection.OfType<DepartmentSubscription>().Find(x => x.DepartmentId == departmentId && x.AccountId == username).FirstOrDefaultAsync();
         }
 
         public Task<InstitutionSubscription> GetInstitutionSubscription(
             string institutionId,
             string username)
         {
-            return collection.OfType<InstitutionSubscription>().Find(x => x.InstitutionId == institutionId && x.Username == username).FirstOrDefaultAsync();
+            return collection.OfType<InstitutionSubscription>().Find(x => x.InstitutionId == institutionId && x.AccountId == username).FirstOrDefaultAsync();
         }
 
         public Task<ResourceSubscription> GetResourceSubscription(
             string resourceId,
             string username)
         {
-            return collection.OfType<ResourceSubscription>().Find(x => x.ResourceId == resourceId && x.Username == username).FirstOrDefaultAsync();
+            return collection.OfType<ResourceSubscription>().Find(x => x.ResourceId == resourceId && x.AccountId == username).FirstOrDefaultAsync();
         }
 
         public Task<StockSubscription> GetStockSubscription(
             string stockId,
             string username)
         {
-            return collection.OfType<StockSubscription>().Find(x => x.StockId == stockId && x.Username == username).FirstOrDefaultAsync();
+            return collection.OfType<StockSubscription>().Find(x => x.StockId == stockId && x.AccountId == username).FirstOrDefaultAsync();
         }
 
         public Task<ConsumableOrderSubscription> GetConsumableOrderSubscription(
             string orderId,
             string username)
         {
-            return collection.OfType<ConsumableOrderSubscription>().Find(x => x.OrderId == orderId && x.Username == username).FirstOrDefaultAsync();
+            return collection.OfType<ConsumableOrderSubscription>().Find(x => x.OrderId == orderId && x.AccountId == username).FirstOrDefaultAsync();
         }
     }
 }

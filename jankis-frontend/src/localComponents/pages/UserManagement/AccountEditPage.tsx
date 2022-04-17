@@ -17,7 +17,7 @@ import { AutocompleteRunner } from '../../../sharedCommonComponents/helpers/Auto
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 
 interface AccountEditPageParams {
-    username?: string;
+    accountId?: string;
 }
 interface AccountEditPageProps {
 }
@@ -32,10 +32,10 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
     const currentUser = useContext(UserContext);
 
     const isNew = location.pathname.toLowerCase().startsWith('/create');
-    if(!isNew && !params.username) {
+    if(!isNew && !params.accountId) {
         throw new Error('Invalid link');
     }
-    const matchedUsername = params.username;
+    const matchedUsername = params.accountId;
     const [ isLoading, setIsLoading ] = useState<boolean>(!isNew);
     const [ isStoring, setIsStoring ] = useState<boolean>(false);
     const navigate = useNavigate();
@@ -58,7 +58,7 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
             try {
                 const response = await apiClient.instance!.get(`api/accounts/${matchedUsername}`, {});
                 const viewModel = await response.json() as ViewModels.AccountViewModel;
-                setUsername(viewModel.username);
+                setUsername(viewModel.accountId);
                 setAccountType(viewModel.accountType);
                 setPersonId(viewModel.profileData.id);
                 setFirstName(viewModel.profileData.firstName);
@@ -93,7 +93,7 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
     }, [ isNew, username ]);
 
     const addRole = (role: Models.Role) => {
-        if(currentUser?.username === username) {
+        if(currentUser?.accountId === username) {
             NotificationManager.error(resolveText('Account_CannotChangeOwnPermissions'), resolveText('Forbidden'));
             return;
         }
@@ -103,7 +103,7 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
         setRoles(roles.concat(role));
     }
     const removeRole = (role: Models.Role) => {
-        if(currentUser?.username === username) {
+        if(currentUser?.accountId === username) {
             NotificationManager.error(resolveText('Account_CannotChangeOwnPermissions'), resolveText('Forbidden'));
             return;
         }
@@ -111,7 +111,7 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
     }
 
     const addDepartment = (department: Models.Department) => {
-        if(currentUser?.username === username) {
+        if(currentUser?.accountId === username) {
             NotificationManager.error(resolveText('Account_CannotChangeOwnPermissions'), resolveText('Forbidden'));
             return;
         }
@@ -121,7 +121,7 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
         setDepartments(departments.concat(department));
     }
     const removeDepartment = (department: Models.Department) => {
-        if(currentUser?.username === username) {
+        if(currentUser?.accountId === username) {
             NotificationManager.error(resolveText('Account_CannotChangeOwnPermissions'), resolveText('Forbidden'));
             return;
         }
@@ -292,7 +292,7 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
                             placeholder={resolveText('Search...')}
                             minSearchTextLength={3}
                             resetOnSelect
-                            disabled={currentUser?.username === username}
+                            disabled={currentUser?.accountId === username}
                         />
                     </Col>
                 </FormGroup>
@@ -317,7 +317,7 @@ export const AccountEditPage = (props: AccountEditPageProps) => {
                             placeholder={resolveText('Search...')}
                             minSearchTextLength={3}
                             resetOnSelect
-                            disabled={currentUser?.username === username}
+                            disabled={currentUser?.accountId === username}
                         />
                     </Col>
                 </FormGroup>

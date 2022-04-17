@@ -28,7 +28,7 @@ namespace HealthSharingPortal.API.Workflow
 
         public async Task NotifyAccessGranted(HealthProfessionalAccess access)
         {
-            await accessRequestHub.Clients.Users(access.AccessReceiverUsername, access.SharerPersonId).ReceiveGrantedAccess(access);
+            await accessRequestHub.Clients.Users(access.AccessReceiverAccountId, access.SharerPersonId).ReceiveGrantedAccess(access);
         }
     }
 }

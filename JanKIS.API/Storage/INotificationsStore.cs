@@ -26,7 +26,7 @@ namespace JanKIS.API.Storage
             bool includeDismissed = false)
         {
             return collection
-                .Find(x => x.Subscription.Username == username && (!x.IsDismissed || includeDismissed))
+                .Find(x => x.Subscription.AccountId == username && (!x.IsDismissed || includeDismissed))
                 .SortByDescending(x => x.Timestamp)
                 .Skip(skip)
                 .Limit(count)

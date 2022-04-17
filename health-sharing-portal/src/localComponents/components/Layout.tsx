@@ -38,9 +38,6 @@ export const Layout = (props: PropsWithChildren<LayoutProps>) => {
             userTypeMenus = (<EmergencyGuestMenu />);
             break;
     }
-    if(user?.accountType === AccountType.Sharer) {
-        
-    }
 
     return (
         <>

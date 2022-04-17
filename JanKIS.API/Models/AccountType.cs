@@ -2,7 +2,8 @@
 {
     public enum AccountType
     {
-        Patient,
-        Employee
+        Undefined = 0,
+        Patient = 1,
+        Employee = 2
     }
 }

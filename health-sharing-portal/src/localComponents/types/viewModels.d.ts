@@ -9,15 +9,17 @@ export namespace ViewModels {
     }
 
     interface AccountCreationInfo {
-        username: string;
-        personId: string;
         accountType: Enums.AccountType;
+        person: Models.Person;
+        menschIdChallengeResponse?: string;
+        menschIdChallengeId?: string;
     }
 
     interface AccountViewModel extends ViewModels.IViewModel<Models.Account> {
-        username: string;
+        accountId: string;
         accountType: Enums.AccountType;
         profileData: Models.Person;
+        isPasswordChangeRequired: boolean;
     }
 
     interface DiagnosisViewModel extends Models.Diagnoses.Diagnosis, ViewModels.IViewModel<Models.Diagnoses.Diagnosis> {
@@ -25,21 +27,38 @@ export namespace ViewModels {
     }
 
     interface GuestEmergencyAccessViewModel {
-        user: ViewModels.LoggedInUserViewModel;
+        user: ViewModels.GuestViewModel;
         accessInfo: Models.AccessControl.EmergencyAccess;
+    }
+
+    interface GuestViewModel extends ViewModels.IUserViewModel {
+        authenticationResult: Models.AuthenticationResult;
+    }
+
+    interface IUserViewModel {
+        profileData: Models.Person;
+        accountType: Enums.AccountType;
+        accountId: string;
+        preferedLanguage: Enums.Language;
     }
 
     interface IViewModel<T> {
         
     }
 
-    interface LoggedInUserViewModel {
-        profileData: Models.Person;
-        authenticationResult: Models.AuthenticationResult;
+    interface LoggedInUserViewModel extends ViewModels.IUserViewModel {
+        account: Models.Account;
+    }
+
+    interface LoginCreationInfo {
         username: string;
-        isPasswordResetRequired: boolean;
-        accountType: Enums.AccountType;
-        preferedLanguage: Enums.Language;
+        password: string;
+    }
+
+    interface MenschIdChallengeViewModel {
+        menschId: string;
+        challengeId: string;
+        challengeShortId: string;
     }
 
     interface PatientOverviewViewModel {

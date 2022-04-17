@@ -30,7 +30,7 @@ export const TemperatureMeasurementForm = (props: TemperatureMeasurementFormProp
             isVerified: false,
             hasBeenSeenBySharer: user!.profileData.id === props.personId,
             measurementType: MeasurementType.Temperature,
-            createdBy: user!.username,
+            createdBy: user!.accountId,
             personId: props.personId,
             timestamp: new Date(),
             value: temperature,

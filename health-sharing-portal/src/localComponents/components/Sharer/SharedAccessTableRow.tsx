@@ -25,7 +25,7 @@ export const SharedAccessTableRow = (props: SharedAccessTableRowProps) => {
     const isExpired = !!endTime ? isAfter(now, endTime) : false;
     const remainingTimeInMinutes = !isExpired && endTime ? differenceInMinutes(endTime!, now) : 0;
     const iAmSharer = user!.accountType === AccountType.Sharer && access.sharerPersonId === user!.profileData.id;
-    const iAmReceiver = access.accessReceiverUsername === user!.username;
+    const iAmReceiver = access.accessReceiverAccountId === user!.accountId;
 
     const navigate = useNavigate();
 
@@ -38,7 +38,7 @@ export const SharedAccessTableRow = (props: SharedAccessTableRowProps) => {
                     onClick={() => props.onRevokeAccess(access.type, access.id)}
                     requireConfirm
                     confirmDialogTitle={resolveText("SharedAccess_ConfirmRevoke_Title")}
-                    confirmDialogMessage={resolveText("SharedAccess_ConfirmRevoke_Message").replace("{0}", access.accessReceiverUsername ?? '')}
+                    confirmDialogMessage={resolveText("SharedAccess_ConfirmRevoke_Message").replace("{0}", access.accessReceiverAccountId ?? '')}
                 />
             );
         }
@@ -63,7 +63,7 @@ export const SharedAccessTableRow = (props: SharedAccessTableRowProps) => {
             ? <b className='red'>{formattedAccessType}</b>
             : formattedAccessType}
         </td>
-        <td>{access.accessReceiverUsername}</td>
+        <td>{access.accessReceiverAccountId}</td>
         <td>
             {!endTime ? resolveText("SharedAccess_NoExpiration") : formatDate(endTime)}
             {endTime 

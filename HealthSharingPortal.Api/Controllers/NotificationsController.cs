@@ -26,7 +26,7 @@ namespace HealthSharingPortal.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllForUser(int? count = null, int? skip = null, bool includeDismissed = false)
         {
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var username = ControllerHelpers.GetAccountId(httpContextAccessor);
             var notifications = await notificationsStore.GetAllForUser(username, count, skip, includeDismissed);
             return Ok(notifications);
         }
@@ -37,8 +37,8 @@ namespace HealthSharingPortal.API.Controllers
             var notification = await notificationsStore.GetByIdAsync(notificationId);
             if (notification == null)
                 return NotFound();
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            if (notification.Subscription.Username != username)
+            var username = ControllerHelpers.GetAccountId(httpContextAccessor);
+            if (notification.Subscription.AccountId != username)
                 return Forbid();
             await notificationsStore.Dismiss(notificationId);
             return Ok();

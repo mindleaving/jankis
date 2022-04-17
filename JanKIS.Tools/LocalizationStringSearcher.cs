@@ -73,11 +73,11 @@ namespace JanKIS.Tools
             var primaryLanguage = "en";
             var primaryDictionaryFile = Path.Combine(
                 FrontendDirectory,
-                "src", "resources",
+                "src", "localComponents", "resources",
                 $"translation.{primaryLanguage}.json");
             var secondaryDictionaryFile = Path.Combine(
                 FrontendDirectory,
-                "src", "resources",
+                "src", "localComponents", "resources",
                 $"translation.{language}.json");
             var primaryJObject = JObject.Parse(File.ReadAllText(primaryDictionaryFile));
             var secondaryJObject = JObject.Parse(File.ReadAllText(secondaryDictionaryFile));

@@ -76,7 +76,7 @@ namespace JanKIS.API.Controllers
                 request.Id = Guid.NewGuid().ToString();
             if (await serviceRequestsStore.ExistsAsync(request.Id))
                 return Conflict("A request with that ID already exists");
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var username = ControllerHelpers.GetAccountId(httpContextAccessor);
             request.Timestamps = new List<ServiceRequestStateChange> {new(ServiceRequestState.Requested, DateTime.UtcNow)};
             request.Requester = username;
             await serviceRequestsStore.StoreAsync(request);
@@ -90,7 +90,7 @@ namespace JanKIS.API.Controllers
             var service = await servicesStore.GetByIdAsync(serviceId);
             if (service == null)
                 return NotFound();
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var username = ControllerHelpers.GetAccountId(httpContextAccessor);
             var subscription = new ServiceSubscription(
                 Guid.NewGuid().ToString(),
                 username,
@@ -102,7 +102,7 @@ namespace JanKIS.API.Controllers
         [HttpPost("{serviceId}/unsubscribe")]
         public async Task<IActionResult> Unsubscribe([FromRoute] string serviceId)
         {
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var username = ControllerHelpers.GetAccountId(httpContextAccessor);
             var existingSubscription = await subscriptionsStore.GetServiceSubscription(serviceId, username);
             if (existingSubscription == null)
                 return Ok();

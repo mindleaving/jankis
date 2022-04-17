@@ -33,7 +33,7 @@ export const RequestEmergencyAccessPage = (props: RequestEmergencyAccessPageProp
                 type: SharedAccessType.Emergency,
                 createdTimestamp: new Date(),
                 isCompleted: false,
-                accessReceiverUsername: user!.username,
+                accessReceiverUsername: user!.accountId,
                 sharerPersonId: personId,
                 emergencyToken: emergencyToken,
                 targetPersonFirstName: personFirstName,

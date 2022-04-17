@@ -43,7 +43,7 @@ namespace HealthSharingPortal.API.Controllers
                 item.TestCategory = testDefinition.Category;
                 item.TestName = testDefinition.Name;
             }
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var username = ControllerHelpers.GetAccountId(httpContextAccessor);
             item.CreatedBy = username;
             item.Timestamp = DateTime.UtcNow;
             return await base.CreateOrReplace(id, item);

@@ -57,7 +57,7 @@ export const CreatePatientNotePage = (props: CreatePatientNotePageProps) => {
         return {
             id: id,
             personId: profileData!.id,
-            createdBy: user!.username,
+            createdBy: user!.accountId,
             isVerified: false,
             hasBeenSeenBySharer: user!.profileData.id === profileData!.id,
             timestamp: new Date(),

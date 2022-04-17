@@ -4,29 +4,20 @@ using HealthSharingPortal.API.Models;
 
 namespace HealthSharingPortal.API.ViewModels
 {
-    public class LoggedInUserViewModel
+    public class LoggedInUserViewModel : IUserViewModel
     {
         public LoggedInUserViewModel(
             Person profileData,
-            AuthenticationResult authenticationResult,
-            string username,
-            bool isPasswordResetRequired,
-            AccountType accountType,
-            Language preferedLanguage)
+            Account account)
         {
             ProfileData = profileData;
-            AuthenticationResult = authenticationResult;
-            Username = username;
-            IsPasswordResetRequired = isPasswordResetRequired;
-            AccountType = accountType;
-            PreferedLanguage = preferedLanguage;
+            Account = account;
         }
 
         public Person ProfileData { get; set; }
-        public AuthenticationResult AuthenticationResult { get; set; }
-        public string Username { get; set; }
-        public bool IsPasswordResetRequired { get; set; }
-        public AccountType AccountType { get; set; }
-        public Language PreferedLanguage { get; set; } = Language.en;
+        public Account Account { get; set; }
+        public string AccountType => (Account?.AccountType ?? Models.AccountType.Undefined).ToString();
+        public string AccountId => Account?.Id;
+        public Language PreferedLanguage => Account?.PreferedLanguage ?? Language.en;
     }
 }

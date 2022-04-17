@@ -62,10 +62,14 @@ namespace HealthSharingPortal.Tools
             var adminEmployee = new Person(Guid.NewGuid().ToString(), adminFirstName, adminLastName, adminBirthday, adminSex);
             personsCollection.InsertOne(adminEmployee);
 
+            var loginCollection = database.GetCollection<Login>(nameof(Login));
+            var login = LocalLoginFactory.Create(adminUsername, adminPassword);
+            login.IsPasswordChangeRequired = false;
+
             var accountsCollection = database.GetCollection<Account>(nameof(Account));
-            var adminAccount = AccountFactory.Create(adminEmployee.Id, adminUsername, AccountType.Admin, adminPassword);
-            adminAccount.IsPasswordChangeRequired = false;
+            var adminAccount = AccountFactory.Create(AccountType.Admin, login.Id, personId: adminEmployee.Id);
             accountsCollection.InsertOne(adminAccount);
+            loginCollection.InsertOne(login);
         }
     }
 }

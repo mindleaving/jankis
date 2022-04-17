@@ -10,13 +10,13 @@ namespace HealthSharingPortal.API.Helpers
 {
     public static class ControllerHelpers
     {
-        public static string GetUsername(IHttpContextAccessor httpContextAccessor)
+        public static string GetAccountId(IHttpContextAccessor httpContextAccessor)
         {
-            var username = httpContextAccessor.HttpContext?.User.Claims
-                .FirstOrDefault(x => x.Type == JwtSecurityTokenBuilder.UsernameClaimName)?.Value;
-            if (username == null)
-                return "anonymous";
-            return UsernameNormalizer.Normalize(username);
+            var accountId = httpContextAccessor.HttpContext?.User.Claims
+                .FirstOrDefault(x => x.Type == JwtSecurityTokenBuilder.AccountIdClaimName)?.Value;
+            if (accountId == null)
+                return null;
+            return UsernameNormalizer.Normalize(accountId);
         }
 
         internal static AccountType? GetAccountType(IHttpContextAccessor httpContextAccessor)
@@ -37,6 +37,20 @@ namespace HealthSharingPortal.API.Helpers
         public static List<Claim> GetClaims(IHttpContextAccessor httpContextAccessor)
         {
             return httpContextAccessor.HttpContext?.User.Claims.ToList() ?? new List<Claim>();
+        }
+
+        public static bool IsLoggedIn(IHttpContextAccessor httpContextAccessor)
+        {
+            var user = httpContextAccessor.HttpContext?.User;
+            if(user?.Identity == null)
+            {
+                return false;
+            }
+            if (!user.Identity.IsAuthenticated)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

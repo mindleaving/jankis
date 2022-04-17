@@ -43,7 +43,7 @@ namespace JanKIS.API.Controllers
             var stock = await store.GetByIdAsync(stockId);
             if (stock == null)
                 return NotFound();
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var username = ControllerHelpers.GetAccountId(httpContextAccessor);
             var subscription = new StockSubscription(
                 Guid.NewGuid().ToString(),
                 username,
@@ -55,7 +55,7 @@ namespace JanKIS.API.Controllers
         [HttpPost("{stockId}/unsubscribe")]
         public async Task<IActionResult> Unsubscribe([FromRoute] string stockId)
         {
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var username = ControllerHelpers.GetAccountId(httpContextAccessor);
             var existingSubscription = await subscriptionsStore.GetStockSubscription(stockId, username);
             if (existingSubscription == null)
                 return Ok();

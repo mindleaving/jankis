@@ -328,6 +328,7 @@ export enum SharedAccessType {
     Emergency = "Emergency"
 }
 export enum AccountType {
+    Undefined = "Undefined",
     Patient = "Patient",
     Employee = "Employee"
 }
@@ -420,6 +421,14 @@ export enum AutoCompleteContext {
     DrugDispensionForm = "DrugDispensionForm",
     ResourceGroup = "ResourceGroup",
     ExternalLocation = "ExternalLocation"
+}
+export enum LoginProvider {
+    Unknown = "Unknown",
+    Google = "Google",
+    Twitter = "Twitter",
+    Facebook = "Facebook",
+    Microsoft = "Microsoft",
+    LocalJwt = "LocalJwt"
 }
 export enum OrderDirection {
     Ascending = "Ascending",

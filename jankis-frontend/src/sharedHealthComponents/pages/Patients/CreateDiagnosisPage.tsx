@@ -34,7 +34,7 @@ export const CreateDiagnosisPage = (props: CreateDiagnosisPageProps) => {
 
     const diagnosis: Models.Diagnoses.Diagnosis = {
         id: uuid(),
-        createdBy: user!.username,
+        createdBy: user!.accountId,
         type: HealthRecordEntryType.Diagnosis,
         isVerified: false,
         hasBeenSeenBySharer: user!.profileData.id === personId,

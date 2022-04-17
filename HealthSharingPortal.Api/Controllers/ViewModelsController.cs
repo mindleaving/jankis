@@ -45,6 +45,8 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IViewModelBuilder<Diagnosis> diagnosisViewModelBuilder;
         private readonly IPersonDataReadonlyStore<QuestionnaireAnswers> questionnaireAnswersStore;
         private readonly IPersonDataReadonlyStore<GenomeExplorerDeployment> genomeExplorerDeploymentStore;
+        private readonly IAccountStore accountStore;
+        private readonly ILoginStore loginStore;
 
         public ViewModelsController(
             IHttpContextAccessor httpContextAccessor,
@@ -65,7 +67,9 @@ namespace HealthSharingPortal.API.Controllers
             IViewModelBuilder<QuestionnaireAnswers> questionnaireAnswersViewModelBuilder,
             IViewModelBuilder<Diagnosis> diagnosisViewModelBuilder,
             IPersonDataReadonlyStore<QuestionnaireAnswers> questionnaireAnswersStore,
-            IPersonDataReadonlyStore<GenomeExplorerDeployment> genomeExplorerDeploymentStore)
+            IPersonDataReadonlyStore<GenomeExplorerDeployment> genomeExplorerDeploymentStore,
+            IAccountStore accountStore,
+            ILoginStore loginStore)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.personStore = personStore;
@@ -86,7 +90,25 @@ namespace HealthSharingPortal.API.Controllers
             this.diagnosisViewModelBuilder = diagnosisViewModelBuilder;
             this.questionnaireAnswersStore = questionnaireAnswersStore;
             this.genomeExplorerDeploymentStore = genomeExplorerDeploymentStore;
+            this.accountStore = accountStore;
+            this.loginStore = loginStore;
         }
+
+        [HttpGet("currentuser")]
+        public async Task<IActionResult> CurrentUser()
+        {
+            var accountId = ControllerHelpers.GetAccountId(httpContextAccessor);
+            var account = await accountStore.GetByIdAsync(accountId);
+            var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
+            var claims = ControllerHelpers.GetClaims(httpContextAccessor);
+            var accessGrants = await authorizationModule.GetAccessGrants(claims);
+            var person = await personStore.GetByIdAsync(personId, accessGrants);
+            var userViewModel = new LoggedInUserViewModel(
+                person,
+                account);
+            return Ok(userViewModel);
+        }
+
 
         [HttpGet("healthdata/{personId}")]
         public async Task<IActionResult> HealthData(
@@ -155,8 +177,8 @@ namespace HealthSharingPortal.API.Controllers
             StudyAssociation myAssociation = null;
             if (accountType == AccountType.Researcher)
             {
-                var username = ControllerHelpers.GetUsername(httpContextAccessor);
-                var myAssociations = await studyAssociationStore.SearchAsync(x => x.StudyId == studyId && x.Username == username);
+                var username = ControllerHelpers.GetAccountId(httpContextAccessor);
+                var myAssociations = await studyAssociationStore.SearchAsync(x => x.StudyId == studyId && x.AccountId == username);
                 myAssociation = myAssociations.FirstOrDefault();
             }
 

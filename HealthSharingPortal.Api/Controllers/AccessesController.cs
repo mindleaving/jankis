@@ -99,9 +99,9 @@ namespace HealthSharingPortal.API.Controllers
             }
             else if (accountType == AccountType.HealthProfessional)
             {
-                var username = ControllerHelpers.GetUsername(httpContextAccessor);
-                var emergencyAccesses = await emergencyAccessStore.SearchAsync(x => x.AccessReceiverUsername == username);
-                var healthProfessionalAccesses = await healthProfessionalAccessStore.SearchAsync(x => x.AccessReceiverUsername == username);
+                var username = ControllerHelpers.GetAccountId(httpContextAccessor);
+                var emergencyAccesses = await emergencyAccessStore.SearchAsync(x => x.AccessReceiverAccountId == username);
+                var healthProfessionalAccesses = await healthProfessionalAccessStore.SearchAsync(x => x.AccessReceiverAccountId == username);
                 var combinedAccesses = emergencyAccesses.Cast<ISharedAccess>().Concat(healthProfessionalAccesses);
                 filteredAccesses = accessFilterer.FilterAccesses(combinedAccesses, filter);
             }
@@ -192,7 +192,7 @@ namespace HealthSharingPortal.API.Controllers
             return orderBy?.ToLower() switch
             {
                 "type" => x => x.Type,
-                "receiver" => x => x.AccessReceiverUsername,
+                "receiver" => x => x.AccessReceiverAccountId,
                 "starttime" => x => x.AccessGrantedTimestamp,
                 "endtime" => x => x.AccessEndTimestamp ?? DateTime.MaxValue,
                 _ => x => x.AccessGrantedTimestamp
