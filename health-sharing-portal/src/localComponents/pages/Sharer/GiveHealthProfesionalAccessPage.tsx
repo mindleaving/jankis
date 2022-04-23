@@ -46,7 +46,7 @@ export const GiveHealthProfesionalAccessPage = (props: GiveHealthProfesionalAcce
         e.preventDefault();
         try {
             const body: Models.CreateAccessInviteBody = {
-                healthProfessionalUsername: healthProfessional!.username,
+                healthProfessionalAccountId: healthProfessional!.id,
                 expirationDuration: expirationTime,
                 permissions: permissions
             };

@@ -1,3 +1,4 @@
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Hubs;
 using HealthSharingPortal.API.Setups;
 using Microsoft.AspNetCore.Builder;
@@ -29,7 +30,8 @@ namespace HealthSharingPortal.API
                 new AccessControlSetup(),
                 new CorsSetup(),
                 new OpenApiSetup(),
-                new SignalRSetup()
+                new SignalRSetup(),
+                new MenschIdSetup()
             };
             foreach (var setup in setups)
             {
@@ -55,6 +57,7 @@ namespace HealthSharingPortal.API
                 app.UseCors();
             }
             app.UseAuthentication();
+            app.AddMultiIdentityAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

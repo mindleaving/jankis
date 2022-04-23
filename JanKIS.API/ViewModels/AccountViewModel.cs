@@ -7,14 +7,15 @@ namespace JanKIS.API.ViewModels
 {
     public class AccountViewModel : IViewModel<Account>
     {
-        public AccountViewModel(string username,
+        public AccountViewModel(
+            string accountId,
             AccountType accountType,
             Person profileData,
             List<Role> roles = null,
             List<PermissionModifier> permissionModifiers = null,
             List<Department> departments = null)
         {
-            Username = username;
+            AccountId = accountId;
             AccountType = accountType;
             ProfileData = profileData;
             Roles = roles ?? new List<Role>();
@@ -22,7 +23,7 @@ namespace JanKIS.API.ViewModels
             Departments = departments ?? new List<Department>();
         }
 
-        public string Username { get; }
+        public string AccountId { get; }
         public AccountType AccountType { get; }
         public Person ProfileData { get; }
         public List<Role> Roles { get; }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using HealthModels;
 using HealthModels.AccessControl;
@@ -10,62 +11,57 @@ namespace HealthSharingPortal.API.AccessControl
 {
     public class AuthenticationModule : IAuthenticationModule
     {
-        private readonly IAccountStore accountStore;
+        private readonly ILoginStore loginStore;
         private readonly ISecurityTokenBuilder securityTokenBuilder;
 
         public AuthenticationModule(
-            IAccountStore accountStore,
-            ISecurityTokenBuilder securityTokenBuilder)
+            ISecurityTokenBuilder securityTokenBuilder,
+            ILoginStore loginStore)
         {
-            this.accountStore = accountStore;
             this.securityTokenBuilder = securityTokenBuilder;
+            this.loginStore = loginStore;
         }
 
         public async Task<bool> ChangePasswordAsync(
-            string userId, 
+            string username, 
             string password,
             bool changePasswordOnNextLogin = false)
         {
-            var matchingAccount = await accountStore.GetByIdAsync(userId);
-            if (matchingAccount == null)
+            var login = await loginStore.GetByIdAsync(username);
+            if (login == null || login is not LocalLogin localLogin)
                 return false;
-            var saltBytes = Convert.FromBase64String(matchingAccount.Salt);
+            var saltBytes = Convert.FromBase64String(localLogin.Salt);
             var passwordHash = PasswordHasher.Hash(password, saltBytes, PasswordHasher.RecommendedHashLength);
             var passwordBase64 = Convert.ToBase64String(passwordHash);
 
-            var result = await accountStore.ChangePasswordAsync(userId, passwordBase64, changePasswordOnNextLogin);
+            var result = await loginStore.ChangePasswordAsync(username, passwordBase64, changePasswordOnNextLogin);
             return result.IsSuccess;
         }
 
-        public async Task<AuthenticationResult> AuthenticateAsync(Person person, Account account, string password)
+        public bool Authenticate(LocalLogin login, string password)
         {
-            if(string.IsNullOrEmpty(password))
-                return AuthenticationResult.Failed(AuthenticationErrorType.InvalidPassword);
-            var salt = Convert.FromBase64String(account.Salt);
-            var storedPasswordHash = Convert.FromBase64String(account.PasswordHash);
+            if (string.IsNullOrEmpty(password))
+                return false;
+            var salt = Convert.FromBase64String(login.Salt);
+            var storedPasswordHash = Convert.FromBase64String(login.PasswordHash);
             var providedPasswordHash = PasswordHasher.Hash(password, salt, 8 * storedPasswordHash.Length);
-            var isMatch = HashComparer.Compare(providedPasswordHash, storedPasswordHash);
-            if (!isMatch)
-            {
-                return AuthenticationResult.Failed(AuthenticationErrorType.InvalidPassword);
-            }
-
-            return await BuildSecurityTokenForUser(person, account);
+            return HashComparer.Compare(providedPasswordHash, storedPasswordHash);
         }
 
-        public async Task<AuthenticationResult> BuildSecurityTokenForUser(Person person, Account account)
+        public AuthenticationResult BuildSecurityTokenForUser(Person person, Account account, Login login)
         {
-            var token = await securityTokenBuilder.BuildForUser(person, account);
-            return AuthenticationResult.Success(token);
+            var token = securityTokenBuilder.BuildForUser(person, account, login);
+            var isPasswordChangeRequired = (login as LocalLogin)?.IsPasswordChangeRequired ?? false;
+            return AuthenticationResult.Success(token, isPasswordChangeRequired);
         }
 
-        public async Task<AuthenticationResult> BuildSecurityTokenForGuest(
+        public AuthenticationResult BuildSecurityTokenForGuest(
             string emergencyPersonId,
             IList<AccessPermissions> permissions,
             string emergencyAccessId)
         {
-            var token = await securityTokenBuilder.BuildForGuest(emergencyPersonId, permissions, emergencyAccessId);
-            return AuthenticationResult.Success(token);
+            var token = securityTokenBuilder.BuildForGuest(emergencyPersonId, permissions, emergencyAccessId);
+            return AuthenticationResult.Success(token, false);
         }
     }
 }

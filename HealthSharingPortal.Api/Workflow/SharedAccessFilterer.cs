@@ -31,7 +31,7 @@ namespace HealthSharingPortal.API.Workflow
             if (!string.IsNullOrWhiteSpace(filter.SearchText))
             {
                 var trimmedLowerSearchText = filter.SearchText.Trim().ToLower();
-                filtered = filtered.Where(x => x.AccessReceiverUsername.ToLower().Contains(trimmedLowerSearchText));
+                filtered = filtered.Where(x => x.AccessReceiverAccountId.ToLower().Contains(trimmedLowerSearchText));
             }
             return filtered;
         }

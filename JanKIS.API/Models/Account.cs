@@ -1,6 +1,7 @@
-﻿using HealthModels;
+﻿using System.Collections.Generic;
+using HealthModels;
+using HealthModels.Interview;
 using MongoDB.Bson.Serialization.Attributes;
-using Newtonsoft.Json;
 
 namespace JanKIS.API.Models
 {
@@ -9,30 +10,22 @@ namespace JanKIS.API.Models
         typeof(PatientAccount))]
     public abstract class Account : IId
     {
+        public Account() {}
         public Account(
-            string personId,
-            string username,
-            string salt,
-            string passwordHash)
+            string id,
+            string personId = null,
+            Language preferedLanguage = Language.en)
         {
+            Id = id;
             PersonId = personId;
-            Username = username;
-            Salt = salt;
-            PasswordHash = passwordHash;
-            IsPasswordChangeRequired = true;
+            PreferedLanguage = preferedLanguage;
+            LoginIds = new List<string>();
         }
 
-        public string Id => Username;
-        public string PersonId { get; set; }
+        public string Id { get; set; }
         public abstract AccountType AccountType { get; }
-        public string Username { get; set; }
-
-        #region Login-information
-        [JsonIgnore]
-        public string PasswordHash { get; set; }
-        [JsonIgnore]
-        public string Salt { get; set; }
-        public bool IsPasswordChangeRequired { get; set; }
-        #endregion
+        public string PersonId { get; set; }
+        public Language PreferedLanguage { get; set; }
+        public List<string> LoginIds { get; set; }
     }
 }

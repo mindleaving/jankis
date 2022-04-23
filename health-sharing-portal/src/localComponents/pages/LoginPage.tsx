@@ -6,26 +6,34 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { apiClient } from '../../sharedCommonComponents/communication/ApiClient';
 import { AsyncButton } from '../../sharedCommonComponents/components/AsyncButton';
 import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
+import { Models } from '../types/models';
 
 interface LoginPageProps {
-    onLoggedIn: (userViewModel: ViewModels.LoggedInUserViewModel, redirectUrl?: string) => void;
+    onNewAccessToken: (authenticationResult: Models.AuthenticationResult) => void;
+    onLoggedIn: (userViewModel: ViewModels.IUserViewModel, redirectUrl?: string) => void;
 }
 
 export const LoginPage = (props: LoginPageProps) => {
 
-    const { role } = useParams();
+    const { accountType } = useParams();
     const [ query ] = useSearchParams();
-    const redirectUrl = query.get("redirectUrl");
+    let redirectUrl = query.get("redirectUrl");
     const [ username, setUsername ] = useState<string>('');
     const [ password, setPassword ] = useState<string>('');
     const [ isLoggingIn, setIsLoggingIn ] = useState<boolean>(false);
 
-    const login = async (e?: FormEvent) => {
+    const localLogin = async (e?: FormEvent) => {
         e?.preventDefault();
         try {
             setIsLoggingIn(true);
-            const response = await apiClient.instance!.post(`api/accounts/${username}/login`, {}, `"${password}"`);
-            const userViewModel = await response.json() as ViewModels.LoggedInUserViewModel;
+            const loginResponse = await apiClient.instance!.post(`api/accounts/${username}/login?accountType=${accountType}`, {}, `"${password}"`);
+            const authenticationResult = await loginResponse.json() as Models.AuthenticationResult;
+            props.onNewAccessToken(authenticationResult);
+            const userViewModelResponse = await apiClient.instance!.get('api/viewmodels/currentuser', {});
+            const userViewModel = await userViewModelResponse.json() as ViewModels.IUserViewModel;
+            if(!userViewModel.accountId || !userViewModel.profileData) {
+                redirectUrl = `/register/${accountType}`;
+            }
             props.onLoggedIn(userViewModel, redirectUrl ?? undefined);
         } catch(error: any) {
             NotificationManager.error(error.message, resolveText('Login_CouldNotLogIn'));
@@ -37,7 +45,7 @@ export const LoginPage = (props: LoginPageProps) => {
     const navigate = useNavigate();
     return (
         <>
-            <Form onSubmit={login}>
+            <Form onSubmit={localLogin}>
                 <Row style={{ marginTop: '200px' }}>
                     <Col>
                         <h1>{resolveText('HealthSharingPortal')}</h1>
@@ -80,7 +88,7 @@ export const LoginPage = (props: LoginPageProps) => {
                 <Row>
                     <Col></Col>
                     <Col xs="auto">
-                        <Button className='registerButton' onClick={() => navigate(`/register/${role}`)}>{resolveText("Register")}</Button>
+                        <Button className='registerButton' onClick={() => navigate(`/register/${accountType}`)}>{resolveText("Register")}</Button>
                     </Col>
                     <Col></Col>
                 </Row>

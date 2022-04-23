@@ -11,7 +11,7 @@ import { ViewModels } from "../../../localComponents/types/viewModels";
 
 export class ObservationCommands {
     personId: string;
-    user: ViewModels.LoggedInUserViewModel;
+    user: ViewModels.IUserViewModel;
     navigate: (path: string) => void;
     commandHierarchy: MedicalCommands.CommandPart;
 
@@ -20,7 +20,7 @@ export class ObservationCommands {
         const pulseObservation: Models.Observations.PulseObservation = {
             id: uuid(),
             type: HealthRecordEntryType.Observation,
-            createdBy: this.user.username,
+            createdBy: this.user.accountId,
             personId: this.personId,
             timestamp: new Date(),
             isVerified: false,
@@ -44,7 +44,7 @@ export class ObservationCommands {
         const bloodPressureObservation: Models.Observations.BloodPressureObservation = {
             id: uuid(),
             type: HealthRecordEntryType.Observation,
-            createdBy: this.user.username,
+            createdBy: this.user.accountId,
             personId: this.personId,
             timestamp: new Date(),
             isVerified: false,
@@ -67,7 +67,7 @@ export class ObservationCommands {
         const temperatureObservation: Models.Observations.TemperatureObservation = {
             id: uuid(),
             type: HealthRecordEntryType.Observation,
-            createdBy: this.user.username,
+            createdBy: this.user.accountId,
             personId: this.personId,
             timestamp: new Date(),
             isVerified: false,
@@ -92,7 +92,7 @@ export class ObservationCommands {
         const genericObservation: Models.Observations.GenericObservation = {
             id: uuid(),
             type: HealthRecordEntryType.Observation,
-            createdBy: this.user.username,
+            createdBy: this.user.accountId,
             personId: this.personId,
             timestamp: new Date(),
             isVerified: false,
@@ -120,7 +120,7 @@ export class ObservationCommands {
 
     constructor(
         personId: string, 
-        user: ViewModels.LoggedInUserViewModel, 
+        user: ViewModels.IUserViewModel, 
         navigate: (path: string) => void) {
             this.personId = personId;
             this.user = user;

@@ -43,7 +43,7 @@ namespace HealthSharingPortal.API.Controllers
                 await autocompleteCache.AddIfNotExists(unitAutoCompleteItem);
             }
 
-            item.CreatedBy = ControllerHelpers.GetUsername(httpContextAccessor);
+            item.CreatedBy = ControllerHelpers.GetAccountId(httpContextAccessor);
             item.Timestamp = DateTime.UtcNow;
             return await base.CreateOrReplace(id, item);
         }

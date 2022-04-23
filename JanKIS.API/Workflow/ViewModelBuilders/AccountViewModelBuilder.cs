@@ -56,14 +56,14 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
                     accountDepartments.Add(department);
                 }
                 return new AccountViewModel(
-                    account.Username,
+                    account.Id,
                     account.AccountType,
                     person,
                     accountRoles,
                     employeeAccount.PermissionModifiers,
                     accountDepartments);
             }
-            return new AccountViewModel(account.Username, account.AccountType, person);
+            return new AccountViewModel(account.Id, account.AccountType, person);
         }
 
         public Task<List<IViewModel<Account>>> BatchBuild(

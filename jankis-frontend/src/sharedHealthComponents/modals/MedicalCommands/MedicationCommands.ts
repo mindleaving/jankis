@@ -9,7 +9,7 @@ import { ViewModels } from "../../../localComponents/types/viewModels";
 
 export class MedicationCommands {
     personId: string;
-    user: ViewModels.LoggedInUserViewModel;
+    user: ViewModels.IUserViewModel;
     navigate: (path: string) => void;
     commandHierarchy: MedicalCommands.CommandPart;
 
@@ -64,7 +64,7 @@ export class MedicationCommands {
 
     constructor(
         personId: string, 
-        user: ViewModels.LoggedInUserViewModel, 
+        user: ViewModels.IUserViewModel, 
         navigate: (path: string) => void) {
             this.personId = personId;
             this.user = user;

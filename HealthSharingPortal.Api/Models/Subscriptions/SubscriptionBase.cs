@@ -8,14 +8,14 @@ namespace HealthSharingPortal.API.Models.Subscriptions
         protected SubscriptionBase() {}
         protected SubscriptionBase(
             string id, 
-            string username)
+            string accountId)
         {
             Id = id;
-            Username = username;
+            AccountId = accountId;
         }
 
         public string Id { get; set; }
-        public string Username { get; set; }
+        public string AccountId { get; set; }
         public DateTime? MutedUntil { get; set; }
         public abstract string Type { get; }
     }

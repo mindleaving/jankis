@@ -4,12 +4,7 @@ namespace JanKIS.API.Models
 {
     public class EmployeeAccount : Account
     {
-        public EmployeeAccount(
-            string personId,
-            string username,
-            string salt,
-            string passwordHash)
-            : base(personId, username, salt, passwordHash)
+        public EmployeeAccount(string id) : base(id)
         {
             Roles = new List<string>();
             PermissionModifiers = new List<PermissionModifier>();

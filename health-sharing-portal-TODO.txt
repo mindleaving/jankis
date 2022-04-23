@@ -1,0 +1,16 @@
+# Health sharing portal
+
+Critical:
+- Check for revoked access for access invites / emergency tokens
+- Edit timestamp of test results (and other health record events)
+- Add medical procedures
+- Add drugs
+- Add historical medications
+  - Show start, end, pattern and dose of medication
+  - Link medication to diagnosis (optional)
+- Add immunizations
+- Only require date for diagnosis
+- 
+
+Nice to have:
+- Consent forms

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Storage;
 using JanKIS.API.Models;
 using JanKIS.API.Storage;
@@ -28,16 +29,18 @@ namespace JanKIS.API.AccessManagement
             this.expirationTime = expirationTime;
         }
 
-        public const string UsernameClaimName = "username";
+        public const string Issuer = "JanKIS";
+        public const string Audience = "JanKIS";
+        public const string AccoundIdClaimName = "accountId";
         public const string AccountTypeClaimName = "accounttype";
         public const string PersonIdClaimName = "personId";
 
-        public async Task<string> BuildForUser(Person person, Account account)
+        public async Task<string> BuildForUser(Person person, Account account, Login login)
         {
             var claims = new List<Claim>
             {
                 new ("id", account.Id),
-                new (UsernameClaimName, account.Username),
+                new (AccoundIdClaimName, account.Id),
                 new (ClaimTypes.Name, $"{person.FirstName} {person.LastName}"),
                 new (AccountTypeClaimName, account.AccountType.ToString()),
                 new (PersonIdClaimName, account.PersonId)
@@ -47,15 +50,15 @@ namespace JanKIS.API.AccessManagement
                 var employeeAccount = (EmployeeAccount) account;
                 var roleClaim = new Claim("roles", string.Join(",", employeeAccount.Roles));
                 claims.Add(roleClaim);
-                var permissionClaims = await GetPermissionClaims(employeeAccount);
+                var permissionClaims = await GetPermissionClaims(employeeAccount, login);
                 claims.AddRange(permissionClaims);
             }
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Audience = "JanKIS",
-                Issuer = "JanKIS",
+                Audience = Audience,
+                Issuer = Issuer,
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.Add(expirationTime),
                 SigningCredentials = new SigningCredentials(privateKey, SecurityAlgorithms.HmacSha256Signature)
@@ -66,9 +69,11 @@ namespace JanKIS.API.AccessManagement
             return serializedToken;
         }
 
-        private async Task<IEnumerable<Claim>> GetPermissionClaims(EmployeeAccount account)
+        private async Task<IEnumerable<Claim>> GetPermissionClaims(
+            EmployeeAccount account,
+            Login login)
         {
-            if (account.IsPasswordChangeRequired)
+            if (login is LocalLogin localLogin && localLogin.IsPasswordChangeRequired)
             {
                 // If password change is required, don't make any other claims than the user ID and name
                 return new List<Claim>();

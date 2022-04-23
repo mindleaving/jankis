@@ -11,7 +11,7 @@ import { getObjectReferenceValue } from "../../helpers/MedicalCommandHelpers";
 export class DiagnosisCommands {
 
     personId: string;
-    user: ViewModels.LoggedInUserViewModel;
+    user: ViewModels.IUserViewModel;
     navigate: (path: string) => void;
     
     addDiagnosis = async (commandParts: MedicalCommands.SelectedCommandPart[]) => {
@@ -19,7 +19,7 @@ export class DiagnosisCommands {
         const diagnosis: Models.Diagnoses.Diagnosis = {
             id: uuid(),
             type: HealthRecordEntryType.Diagnosis,
-            createdBy: this.user.username,
+            createdBy: this.user.accountId,
             timestamp: new Date(),
             isVerified: false,
             hasBeenSeenBySharer: this.user.profileData.id === this.personId,
@@ -59,7 +59,7 @@ export class DiagnosisCommands {
 
     constructor(
         personId: string, 
-        user: ViewModels.LoggedInUserViewModel, 
+        user: ViewModels.IUserViewModel, 
         navigate: (path: string) => void) {
             this.personId = personId;
             this.user = user;

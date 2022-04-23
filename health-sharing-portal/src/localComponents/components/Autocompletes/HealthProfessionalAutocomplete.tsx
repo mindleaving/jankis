@@ -23,12 +23,12 @@ export const HealthProfessionalAutocomplete = (props: HealthProfessionalAutocomp
         >
             {props.isLoading 
             ? resolveText('Loading...') 
-            : props.value!.username}
+            : props.value!.id}
         </Alert>);
     }
     return (<Autocomplete
         search={accountAutocompleteRunner.search}
-        displayNameSelector={x => x?.username}
+        displayNameSelector={x => x?.id}
         onItemSelected={props.onChange}
     />);
 

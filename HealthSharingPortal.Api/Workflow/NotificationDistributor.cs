@@ -60,7 +60,7 @@ namespace HealthSharingPortal.API.Workflow
                     storageOperation
                 );
                 await notificationsStore.StoreAsync(notification);
-                await notificationsHub.Clients.User(subscription.Username).ReceiveNotification(notification);
+                await notificationsHub.Clients.User(subscription.AccountId).ReceiveNotification(notification);
             }
         }
 
@@ -81,7 +81,7 @@ namespace HealthSharingPortal.API.Workflow
                     submitterUsername,
                     admission);
                 await notificationsStore.StoreAsync(notification);
-                await notificationsHub.Clients.User(subscription.Username).ReceiveNotification(notification);
+                await notificationsHub.Clients.User(subscription.AccountId).ReceiveNotification(notification);
             }
         }
     }

@@ -18,7 +18,7 @@ export const formDataToQuestionnaireAnswers = (
     formData: { [key:string]: string }, 
     questionnaire: Models.Interview.Questionnaire,
     personId: string,
-    currentUser: ViewModels.LoggedInUserViewModel)
+    currentUser: ViewModels.IUserViewModel)
     : Models.Interview.QuestionnaireAnswers => {
 
     const answers = questionnaire.questions.map((question, questionIndex) => {
@@ -36,7 +36,7 @@ export const formDataToQuestionnaireAnswers = (
     return {
         id: uuid(),
         type: HealthRecordEntryType.Questionnaire,
-        createdBy: currentUser.username,
+        createdBy: currentUser.accountId,
         createdTimestamp: new Date(),
         isVerified: false,
         hasBeenSeenBySharer: currentUser.profileData.id === personId,

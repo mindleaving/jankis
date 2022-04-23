@@ -6,9 +6,9 @@
 
         public ConsumableOrderSubscription(
             string id,
-            string username,
+            string accountId,
             string orderId)
-            : base(id, username)
+            : base(id, accountId)
         {
             OrderId = orderId;
         }

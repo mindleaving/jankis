@@ -67,7 +67,7 @@ export const CreatePatientDocumentPage = (props: CreatePatientDocumentPageProps)
             id: documentId,
             type: HealthRecordEntryType.Document,
             personId: profileData!.id,
-            createdBy: user!.username,
+            createdBy: user!.accountId,
             timestamp: new Date(),
             isVerified: false,
             hasBeenSeenBySharer: user!.profileData.id === profileData!.id,

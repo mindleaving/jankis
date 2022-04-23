@@ -45,9 +45,9 @@ namespace JanKIS.API.AccessManagement
             if (accountType == AccountType.Employee)
             {
                 var utcNow = DateTime.UtcNow;
-                var username = claims.TryGetValue(JwtSecurityTokenBuilder.UsernameClaimName);
+                var username = claims.TryGetValue(JwtSecurityTokenBuilder.AccoundIdClaimName);
                 var activeAccesses = await healthProfessionalAccessStore
-                    .SearchAsync(x => x.AccessReceiverUsername == username 
+                    .SearchAsync(x => x.AccessReceiverAccountId == username 
                                       && x.SharerPersonId == personId 
                                       && !x.IsRevoked 
                                       && (x.AccessEndTimestamp == null || x.AccessEndTimestamp > utcNow));
@@ -60,7 +60,7 @@ namespace JanKIS.API.AccessManagement
                     return new PersonDataAccessGrant(personId, permissions);
                 }
                 var activeEmergencyAccesses = await emergencyAccessStore
-                    .SearchAsync(x => x.AccessReceiverUsername == username 
+                    .SearchAsync(x => x.AccessReceiverAccountId == username 
                                       && x.SharerPersonId == personId 
                                       && !x.IsRevoked 
                                       && (x.AccessEndTimestamp == null || x.AccessEndTimestamp > utcNow));
@@ -91,13 +91,13 @@ namespace JanKIS.API.AccessManagement
             if (accountType == AccountType.Employee)
             {
                 var utcNow = DateTime.UtcNow;
-                var username = claims.TryGetValue(JwtSecurityTokenBuilder.UsernameClaimName);
+                var username = claims.TryGetValue(JwtSecurityTokenBuilder.AccoundIdClaimName);
                 var activeAccesses = await healthProfessionalAccessStore
-                    .SearchAsync(x => x.AccessReceiverUsername == username
+                    .SearchAsync(x => x.AccessReceiverAccountId == username
                                       && !x.IsRevoked 
                                       && (x.AccessEndTimestamp == null || x.AccessEndTimestamp > utcNow));
                 var activeEmergencyAccesses = await emergencyAccessStore
-                    .SearchAsync(x => x.AccessReceiverUsername == username
+                    .SearchAsync(x => x.AccessReceiverAccountId == username
                                       && !x.IsRevoked 
                                       && (x.AccessEndTimestamp == null || x.AccessEndTimestamp > utcNow));
                 return activeAccesses.Select(x => new PersonDataAccessGrant(x.SharerPersonId, x.Permissions))

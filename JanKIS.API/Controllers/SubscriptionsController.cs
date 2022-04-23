@@ -28,12 +28,12 @@ namespace JanKIS.API.Controllers
             string id,
             SubscriptionBase item)
         {
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
-            var existingTypeSubscriptions = await store.SearchAsync(x => x.Username.ToLower() == username && x.Type == item.Type);
+            var username = ControllerHelpers.GetAccountId(httpContextAccessor);
+            var existingTypeSubscriptions = await store.SearchAsync(x => x.AccountId.ToLower() == username && x.Type == item.Type);
             var matchingSubscription = existingTypeSubscriptions.FirstOrDefault(existing => SubscriptionComparer.IsMatch(existing, item));
             if (matchingSubscription != null)
                 return Conflict(matchingSubscription.Id);
-            item.Username = username;
+            item.AccountId = username;
             return await base.CreateOrReplace(id, item);
         }
 
@@ -48,13 +48,13 @@ namespace JanKIS.API.Controllers
         {
             return orderBy?.ToLower() switch
             {
-                _ => x => x.Username
+                _ => x => x.AccountId
             };
         }
 
         protected override Expression<Func<SubscriptionBase, bool>> BuildSearchExpression(string[] searchTerms)
         {
-            return SearchExpressionBuilder.ContainsAll<SubscriptionBase>(x => x.Username.ToLower(), searchTerms);
+            return SearchExpressionBuilder.ContainsAll<SubscriptionBase>(x => x.AccountId.ToLower(), searchTerms);
         }
 
         protected override Task PublishChange(

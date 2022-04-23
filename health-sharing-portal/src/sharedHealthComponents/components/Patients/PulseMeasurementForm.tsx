@@ -30,7 +30,7 @@ export const PulseMeasurementForm = (props: PulseMeasurementFormProps) => {
             id: uuid(),
             type: HealthRecordEntryType.Observation,
             measurementType: MeasurementType.Pulse,
-            createdBy: user!.username,
+            createdBy: user!.accountId,
             personId: props.personId,
             timestamp: new Date(),
             isVerified: false,

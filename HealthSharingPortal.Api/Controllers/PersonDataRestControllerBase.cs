@@ -81,7 +81,7 @@ namespace HealthSharingPortal.API.Controllers
         {
             if (id != item.Id)
                 return BadRequest("ID of route doesn't match body");
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var username = ControllerHelpers.GetAccountId(httpContextAccessor);
             var accessGrants = await GetAccessGrants();
             var storageOperation = await store.StoreAsync(item, accessGrants);
             await PublishChange(item, storageOperation, username);
@@ -99,7 +99,7 @@ namespace HealthSharingPortal.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             await store.StoreAsync(item, accessGrants);
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var username = ControllerHelpers.GetAccountId(httpContextAccessor);
             await PublishChange(item, StorageOperation.Changed, username);
             return Ok();
         }

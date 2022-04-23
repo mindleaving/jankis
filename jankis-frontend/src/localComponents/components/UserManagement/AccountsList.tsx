@@ -52,7 +52,7 @@ export const AccountsList = (props: AccountsListProps) => {
             {},
             resolveText('Account_SuccessfullyDeleted'),
             resolveText('Account_CouldNotDelete'),
-            () => setUsers(users.filter(x => x.username !== username))
+            () => setUsers(users.filter(x => x.accountId !== username))
         )
     }
     
@@ -74,12 +74,12 @@ export const AccountsList = (props: AccountsListProps) => {
             <tbody>
                 {users.length > 0
                 ? users.map(user => (
-                    <tr key={user.username}>
-                        <td><i className="fa fa-trash red clickable" onClick={() => deleteAccount(user.username, `${user.profileData.firstName} ${user.profileData.lastName}`)} /></td>
-                        <td>{user.username}</td>
+                    <tr key={user.accountId}>
+                        <td><i className="fa fa-trash red clickable" onClick={() => deleteAccount(user.accountId, `${user.profileData.firstName} ${user.profileData.lastName}`)} /></td>
+                        <td>{user.accountId}</td>
                         <td>{user.profileData.firstName}</td>
                         <td>{user.profileData.lastName}</td>
-                        <td><Button className="p-0" variant="link" onClick={() => navigate(`/accounts/${user.username}/edit`)}>{resolveText('Edit...')}</Button></td>
+                        <td><Button className="p-0" variant="link" onClick={() => navigate(`/accounts/${user.accountId}/edit`)}>{resolveText('Edit...')}</Button></td>
                     </tr>
                 ))
                 : <tr>

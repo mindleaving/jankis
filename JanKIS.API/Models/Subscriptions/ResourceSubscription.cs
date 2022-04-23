@@ -9,9 +9,9 @@ namespace JanKIS.API.Models.Subscriptions
         }
 
         public ResourceSubscription(string id,
-            string username,
+            string accountId,
             string resourceId)
-            : base(id, username)
+            : base(id, accountId)
         {
             ResourceId = resourceId;
         }

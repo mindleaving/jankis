@@ -28,7 +28,7 @@ namespace HealthSharingPortal.API.Controllers
 
         public override async Task<IActionResult> CreateOrReplace(string id, MedicationDispension item)
         {
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var username = ControllerHelpers.GetAccountId(httpContextAccessor);
             item.CreatedBy = username;
             item.Timestamp = DateTime.UtcNow;
             return await base.CreateOrReplace(id, item);

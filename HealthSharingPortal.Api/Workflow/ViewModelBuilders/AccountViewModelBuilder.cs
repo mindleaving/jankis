@@ -31,7 +31,7 @@ namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
             if(options is not AccountViewModelBuilderOptions accountViewModelBuilderOptions)
                 throw new ArgumentException($"{nameof(AccountViewModelBuilder)} was called without options, but they are mandatory and must contain access grants");
             var person = await personsStore.GetByIdAsync(account.PersonId, accountViewModelBuilderOptions.AccessGrants);
-            return new AccountViewModel(account.Username, account.AccountType, person);
+            return new AccountViewModel(account.Id, account.AccountType, person);
         }
 
         public async Task<List<IViewModel<Account>>> BatchBuild(
@@ -50,7 +50,7 @@ namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
             {
                 if(!personDictionary.ContainsKey(account.PersonId))
                     continue;
-                var viewModel = new AccountViewModel(account.Username, account.AccountType, personDictionary[account.PersonId]);
+                var viewModel = new AccountViewModel(account.Id, account.AccountType, personDictionary[account.PersonId]);
                 viewModels.Add(viewModel);
             }
             return viewModels;

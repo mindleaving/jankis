@@ -7,7 +7,6 @@ namespace JanKIS.API.Storage
 {
     public interface IAccountStore : IStore<Account>
     {
-        Task<StorageResult> ChangePasswordAsync(string username, string passwordBase64, bool changePasswordOnNextLogin);
         Task<StorageResult> SetRoles(string username, List<string> roleIds);
         Task<StorageResult> AddRole(string username, string roleId);
         Task<StorageResult> RemoveRole(string username, string roleId);

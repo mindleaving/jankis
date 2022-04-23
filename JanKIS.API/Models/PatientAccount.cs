@@ -2,13 +2,10 @@
 {
     public class PatientAccount : Account
     {
-        public PatientAccount(
-            string personId,
-            string username,
-            string salt,
-            string passwordHash)
-            : base(personId, username, salt, passwordHash)
+        public PatientAccount(string personId)
+            : base(personId)
         {
+            PersonId = personId;
         }
 
         public override AccountType AccountType => AccountType.Patient;

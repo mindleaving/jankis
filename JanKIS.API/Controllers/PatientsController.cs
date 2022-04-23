@@ -98,7 +98,7 @@ namespace JanKIS.API.Controllers
             if (profileData == null)
                 return NotFound();
             var now = DateTime.UtcNow;
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var username = ControllerHelpers.GetAccountId(httpContextAccessor);
             var currentBedOccupancy = bedOccupanciesStore.FirstOrDefaultAsync(x => x.Patient.Id == personId && x.StartTime <= now && (x.EndTime == null || x.EndTime > now));
             var admissions = admissionsStore.SearchAsync(x => x.ProfileData.Id == personId, accessGrants);
             var notes = patientNotesStore.SearchAsync(x => x.PersonId == personId, accessGrants);
@@ -244,7 +244,7 @@ namespace JanKIS.API.Controllers
             var patient = await personsStore.GetByIdAsync(personId, accessGrants);
             if (patient == null)
                 return NotFound();
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var username = ControllerHelpers.GetAccountId(httpContextAccessor);
             var subscription = new PatientSubscription(
                 Guid.NewGuid().ToString(),
                 username,
@@ -257,7 +257,7 @@ namespace JanKIS.API.Controllers
         [HttpPost("{personId}/unsubscribe")]
         public async Task<IActionResult> Unsubscribe([FromRoute] string personId)
         {
-            var username = ControllerHelpers.GetUsername(httpContextAccessor);
+            var username = ControllerHelpers.GetAccountId(httpContextAccessor);
             var existingSubscription = await subscriptionsStore.GetPatientSubscription(personId, username);
             if (existingSubscription == null)
                 return Ok();

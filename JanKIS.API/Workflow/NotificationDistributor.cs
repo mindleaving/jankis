@@ -63,7 +63,7 @@ namespace JanKIS.API.Workflow
                     storageOperation
                 );
                 await notificationsStore.StoreAsync(notification);
-                await notificationsHub.Clients.User(subscription.Username).ReceiveNotification(notification);
+                await notificationsHub.Clients.User(subscription.AccountId).ReceiveNotification(notification);
             }
         }
 
@@ -84,7 +84,7 @@ namespace JanKIS.API.Workflow
                     submitterUsername,
                     admission);
                 await notificationsStore.StoreAsync(notification);
-                await notificationsHub.Clients.User(subscription.Username).ReceiveNotification(notification);
+                await notificationsHub.Clients.User(subscription.AccountId).ReceiveNotification(notification);
             }
         }
 
@@ -106,7 +106,7 @@ namespace JanKIS.API.Workflow
                     bedOccupancy
                 );
                 await notificationsStore.StoreAsync(notification);
-                await notificationsHub.Clients.User(subscription.Username).ReceiveNotification(notification);
+                await notificationsHub.Clients.User(subscription.AccountId).ReceiveNotification(notification);
             }
         }
 
@@ -128,7 +128,7 @@ namespace JanKIS.API.Workflow
                     serviceRequest.Id
                 );
                 await notificationsStore.StoreAsync(notification);
-                await notificationsHub.Clients.User(subscription.Username).ReceiveNotification(notification);
+                await notificationsHub.Clients.User(subscription.AccountId).ReceiveNotification(notification);
             }
         }
 
@@ -150,7 +150,7 @@ namespace JanKIS.API.Workflow
                     service
                 );
                 await notificationsStore.StoreAsync(notification);
-                await notificationsHub.Clients.User(subscription.Username).ReceiveNotification(notification);
+                await notificationsHub.Clients.User(subscription.AccountId).ReceiveNotification(notification);
             }
         }
     }

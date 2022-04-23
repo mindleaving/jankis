@@ -33,7 +33,7 @@ export const TestResultsForm = (props: TestResultsFormProps) => {
         const testResult: Models.DiagnosticTestResults.DiagnosticTestResult = {
             id: uuid(),
             type: HealthRecordEntryType.TestResult,
-            createdBy: user!.username,
+            createdBy: user!.accountId,
             personId: props.personId,
             scaleType: testDefinition.scaleType,
             testCodeLocal: testDefinition.testCodeLocal,

@@ -4,7 +4,7 @@ import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer'
 import { ViewModels } from '../../types/viewModels';
 
 interface LoggedInUserProps {
-    user: ViewModels.LoggedInUserViewModel;
+    user: ViewModels.IUserViewModel;
     onLogOut: () => void;
 }
 
@@ -13,7 +13,7 @@ export const LoggedInUser = (props: LoggedInUserProps) => {
     return (
         <Nav className='ms-auto'>
             <Navbar.Text className='me-2'>
-                {resolveText('Hello')}, {props.user.profileData.firstName}
+                {resolveText('Hello')}, {props.user.profileData?.firstName}
             </Navbar.Text>
             <NavItem>
                 <Button 

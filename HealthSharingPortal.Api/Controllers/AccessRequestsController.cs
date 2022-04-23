@@ -74,7 +74,7 @@ namespace HealthSharingPortal.API.Controllers
             }
             if (accountType == AccountType.HealthProfessional)
             {
-                var username = ControllerHelpers.GetUsername(httpContextAccessor);
+                var username = ControllerHelpers.GetAccountId(httpContextAccessor);
                 var ordinaryRequests = await healthProfessionalInviteStore.SearchAsync(x => 
                         !x.IsCompleted 
                         && !x.IsRejected
@@ -94,7 +94,7 @@ namespace HealthSharingPortal.API.Controllers
             var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
             if (accountType != AccountType.HealthProfessional)
                 return StatusCode((int)HttpStatusCode.Forbidden, "Only health professionals can get emergency access");
-            var requesterUsername = ControllerHelpers.GetUsername(httpContextAccessor);
+            var requesterUsername = ControllerHelpers.GetAccountId(httpContextAccessor);
             if (await HasReachedMaximumAllowedEmergencyRequests(requesterUsername))
                 return StatusCode((int)HttpStatusCode.TooManyRequests, "You have reached the maximum amount of emergency requests for now");
             accessRequest.Id = Guid.NewGuid().ToString();
@@ -112,7 +112,7 @@ namespace HealthSharingPortal.API.Controllers
             var emergencyAccess = new EmergencyAccess
             {
                 Id = accessRequest.Id,
-                AccessReceiverUsername = requesterUsername,
+                AccessReceiverAccountId = requesterUsername,
                 SharerPersonId = matchingPerson.Id,
                 AccessGrantedTimestamp = utcNow,
                 AccessEndTimestamp = utcNow.AddMinutes(60)
@@ -150,22 +150,20 @@ namespace HealthSharingPortal.API.Controllers
             var guestEmergencyAccess = new EmergencyAccess
             {
                 Id = guestAccessRequest.Id,
-                AccessReceiverUsername = "guest",
+                AccessReceiverAccountId = "guest",
                 SharerPersonId = matchingPerson.Id,
                 AccessGrantedTimestamp = utcNow,
                 AccessEndTimestamp = utcNow.AddMinutes(60)
             };
             await emergencyAccessStore.StoreAsync(guestEmergencyAccess);
             var profileData = new Person(null, "Guest", "Guest", DateTime.UtcNow, Sex.Other);
-            var authenticationResult = await authenticationModule.BuildSecurityTokenForGuest(
+            var authenticationResult = authenticationModule.BuildSecurityTokenForGuest(
                 matchingPerson.Id, 
                 emergencyToken.Permissions, 
                 emergencyToken.Id);
-            var userViewModel = new LoggedInUserViewModel(
+            var userViewModel = new GuestViewModel(
                 profileData,
                 authenticationResult,
-                "guest",
-                false,
                 AccountType.EmergencyGuest,
                 language);
             var guestEmergencyAccessViewModel = new GuestEmergencyAccessViewModel
@@ -222,19 +220,19 @@ namespace HealthSharingPortal.API.Controllers
         [HttpPost("create/healthprofessional")]
         public async Task<IActionResult> CreateForHealthProfessional([FromBody] CreateAccessInviteBody body)
         {
-            var healthProfessionalUsername = body.HealthProfessionalUsername;
+            var healthProfessionalAccountId = body.HealthProfessionalAccountId;
             var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
             if (accountType != AccountType.Sharer)
                 return StatusCode((int)HttpStatusCode.Forbidden, "Only data sharers can give access to health professionals");
             var matchingHealthProfessionalAccount = await accountStore
-                .SearchAsync(x => x.AccountType == AccountType.HealthProfessional && x.Username == healthProfessionalUsername);
+                .SearchAsync(x => x.AccountType == AccountType.HealthProfessional && x.Id == healthProfessionalAccountId);
             if (matchingHealthProfessionalAccount == null)
-                return BadRequest($"Unknown health professional '{healthProfessionalUsername}'");
+                return BadRequest($"Unknown health professional '{healthProfessionalAccountId}'");
             if (!DateTimeHelpers.TryParseTimespan(body.ExpirationDuration, out var parsedExpirationDuration))
                 parsedExpirationDuration = TimeSpan.FromMinutes(60);
             var sharerPersonId = ControllerHelpers.GetPersonId(httpContextAccessor);
             var accessInviteId = await healthProfessionalInviteStore.CreateNew(
-                healthProfessionalUsername, 
+                healthProfessionalAccountId, 
                 sharerPersonId, 
                 parsedExpirationDuration,
                 body.Permissions);
@@ -265,7 +263,7 @@ namespace HealthSharingPortal.API.Controllers
                 return NotFound();
             if (accountType == AccountType.HealthProfessional)
             {
-                var username = ControllerHelpers.GetUsername(httpContextAccessor);
+                var username = ControllerHelpers.GetAccountId(httpContextAccessor);
                 if (matchingAccessRequest.AccessReceiverUsername != username)
                     return Forbid();
                 return Ok(matchingAccessRequest);
@@ -298,7 +296,7 @@ namespace HealthSharingPortal.API.Controllers
             }
             if (accountType == AccountType.HealthProfessional)
             {
-                var username = ControllerHelpers.GetUsername(httpContextAccessor);
+                var username = ControllerHelpers.GetAccountId(httpContextAccessor);
                 if (matchingDatabaseEntry.AccessReceiverUsername != username)
                     return Forbid();
             }
@@ -330,7 +328,7 @@ namespace HealthSharingPortal.API.Controllers
                 var healthProfessionalAccess = new HealthProfessionalAccess
                 {
                     Id = accessInvite.Id,
-                    AccessReceiverUsername = accessInvite.AccessReceiverUsername,
+                    AccessReceiverAccountId = accessInvite.AccessReceiverUsername,
                     SharerPersonId = accessInvite.SharerPersonId,
                     Permissions = matchingDatabaseEntry.Permissions,
                     AccessGrantedTimestamp = utcNow,
@@ -363,7 +361,7 @@ namespace HealthSharingPortal.API.Controllers
             }
             else if (accountType == AccountType.HealthProfessional)
             {
-                var username = ControllerHelpers.GetUsername(httpContextAccessor);
+                var username = ControllerHelpers.GetAccountId(httpContextAccessor);
                 if (accessInvite.AccessReceiverUsername != username)
                     return Forbid();
                 if(!await healthProfessionalInviteStore.Reject(inviteId))

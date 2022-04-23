@@ -3,15 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using HealthModels;
 using HealthModels.AccessControl;
+using HealthModels.Interview;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
 using HealthSharingPortal.API.ViewModels;
 using HealthSharingPortal.API.Workflow.ViewModelBuilders;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Facebook;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
+using Microsoft.AspNetCore.Authentication.Twitter;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,23 +33,29 @@ namespace HealthSharingPortal.API.Controllers
     public class AccountsController : ControllerBase
     {
         private readonly IAccountStore accountsStore;
-        private readonly IPersonDataReadonlyStore<Person> personsStore;
+        private readonly IPersonDataStore<Person> personsStore;
         private readonly IAuthenticationModule authenticationModule;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IAuthorizationModule authorizationModule;
+        private readonly ILoginStore loginStore;
+        private readonly IMenschIdVerifier menschIdVerifier;
 
         public AccountsController(
             IAccountStore accountsStore,
-            IPersonDataReadonlyStore<Person> personsStore,
+            IPersonDataStore<Person> personsStore,
             IAuthenticationModule authenticationModule,
             IHttpContextAccessor httpContextAccessor,
-            IAuthorizationModule authorizationModule)
+            IAuthorizationModule authorizationModule,
+            ILoginStore loginStore,
+            IMenschIdVerifier menschIdVerifier)
         {
             this.accountsStore = accountsStore;
             this.personsStore = personsStore;
             this.authenticationModule = authenticationModule;
             this.httpContextAccessor = httpContextAccessor;
             this.authorizationModule = authorizationModule;
+            this.loginStore = loginStore;
+            this.menschIdVerifier = menschIdVerifier;
         }
 
         [HttpGet]
@@ -64,14 +78,13 @@ namespace HealthSharingPortal.API.Controllers
             Expression<Func<Account, object>> orderByExpression = orderBy?.ToLower() switch
             {
                 "id" => x => x.Id,
-                "username" => x => x.Username,
                 "accounttype" => x => x.AccountType,
                 "personid" => x => x.PersonId,
-                _ => x => x.Username
+                _ => x => x.Id
             };
             var accountFilterExpressions = new List<Expression<Func<Account, bool>>>();
             var searchTerms = SearchTermSplitter.SplitAndToLower(searchText);
-            var searchExpression = SearchExpressionBuilder.ContainsAll<Account>(x => x.Username.ToLower(), searchTerms);
+            var searchExpression = SearchExpressionBuilder.ContainsAll<Account>(x => x.Id.ToLower(), searchTerms);
             accountFilterExpressions.Add(searchExpression);
             if(accountType.HasValue)
                 accountFilterExpressions.Add(x => x.AccountType == accountType.Value);
@@ -124,53 +137,140 @@ namespace HealthSharingPortal.API.Controllers
             return Ok(viewModel);
         }
 
-
-        [HttpGet("{username}/exists")]
-        public async Task<IActionResult> Exists([FromRoute] string username)
-        {
-            var accountType = ControllerHelpers.GetAccountType(httpContextAccessor);
-            if (accountType != AccountType.Admin)
-                return Forbid();
-            return await accountsStore.ExistsAsync(username) ? Ok() : NotFound();
-        }
-
         [HttpPost]
-        [AllowAnonymous]
         public async Task<IActionResult> CreateAccount([FromBody] AccountCreationInfo creationInfo)
         {
-            var readAccessGrant = new PersonDataAccessGrant(creationInfo.PersonId, new[] { AccessPermissions.Read });
-            if (!await personsStore.ExistsAsync(creationInfo.PersonId, new List<IPersonDataAccessGrant> { readAccessGrant }))
-                return BadRequest($"Person with ID '{creationInfo.PersonId}' doesn't exist");
-            var password = new TemporaryPasswordGenerator().Generate();
-            var account = AccountFactory.Create(creationInfo.PersonId, creationInfo.Username, creationInfo.AccountType, password);
+            var claims = ControllerHelpers.GetClaims(httpContextAccessor);
+            var currentLogin = await loginStore.GetFromClaimsAsync(claims);
+            if (currentLogin == null)
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Could not determine active login");
+
+            // Create person if not exists
+            var personId = creationInfo.Person.Id;
+            if(creationInfo.MenschIdChallengeId != null && creationInfo.MenschIdChallengeResponse != null)
+                await menschIdVerifier.TryCompleteChallenge(creationInfo.MenschIdChallengeId, creationInfo.MenschIdChallengeResponse);
+            if (!await menschIdVerifier.IsControllingId(personId, currentLogin.Id))
+                return StatusCode((int)HttpStatusCode.Forbidden, $"You haven't proven that you control the person ID '{personId}'.");
+            var readAccessGrant = AccessGrantHelpers.GrantForPersonWithPermission(personId, AccessPermissions.Read);
+            if (!await personsStore.ExistsAsync(personId, readAccessGrant))
+            {
+                var writeGrant = AccessGrantHelpers.GrantForPersonWithPermission(personId, AccessPermissions.Create);
+                await personsStore.StoreAsync(creationInfo.Person, writeGrant);
+            }
+
+            var existingAccount = await accountsStore.SearchAsync(x => x.AccountType == creationInfo.AccountType && x.PersonId == personId);
+            if (existingAccount.Any())
+                return Conflict("You already have an account");
+
+            // Create account
+            var account = AccountFactory.Create(creationInfo.AccountType, currentLogin.Id, personId);
             await accountsStore.StoreAsync(account);
-            return Ok(password);
+
+            return Ok(account);
         }
 
 
-        [HttpPost("{username}/login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromRoute] string username, [FromBody] string password)
+        [HttpPost("{username}/login")]
+        public async Task<IActionResult> Login(
+            [FromRoute] string username, 
+            [FromBody] string password,
+            [FromQuery] AccountType accountType)
         {
-            var account = await accountsStore.GetByIdAsync(username);
-            if(account == null)
-                return NotFound();
-            var readAccessGrant = new PersonDataAccessGrant(account.PersonId, new[] { AccessPermissions.Read });
-            var person = await personsStore.GetByIdAsync(account.PersonId, new List<IPersonDataAccessGrant> { readAccessGrant });
-            if (person == null)
-                return NotFound();
-            var authenticationResult = await authenticationModule.AuthenticateAsync(person, account, password);
-            if (!authenticationResult.IsAuthenticated)
-                return StatusCode((int) HttpStatusCode.Unauthorized, authenticationResult);
-            var userViewModel = new LoggedInUserViewModel(
-                person,
-                authenticationResult,
-                username,
-                account.IsPasswordChangeRequired,
-                account.AccountType,
-                account.PreferedLanguage);
-            return Ok(userViewModel);
+            if (accountType == AccountType.Undefined)
+                return BadRequest($"Invalid account type '{accountType}'");
+            var login = await loginStore.GetLocalByUsername(username);
+            if(login == null)
+                return StatusCode((int)HttpStatusCode.Unauthorized, AuthenticationResult.Failed(AuthenticationErrorType.UserNotFound));
+            if (!authenticationModule.Authenticate(login, password))
+                return StatusCode((int)HttpStatusCode.Unauthorized, AuthenticationResult.Failed(AuthenticationErrorType.InvalidPassword));
+            var account = await accountsStore.FirstOrDefaultAsync(x => x.LoginIds.Contains(login.Id) && x.AccountType == accountType);
+            Person person = null;
+            if(account != null)
+            {
+                var readAccessGrant = AccessGrantHelpers.GrantForPersonWithPermission(account.PersonId, AccessPermissions.Read);
+                person = await personsStore.GetByIdAsync(account.PersonId, readAccessGrant);
+            }
+            var authenticationResult = authenticationModule.BuildSecurityTokenForUser(person, account, login);
+            return Ok(authenticationResult);
         }
+
+        [Authorize]
+        [AllowAnonymous]
+        [HttpGet("external-login/{loginProvider}")]
+        [HttpPost("external-login/{loginProvider}")]
+        public async Task<IActionResult> ExternalLogin(
+            [FromRoute] LoginProvider loginProvider,
+            [FromQuery] AccountType accountType,
+            [FromQuery] string redirectUrl = null)
+        {
+            if (ControllerHelpers.IsLoggedIn(httpContextAccessor))
+            {
+                var claims = ControllerHelpers.GetClaims(httpContextAccessor);
+                await SetAdditionalClaims(accountType);
+
+                var loginProviderInUse = claims.GetLoginProvider();
+                if (loginProvider == loginProviderInUse)
+                {
+                    if (!string.IsNullOrWhiteSpace(redirectUrl))
+                        return Redirect(redirectUrl);
+                    return Ok();
+                }
+            }
+            switch (loginProvider)
+            {
+                case LoginProvider.Google:
+                    return Challenge(GoogleDefaults.AuthenticationScheme);
+                case LoginProvider.Twitter:
+                    return Challenge(TwitterDefaults.AuthenticationScheme);
+                case LoginProvider.Facebook:
+                    return Challenge(FacebookDefaults.AuthenticationScheme);
+                case LoginProvider.Microsoft:
+                    return Challenge(MicrosoftAccountDefaults.AuthenticationScheme);
+                default:
+                    return BadRequest($"Invalid login provider '{loginProvider}'");
+            }
+        }
+
+        private async Task SetAdditionalClaims(AccountType accountType)
+        {
+            var claims = httpContextAccessor.HttpContext.User.Claims.ToList();
+
+            var login = await loginStore.GetFromClaimsAsync(claims);
+            var accounts = await accountsStore.GetForLoginAsync(login);
+            var typedAccount = accounts.FirstOrDefault(x => x.AccountType == accountType);
+
+            var additionalClaims = new List<Claim>();
+            if (!claims.Exists(x => x.Type == JwtSecurityTokenBuilder.AccountTypeClaimName))
+            {
+                additionalClaims.Add(new Claim(JwtSecurityTokenBuilder.AccountTypeClaimName, accountType.ToString()));
+            }
+            if (!claims.Exists(x => x.Type == JwtSecurityTokenBuilder.AccountIdClaimName))
+            {
+                if(typedAccount != null)
+                    additionalClaims.Add(new Claim(JwtSecurityTokenBuilder.AccountIdClaimName, typedAccount.Id));
+            }
+            if (!claims.Exists(x => x.Type == JwtSecurityTokenBuilder.PersonIdClaimName))
+            {
+                if (typedAccount?.PersonId != null)
+                {
+                    additionalClaims.Add(new Claim(JwtSecurityTokenBuilder.PersonIdClaimName, typedAccount.PersonId));
+                }
+            }
+            if(!additionalClaims.Any())
+                return;
+
+            var claimPrincipal = httpContextAccessor.HttpContext.User;
+            var claimIdentity = claimPrincipal.Identities.FirstOrDefault();
+            if (claimIdentity == null)
+            {
+                claimIdentity = new ClaimsIdentity();
+                claimPrincipal.AddIdentity(claimIdentity);
+            }
+            claimIdentity.AddClaims(additionalClaims);
+            await httpContextAccessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimPrincipal);
+        }
+
 
         [HttpPost("{username}/resetpassword")]
         [Authorize(Policy = AdminRequirement.PolicyName)]

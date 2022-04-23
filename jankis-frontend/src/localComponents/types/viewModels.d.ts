@@ -9,7 +9,7 @@ export namespace ViewModels {
     }
 
     interface AccountViewModel extends ViewModels.IViewModel<Models.Account> {
-        username: string;
+        accountId: string;
         accountType: Enums.AccountType;
         profileData: Models.Person;
         roles: Models.Role[];
@@ -45,12 +45,10 @@ export namespace ViewModels {
         room?: Models.Room;
     }
 
-    interface LoggedInUserViewModel {
-        profileData: Models.Person;
+    interface LoggedInUserViewModel extends ViewModels.IUserViewModel {
+        account: Models.Account;
         authenticationResult: Models.AuthenticationResult;
-        username: string;
         isPasswordResetRequired: boolean;
-        accountType: Enums.AccountType;
         roles: Models.Role[];
         permissions: Enums.Permission[];
         departments: Models.Department[];
@@ -109,12 +107,34 @@ export namespace ViewModels {
     }
 
     interface GuestEmergencyAccessViewModel {
-        user: ViewModels.LoggedInUserViewModel;
+        user: ViewModels.GuestViewModel;
         accessInfo: Models.AccessControl.EmergencyAccess;
+    }
+
+    interface GuestViewModel extends ViewModels.IUserViewModel {
+        authenticationResult: Models.AuthenticationResult;
+    }
+
+    interface IUserViewModel {
+        profileData: Models.Person;
+        accountType: string;
+        accountId: string;
+        preferedLanguage: Enums.Language;
     }
 
     interface IViewModel<T> {
         
+    }
+
+    interface LoginCreationInfo {
+        username: string;
+        password: string;
+    }
+
+    interface MenschIdChallengeViewModel {
+        menschId: string;
+        challengeId: string;
+        challengeShortId: string;
     }
 
     interface PatientOverviewViewModel {

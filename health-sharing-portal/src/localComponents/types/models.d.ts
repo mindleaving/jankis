@@ -91,16 +91,16 @@ export namespace Models {
     }
 
     interface Account extends Models.IId {
-        personId: string;
         accountType: Enums.AccountType;
-        username: string;
+        personId: string;
         preferedLanguage: Enums.Language;
-        isPasswordChangeRequired: boolean;
+        loginIds: string[];
     }
 
     interface AuthenticationResult {
         isAuthenticated: boolean;
         accessToken?: string;
+        isPasswordChangeRequired: boolean;
         error: Enums.AuthenticationErrorType;
     }
 
@@ -114,7 +114,7 @@ export namespace Models {
     }
 
     interface CreateAccessInviteBody {
-        healthProfessionalUsername: string;
+        healthProfessionalAccountId: string;
         expirationDuration: string;
         permissions: Enums.AccessPermissions[];
     }
@@ -158,7 +158,7 @@ export namespace Models {
     }
 
     interface StudyAssociation extends Models.IId {
-        username: string;
+        accountId: string;
         studyId: string;
         role: Enums.StudyStaffRole;
     }
@@ -384,7 +384,7 @@ export namespace Models {
         }
     
         interface PersonalizedAbbreviation extends Models.IId {
-            username: string;
+            accountId: string;
             abbreviation: string;
             fullText: string;
         }
@@ -742,7 +742,7 @@ export namespace Models {
         interface ISharedAccess extends Models.IId {
             type: Enums.SharedAccessType;
             permissions: Enums.AccessPermissions[];
-            accessReceiverUsername?: string;
+            accessReceiverAccountId?: string;
             sharerPersonId: string;
             accessGrantedTimestamp: Date;
             accessEndTimestamp?: Date | null;
@@ -780,9 +780,16 @@ export namespace Models {
         }
     
         interface SubscriptionBase extends Models.IId {
-            username: string;
+            accountId: string;
             mutedUntil?: Date | null;
             type: string;
+        }
+    }
+
+    export namespace RequestBodies {
+        interface MenschIdChallengeAnswer {
+            challengeId: string;
+            secret: string;
         }
     }
 

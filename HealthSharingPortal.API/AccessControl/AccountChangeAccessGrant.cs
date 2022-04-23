@@ -2,6 +2,6 @@
 {
     public class AccountChangeAccessGrant : IPersonDataAccessGrant
     {
-        public string Username { get; set; }
+        public string AccountId { get; set; }
     }
 }

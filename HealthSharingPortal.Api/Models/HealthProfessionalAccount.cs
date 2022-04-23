@@ -1,21 +1,16 @@
 ﻿using HealthModels;
+using HealthModels.Interview;
 
 namespace HealthSharingPortal.API.Models
 {
     public class HealthProfessionalAccount : Account
     {
+        public HealthProfessionalAccount() {}
         public HealthProfessionalAccount(
-            string personId,
-            string username,
-            AccountType accountType,
-            string salt,
-            string passwordHash)
-            : base(
-                personId, 
-                username, 
-                accountType,
-                salt,
-                passwordHash)
+            string id,
+            string personId = null,
+            Language preferedLanguage = Language.en)
+            : base(id, AccountType.HealthProfessional, personId, preferedLanguage)
         {
         }
 

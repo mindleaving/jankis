@@ -81,7 +81,7 @@ export const GenomeUploadPage = (props: GenomeUploadPageProps) => {
         return {
             id: uuid(),
             type: HealthRecordEntryType.TestResult,
-            createdBy: user!.username,
+            createdBy: user!.accountId,
             timestamp: new Date(),
             isVerified: false,
             hasBeenSeenBySharer: user!.profileData.id === profileData!.id,
@@ -97,7 +97,7 @@ export const GenomeUploadPage = (props: GenomeUploadPageProps) => {
         return {
             id: uuid(),
             type: HealthRecordEntryType.TestResult,
-            createdBy: user!.username,
+            createdBy: user!.accountId,
             timestamp: new Date(),
             isVerified: false,
             hasBeenSeenBySharer: user!.profileData.id === profileData!.id,
@@ -114,7 +114,7 @@ export const GenomeUploadPage = (props: GenomeUploadPageProps) => {
             id: documentId,
             type: HealthRecordEntryType.Document,
             personId: profileData!.id,
-            createdBy: user!.username,
+            createdBy: user!.accountId,
             timestamp: new Date(),
             isVerified: false,
             hasBeenSeenBySharer: user!.profileData.id === profileData!.id,

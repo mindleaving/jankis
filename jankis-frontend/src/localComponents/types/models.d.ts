@@ -232,6 +232,7 @@ export namespace Models {
     interface AuthenticationResult {
         isAuthenticated: boolean;
         accessToken?: string;
+        isPasswordChangeRequired: boolean;
         error: Enums.AuthenticationErrorType;
     }
 
@@ -449,7 +450,7 @@ export namespace Models {
         }
     
         interface PersonalizedAbbreviation extends Models.IId {
-            username: string;
+            accountId: string;
             abbreviation: string;
             fullText: string;
         }
@@ -807,7 +808,7 @@ export namespace Models {
         interface ISharedAccess extends Models.IId {
             type: Enums.SharedAccessType;
             permissions: Enums.AccessPermissions[];
-            accessReceiverUsername?: string;
+            accessReceiverAccountId?: string;
             sharerPersonId: string;
             accessGrantedTimestamp: Date;
             accessEndTimestamp?: Date | null;
@@ -881,9 +882,16 @@ export namespace Models {
         }
     
         interface SubscriptionBase extends Models.IId {
-            username: string;
+            accountId: string;
             mutedUntil?: Date | null;
             type: string;
+        }
+    }
+
+    export namespace RequestBodies {
+        interface MenschIdChallengeAnswer {
+            challengeId: string;
+            secret: string;
         }
     }
 }
