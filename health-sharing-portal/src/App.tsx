@@ -181,7 +181,7 @@ export const App = (props: AppProps) => {
             <Layout onLogOut={onLogOut}>
                 <Routes>
                     {routes
-                        .filter(x => x.audience.includes(loggedInUser.accountType))
+                        .filter(x => x.audience.includes(loggedInUser.accountType as AccountType))
                         .map(route => <Route key={route.path} path={route.path} element={route.element} />)}
 
                     <Route path="/" element={userTypeHomePage} />

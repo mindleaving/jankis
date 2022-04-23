@@ -37,7 +37,7 @@ export namespace ViewModels {
 
     interface IUserViewModel {
         profileData: Models.Person;
-        accountType: Enums.AccountType;
+        accountType: string;
         accountId: string;
         preferedLanguage: Enums.Language;
     }
