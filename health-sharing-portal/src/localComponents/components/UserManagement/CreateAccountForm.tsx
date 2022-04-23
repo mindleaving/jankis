@@ -8,7 +8,7 @@ import { ViewModels } from '../../types/viewModels';
 import { GenericTypeCreateEditPage } from '../../../sharedCommonComponents/pages/GenericTypeCreateEditPage';
 import { MenschIdWidget } from '../../../sharedHealthComponents/components/Widgets/MenschIdWidget';
 import { useParams } from 'react-router-dom';
-import { FlatpickrWidget } from '../../../sharedHealthComponents/components/Widgets/FlatpickrWidget';
+import { FlatpickrDateWidget } from '../../../sharedHealthComponents/components/Widgets/FlatpickrDateWidget';
 
 interface CreateAccountFormProps {
     onAccountCreated: () => void;
@@ -58,7 +58,7 @@ export const CreateAccountForm = (props: CreateAccountFormProps) => {
                         "ui:widget": "hidden"
                     },
                     "birthDate": {
-                        "ui:widget": FlatpickrWidget
+                        "ui:widget": FlatpickrDateWidget
                     }
                 }}
             />

@@ -10,6 +10,7 @@
         MedicationDispension = 5,
         Equipment = 6,
         Diagnosis = 7,
-        Questionnaire = 8
+        Questionnaire = 8,
+        Procedure = 9,
     }
 }

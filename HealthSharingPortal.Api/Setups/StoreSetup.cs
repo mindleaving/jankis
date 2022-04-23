@@ -10,6 +10,7 @@ using HealthModels.Interview;
 using HealthModels.MedicalTextEditor;
 using HealthModels.Medication;
 using HealthModels.Observations;
+using HealthModels.Procedures;
 using HealthModels.Services;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Models;
@@ -76,6 +77,8 @@ namespace HealthSharingPortal.API.Setups
             services.AddScoped<ILoginStore, LoginStore>();
             SetupPersonDataStores<MedicationSchedule>(services);
             SetupPersonDataStores<MedicationDispension>(services);
+            SetupPersonDataStores<MedicalProcedure>(services);
+            SetupTypeStores<MedicalProcedureDefinition>(services);
             SetupTypeStores<MedicalText>(services);
             SetupTypeStores<MenschIdChallenge>(services);
             services.AddScoped<IMenschIdChallengeStore, MenschIdChallengeStore>();

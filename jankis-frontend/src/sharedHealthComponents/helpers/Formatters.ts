@@ -116,3 +116,6 @@ export const formatDiagnosisNameAndCode = (diagnosis: ViewModels.DiagnosisViewMo
     }
     return `${diagnosis.name} (${codes.join(", ")})`;
 }
+export const formatMedicalProcedureCodeAndName = (medicalProcedure: Models.Procedures.MedicalProcedure) => {
+    return `SNOMED CT: ${medicalProcedure.snomedCtCode}: ${medicalProcedure.snomedCtName}`;
+}

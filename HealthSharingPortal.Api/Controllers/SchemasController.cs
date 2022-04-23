@@ -4,6 +4,7 @@ using System.Linq;
 using HealthModels;
 using HealthModels.Diagnoses;
 using HealthModels.Interview;
+using HealthModels.Procedures;
 using HealthSharingPortal.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -27,7 +28,8 @@ namespace HealthSharingPortal.API.Controllers
                 typeof(HealthProfessionalAccount),
                 typeof(Person),
                 typeof(Questionnaire),
-                typeof(Diagnosis)
+                typeof(Diagnosis),
+                typeof(MedicalProcedure),
             }.ToDictionary(x => x.Name.ToLower(), x => x);
 
         [HttpGet("{typeName}")]

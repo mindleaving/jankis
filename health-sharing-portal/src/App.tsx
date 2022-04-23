@@ -54,6 +54,7 @@ import { CreateEmergencyAccessTokenPage } from './localComponents/pages/Sharer/C
 import { EmergencyPage } from './localComponents/pages/EmergencyPage';
 import { NoUserLayout } from './localComponents/components/NoUserLayout';
 import { Models } from './localComponents/types/models';
+import { CreateMedicalProcedurePage } from './sharedHealthComponents/pages/Patients/CreateMedicalProcedurePage';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";
@@ -161,19 +162,21 @@ export const App = (props: AppProps) => {
         { path: '/healthrecord/:personId/timeline', element: <PatientTimelinePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/medications', element: <PatientMedicationsPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/create/testresult', element: <CreatePatientTestResultPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/create/procedure', element: <CreateMedicalProcedurePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/edit/procedure/:entryId', element: <CreateMedicalProcedurePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/create/observation', element: <CreatePatientObservationPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/create/diagnosis', element: <CreateDiagnosisPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
-        { path: '/healthrecord/:personId/edit/diagnosis/:diagnosisId', element: <CreateDiagnosisPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/edit/diagnosis/:entryId', element: <CreateDiagnosisPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/create/document', element: <CreatePatientDocumentPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/create/note', element: <CreatePatientNotePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/add/questionnaire', element: <AssignQuestionnairePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
-        { path: '/medicationschedules/:scheduleId/edit', element: <EditMedicationSchedulePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/upload/imaging', element: <ImagingUploadPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/imaging/:dicomStudyId', element: <ImagingExplorationPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/upload/genome', element: <GenomeUploadPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/genome', element: <GenomeExplorationPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/questionnaire/:questionnaireId/answer', element: <AnswerQuestionnairePage />, audience: [ AccountType.Sharer ]},
-        { path: '/healthrecord/:personId/questionnaire/:questionnaireId/answer/:answerId', element: <AnswerQuestionnairePage />, audience: [ AccountType.Sharer ]}
+        { path: '/healthrecord/:personId/questionnaire/:questionnaireId/answer/:answerId', element: <AnswerQuestionnairePage />, audience: [ AccountType.Sharer ]},
+        { path: '/medicationschedules/:scheduleId/edit', element: <EditMedicationSchedulePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
     ]
 
     return (

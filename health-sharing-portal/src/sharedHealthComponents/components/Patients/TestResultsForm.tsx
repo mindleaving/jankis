@@ -12,11 +12,9 @@ import { formatDiagnosticTestNameOfResult } from '../../helpers/Formatters';
 import { NotificationManager } from 'react-notifications';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { useNavigate } from 'react-router-dom';
+import { HealthRecordEntryFormProps } from '../../types/frontendTypes';
 
-interface TestResultsFormProps {
-    personId: string;
-    onStore: () => void;
-}
+interface TestResultsFormProps extends HealthRecordEntryFormProps {}
 
 export const TestResultsForm = (props: TestResultsFormProps) => {
 

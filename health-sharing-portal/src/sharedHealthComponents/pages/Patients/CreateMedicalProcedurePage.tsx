@@ -1,18 +1,19 @@
 import { useContext } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import UserContext from '../../../localComponents/contexts/UserContext';
+import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
+import { uuid } from '../../../sharedCommonComponents/helpers/uuid';
 import { GenericTypeCreateEditPage } from '../../../sharedCommonComponents/pages/GenericTypeCreateEditPage';
-import { IcdAutocompleteWidget } from '../../components/Widgets/IcdAutocompleteWidget';
+import { FlatpickrTimeWidget } from '../../components/Widgets/FlatpickrTimeWidget';
 import { PersonAutocompleteWidget } from '../../components/Widgets/PersonAutocompleteWidget';
-import { v4 as uuid } from 'uuid';
-import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
+import { SnomedCtAutocompleteWidget } from '../../components/Widgets/SnomedCtAutocompleteWidget';
 
-interface CreateDiagnosisPageProps {}
+interface CreateMedicalProcedurePageProps {}
 
-export const CreateDiagnosisPage = (props: CreateDiagnosisPageProps) => {
+export const CreateMedicalProcedurePage = (props: CreateMedicalProcedurePageProps) => {
 
     const { personId } = useParams();
     const user = useContext(UserContext);
@@ -22,36 +23,37 @@ export const CreateDiagnosisPage = (props: CreateDiagnosisPageProps) => {
         return (<h3>{resolveText("NoPersonIdSpecified")}</h3>);
     }
 
-    const loadDiagnoses = async (id: string) => {
-        const response = await apiClient.instance!.get(`api/diagnoses/${id}`, {});
+    const loadMedicalProcedure = async (id: string) => {
+        const response = await apiClient.instance!.get(`api/medicalprocedures/${id}`, {});
         return await response.json();
     }
 
-    const submit = async (diagnosis: Models.Diagnoses.Diagnosis) => {
-        await apiClient.instance!.put(`api/diagnoses/${diagnosis.id}`, {}, diagnosis);
+    const submit = async (medicalProcedure: Models.Procedures.MedicalProcedure) => {
+        await apiClient.instance!.put(`api/medicalprocedures/${medicalProcedure.id}`, {}, medicalProcedure);
         navigate(-1);
     }
 
-    const diagnosis: Models.Diagnoses.Diagnosis = {
+    const medicalProcedure: Models.Procedures.MedicalProcedure = {
         id: uuid(),
         createdBy: user!.accountId,
-        type: HealthRecordEntryType.Diagnosis,
+        type: HealthRecordEntryType.Procedure,
         isVerified: false,
         hasBeenSeenBySharer: user!.profileData.id === personId,
         personId: personId!,
-        hasResolved: false,
-        icd11Code: '',
+        snomedCtCode: '',
+        snomedCtName: '',
+        note: '',
         timestamp: new Date().toISOString() as any
     }
 
     return (
         <>
-            <h1>{resolveText("Diagnosis")}</h1>
-            <GenericTypeCreateEditPage<Models.Diagnoses.Diagnosis>
-                typeName='diagnosis'
+            <h1>{resolveText("MedicalProcedure")}</h1>
+            <GenericTypeCreateEditPage<Models.Procedures.MedicalProcedure>
+                typeName='medicalprocedure'
                 paramName='entryId'
-                item={diagnosis}
-                itemLoader={loadDiagnoses}
+                item={medicalProcedure}
+                itemLoader={loadMedicalProcedure}
                 onSubmit={submit}
                 uiSchema={{
                     id: {
@@ -60,6 +62,9 @@ export const CreateDiagnosisPage = (props: CreateDiagnosisPageProps) => {
                     personId: {
                         "ui:widget": PersonAutocompleteWidget
                     },
+                    timestamp: {
+                        "ui:widget": FlatpickrTimeWidget
+                    },
                     type: {
                         "ui:widget": "hidden"
                     },
@@ -67,8 +72,14 @@ export const CreateDiagnosisPage = (props: CreateDiagnosisPageProps) => {
                         "ui:readonly": true,
                         "ui:widget": "hidden",
                     },
-                    icd11Code: {
-                        "ui:widget": IcdAutocompleteWidget
+                    snomedCtCode: {
+                        "ui:widget": SnomedCtAutocompleteWidget
+                    },
+                    snomedCtName: {
+                        "ui:widget": "hidden"
+                    },
+                    note: {
+                        "ui:widget": "textarea"
                     }
                 }}
             />
@@ -76,4 +87,3 @@ export const CreateDiagnosisPage = (props: CreateDiagnosisPageProps) => {
     );
 
 }
-

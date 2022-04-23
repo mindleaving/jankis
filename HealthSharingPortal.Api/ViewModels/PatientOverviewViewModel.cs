@@ -3,6 +3,7 @@ using HealthModels;
 using HealthModels.DiagnosticTestResults;
 using HealthModels.Medication;
 using HealthModels.Observations;
+using HealthModels.Procedures;
 
 namespace HealthSharingPortal.API.ViewModels
 {
@@ -16,6 +17,7 @@ namespace HealthSharingPortal.API.ViewModels
             List<MedicationSchedule> medicationSchedules,
             List<MedicationDispension> medicationDispensions,
             List<DiagnosticTestResult> testResults,
+            List<MedicalProcedure> medicalProcedures,
             List<Observation> observations,
             List<PatientDocument> documents,
             List<QuestionnaireAnswersViewModel> questionnaires)
@@ -27,6 +29,7 @@ namespace HealthSharingPortal.API.ViewModels
             MedicationSchedules = medicationSchedules;
             MedicationDispensions = medicationDispensions;
             TestResults = testResults;
+            MedicalProcedures = medicalProcedures;
             Observations = observations;
             Documents = documents;
             Questionnaires = questionnaires;
@@ -39,6 +42,7 @@ namespace HealthSharingPortal.API.ViewModels
         public List<MedicationSchedule> MedicationSchedules { get; }
         public List<MedicationDispension> MedicationDispensions { get; }
         public List<DiagnosticTestResult> TestResults { get; set; }
+        public List<MedicalProcedure> MedicalProcedures { get; }
         public List<Observation> Observations { get; set; }
         public List<PatientDocument> Documents { get; set; }
         public List<QuestionnaireAnswersViewModel> Questionnaires { get; }

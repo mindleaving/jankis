@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import { Button, ButtonGroup, Col, FormControl, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { HealthRecordEntryType } from "../../../localComponents/types/enums.d";
 import { Models } from "../../../localComponents/types/models";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
-import { TestResultCategories } from "../../types/frontendTypes.d";
+import { MarkHealthRecordEntryAsSeenCallback, TestResultCategories } from "../../types/frontendTypes.d";
 import { TestResultTable } from "./TestResultTable";
 
 interface PatientTestResultsViewProps {
     personId: string;
     testResults: Models.DiagnosticTestResults.DiagnosticTestResult[];
-    onMarkAsSeen: (entryType: HealthRecordEntryType, entryId: string, update: Update<Models.IHealthRecordEntry>) => void;
+    onMarkAsSeen: MarkHealthRecordEntryAsSeenCallback;
 }
 
 export const PatientTestResultsView = (props: PatientTestResultsViewProps) => {

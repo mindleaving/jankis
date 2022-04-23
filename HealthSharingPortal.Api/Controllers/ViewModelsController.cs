@@ -8,6 +8,7 @@ using HealthModels.DiagnosticTestResults;
 using HealthModels.Interview;
 using HealthModels.Medication;
 using HealthModels.Observations;
+using HealthModels.Procedures;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
@@ -33,6 +34,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IPersonDataReadonlyStore<MedicationSchedule> medicationSchedulesStore;
         private readonly IPersonDataReadonlyStore<MedicationDispension> medicationDispensionsStore;
         private readonly IPersonDataReadonlyStore<DiagnosticTestResult> testResultsStore;
+        private readonly IPersonDataReadonlyStore<MedicalProcedure> medicalProceduresStore;
         private readonly IPersonDataReadonlyStore<Observation> observationsStore;
         private readonly IPersonDataReadonlyStore<PatientDocument> documentsStore;
         private readonly IPersonDataReadonlyStore<StudyEnrollment> studyEnrollmentStore;
@@ -56,9 +58,10 @@ namespace HealthSharingPortal.API.Controllers
             IPersonDataReadonlyStore<MedicationSchedule> medicationSchedulesStore,
             IPersonDataReadonlyStore<MedicationDispension> medicationDispensionsStore, 
             IPersonDataReadonlyStore<DiagnosticTestResult> testResultsStore,
+            IPersonDataReadonlyStore<MedicalProcedure> medicalProceduresStore,
             IPersonDataReadonlyStore<Observation> observationsStore,
-            IPersonDataReadonlyStore<PatientDocument> documentsStore,
-            IPersonDataReadonlyStore<StudyEnrollment> studyEnrollmentStore, 
+            IPersonDataReadonlyStore<PatientDocument> documentsStore, 
+            IPersonDataReadonlyStore<StudyEnrollment> studyEnrollmentStore,
             IReadonlyStore<Study> studyStore,
             IReadonlyStore<StudyAssociation> studyAssociationStore,
             IAuthorizationModule authorizationModule,
@@ -92,6 +95,7 @@ namespace HealthSharingPortal.API.Controllers
             this.genomeExplorerDeploymentStore = genomeExplorerDeploymentStore;
             this.accountStore = accountStore;
             this.loginStore = loginStore;
+            this.medicalProceduresStore = medicalProceduresStore;
         }
 
         [HttpGet("currentuser")]
@@ -131,6 +135,7 @@ namespace HealthSharingPortal.API.Controllers
             var medicationSchedules = medicationSchedulesStore.SearchAsync(x => x.PersonId == personId, accessGrants);
             var medicationDispensions = medicationDispensionsStore.SearchAsync(x => x.PersonId == personId, accessGrants);
             var testResults = testResultsStore.SearchAsync(x => x.PersonId == personId, accessGrants);
+            var medicalProcedures = medicalProceduresStore.SearchAsync(x => x.PersonId == personId, accessGrants);
             var observations = observationsStore.SearchAsync(x => x.PersonId == personId, accessGrants);
             var documents = documentsStore.SearchAsync(x => x.PersonId == personId, accessGrants);
             var questionnaireAnswers = questionnaireAnswersStore.SearchAsync(x => x.PersonId == personId, accessGrants)
@@ -143,6 +148,7 @@ namespace HealthSharingPortal.API.Controllers
                 medicationSchedules,
                 medicationDispensions,
                 testResults,
+                medicalProcedures,
                 observations,
                 documents,
                 questionnaireAnswers);
@@ -155,6 +161,7 @@ namespace HealthSharingPortal.API.Controllers
                 medicationSchedules.Result,
                 medicationDispensions.Result,
                 testResults.Result,
+                medicalProcedures.Result,
                 observations.Result,
                 documents.Result,
                 questionnaireAnswers.Result.Cast<QuestionnaireAnswersViewModel>().ToList());

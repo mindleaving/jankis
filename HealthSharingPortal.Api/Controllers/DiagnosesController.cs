@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Security;
 using System.Threading.Tasks;
 using HealthModels.Diagnoses;
 using HealthModels.Interview;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
-using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
 using HealthSharingPortal.API.Workflow;
 using Microsoft.AspNetCore.Http;

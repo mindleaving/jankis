@@ -13,7 +13,7 @@ import { PatientActionsCard } from '../../../sharedHealthComponents/components/P
 import { HealthRecordAction } from '../../../sharedHealthComponents/types/frontendTypes';
 import { useParams } from 'react-router-dom';
 import { HealthRecordEntryType } from '../../types/enums.d';
-import { confirmUnhide } from '../../../sharedHealthComponents/helpers/HealthRecordEntryHelpers';
+import { confirmUnhide, confirmVerified } from '../../../sharedHealthComponents/helpers/HealthRecordEntryHelpers';
 
 interface HealthRecordPageProps {}
 
@@ -29,6 +29,7 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
     const [ medicationDispensions, setMedicationDispensions ] = useState<Models.Medication.MedicationDispension[]>([]);
     const [ observations, setObservations ] = useState<Models.Observations.Observation[]>([]);
     const [ testResults, setTestResults ] = useState<Models.DiagnosticTestResults.DiagnosticTestResult[]>([]);
+    const [ medicalProcedures, setMedicalProcedures ] = useState<Models.Procedures.MedicalProcedure[]>([]);
     const [ documents, setDocuments ] = useState<Models.PatientDocument[]>([]);
     const [ questionnaires, setQuestionnaires ] = useState<ViewModels.QuestionnaireAnswersViewModel[]>([]);
     
@@ -45,6 +46,7 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
             setMedicationDispensions(vm.medicationDispensions);
             setObservations(vm.observations);
             setTestResults(vm.testResults);
+            setMedicalProcedures(vm.medicalProcedures);
             setDocuments(vm.documents);
             setQuestionnaires(vm.questionnaires);
         },
@@ -118,7 +120,7 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
         update: Update<Models.IHealthRecordEntry>, 
         force: boolean = false) => {
         if(!force) {
-            confirmUnhide(() => markHealthRecordEntryAsVerified(entryType, entryId, update, true));
+            confirmVerified(() => markHealthRecordEntryAsVerified(entryType, entryId, update, true));
             return;
         }
         await sendPostRequest(
@@ -192,9 +194,10 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
         { path: `/healthrecord/${personId}/create/observation`, textResourceId: 'Action_AddObservation' },
         { path: `/healthrecord/${personId}/create/diagnosis`, textResourceId: 'Action_AddDiagnosis' },
         { path: `/healthrecord/${personId}/create/testresult`, textResourceId: 'Action_AddTestResult' },
+        { path: `/healthrecord/${personId}/create/procedure`, textResourceId: 'Action_AddMedicalProcedure' },
         { path: `/healthrecord/${personId}/create/document`, textResourceId: 'Action_AddDocument' },
         { path: `/healthrecord/${personId}/add/questionnaire`, textResourceId: 'Action_AddQuestionnaire' },
-        { path: `/healthrecord/${personId}/order/service`, textResourceId: 'Action_OrderService' },
+        // { path: `/healthrecord/${personId}/order/service`, textResourceId: 'Action_OrderService' },
     ]
 
     return (
@@ -222,12 +225,14 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
                         diagnoses={diagnoses}
                         observations={observations}
                         testResults={testResults}
+                        medicalProcedures={medicalProcedures}
                         questionnaires={questionnaires}
                         medicationSchedules={medicationSchedules}
                         medicationDispensions={medicationDispensions}
                         createNewMedicationSchedule={createNewMedicationSchedule}
                         onDiagnosisMarkedAsResolved={onDiagnosisMarkedAsResolved}
                         onMarkAsSeen={markHealthRecordEntryAsSeen}
+                        onMarkAsVerified={markHealthRecordEntryAsVerified}
                     />
                 </Col>
             </Row>

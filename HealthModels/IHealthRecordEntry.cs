@@ -7,7 +7,9 @@ namespace HealthModels
     {
         [Required]
         HealthRecordEntryType Type { get; }
+        [Required]
         string CreatedBy { get; set; }
+        [Required]
         DateTime Timestamp { get; set; }
         public bool IsVerified { get; set; }
         /// <summary>

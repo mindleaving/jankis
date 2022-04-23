@@ -49,7 +49,7 @@ export const CreateDiagnosisPage = (props: CreateDiagnosisPageProps) => {
             <h1>{resolveText("Diagnosis")}</h1>
             <GenericTypeCreateEditPage<Models.Diagnoses.Diagnosis>
                 typeName='diagnosis'
-                paramName='diagnosisId'
+                paramName='entryId'
                 item={diagnosis}
                 itemLoader={loadDiagnoses}
                 onSubmit={submit}

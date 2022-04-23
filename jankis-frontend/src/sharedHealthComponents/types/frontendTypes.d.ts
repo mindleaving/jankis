@@ -21,5 +21,9 @@ export enum TestResultCategories {
     Dental = "Dental",
     Pathology = "Pathology"
 }
+export interface HealthRecordEntryFormProps {
+    personId: string;
+    onStore: () => void;
+}
 export type MarkHealthRecordEntryAsSeenCallback = (entryType: HealthRecordEntryType, entryId: string, update: Update<Models.IHealthRecordEntry>) => void;
 export type MarkHealthRecordEntryAsVerifiedCallback = (entryType: HealthRecordEntryType, entryId: string, update: Update<Models.IHealthRecordEntry>) => void;

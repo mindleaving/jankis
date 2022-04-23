@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using TypescriptGenerator.Attributes;
 
 namespace HealthModels.Diagnoses
@@ -15,6 +16,7 @@ namespace HealthModels.Diagnoses
 
         [TypescriptIsOptional]
         public string Icd10Code { get; set; }
+        [Required]
         public string Icd11Code { get; set; }
         public bool HasResolved { get; set; }
         public DateTime? ResolvedTimestamp { get; set; }

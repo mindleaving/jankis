@@ -2,7 +2,7 @@ import { WidgetProps } from '@rjsf/core';
 import { FormGroup, FormLabel } from 'react-bootstrap';
 import Flatpickr from 'react-flatpickr';
 
-export const FlatpickrWidget = (props: WidgetProps) => {
+export const FlatpickrTimeWidget = (props: WidgetProps) => {
 
     return (
         <FormGroup>
@@ -11,11 +11,11 @@ export const FlatpickrWidget = (props: WidgetProps) => {
                 className='form-control'
                 options={{
                     allowInput: true,
-                    enableTime: false,
+                    enableTime: true,
                     time_24hr: true
                 }}
                 value={props.value}
-                onChange={(_: Date[], dateStr: string) => props.onChange(`${dateStr}T00:00:00Z`)}
+                onChange={(dates: Date[], dateStr: string) => props.onChange(dates[0].toISOString())}
             />
         </FormGroup>
     );

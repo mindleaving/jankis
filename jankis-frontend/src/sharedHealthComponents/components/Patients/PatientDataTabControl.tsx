@@ -11,7 +11,8 @@ import { PatientTestResultsView } from './PatientTestResultsView';
 import { PatientDiagnosesView } from './PatientDiagnosesView';
 import { ViewModels } from '../../../localComponents/types/viewModels';
 import { PatientQuestionnairesView } from './PatientQuestionnairesView';
-import { HealthRecordEntryType } from '../../../localComponents/types/enums';
+import { MarkHealthRecordEntryAsSeenCallback, MarkHealthRecordEntryAsVerifiedCallback } from '../../types/frontendTypes';
+import { PatientMedicalProceduresView } from './PatientMedicalProceduresView';
 
 interface PatientDataTabControlProps {
     personId: string;
@@ -20,17 +21,19 @@ interface PatientDataTabControlProps {
     observations: Models.Observations.Observation[];
     documents: Models.PatientDocument[];
     testResults: Models.DiagnosticTestResults.DiagnosticTestResult[];
+    medicalProcedures: Models.Procedures.MedicalProcedure[];
     questionnaires: ViewModels.QuestionnaireAnswersViewModel[];
     medicationSchedules: Models.Medication.MedicationSchedule[];
     medicationDispensions: Models.Medication.MedicationDispension[];
     createNewMedicationSchedule: () => void;
     onDiagnosisMarkedAsResolved: (diagnosisId: string) => void;
-    onMarkAsSeen: (entryType: HealthRecordEntryType, entryId: string, update: Update<Models.IHealthRecordEntry>) => void;
+    onMarkAsSeen: MarkHealthRecordEntryAsSeenCallback;
+    onMarkAsVerified: MarkHealthRecordEntryAsVerifiedCallback;
 }
 
 export const PatientDataTabControl = (props: PatientDataTabControlProps) => {
 
-    const { notes, diagnoses, observations, documents, testResults, medicationSchedules, medicationDispensions, questionnaires }  = props;
+    const { notes, diagnoses, observations, documents, testResults, medicalProcedures, medicationSchedules, medicationDispensions, questionnaires }  = props;
 
     return (
         <Tabs defaultActiveKey="overview">
@@ -80,6 +83,13 @@ export const PatientDataTabControl = (props: PatientDataTabControlProps) => {
                 <PatientTestResultsView 
                     personId={props.personId}
                     testResults={testResults}
+                    onMarkAsSeen={props.onMarkAsSeen}
+                />
+            </Tab>
+            <Tab eventKey="procedures" title={resolveText('Patient_MedicalProcedures')}>
+                <PatientMedicalProceduresView 
+                    personId={props.personId}
+                    medicalProcedures={medicalProcedures}
                     onMarkAsSeen={props.onMarkAsSeen}
                 />
             </Tab>

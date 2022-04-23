@@ -145,6 +145,7 @@ export namespace ViewModels {
         medicationSchedules: Models.Medication.MedicationSchedule[];
         medicationDispensions: Models.Medication.MedicationDispension[];
         testResults: Models.DiagnosticTestResults.DiagnosticTestResult[];
+        medicalProcedures: Models.Procedures.MedicalProcedure[];
         observations: Models.Observations.Observation[];
         documents: Models.PatientDocument[];
         questionnaires: ViewModels.QuestionnaireAnswersViewModel[];

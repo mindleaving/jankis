@@ -365,6 +365,19 @@ export namespace Models {
         }
     }
 
+    export namespace Procedures {
+        interface MedicalProcedure extends Models.IHealthRecordEntry {
+            snomedCtCode: string;
+            snomedCtName: string;
+            note: string;
+        }
+    
+        interface MedicalProcedureDefinition extends Models.Services.ServiceDefinition {
+            snomedCtCode: string;
+            localCode: string;
+        }
+    }
+
     export namespace Observations {
         interface BloodPressureObservation extends Models.Observations.Observation {
             systolic: number;

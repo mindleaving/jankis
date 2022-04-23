@@ -9,6 +9,7 @@ using HealthModels.DiagnosticTestResults;
 using HealthModels.Interview;
 using HealthModels.Medication;
 using HealthModels.Observations;
+using HealthModels.Procedures;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models.Subscriptions;
@@ -35,6 +36,7 @@ namespace JanKIS.API.Controllers
         private readonly IAdmissionsStore admissionsStore;
         private readonly IPersonDataReadonlyStore<PatientNote> patientNotesStore;
         private readonly IPersonDataReadonlyStore<DiagnosticTestResult> testResultsStore;
+        private readonly IPersonDataReadonlyStore<MedicalProcedure> medicalProceduresStore;
         private readonly IPersonDataReadonlyStore<Observation> observationsStore;
         private readonly IPersonDataReadonlyStore<PatientDocument> documentsStore;
         private readonly IReadonlyStore<BedOccupancy> bedOccupanciesStore;
@@ -55,6 +57,7 @@ namespace JanKIS.API.Controllers
             IAdmissionsStore admissionsStore,
             IPersonDataReadonlyStore<PatientNote> patientNotesStore,
             IPersonDataReadonlyStore<DiagnosticTestResult> testResultsStore,
+            IPersonDataReadonlyStore<MedicalProcedure> medicalProceduresStore,
             IPersonDataReadonlyStore<Observation> observationsStore,
             IPersonDataReadonlyStore<PatientDocument> documentsStore,
             IReadonlyStore<BedOccupancy> bedOccupanciesStore,
@@ -74,6 +77,7 @@ namespace JanKIS.API.Controllers
             this.admissionsStore = admissionsStore;
             this.patientNotesStore = patientNotesStore;
             this.testResultsStore = testResultsStore;
+            this.medicalProceduresStore = medicalProceduresStore;
             this.observationsStore = observationsStore;
             this.documentsStore = documentsStore;
             this.bedOccupanciesStore = bedOccupanciesStore;
@@ -108,6 +112,7 @@ namespace JanKIS.API.Controllers
             var medicationSchedules = medicationSchedulesStore.SearchAsync(x => x.PersonId == personId, accessGrants);
             var medicationDispensions = medicationDispensionsStore.SearchAsync(x => x.PersonId == personId, accessGrants);
             var testResults = testResultsStore.SearchAsync(x => x.PersonId == personId, accessGrants);
+            var medicalProcedures = medicalProceduresStore.SearchAsync(x => x.PersonId == personId, accessGrants);
             var observations = observationsStore.SearchAsync(x => x.PersonId == personId, accessGrants);
             var documents = documentsStore.SearchAsync(x => x.PersonId == personId, accessGrants);
             var questionnaireAnswers = questionnaireAnswersStore.SearchAsync(x => x.PersonId == personId, accessGrants)
@@ -123,6 +128,7 @@ namespace JanKIS.API.Controllers
                 medicationSchedules,
                 medicationDispensions,
                 testResults,
+                medicalProcedures,
                 observations,
                 documents,
                 questionnaireAnswers,
@@ -137,6 +143,7 @@ namespace JanKIS.API.Controllers
                 medicationSchedules.Result,
                 medicationDispensions.Result.OrderByDescending(x => x.Timestamp).ToList(),
                 testResults.Result.OrderByDescending(x => x.Timestamp).ToList(),
+                medicalProcedures.Result.OrderByDescending(x => x.Timestamp).ToList(),
                 observations.Result.OrderByDescending(x => x.Timestamp).ToList(),
                 documents.Result.OrderByDescending(x => x.Timestamp).ToList(),
                 questionnaireAnswers.Result.Cast<QuestionnaireAnswersViewModel>().ToList(),

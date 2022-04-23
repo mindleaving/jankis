@@ -3,6 +3,7 @@ using HealthModels;
 using HealthModels.DiagnosticTestResults;
 using HealthModels.Medication;
 using HealthModels.Observations;
+using HealthModels.Procedures;
 using HealthSharingPortal.API.Models.Subscriptions;
 using HealthSharingPortal.API.ViewModels;
 using JanKIS.API.Models;
@@ -20,11 +21,12 @@ namespace JanKIS.API.ViewModels
             List<MedicationSchedule> medicationSchedules,
             List<MedicationDispension> medicationDispensions,
             List<DiagnosticTestResult> testResults,
+            List<MedicalProcedure> medicalProcedures,
             List<Observation> observations,
             List<PatientDocument> documents,
             List<QuestionnaireAnswersViewModel> questionnaires,
             PatientSubscription subscription)
-            : base(profileData, admissions, notes, diagnoses, medicationSchedules, medicationDispensions, testResults, observations, documents, questionnaires)
+            : base(profileData, admissions, notes, diagnoses, medicationSchedules, medicationDispensions, testResults, medicalProcedures, observations, documents, questionnaires)
         {
             CurrentBedOccupancy = currentBedOccupancy;
             Subscription = subscription;

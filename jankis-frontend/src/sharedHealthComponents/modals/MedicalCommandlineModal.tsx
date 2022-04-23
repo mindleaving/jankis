@@ -193,8 +193,9 @@ export const MedicalCommandlineModal = (props: MedicalCommandlineModalProps) => 
             <Modal.Body>
                 <div className='d-flex'>
                     <div className='d-flex flex-grow-1 border border-dark'>
-                        {selectedParts.map(selectedPart => (
+                        {selectedParts.map((selectedPart, partIndex) => (
                             <Badge
+                                key={partIndex}
                                 className='align-self-center mx-1'
                             >
                                 {formatSelectedCommandPart(selectedPart)}

@@ -14,7 +14,7 @@ import { formatAdmission } from '../../../sharedHealthComponents/helpers/Formatt
 import { PatientDataTabControl } from '../../../sharedHealthComponents/components/Patients/PatientDataTabControl';
 import { PatientActionsCard } from '../../../sharedHealthComponents/components/Patients/PatientActionsCard';
 import { HealthRecordAction } from '../../../sharedHealthComponents/types/frontendTypes';
-import { confirmUnhide } from '../../../sharedHealthComponents/helpers/HealthRecordEntryHelpers';
+import { confirmUnhide, confirmVerified } from '../../../sharedHealthComponents/helpers/HealthRecordEntryHelpers';
 import { HealthRecordEntryType } from '../../types/enums.d';
 
 import '../../../sharedHealthComponents/styles/healthrecord.css';
@@ -36,6 +36,7 @@ export const PatientPage = (props: PatientPageProps) => {
     const [ medicationDispensions, setMedicationDispensions ] = useState<Models.Medication.MedicationDispension[]>([]);
     const [ observations, setObservations ] = useState<Models.Observations.Observation[]>([]);
     const [ testResults, setTestResults ] = useState<Models.DiagnosticTestResults.DiagnosticTestResult[]>([]);
+    const [ medicalProcedures, setMedicalProcedures ] = useState<Models.Procedures.MedicalProcedure[]>([]);
     const [ documents, setDocuments ] = useState<Models.PatientDocument[]>([]);
     const [ questionnaires, setQuestionnaires ] = useState<ViewModels.QuestionnaireAnswersViewModel[]>([]);
     const [ subscription, setSubscription ] = useState<Models.Subscriptions.PatientSubscription>();
@@ -56,6 +57,7 @@ export const PatientPage = (props: PatientPageProps) => {
             setMedicationDispensions(vm.medicationDispensions ?? []);
             setObservations(vm.observations ?? []);
             setTestResults(vm.testResults ?? []);
+            setMedicalProcedures(vm.medicalProcedures ?? []);
             setDocuments(vm.documents ?? []);
             setSubscription(vm.subscription);
             setQuestionnaires(vm.questionnaires ?? []);
@@ -124,7 +126,7 @@ export const PatientPage = (props: PatientPageProps) => {
         update: Update<Models.IHealthRecordEntry>, 
         force: boolean = false) => {
         if(!force) {
-            confirmUnhide(() => markHealthRecordEntryAsVerified(entryType, entryId, update, true));
+            confirmVerified(() => markHealthRecordEntryAsVerified(entryType, entryId, update, true));
             return;
         }
         await sendPostRequest(
@@ -259,11 +261,13 @@ export const PatientPage = (props: PatientPageProps) => {
                 diagnoses={diagnoses}
                 observations={observations}
                 testResults={testResults}
+                medicalProcedures={medicalProcedures}
                 medicationSchedules={medicationSchedules}
                 medicationDispensions={medicationDispensions}
                 createNewMedicationSchedule={createNewMedicationSchedule}
                 onDiagnosisMarkedAsResolved={onDiagnosisMarkedAsResolved}
                 onMarkAsSeen={markHealthRecordEntryAsSeen}
+                onMarkAsVerified={markHealthRecordEntryAsVerified}
             />
         </>
     );

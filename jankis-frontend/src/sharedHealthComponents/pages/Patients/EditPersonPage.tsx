@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Models } from '../../../localComponents/types/models';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { GenericTypeCreateEditPage } from '../../../sharedCommonComponents/pages/GenericTypeCreateEditPage';
-import { FlatpickrWidget } from '../../components/Widgets/FlatpickrWidget';
+import { FlatpickrDateWidget } from '../../components/Widgets/FlatpickrDateWidget';
 
 interface EditPersonPageProps {}
 
@@ -33,7 +33,7 @@ export const EditPersonPage = (props: EditPersonPageProps) => {
                     "ui:widget": "hidden"
                 },
                 birthDate: {
-                    "ui:widget": FlatpickrWidget
+                    "ui:widget": FlatpickrDateWidget
                 }
             }}
         />
