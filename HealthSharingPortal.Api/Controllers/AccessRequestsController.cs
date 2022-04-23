@@ -153,14 +153,15 @@ namespace HealthSharingPortal.API.Controllers
                 AccessReceiverAccountId = "guest",
                 SharerPersonId = matchingPerson.Id,
                 AccessGrantedTimestamp = utcNow,
-                AccessEndTimestamp = utcNow.AddMinutes(60)
+                AccessEndTimestamp = utcNow.AddMinutes(60),
+                Permissions = emergencyToken.Permissions
             };
             await emergencyAccessStore.StoreAsync(guestEmergencyAccess);
             var profileData = new Person(null, "Guest", "Guest", DateTime.UtcNow, Sex.Other);
             var authenticationResult = authenticationModule.BuildSecurityTokenForGuest(
                 matchingPerson.Id, 
-                emergencyToken.Permissions, 
-                emergencyToken.Id);
+                guestEmergencyAccess.Permissions, 
+                guestEmergencyAccess.Id);
             var userViewModel = new GuestViewModel(
                 profileData,
                 authenticationResult,

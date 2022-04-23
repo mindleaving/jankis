@@ -22,6 +22,8 @@ namespace HealthSharingPortal.API.Storage
 
         public async Task<StorageOperation> StoreAsync(T item, List<IPersonDataAccessGrant> accessGrants)
         {
+            if(string.IsNullOrWhiteSpace(item.Id))
+                throw new ArgumentException("ID cannot be null or whitespace.", nameof(item.Id));
             var permissions = GetPermissionsForPerson(item.PersonId, accessGrants);
             if(!permissions.Contains(AccessPermissions.Create) && !permissions.Contains(AccessPermissions.Modify))
                 throw new SecurityException(SecurityErrorMessage);
@@ -41,6 +43,8 @@ namespace HealthSharingPortal.API.Storage
 
         public async Task DeleteAsync(string id, List<IPersonDataAccessGrant> accessGrants)
         {
+            if (string.IsNullOrWhiteSpace(id))
+                throw new ArgumentException("ID cannot be null or whitespace.", nameof(id));
             var item = await collection.Find(x => x.Id == id).FirstOrDefaultAsync();
             if(item == null)
                 return;

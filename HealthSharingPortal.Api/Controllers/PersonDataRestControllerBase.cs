@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Security;
 using System.Threading.Tasks;
 using HealthModels;
 using HealthModels.Interview;
@@ -98,6 +97,8 @@ namespace HealthSharingPortal.API.Controllers
             updates.ApplyTo(item, ModelState);
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            if (item.Id != id)
+                return BadRequest("ID of the item must not be changed");
             await store.StoreAsync(item, accessGrants);
             var username = ControllerHelpers.GetAccountId(httpContextAccessor);
             await PublishChange(item, StorageOperation.Changed, username);

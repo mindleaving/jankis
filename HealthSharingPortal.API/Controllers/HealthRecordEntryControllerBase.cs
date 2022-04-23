@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using HealthModels;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
@@ -17,6 +18,15 @@ namespace HealthSharingPortal.API.Controllers
             IAuthorizationModule authorizationModule)
             : base(store, httpContextAccessor, authorizationModule)
         {
+        }
+
+        public override async Task<IActionResult> CreateOrReplace(
+            string id,
+            T item)
+        {
+            item.CreatedBy = ControllerHelpers.GetAccountId(httpContextAccessor);
+            item.Timestamp = DateTime.UtcNow;
+            return await base.CreateOrReplace(id, item);
         }
 
         [HttpPost("{entryId}/verified")]

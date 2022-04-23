@@ -34,6 +34,8 @@ namespace HealthSharingPortal.API.Storage
             string id,
             List<IPersonDataAccessGrant> accessGrants)
         {
+            if (string.IsNullOrWhiteSpace(id)) 
+                throw new ArgumentException("ID cannot be null or whitespace.", nameof(id));
             var item = await backingStore.GetByIdAsync(id);
             CheckItemAccessRights(item, accessGrants);
             return item != null;
@@ -43,6 +45,8 @@ namespace HealthSharingPortal.API.Storage
             string id,
             List<IPersonDataAccessGrant> accessGrants)
         {
+            if (string.IsNullOrWhiteSpace(id))
+                throw new ArgumentException("ID cannot be null or whitespace.", nameof(id));
             var item = await backingStore.GetByIdAsync(id);
             CheckItemAccessRights(item, accessGrants);
             return item;

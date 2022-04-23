@@ -50,11 +50,15 @@ namespace HealthSharingPortal.API.Storage
 
         public Task<bool> ExistsAsync(string id)
         {
+            if (string.IsNullOrWhiteSpace(id)) 
+                throw new ArgumentException("ID cannot be null or whitespace.", nameof(id));
             return collection.Find(x => x.Id == id).AnyAsync();
         }
 
         public Task<T> GetByIdAsync(string id)
         {
+            if (string.IsNullOrWhiteSpace(id)) 
+                throw new ArgumentException("ID cannot be null or whitespace.", nameof(id));
             return collection.Find(x => x.Id == id).FirstOrDefaultAsync();
         }
 

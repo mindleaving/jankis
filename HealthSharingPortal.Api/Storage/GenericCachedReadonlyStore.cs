@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,6 +36,8 @@ namespace HealthSharingPortal.API.Storage
 
         public async Task<T> CachedGetByIdAsync(string id)
         {
+            if (string.IsNullOrWhiteSpace(id)) 
+                throw new ArgumentException("ID cannot be null or whitespace.", nameof(id));
             if (cachedItems.TryGetValue(id, out var item))
                 return item;
             item = await GetByIdAsync(id);
