@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using HealthModels;
 using HealthModels.Extensions;
 using HealthModels.Interview;
 using HealthModels.Procedures;

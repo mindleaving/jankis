@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Security;
 using System.Threading.Tasks;
+using HealthModels;
 using HealthModels.Interview;
 using HealthModels.Medication;
 using HealthSharingPortal.API.AccessControl;
@@ -18,8 +19,9 @@ namespace HealthSharingPortal.API.Controllers
         public MedicationSchedulesController(
             IPersonDataStore<MedicationSchedule> store,
             IHttpContextAccessor httpContextAccessor,
-            IAuthorizationModule authorizationModule)
-            : base(store, httpContextAccessor, authorizationModule)
+            IAuthorizationModule authorizationModule,
+            IReadonlyStore<PersonDataChange> changeStore)
+            : base(store, httpContextAccessor, authorizationModule, changeStore)
         {
         }
 
@@ -33,7 +35,7 @@ namespace HealthSharingPortal.API.Controllers
             if (medicationSchedule == null)
                 return NotFound();
             medicationSchedule.Items.Add(medication);
-            await store.StoreAsync(medicationSchedule, accessGrants);
+            await Store(store, medicationSchedule, accessGrants);
             return Ok();
         }
 
@@ -45,7 +47,7 @@ namespace HealthSharingPortal.API.Controllers
             if (medicationSchedule == null)
                 return NotFound();
             medicationSchedule.Items.RemoveAll(x => x.Id == itemId);
-            await store.StoreAsync(medicationSchedule, accessGrants);
+            await Store(store, medicationSchedule, accessGrants);
             return Ok();
         }
 

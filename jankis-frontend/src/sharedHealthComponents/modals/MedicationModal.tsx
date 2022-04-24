@@ -22,7 +22,7 @@ export const MedicationModal = (props: MedicationModalProps) => {
         const medication: Models.Medication.MedicationScheduleItem = {
             id: uuid(),
             drug: selectedDrug!,
-            dispensions: [],
+            plannedDispensions: [],
             isDispendedByPatient: false,
             isPaused: false,
             note: ''

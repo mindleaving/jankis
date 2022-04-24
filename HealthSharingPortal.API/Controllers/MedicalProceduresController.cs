@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using HealthModels;
 using HealthModels.Interview;
 using HealthModels.Procedures;
 using HealthSharingPortal.API.AccessControl;
@@ -19,8 +20,9 @@ namespace HealthSharingPortal.API.Controllers
             IPersonDataStore<MedicalProcedure> store,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,
-            INotificationDistributor notificationDistributor)
-            : base(store, httpContextAccessor, authorizationModule)
+            INotificationDistributor notificationDistributor,
+            IReadonlyStore<PersonDataChange> changeStore)
+            : base(store, httpContextAccessor, authorizationModule, changeStore)
         {
             this.notificationDistributor = notificationDistributor;
         }

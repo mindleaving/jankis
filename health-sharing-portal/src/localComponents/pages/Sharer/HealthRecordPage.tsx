@@ -193,6 +193,7 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
         { path: `/healthrecord/${personId}/create/note`, textResourceId: 'Action_AddNote' },
         { path: `/healthrecord/${personId}/create/observation`, textResourceId: 'Action_AddObservation' },
         { path: `/healthrecord/${personId}/create/diagnosis`, textResourceId: 'Action_AddDiagnosis' },
+        { path: `/healthrecord/${personId}/add/medication`, textResourceId: 'Action_AddMedication' },
         { path: `/healthrecord/${personId}/create/testresult`, textResourceId: 'Action_AddTestResult' },
         { path: `/healthrecord/${personId}/create/procedure`, textResourceId: 'Action_AddMedicalProcedure' },
         { path: `/healthrecord/${personId}/create/document`, textResourceId: 'Action_AddDocument' },

@@ -15,8 +15,9 @@ namespace HealthSharingPortal.API.Controllers
         protected HealthRecordEntryControllerBase(
             IPersonDataStore<T> store,
             IHttpContextAccessor httpContextAccessor,
-            IAuthorizationModule authorizationModule)
-            : base(store, httpContextAccessor, authorizationModule)
+            IAuthorizationModule authorizationModule,
+            IReadonlyStore<PersonDataChange> changeStore)
+            : base(store, httpContextAccessor, authorizationModule, changeStore)
         {
         }
 
@@ -42,7 +43,7 @@ namespace HealthSharingPortal.API.Controllers
             if (healthRecordEntry.IsVerified)
                 return Ok();
             healthRecordEntry.IsVerified = true;
-            await store.StoreAsync(healthRecordEntry, accessGrants);
+            await Store(store, healthRecordEntry, accessGrants);
             return Ok();
         }
 
@@ -62,7 +63,7 @@ namespace HealthSharingPortal.API.Controllers
             if (healthRecordEntry.HasBeenSeenBySharer)
                 return Ok();
             healthRecordEntry.HasBeenSeenBySharer = true;
-            await store.StoreAsync(healthRecordEntry, accessGrants);
+            await Store(store, healthRecordEntry, accessGrants);
             return Ok();
         }
     }

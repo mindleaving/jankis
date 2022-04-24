@@ -12,6 +12,8 @@ import { DrugsFilter } from '../../types/frontendTypes';
 
 interface DrugsListProps {
     filter: DrugsFilter;
+    onDrugSelected: (drugId: string) => void;
+    onCreateDrug?: () => void;
 }
 
 export const DrugsList = (props: DrugsListProps) => {
@@ -48,11 +50,19 @@ export const DrugsList = (props: DrugsListProps) => {
         );
     }
 
+    const editDrug = (drugId: string) => {
+        if(props.onDrugSelected) {
+            props.onDrugSelected(drugId);
+        } else {
+            navigate(`/drugs/${drugId}/edit`);
+        }
+    }
+
     return (
         <PagedTable
             onPageChanged={drugsLoader.load}
             hasCreateNewButton
-            onCreateNew={() => navigate('/create/drug')}
+            onCreateNew={props.onCreateDrug ?? (() => navigate('/create/drug'))}
         >
             <thead>
                 <tr>
@@ -83,7 +93,9 @@ export const DrugsList = (props: DrugsListProps) => {
                         <td>{drug.amountValue} {drug.amountUnit}</td>
                         <td>{drug.dispensionForm} @ {drug.applicationSite}</td>
                         <td>
-                            <Button variant="link" onClick={() => navigate(`/drugs/${drug.id}/edit`)}>{resolveText('Edit...')}</Button>
+                            <Button variant="link" onClick={() => editDrug(drug.id)}>
+                                {resolveText('Edit...')}
+                            </Button>
                         </td>
                     </tr>
                 ))}

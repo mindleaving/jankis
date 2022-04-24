@@ -9,6 +9,7 @@ interface DrugAutocompleteProps {
     isLoading?: boolean;
     value?: Models.Medication.Drug;
     onChange: (drug: Models.Medication.Drug | undefined) => void;
+    required?: boolean;
 }
 
 export const DrugAutocomplete = (props: DrugAutocompleteProps) => {
@@ -30,6 +31,7 @@ export const DrugAutocomplete = (props: DrugAutocompleteProps) => {
         search={drugAutocompleteRunner.search}
         displayNameSelector={x => x?.productName}
         onItemSelected={props.onChange}
+        required={props.required}
     />);
 
 }

@@ -20,8 +20,9 @@ namespace HealthSharingPortal.API.Controllers
             IPersonDataStore<PatientNote> store,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,
+            IReadonlyStore<PersonDataChange> changeStore,
             INotificationDistributor notificationDistributor)
-            : base(store, httpContextAccessor, authorizationModule)
+            : base(store, httpContextAccessor, authorizationModule, changeStore)
         {
             this.notificationDistributor = notificationDistributor;
         }

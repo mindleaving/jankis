@@ -155,7 +155,7 @@ namespace HealthSharingPortal.API.Controllers
             if (!await personsStore.ExistsAsync(personId, readAccessGrant))
             {
                 var writeGrant = AccessGrantHelpers.GrantForPersonWithPermission(personId, AccessPermissions.Create);
-                await personsStore.StoreAsync(creationInfo.Person, writeGrant);
+                await PersonDataControllerHelpers.Store(personsStore, creationInfo.Person, writeGrant, httpContextAccessor);
             }
 
             var existingAccount = await accountsStore.SearchAsync(x => x.AccountType == creationInfo.AccountType && x.PersonId == personId);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Security;
 using System.Threading.Tasks;
+using HealthModels;
 using HealthModels.Interview;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
@@ -61,7 +62,11 @@ namespace HealthSharingPortal.API.Controllers
                     return Conflict("An answer with the same ID exists for another questionnaire. Please use another ID");
             }
 
-            await answersStore.StoreAsync(answer, accessGrants);
+            await PersonDataControllerHelpers.Store(
+                answersStore,
+                answer,
+                accessGrants,
+                httpContextAccessor);
             return Ok();
         }
 

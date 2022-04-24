@@ -69,10 +69,11 @@ namespace HealthSharingPortal.API.Controllers
             return Ok(transformedItems);
         }
 
+        [HttpPost]
         [HttpPut("{id}")]
         public virtual async Task<IActionResult> CreateOrReplace([FromRoute] string id, [FromBody] T item)
         {
-            if (id != item.Id)
+            if (id != null && id != item.Id)
                 return BadRequest("ID of route doesn't match body");
             var username = ControllerHelpers.GetAccountId(httpContextAccessor);
             var storageOperation = await store.StoreAsync(item);

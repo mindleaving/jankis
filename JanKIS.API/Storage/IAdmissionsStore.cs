@@ -15,8 +15,8 @@ namespace JanKIS.API.Storage
 
     public class AdmissionsStore : GenericPersonDataStore<Admission>, IAdmissionsStore
     {
-        public AdmissionsStore(IMongoDatabase mongoDatabase)
-            : base(mongoDatabase)
+        public AdmissionsStore(IMongoDatabase mongoDatabase, IStore<PersonDataChange> recordChangeStore)
+            : base(mongoDatabase, recordChangeStore)
         {
         }
 

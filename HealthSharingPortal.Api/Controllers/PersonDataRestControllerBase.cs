@@ -22,17 +22,20 @@ namespace HealthSharingPortal.API.Controllers
     public abstract class PersonDataRestControllerBase<T> : ControllerBase, IRestController<T> where T : class, IPersonData
     {
         protected readonly IPersonDataStore<T> store;
+        protected readonly IReadonlyStore<PersonDataChange> changeStore;
         protected readonly IHttpContextAccessor httpContextAccessor;
         protected readonly IAuthorizationModule authorizationModule;
 
         protected PersonDataRestControllerBase(
             IPersonDataStore<T> store,
             IHttpContextAccessor httpContextAccessor,
-            IAuthorizationModule authorizationModule)
+            IAuthorizationModule authorizationModule,
+            IReadonlyStore<PersonDataChange> changeStore)
         {
             this.store = store;
             this.httpContextAccessor = httpContextAccessor;
             this.authorizationModule = authorizationModule;
+            this.changeStore = changeStore;
         }
 
         [HttpGet("{id}")]
@@ -75,14 +78,23 @@ namespace HealthSharingPortal.API.Controllers
             return Ok(transformedItems);
         }
 
+        [HttpGet("{id}/history")]
+        public async Task<IActionResult> GetChangeHistory([FromRoute] string id)
+        {
+            var changes = await changeStore.SearchAsync(x => x.Type == typeof(T).Name && x.EntryId == id);
+            return Ok(changes);
+        }
+
+
+        [HttpPost]
         [HttpPut("{id}")]
         public virtual async Task<IActionResult> CreateOrReplace([FromRoute] string id, [FromBody] T item)
         {
-            if (id != item.Id)
+            if (id != null && id != item.Id)
                 return BadRequest("ID of route doesn't match body");
             var username = ControllerHelpers.GetAccountId(httpContextAccessor);
             var accessGrants = await GetAccessGrants();
-            var storageOperation = await store.StoreAsync(item, accessGrants);
+            var storageOperation = await Store(store, item, accessGrants);
             await PublishChange(item, storageOperation, username);
             return Ok(id);
         }
@@ -99,7 +111,7 @@ namespace HealthSharingPortal.API.Controllers
                 return BadRequest(ModelState);
             if (item.Id != id)
                 return BadRequest("ID of the item must not be changed");
-            await store.StoreAsync(item, accessGrants);
+            await Store(store, item, accessGrants);
             var username = ControllerHelpers.GetAccountId(httpContextAccessor);
             await PublishChange(item, StorageOperation.Changed, username);
             return Ok();
@@ -110,8 +122,24 @@ namespace HealthSharingPortal.API.Controllers
         public virtual async Task<IActionResult> Delete([FromRoute] string id)
         {
             var accessGrants = await GetAccessGrants();
-            await store.DeleteAsync(id, accessGrants);
+            await Delete(store, id, accessGrants);
             return Ok();
+        }
+
+        protected Task<StorageOperation> Store(
+            IPersonDataStore<T> personDataStore,
+            T item,
+            List<IPersonDataAccessGrant> accessGrants)
+        {
+            return PersonDataControllerHelpers.Store(personDataStore, item, accessGrants, httpContextAccessor);
+        }
+
+        protected Task Delete(
+            IPersonDataStore<T> personDataStore,
+            string id,
+            List<IPersonDataAccessGrant> accessGrants)
+        {
+            return PersonDataControllerHelpers.Delete(personDataStore, id, accessGrants, httpContextAccessor);
         }
 
         protected async Task<List<IPersonDataAccessGrant>> GetAccessGrants()

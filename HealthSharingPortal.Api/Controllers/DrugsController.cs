@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using HealthModels;
 using HealthModels.Interview;
 using HealthModels.Medication;
 using HealthSharingPortal.API.Helpers;
@@ -56,6 +57,7 @@ namespace HealthSharingPortal.API.Controllers
             await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.DrugBrand.ToString(), item.Brand));
             await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.DrugApplicationSite.ToString(), item.ApplicationSite));
             await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.DrugDispensionForm.ToString(), item.DispensionForm));
+            await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.Unit.ToString(), item.AmountUnit));
             foreach (var activeIngredient in item.ActiveIngredients)
             {
                 await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.DrugActiveIngredient.ToString(), activeIngredient));

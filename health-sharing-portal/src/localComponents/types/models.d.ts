@@ -90,6 +90,15 @@ export namespace Models {
         healthInsurance?: Models.HealthInsurance;
     }
 
+    interface PersonDataChange extends Models.IId {
+        type: string;
+        entryId: string;
+        changedByAccountId: string;
+        changedByPersonId: string;
+        timestamp: Date;
+        changeType: Enums.StorageOperation;
+    }
+
     interface Account extends Models.IId {
         accountType: Enums.AccountType;
         personId: string;
@@ -356,6 +365,12 @@ export namespace Models {
             value: number;
             state: Enums.MedicationDispensionState;
             note?: string;
+            administeredBy?: string;
+        }
+    
+        interface MedicationDosage {
+            value: number;
+            unit: string;
         }
     
         interface MedicationSchedule extends Models.IPersonData {
@@ -368,10 +383,25 @@ export namespace Models {
     
         interface MedicationScheduleItem extends Models.IId {
             drug: Models.Medication.Drug;
-            dispensions: Models.Medication.MedicationDispension[];
+            plannedDispensions: Models.Medication.MedicationDispension[];
+            pattern?: Models.Medication.MedicationSchedulePattern;
+            instructions?: Models.Medication.MedicationAdministrationInstructions;
             note: string;
             isPaused: boolean;
             isDispendedByPatient: boolean;
+        }
+    
+        interface MedicationAdministrationInstructions {
+            inConjunctionWithMeal: boolean;
+        }
+    
+        interface MedicationSchedulePattern {
+            patternType: Enums.MedicationSchedulePatternType;
+            unit?: string;
+            morning: number;
+            noon: number;
+            evening: number;
+            night: number;
         }
     }
 

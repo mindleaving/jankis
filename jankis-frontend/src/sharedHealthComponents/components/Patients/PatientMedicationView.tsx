@@ -34,7 +34,7 @@ export const PatientMedicationView = (props: PatientMedicationViewProps) => {
                 if(medication.isPaused) {
                     return [];
                 }
-                return medication.dispensions
+                return medication.plannedDispensions
                     .filter(dispension => new Date(dispension.timestamp).getTime() > 0)
                     .map(dispension => {
                         const time = new Date(dispension.timestamp).getTime();

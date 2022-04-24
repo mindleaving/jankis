@@ -25,8 +25,9 @@ namespace HealthSharingPortal.API.Controllers
             IFilesStore filesStore,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,
+            IReadonlyStore<PersonDataChange> changeStore,
             INotificationDistributor notificationDistributor)
-            : base(store, httpContextAccessor, authorizationModule)
+            : base(store, httpContextAccessor, authorizationModule, changeStore)
         {
             this.filesStore = filesStore;
             this.notificationDistributor = notificationDistributor;

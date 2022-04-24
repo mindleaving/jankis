@@ -38,7 +38,7 @@ export const MedicationScheduleItemTableRow = (props: MedicationScheduleItemTabl
             </tr>
         )
     }
-    const timeSortedDispensions = medication.dispensions.sort((a:any,b:any) => a.timestamp.localeCompare(b.timestamp));
+    const timeSortedDispensions = medication.plannedDispensions.sort((a:any,b:any) => a.timestamp.localeCompare(b.timestamp));
     const dispensionsToday = timeSortedDispensions.filter(dispension => isToday(new Date(dispension.timestamp)));
     const dispensionsTomorrow = timeSortedDispensions.filter(dispension => isTomorrow(new Date(dispension.timestamp)));
     return (

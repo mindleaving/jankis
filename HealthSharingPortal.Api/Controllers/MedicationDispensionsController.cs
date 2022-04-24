@@ -1,27 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using HealthModels;
 using HealthModels.Interview;
 using HealthModels.Medication;
+using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Storage;
+using HealthSharingPortal.API.ViewModels;
 using HealthSharingPortal.API.Workflow;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthSharingPortal.API.Controllers
 {
-    public class MedicationDispensionsController : RestControllerBase<MedicationDispension>
+    public class MedicationDispensionsController : HealthRecordEntryControllerBase<MedicationDispension>
     {
         private readonly INotificationDistributor notificationDistributor;
 
         public MedicationDispensionsController(
-            IStore<MedicationDispension> store,
+            IPersonDataStore<MedicationDispension> store,
             IHttpContextAccessor httpContextAccessor,
+            IAuthorizationModule authorizationModule,
+            IReadonlyStore<PersonDataChange> changeStore,
             INotificationDistributor notificationDistributor)
-            : base(store, httpContextAccessor)
+            : base(store, httpContextAccessor, authorizationModule, changeStore)
         {
             this.notificationDistributor = notificationDistributor;
         }
@@ -33,6 +36,23 @@ namespace HealthSharingPortal.API.Controllers
             item.Timestamp = DateTime.UtcNow;
             return await base.CreateOrReplace(id, item);
         }
+
+        [HttpPost("pastmedication")]
+        public async Task<IActionResult> AddPastMedication([FromBody] PastMedicationViewModel body)
+        {
+            var accountId = ControllerHelpers.GetAccountId(httpContextAccessor);
+            body.CreatedBy = accountId;
+
+            var dispensionBuilder = new MedicationDispensionsBuilder();
+            var medicationDispensions = dispensionBuilder.Build(body);
+            var accessGrants = await GetAccessGrants();
+            foreach (var dispension in medicationDispensions)
+            {
+                await Store(store, dispension, accessGrants);
+            }
+            return Ok();
+        }
+
 
         protected override Task<object> TransformItem(
             MedicationDispension item,

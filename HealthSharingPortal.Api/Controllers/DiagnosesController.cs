@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using HealthModels;
 using HealthModels.Diagnoses;
 using HealthModels.Interview;
 using HealthSharingPortal.API.AccessControl;
@@ -20,8 +21,9 @@ namespace HealthSharingPortal.API.Controllers
             IPersonDataStore<Diagnosis> store,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,
+            IReadonlyStore<PersonDataChange> changeStore,
             INotificationDistributor notificationDistributor)
-            : base(store, httpContextAccessor, authorizationModule)
+            : base(store, httpContextAccessor, authorizationModule, changeStore)
         {
             this.notificationDistributor = notificationDistributor;
         }
@@ -37,7 +39,7 @@ namespace HealthSharingPortal.API.Controllers
                 return Ok();
             diagnosis.HasResolved = true;
             diagnosis.ResolvedTimestamp = DateTime.UtcNow;
-            await store.StoreAsync(diagnosis, accessGrants);
+            await Store(store, diagnosis, accessGrants);
             return Ok();
         }
 

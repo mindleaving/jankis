@@ -25,13 +25,13 @@ export const MedicationScheduleItemEditTableRow = (props: MedicationScheduleItem
     const [ note, setNote] = useState<string>(medication.note ?? '');
     const [ isPaused, setIsPaused ] = useState<boolean>(medication.isPaused ?? false);
     const [ isDispendedByPatient, setIsDispendedByPatient ] = useState<boolean>(medication.isDispendedByPatient ?? false);
-    const [ dispensions, setDispensions ] = useState<Models.Medication.MedicationDispension[]>(medication.dispensions ?? []);
+    const [ dispensions, setDispensions ] = useState<Models.Medication.MedicationDispension[]>(medication.plannedDispensions ?? []);
 
     useEffect(() => {
         const updatedMedication: Models.Medication.MedicationScheduleItem = {
             id: medication.id,
             drug: medication.drug,
-            dispensions: dispensions,
+            plannedDispensions: dispensions,
             isPaused: isPaused,
             isDispendedByPatient: isDispendedByPatient,
             note: note

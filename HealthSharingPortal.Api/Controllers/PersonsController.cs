@@ -17,8 +17,9 @@ namespace HealthSharingPortal.API.Controllers
         public PersonsController(
             IPersonDataStore<Person> store,
             IHttpContextAccessor httpContextAccessor,
-            IAuthorizationModule authorizationModule)
-            : base(store, httpContextAccessor, authorizationModule)
+            IAuthorizationModule authorizationModule,
+            IReadonlyStore<PersonDataChange> changeStore)
+            : base(store, httpContextAccessor, authorizationModule, changeStore)
         {
         }
 

@@ -61,6 +61,17 @@ export namespace ViewModels {
         challengeShortId: string;
     }
 
+    interface PastMedicationViewModel {
+        personId: string;
+        drug: Models.Medication.Drug;
+        createdBy: string;
+        administeredBy?: string;
+        dosage: Models.Medication.MedicationDosage;
+        startTimestamp: Date;
+        endTimestamp: Date;
+        pattern: Models.Medication.MedicationSchedulePattern;
+    }
+
     interface PatientOverviewViewModel {
         profileData: Models.Person;
         admissions: Models.Admission[];

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using HealthModels;
 using HealthModels.Interview;
 using HealthModels.MedicalTextEditor;
 using HealthSharingPortal.API.Helpers;

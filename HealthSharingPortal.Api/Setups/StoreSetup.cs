@@ -73,6 +73,7 @@ namespace HealthSharingPortal.API.Setups
             SetupPersonDataStores<GenomeExplorerDeployment>(services);
             SetupTypeStores<HealthProfessionalAccess>(services);
             services.AddScoped<IHealthProfessionalAccessInviteStore, HealthProfessionalAccessInviteStore>();
+            SetupTypeStores<PersonDataChange>(services);
             SetupTypeStores<Login>(services);
             services.AddScoped<ILoginStore, LoginStore>();
             SetupPersonDataStores<MedicationSchedule>(services);

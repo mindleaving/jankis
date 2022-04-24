@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using HealthModels;
 using HealthModels.Interview;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Controllers;
@@ -23,8 +24,9 @@ namespace JanKIS.API.Controllers
             IHttpContextAccessor httpContextAccessor,
             IViewModelBuilder<AttachedEquipment> attachedEquipmentViewModelBuilder,
             INotificationDistributor notificationDistributor,
-            IAuthorizationModule authorizationModule)
-            : base(store, httpContextAccessor, authorizationModule)
+            IAuthorizationModule authorizationModule,
+            IReadonlyStore<PersonDataChange> changeStore)
+            : base(store, httpContextAccessor, authorizationModule, changeStore)
         {
             this.attachedEquipmentViewModelBuilder = attachedEquipmentViewModelBuilder;
             this.notificationDistributor = notificationDistributor;

@@ -6,6 +6,7 @@ namespace HealthModels.Medication
 {
     public class MedicationDispension : IHealthRecordEntry
     {
+        public MedicationDispension() {}
         public MedicationDispension(
             string id,
             string personId,
@@ -43,6 +44,8 @@ namespace HealthModels.Medication
         public MedicationDispensionState State { get; set; }
         [TypescriptIsOptional]
         public string Note { get; set; }
+        [TypescriptIsOptional]
+        public string AdministeredBy { get; set; }
         
     }
 }

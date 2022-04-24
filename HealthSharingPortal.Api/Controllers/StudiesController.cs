@@ -248,7 +248,7 @@ namespace HealthSharingPortal.API.Controllers
                         existingEnrollment.InclusionCriteriaQuestionnaireAnswers = body.InclusionCriteriaQuestionnaireAnswers;
                         existingEnrollment.ExclusionCriteriaQuestionnaireAnswers = body.ExclusionCriteriaQuestionnaireAnswers;
                         existingEnrollment.Permissions = body.Permissions;
-                        await enrollmentStore.StoreAsync(existingEnrollment, accessGrants);
+                        await PersonDataControllerHelpers.Store(enrollmentStore, existingEnrollment, accessGrants, httpContextAccessor);
                         return Ok();
                     }
                     case StudyEnrollementState.ParticipationOffered:
@@ -280,7 +280,7 @@ namespace HealthSharingPortal.API.Controllers
                     Permissions = body.Permissions
                 };
             newEnrollment.SetState(StudyEnrollementState.ParticipationOffered, DateTime.UtcNow);
-            await enrollmentStore.StoreAsync(newEnrollment, accessGrants);
+            await PersonDataControllerHelpers.Store(enrollmentStore, newEnrollment, accessGrants, httpContextAccessor);
             return Ok();
         }
 
@@ -319,7 +319,7 @@ namespace HealthSharingPortal.API.Controllers
             // Delete all enrollments and start over
             foreach (var existingEnrollment in existingEnrollments)
             {
-                await enrollmentStore.DeleteAsync(existingEnrollment.Id, accessGrants);
+                await PersonDataControllerHelpers.Delete(enrollmentStore, existingEnrollment.Id, accessGrants, httpContextAccessor);
             }
         }
 
@@ -333,7 +333,7 @@ namespace HealthSharingPortal.API.Controllers
             foreach (var enrollment in enrollments)
             {
                 enrollment.SetState(StudyEnrollementState.Left, utcNow);
-                await enrollmentStore.StoreAsync(enrollment, accessGrants);
+                await PersonDataControllerHelpers.Store(enrollmentStore, enrollment, accessGrants, httpContextAccessor);
             }
             return Ok();
         }
@@ -361,7 +361,7 @@ namespace HealthSharingPortal.API.Controllers
                 return StatusCode((int)HttpStatusCode.Forbidden, "You are not associated with the study");
             var modifyAccessGrant = AccessGrantHelpers.GrantForPersonWithPermission(enrollment.PersonId, AccessPermissions.Modify);
             enrollment.SetState(StudyEnrollementState.Eligible, DateTime.UtcNow);
-            await enrollmentStore.StoreAsync(enrollment, modifyAccessGrant);
+            await PersonDataControllerHelpers.Store(enrollmentStore, enrollment, modifyAccessGrant, httpContextAccessor);
             return Ok();
         }
 
@@ -389,7 +389,7 @@ namespace HealthSharingPortal.API.Controllers
                 return BadRequest("You have not yet been determined to be eligible");
 
             enrollment.SetState(StudyEnrollementState.Enrolled, DateTime.UtcNow);
-            await enrollmentStore.StoreAsync(enrollment, accessGrants);
+            await PersonDataControllerHelpers.Store(enrollmentStore, enrollment, accessGrants, httpContextAccessor);
             return Ok();
         }
 
@@ -410,7 +410,7 @@ namespace HealthSharingPortal.API.Controllers
                 return StatusCode((int)HttpStatusCode.Forbidden, "You are not associated with the study");
             var modifyAccessGrant = AccessGrantHelpers.GrantForPersonWithPermission(enrollment.PersonId, AccessPermissions.Modify);
             enrollment.SetState(StudyEnrollementState.Excluded, DateTime.UtcNow);
-            await enrollmentStore.StoreAsync(enrollment, modifyAccessGrant);
+            await PersonDataControllerHelpers.Store(enrollmentStore, enrollment, modifyAccessGrant, httpContextAccessor);
             return Ok();
         }
 
@@ -431,7 +431,7 @@ namespace HealthSharingPortal.API.Controllers
                 return StatusCode((int)HttpStatusCode.Forbidden, "You are not associated with the study");
             var modifyAccessGrant = AccessGrantHelpers.GrantForPersonWithPermission(enrollment.PersonId, AccessPermissions.Modify);
             enrollment.SetState(StudyEnrollementState.Rejected, DateTime.UtcNow);
-            await enrollmentStore.StoreAsync(enrollment, modifyAccessGrant);
+            await PersonDataControllerHelpers.Store(enrollmentStore, enrollment, modifyAccessGrant, httpContextAccessor);
             return Ok();
         }
 

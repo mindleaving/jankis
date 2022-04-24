@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using HealthModels;
 using HealthModels.Interview;
 using HealthModels.Observations;
 using HealthSharingPortal.API.AccessControl;
@@ -24,8 +25,9 @@ namespace HealthSharingPortal.API.Controllers
             IAutocompleteCache autocompleteCache,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,
+            IReadonlyStore<PersonDataChange> changeStore,
             INotificationDistributor notificationDistributor)
-            : base(store, httpContextAccessor, authorizationModule)
+            : base(store, httpContextAccessor, authorizationModule, changeStore)
         {
             this.autocompleteCache = autocompleteCache;
             this.notificationDistributor = notificationDistributor;
