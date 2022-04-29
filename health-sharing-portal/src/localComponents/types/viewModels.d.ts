@@ -22,8 +22,25 @@ export namespace ViewModels {
         isPasswordChangeRequired: boolean;
     }
 
+    interface CopyMedicationScheduleItemViewModel {
+        sourceScheduleId: string;
+        itemId: string;
+        targetScheduleId: string;
+    }
+
     interface DiagnosisViewModel extends Models.Diagnoses.Diagnosis, ViewModels.IViewModel<Models.Diagnoses.Diagnosis> {
         name: string;
+    }
+
+    interface DispenseMedicationViewModel {
+        scheduleId: string;
+        itemId: string;
+        dispensionId: string;
+        dispensionState: Enums.MedicationDispensionState;
+        administrationTime?: Date | null;
+        administeredBy: string;
+        note: string;
+        administeredAmount: Models.Medication.MedicationDosage;
     }
 
     interface GuestEmergencyAccessViewModel {

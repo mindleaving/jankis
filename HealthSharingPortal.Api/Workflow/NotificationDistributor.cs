@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using HealthModels;
 using HealthModels.AccessControl;
+using HealthModels.Medication;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Hubs;
 using HealthSharingPortal.API.Models.Subscriptions;
@@ -15,6 +16,7 @@ namespace HealthSharingPortal.API.Workflow
     {
         Task NotifyNewPatientEvent(IHealthRecordEntry healthRecordEntry, StorageOperation storageOperation, string submitterUsername);
         Task NotifyNewAdmission(Admission admission, StorageOperation storageOperation, string submitterUsername);
+        Task NotifyMedicationScheduleChanged(MedicationSchedule medicationSchedule, StorageOperation storageOperation, string submitterUsername);
     }
 
     public class NotificationDistributor : INotificationDistributor
@@ -80,6 +82,34 @@ namespace HealthSharingPortal.API.Workflow
                     now,
                     submitterUsername,
                     admission);
+                await notificationsStore.StoreAsync(notification);
+                await notificationsHub.Clients.User(subscription.AccountId).ReceiveNotification(notification);
+            }
+        }
+
+        public async Task NotifyMedicationScheduleChanged(
+            MedicationSchedule medicationSchedule,
+            StorageOperation storageOperation,
+            string submitterUsername)
+        {
+            var now = DateTime.UtcNow;
+            var personId = medicationSchedule.PersonId;
+            var patient = await personsStore.GetByIdAsync(
+                personId, 
+                AccessGrantHelpers.GrantForPersonWithPermission(personId, AccessPermissions.Read));
+            var matchingSubscriptions = await subscriptionsStore.GetPatientSubscriptions(personId);
+            foreach (var subscription in matchingSubscriptions)
+            {
+                var notification = new MedicationScheduleNotification(
+                    Guid.NewGuid().ToString(),
+                    subscription,
+                    false,
+                    now,
+                    submitterUsername,
+                    patient,
+                    medicationSchedule.Id,
+                    storageOperation
+                );
                 await notificationsStore.StoreAsync(notification);
                 await notificationsHub.Clients.User(subscription.AccountId).ReceiveNotification(notification);
             }

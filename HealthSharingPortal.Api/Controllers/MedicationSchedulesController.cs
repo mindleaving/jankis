@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Linq.Expressions;
-using System.Security;
 using System.Threading.Tasks;
 using HealthModels;
 using HealthModels.Interview;
@@ -9,6 +9,8 @@ using HealthModels.Medication;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Storage;
+using HealthSharingPortal.API.ViewModels;
+using HealthSharingPortal.API.Workflow;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,13 +18,23 @@ namespace HealthSharingPortal.API.Controllers
 {
     public class MedicationSchedulesController : PersonDataRestControllerBase<MedicationSchedule>
     {
+        private readonly IPersonDataStore<MedicationDispension> dispensionsStore;
+        private readonly MedicationDispensionsBuilder dispensionsBuilder;
+        private readonly INotificationDistributor notificationDistributor;
+
         public MedicationSchedulesController(
             IPersonDataStore<MedicationSchedule> store,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,
-            IReadonlyStore<PersonDataChange> changeStore)
+            IReadonlyStore<PersonDataChange> changeStore,
+            IPersonDataStore<MedicationDispension> dispensionsStore,
+            MedicationDispensionsBuilder dispensionsBuilder,
+            INotificationDistributor notificationDistributor)
             : base(store, httpContextAccessor, authorizationModule, changeStore)
         {
+            this.dispensionsStore = dispensionsStore;
+            this.dispensionsBuilder = dispensionsBuilder;
+            this.notificationDistributor = notificationDistributor;
         }
 
         [HttpPut("{scheduleId}/items/{itemId}")]
@@ -51,6 +63,120 @@ namespace HealthSharingPortal.API.Controllers
             return Ok();
         }
 
+        [HttpPost("copyitem")]
+        public async Task<IActionResult> CopyScheduleItem([FromBody] CopyMedicationScheduleItemViewModel body)
+        {
+            var accessGrants = await GetAccessGrants();
+            var sourceSchedule = await store.GetByIdAsync(body.SourceScheduleId, accessGrants);
+            if (sourceSchedule == null)
+                return NotFound($"Source schedule '{body.SourceScheduleId}' not found");
+            var item = sourceSchedule.Items.FirstOrDefault(x => x.Id == body.ItemId);
+            if (item == null)
+                return NotFound($"Item '{body.ItemId}' not found in source schedule");
+            var targetSchedule = await store.GetByIdAsync(body.TargetScheduleId, accessGrants);
+            if (targetSchedule == null)
+                return NotFound($"Target schedule '{body.TargetScheduleId}' not found");
+            if (targetSchedule.Items.Exists(x => x.Id == item.Id))
+                return Ok();
+            targetSchedule.Items.Add(item);
+            await Store(store, targetSchedule, accessGrants);
+            return Ok();
+        }
+
+        [HttpPost("{scheduleId}/spawndispensions")]
+        public async Task<IActionResult> SpawnDispensions(
+            [FromRoute] string scheduleId,
+            [FromQuery] DateTime endTime)
+        {
+            if (endTime - DateTime.UtcNow > TimeSpan.FromDays(31))
+                return BadRequest("End time cannot be more than 31 days in the future");
+            var accessGrants = await GetAccessGrants();
+            var schedule = await store.GetByIdAsync(scheduleId, accessGrants);
+            if (schedule == null)
+                return NotFound($"Schedule '{scheduleId}' not found");
+
+            var accountId = ControllerHelpers.GetAccountId(httpContextAccessor);
+            foreach (var item in schedule.Items)
+            {
+                dispensionsBuilder.BuildForTimeRange(item, endTime, schedule.PersonId, accountId);
+            }
+
+            await Store(store, schedule, accessGrants);
+            return Ok();
+        }
+
+        [HttpPost("{scheduleId}/items/{itemId}/spawndispensions")]
+        public async Task<IActionResult> SpawnDispensions(
+            [FromRoute] string scheduleId,
+            [FromRoute] string itemId,
+            [FromQuery] DateTime endTime)
+        {
+            if (endTime - DateTime.UtcNow > TimeSpan.FromDays(31))
+                return BadRequest("End time cannot be more than 31 days in the future");
+            var accessGrants = await GetAccessGrants();
+            var schedule = await store.GetByIdAsync(scheduleId, accessGrants);
+            if (schedule == null)
+                return NotFound($"Schedule '{scheduleId}' not found");
+            var item = schedule.Items.FirstOrDefault(x => x.Id == itemId);
+            if (item == null)
+                return NotFound($"Item '{itemId}' not found");
+
+            var accountId = ControllerHelpers.GetAccountId(httpContextAccessor);
+            dispensionsBuilder.BuildForTimeRange(item, endTime, schedule.PersonId, accountId);
+
+            await Store(store, schedule, accessGrants);
+            return Ok();
+        }
+
+
+        [HttpPost("dispense")]
+        public async Task<IActionResult> DispenseMedication(
+            [FromBody] DispenseMedicationViewModel body)
+        {
+            if (body.DispensionState == MedicationDispensionState.Scheduled)
+                return BadRequest($"Dispension state cannot be '{body.DispensionState}'");
+            var accessGrants = await GetAccessGrants();
+            var schedule = await store.GetByIdAsync(body.ScheduleId, accessGrants);
+            if (schedule == null)
+                return NotFound($"Schedule '{body.ScheduleId}' not found");
+            var item = schedule.Items.FirstOrDefault(x => x.Id == body.ItemId);
+            if (item == null)
+                return NotFound($"Item '{body.ItemId}' not found");
+            var dispension = item.PlannedDispensions.FirstOrDefault(x => x.Id == body.DispensionId);
+            if (dispension == null)
+                return NotFound($"Dispension '{body.DispensionId}' not found");
+
+            // Modify dispension
+            dispension.State = body.DispensionState;
+            var accountId = ControllerHelpers.GetAccountId(httpContextAccessor);
+            dispension.CreatedBy = accountId;
+            dispension.IsVerified = true;
+            dispension.HasBeenSeenBySharer = true;
+            dispension.Note = body.Note;
+            if (body.DispensionState == MedicationDispensionState.Dispensed)
+            {
+                dispension.AdministeredBy = body.AdministeredBy ?? accountId;
+                if(body.AdministrationTime.HasValue)
+                    dispension.Timestamp = body.AdministrationTime.Value;
+                if (body.AdministeredAmount != null)
+                {
+                    dispension.Value = body.AdministeredAmount.Value;
+                    dispension.Unit = body.AdministeredAmount.Unit;
+                }
+            }
+
+            await PersonDataControllerHelpers.Store(
+                dispensionsStore,
+                dispension,
+                accessGrants,
+                httpContextAccessor);
+            item.PlannedDispensions.Remove(dispension);
+            await Store(store, schedule, accessGrants);
+            return Ok();
+        }
+
+
+
         protected override Task<object> TransformItem(
             MedicationSchedule item,
             Language language = Language.en)
@@ -71,13 +197,12 @@ namespace HealthSharingPortal.API.Controllers
             return SearchExpressionBuilder.ContainsAll<MedicationSchedule>(x => x.Name.ToLower(), searchTerms);
         }
 
-        protected override Task PublishChange(
+        protected override async Task PublishChange(
             MedicationSchedule item,
             StorageOperation storageOperation,
             string submitterUsername)
         {
-            // Nothing to do
-            return Task.CompletedTask;
+            await notificationDistributor.NotifyMedicationScheduleChanged(item, storageOperation, submitterUsername);
         }
     }
 }

@@ -806,6 +806,12 @@ export namespace Models {
             timestamp: Date;
         }
     
+        interface MedicationScheduleNotification extends Models.Subscriptions.NotificationBase {
+            patient: Models.Person;
+            scheduleId: string;
+            storageOperation: Enums.StorageOperation;
+        }
+    
         interface NotificationBase extends Models.Subscriptions.INotification {
             
         }

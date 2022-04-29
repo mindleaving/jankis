@@ -43,7 +43,7 @@ namespace HealthSharingPortal.API.Controllers
             var accountId = ControllerHelpers.GetAccountId(httpContextAccessor);
             body.CreatedBy = accountId;
 
-            var dispensionBuilder = new MedicationDispensionsBuilder();
+            var dispensionBuilder = new PastMedicationDispensionsBuilder();
             var medicationDispensions = dispensionBuilder.Build(body);
             var accessGrants = await GetAccessGrants();
             foreach (var dispension in medicationDispensions)

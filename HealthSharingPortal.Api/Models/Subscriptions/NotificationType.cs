@@ -3,6 +3,7 @@
     internal enum NotificationType
     {
         NewPatientEvent,
-        NewAdmission
+        NewAdmission,
+        MedicationScheduleChange
     }
 }
