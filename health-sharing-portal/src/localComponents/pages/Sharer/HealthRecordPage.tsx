@@ -75,6 +75,7 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
             note: '',
             isPaused: false,
             isDispendedByPatient: false,
+            isActive: true,
             items: []
         };
         await buildAndStoreObject<Models.Medication.MedicationSchedule>(
@@ -84,6 +85,15 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
             () => medicationSchedule,
             () => setMedicationSchedules(medicationSchedules.concat(medicationSchedule))
         );
+    }
+    const onMedicationScheduleChanged = (scheduleId: string, update: Update<Models.Medication.MedicationSchedule>) => {
+        setMedicationSchedules(state => state.map(x => x.id === scheduleId ? update(x) : x))
+    }
+    const onMedicationDispensionRemoved = (dispensionId: string) => {
+        setMedicationDispensions(state => state.filter(x => x.id !== dispensionId));
+    }
+    const onMedicationDispensionAdded = (dispension: Models.Medication.MedicationDispension) => {
+        setMedicationDispensions(state => state.concat(dispension));
     }
 
     const onDiagnosisMarkedAsResolved = (diagnosisId: string) => {
@@ -234,6 +244,9 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
                         onDiagnosisMarkedAsResolved={onDiagnosisMarkedAsResolved}
                         onMarkAsSeen={markHealthRecordEntryAsSeen}
                         onMarkAsVerified={markHealthRecordEntryAsVerified}
+                        onMedicationScheduleChanged={onMedicationScheduleChanged}
+                        onMedicationDispensionRemoved={onMedicationDispensionRemoved}
+                        onMedicationDispensionAdded={onMedicationDispensionAdded}
                     />
                 </Col>
             </Row>

@@ -1,13 +1,16 @@
-import { Badge, FormCheck } from 'react-bootstrap';
-import { formatDate, formatDrug } from '../../helpers/Formatters';
-import { isToday, isTomorrow } from 'date-fns';
+import { FormCheck } from 'react-bootstrap';
+import { formatDrug } from '../../helpers/Formatters';
+import { isBefore, isToday, isTomorrow, startOfToday } from 'date-fns';
 import { Models } from '../../../localComponents/types/models';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
+import { MedicationDispensionBadge } from '../Medication/MedicationDispensionBadge';
+import { DispensionStateChangeCallback } from '../../types/frontendTypes';
 
 interface MedicationScheduleItemTableRowProps {
     medication: Models.Medication.MedicationScheduleItem;
     isSelected: boolean;
     onSelectionChanged: (isSelected: boolean) => void;
+    onDispensionStateChanged: DispensionStateChangeCallback;
 }
 
 export const MedicationScheduleItemTableRow = (props: MedicationScheduleItemTableRowProps) => {
@@ -41,15 +44,31 @@ export const MedicationScheduleItemTableRow = (props: MedicationScheduleItemTabl
     const timeSortedDispensions = medication.plannedDispensions.sort((a:any,b:any) => a.timestamp.localeCompare(b.timestamp));
     const dispensionsToday = timeSortedDispensions.filter(dispension => isToday(new Date(dispension.timestamp)));
     const dispensionsTomorrow = timeSortedDispensions.filter(dispension => isTomorrow(new Date(dispension.timestamp)));
+    const potentiallyMissedDispensions = timeSortedDispensions.filter(dispension => isBefore(new Date(dispension.timestamp), startOfToday()));
+
     return (
     <tr>
         <td>{selectionCheckbox}</td>
         <td>{medicationInfos}</td>
         <td>
+            {potentiallyMissedDispensions.map(dispension => (
+                <div key={dispension.id}>
+                    <MedicationDispensionBadge
+                        dispension={dispension}
+                        onDispensionStateChanged={props.onDispensionStateChanged}
+                    />
+                </div>
+            ))}
+        </td>
+        <td>
             {dispensionsToday.length > 0
             ? dispensionsToday.map(dispension => (
                 <div key={dispension.id}>
-                    <Badge bg="primary">{formatDate(new Date(dispension.timestamp))}{dispension.note ? ` (${dispension.note})` : ''}</Badge>
+                    <MedicationDispensionBadge
+                        dispension={dispension}
+                        onDispensionStateChanged={props.onDispensionStateChanged}
+                        hideDate
+                    />
                 </div>
             ))
             : resolveText('None')}
@@ -58,7 +77,11 @@ export const MedicationScheduleItemTableRow = (props: MedicationScheduleItemTabl
             {dispensionsTomorrow.length > 0
             ? dispensionsTomorrow.map(dispension => (
                 <div key={dispension.id}>
-                    <Badge bg="primary">{formatDate(new Date(dispension.timestamp))}{dispension.note ? ` (${dispension.note})` : ''}</Badge>
+                    <MedicationDispensionBadge
+                        dispension={dispension}
+                        onDispensionStateChanged={props.onDispensionStateChanged}
+                        hideDate
+                    />
                 </div>
             ))
             : resolveText('None')}

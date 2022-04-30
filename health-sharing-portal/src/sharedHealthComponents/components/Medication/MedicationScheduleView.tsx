@@ -1,98 +1,32 @@
-import { ApexOptions } from 'apexcharts';
-import { addDays } from 'date-fns';
-import React, { useEffect, useState } from 'react';
-import { Alert, FormCheck, Table } from 'react-bootstrap';
+import { useEffect, useState } from 'react';
+import { Alert, Button, FormCheck, Table } from 'react-bootstrap';
 import { Models } from '../../../localComponents/types/models';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { MedicationScheduleItemTableRow } from '../Patients/MedicationScheduleItemTableRow';
-import Chart from 'react-apexcharts';
+import { DispensionStateChangeCallback } from '../../types/frontendTypes';
+import { MedicationDispensionChart } from './MedicationDispensionChart';
+import { addDays } from 'date-fns';
+import { sendPostRequest } from '../../../sharedCommonComponents/helpers/StoringHelpers';
 
 interface MedicationScheduleViewProps {
     medicationSchedule: Models.Medication.MedicationSchedule;
+    onDispensionStateChanged: DispensionStateChangeCallback;
+    onSwitchToActive: () => void;
+    onMarkedAsActive: (scheduleId: string) => void;
 }
 
 export const MedicationScheduleView = (props: MedicationScheduleViewProps) => {
 
-    const [ medicationChartSeries, setMedicationChartSeries ] = useState<any[]>([{ data: [] }]);
     const [ selectedMedications, setSelectedMedications ] = useState<Models.Medication.MedicationScheduleItem[]>([]);
-    
+
     useEffect(() => {
         if(!props.medicationSchedule) {
+            setSelectedMedications([]);
             return;
         }
-        const series = [{
-            data: props.medicationSchedule.items.flatMap(medication => {
-                if(medication.isPaused) {
-                    return [];
-                }
-                return medication.plannedDispensions
-                    .filter(dispension => new Date(dispension.timestamp).getTime() > 0)
-                    .map(chartPointFromDispension);
-            })
-        }];
-        setMedicationChartSeries(series);
+        setSelectedMedications(props.medicationSchedule.items);
     }, [ props.medicationSchedule ]);
 
-    useEffect(() => {
-        const scheduleItems = selectedMedications.length > 0
-            ? selectedMedications
-            : props.medicationSchedule.items;
-        const series = [{
-            data: scheduleItems.flatMap(medication => {
-                if(medication.isPaused) {
-                    return [];
-                }
-                return medication.plannedDispensions
-                    .filter(dispension => new Date(dispension.timestamp).getTime() > 0)
-                    .map(chartPointFromDispension);
-            })
-        }];
-        setMedicationChartSeries(series);
-    }, [ selectedMedications ]);
-
-    const chartPointFromDispension = (dispension: Models.Medication.MedicationDispension) => {
-        const time = new Date(dispension.timestamp).getTime();
-        return (
-            {
-                x: dispension.drug.productName,
-                y: [ time, time + 60*60*1000 ]
-            }
-        )
-    }
-
-    const now = new Date();
-    const minTime = addDays(now, -2).getTime();
-    const maxTime = addDays(now, 3).getTime();
-    const chartOptions: ApexOptions = {
-        chart: {
-            type: 'rangeBar',
-            events: {
-                beforeResetZoom: (chart, options) => {
-                    return {
-                        xaxis: {
-                            min: minTime,
-                            max: maxTime
-                        }
-                    };
-                }
-            }
-        },
-        plotOptions: {
-            bar: {
-                horizontal: true
-            }
-        },
-        xaxis: {
-            type: 'datetime',
-            min: minTime,
-            max: maxTime
-        },
-        tooltip: {
-            x: {
-                format: 'dd MMM HH:mm'
-            }
-        }
-    };
     const addMedicationToSelection = (medication: Models.Medication.MedicationScheduleItem) => {
         if(selectedMedications.includes(medication)) return;
         setSelectedMedications(selectedMedications.concat(medication));
@@ -107,15 +41,49 @@ export const MedicationScheduleView = (props: MedicationScheduleViewProps) => {
             setSelectedMedications(props.medicationSchedule.items);
         }
     }
+    const switchToActive = () => props.onSwitchToActive();
+    const makeActive = async () => {
+        await sendPostRequest(
+            `api/medicationschedules/${props.medicationSchedule.id}/active`,
+            resolveText("MedicationSchedule_CouldNotSetActive"),
+            null,
+            () => props.onMarkedAsActive(props.medicationSchedule.id)
+        );
+    }
     
+    const now = new Date();
     return (
         <>
-            {props.medicationSchedule.items.length > 0
-            ? <Chart
-                type="rangeBar"
-                options={chartOptions}
-                series={medicationChartSeries}
-                height={Math.min(380, 100+50*props.medicationSchedule.items.length)}
+            {!props.medicationSchedule.isActive 
+            ? <Alert 
+                variant='danger'
+            >
+                <div className='d-flex'>
+                    <div className='me-auto'>{resolveText("MedicationSchedule_NotActive")}</div>
+                    <Button 
+                        size="sm" 
+                        className='mx-2'
+                        onClick={switchToActive}
+                    >
+                        {resolveText("MedicationSchedule_SwitchToActive")}
+                    </Button>
+                    <Button 
+                        size="sm"
+                        variant='success'
+                        className='mx-2'
+                        onClick={makeActive}
+                    >
+                        {resolveText("MedicationSchedule_MakeActive")}
+                    </Button>
+                </div>
+            </Alert> 
+            : null}
+            {props.medicationSchedule.items.flatMap(item => item.plannedDispensions).length > 0
+            ? <MedicationDispensionChart
+                medicationDispensions={selectedMedications.flatMap(x => x.plannedDispensions)}
+                groupBy={x => x.drug.id}
+                defaultTimeRangeStart={addDays(now, -2)}
+                defaultTimeRangeEnd={addDays(now, 3)}
             /> : null}
             {props.medicationSchedule.note
             ? <Alert variant="danger">
@@ -131,6 +99,7 @@ export const MedicationScheduleView = (props: MedicationScheduleViewProps) => {
                             />
                         </th>
                         <th>{resolveText('MedicationScheduleItem_DrugName')}</th>
+                        <th>{resolveText('MedicationScheduleItem_PotentiallyMissedDispensions')}</th>
                         <th>{resolveText('MedicationScheduleItem_DispensionsToday')}</th>
                         <th>{resolveText('MedicationScheduleItem_DispensionsTomorrow')}</th>
                     </tr>
@@ -144,6 +113,7 @@ export const MedicationScheduleView = (props: MedicationScheduleViewProps) => {
                                 medication={medication}
                                 isSelected={isSelected}
                                 onSelectionChanged={isSelected => isSelected ? addMedicationToSelection(medication) : removeMedicationFromSelection(medication)}
+                                onDispensionStateChanged={props.onDispensionStateChanged}
                             />
                         );
                     })}

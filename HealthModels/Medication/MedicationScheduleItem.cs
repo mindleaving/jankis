@@ -1,10 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TypescriptGenerator.Attributes;
 
 namespace HealthModels.Medication
 {
     public class MedicationScheduleItem : IId
     {
+        public MedicationScheduleItem(){}
+
+        public MedicationScheduleItem(
+            Drug drug)
+        {
+            Id = Guid.NewGuid().ToString();
+            Drug = drug;
+            PlannedDispensions = new List<MedicationDispension>();
+        }
+
         public string Id { get; set; }
         public Drug Drug { get; set; }
         public List<MedicationDispension> PlannedDispensions { get; set; }

@@ -24,5 +24,6 @@ namespace HealthModels.Medication
         public string Note { get; set; }
         public bool IsPaused { get; set; }
         public bool IsDispendedByPatient { get; set; }
+        public bool IsActive { get; set; }
     }
 }

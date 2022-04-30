@@ -29,6 +29,9 @@ interface PatientDataTabControlProps {
     onDiagnosisMarkedAsResolved: (diagnosisId: string) => void;
     onMarkAsSeen: MarkHealthRecordEntryAsSeenCallback;
     onMarkAsVerified: MarkHealthRecordEntryAsVerifiedCallback;
+    onMedicationScheduleChanged: (scheduleId: string, update: Update<Models.Medication.MedicationSchedule>) => void;
+    onMedicationDispensionRemoved: (dispensionId: string) => void;
+    onMedicationDispensionAdded: (dispension: Models.Medication.MedicationDispension) => void;
 }
 
 export const PatientDataTabControl = (props: PatientDataTabControlProps) => {
@@ -68,6 +71,9 @@ export const PatientDataTabControl = (props: PatientDataTabControlProps) => {
                     medicationSchedules={medicationSchedules}
                     medicationDispensions={medicationDispensions}
                     onCreateNewMedicationSchedule={props.createNewMedicationSchedule}
+                    onMedicationScheduleChanged={props.onMedicationScheduleChanged}
+                    onMedicationDispensionRemoved={props.onMedicationDispensionRemoved}
+                    onDispensionAdded={props.onMedicationDispensionAdded}
                 />
             </Tab>
             <Tab eventKey="equipment" title={resolveText('Patient_Equipment')}>

@@ -24,6 +24,7 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
     const [ note, setNote ] = useState<string>('');
     const [ isPaused, setIsPaused ] = useState<boolean>(false);
     const [ isDispendedByPatient, setIsDispendedByPatient ] = useState<boolean>(false);
+    const [ isActive, setIsActive ] = useState<boolean>(false);
     const [ selectedScheduleItemIds, setSelectedScheduleItemIds ] = useState<string[]>([]);
     const [ showMedicationModal, setShowMedicationModal] = useState<boolean>(false);
     const navigate = useNavigate();
@@ -40,6 +41,7 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
                 setNote(medicationSchedule.note);
                 setIsPaused(medicationSchedule.isPaused);
                 setIsDispendedByPatient(medicationSchedule.isDispendedByPatient);
+                setIsActive(medicationSchedule.isActive);
             },
             () => setIsLoading(false)
         );
@@ -66,7 +68,8 @@ export const MedicationScheduleEditor = (props: MedicationScheduleEditorProps) =
             items: medications,
             personId: personId!,
             isPaused: isPaused,
-            isDispendedByPatient: isDispendedByPatient
+            isDispendedByPatient: isDispendedByPatient,
+            isActive: isActive
         }
     }
     const updateSelection = (isSelected: boolean, medicationId: string) => {

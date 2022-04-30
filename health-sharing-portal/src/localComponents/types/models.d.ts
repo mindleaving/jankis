@@ -379,6 +379,7 @@ export namespace Models {
             note: string;
             isPaused: boolean;
             isDispendedByPatient: boolean;
+            isActive: boolean;
         }
     
         interface MedicationScheduleItem extends Models.IId {

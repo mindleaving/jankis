@@ -57,9 +57,11 @@ export enum MeasurementType {
     Weight = "Weight"
 }
 export enum MedicationDispensionState {
+    Undefined = "Undefined",
     Scheduled = "Scheduled",
     Dispensed = "Dispensed",
-    Missed = "Missed"
+    Missed = "Missed",
+    Skipped = "Skipped"
 }
 export enum MedicationSchedulePatternType {
     PillCount = "PillCount",

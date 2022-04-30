@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Commons.Extensions;
 using HealthModels;
 using HealthModels.Interview;
 using HealthModels.Medication;
@@ -36,6 +37,27 @@ namespace HealthSharingPortal.API.Controllers
             this.dispensionsBuilder = dispensionsBuilder;
             this.notificationDistributor = notificationDistributor;
         }
+
+        [HttpPost("{scheduleId}/active")]
+        public async Task<IActionResult> SetActive([FromRoute] string scheduleId)
+        {
+            var accessGrants = await GetAccessGrants();
+            var schedule = await store.GetByIdAsync(scheduleId, accessGrants);
+            if (schedule == null)
+                return NotFound($"Schedule '{scheduleId}' not found");
+            var currentlyActiveSchedules = await store.SearchAsync(x => x.IsActive && x.PersonId == schedule.PersonId && x.Id != scheduleId, accessGrants);
+            foreach (var currentlyActiveSchedule in currentlyActiveSchedules)
+            {
+                currentlyActiveSchedule.IsActive = false;
+                await Store(store, currentlyActiveSchedule, accessGrants);
+            }
+            if (schedule.IsActive)
+                return Ok();
+            schedule.IsActive = true;
+            await Store(store, schedule, accessGrants);
+            return Ok();
+        }
+
 
         [HttpPut("{scheduleId}/items/{itemId}")]
         public async Task<IActionResult> AddMedication([FromRoute] string scheduleId, [FromRoute] string itemId, [FromBody] MedicationScheduleItem medication)
@@ -133,7 +155,7 @@ namespace HealthSharingPortal.API.Controllers
         public async Task<IActionResult> DispenseMedication(
             [FromBody] DispenseMedicationViewModel body)
         {
-            if (body.DispensionState == MedicationDispensionState.Scheduled)
+            if (!body.DispensionState.InSet(MedicationDispensionState.Dispensed, MedicationDispensionState.Missed, MedicationDispensionState.Skipped))
                 return BadRequest($"Dispension state cannot be '{body.DispensionState}'");
             var accessGrants = await GetAccessGrants();
             var schedule = await store.GetByIdAsync(body.ScheduleId, accessGrants);

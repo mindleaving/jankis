@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels;
@@ -17,16 +18,19 @@ namespace HealthSharingPortal.API.Controllers
     public class MedicationDispensionsController : HealthRecordEntryControllerBase<MedicationDispension>
     {
         private readonly INotificationDistributor notificationDistributor;
+        private readonly IPersonDataStore<MedicationSchedule> medicationScheduleStore;
 
         public MedicationDispensionsController(
             IPersonDataStore<MedicationDispension> store,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,
             IReadonlyStore<PersonDataChange> changeStore,
-            INotificationDistributor notificationDistributor)
+            INotificationDistributor notificationDistributor,
+            IPersonDataStore<MedicationSchedule> medicationScheduleStore)
             : base(store, httpContextAccessor, authorizationModule, changeStore)
         {
             this.notificationDistributor = notificationDistributor;
+            this.medicationScheduleStore = medicationScheduleStore;
         }
 
         public override async Task<IActionResult> CreateOrReplace(string id, MedicationDispension item)
@@ -52,6 +56,44 @@ namespace HealthSharingPortal.API.Controllers
             }
             return Ok();
         }
+
+        [HttpPost("{dispensionId}/back-to-schedule")]
+        public async Task<IActionResult> MoveDispensionBackToSchedule(
+            [FromRoute] string dispensionId)
+        {
+            var accessGrants = await GetAccessGrants();
+            var dispension = await store.GetByIdAsync(dispensionId, accessGrants);
+            if (dispension == null)
+                return NotFound($"Dispension '{dispensionId}' not found");
+            if ((dispension.Timestamp - DateTime.UtcNow).Duration() > TimeSpan.FromDays(1))
+                return BadRequest("Dispensions can only be moved back to schedule within 24 hours of the original schedule time");
+            var activeSchedule = await medicationScheduleStore.FirstOrDefaultAsync(x => x.PersonId == dispension.PersonId && x.IsActive, accessGrants);
+            if (activeSchedule == null)
+            {
+                activeSchedule = new MedicationSchedule(dispension.PersonId)
+                {
+                    IsActive = true
+                };
+            }
+
+            var matchingItem = activeSchedule.Items.FirstOrDefault(x => x.Drug.Id == dispension.Drug.Id);
+            if(matchingItem == null)
+            {
+                matchingItem = new MedicationScheduleItem(dispension.Drug);
+                activeSchedule.Items.Add(matchingItem);
+            }
+            dispension.State = MedicationDispensionState.Scheduled;
+            matchingItem.PlannedDispensions.Add(dispension);
+            await PersonDataControllerHelpers.Store(
+                medicationScheduleStore,
+                activeSchedule,
+                accessGrants,
+                httpContextAccessor);
+            await Delete(store, dispension.Id, accessGrants);
+
+            return Ok(activeSchedule.Id);
+        }
+
 
 
         protected override Task<object> TransformItem(

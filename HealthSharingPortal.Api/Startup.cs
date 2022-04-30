@@ -31,7 +31,8 @@ namespace HealthSharingPortal.API
                 new CorsSetup(),
                 new OpenApiSetup(),
                 new SignalRSetup(),
-                new MenschIdSetup()
+                new MenschIdSetup(),
+                new WorkflowSetup()
             };
             foreach (var setup in setups)
             {

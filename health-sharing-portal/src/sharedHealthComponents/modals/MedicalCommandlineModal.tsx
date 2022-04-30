@@ -68,7 +68,7 @@ export const MedicalCommandlineModal = (props: MedicalCommandlineModalProps) => 
             ?? [];
         const selectedObjectReferences: MedicalCommands.SelectedCommandPart[] = [];
         for (const part of objectReferenceParts) {
-            const autocompleteRunner = new AutocompleteRunner(part.autocompleteUrl, part.searchParameter, 10);
+            const autocompleteRunner = new AutocompleteRunner(part.autocompleteUrl, part.searchParameter, 10, part.orderBy);
             const matches = await autocompleteRunner.search(searchText);
             for (const match of matches) {
                 const selectedObjectReference: MedicalCommands.SelectedCommandPart = {

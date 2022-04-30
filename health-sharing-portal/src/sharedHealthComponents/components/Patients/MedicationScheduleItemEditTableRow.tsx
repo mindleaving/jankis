@@ -103,6 +103,7 @@ export const MedicationScheduleItemEditTableRow = (props: MedicationScheduleItem
                 .filter(dispension => isToday(new Date(dispension.timestamp)))
                 .map(dispension => (
                     <MedicationDispensionEditor
+                        key={dispension.id}
                         dispension={dispension}
                         onChange={updateDispension}
                         onDelete={deleteDispension}

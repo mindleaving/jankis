@@ -7,6 +7,9 @@ import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
 export const formatDate = (date: Date) => {
     return format(date, 'yyyy-MM-dd HH:mm');
 }
+export const formatTime = (date: Date) => {
+    return format(date, 'HH:mm');
+}
 export const formatPerson = (person: Models.Person) => {
     const genderSymbol = person.sex === Sex.Male ? '♂'
         : person.sex === Sex.Female ? '♀'
