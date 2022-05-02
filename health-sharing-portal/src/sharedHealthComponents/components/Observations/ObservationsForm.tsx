@@ -1,8 +1,8 @@
 import React, { FormEvent, Fragment, useState } from 'react';
-import { PulseMeasurementForm } from '../../components/Patients/PulseMeasurementForm';
-import { BloodPressureMeasurementForm } from '../../components/Patients/BloodPressureMeasurementForm';
-import { TemperatureMeasurementForm } from '../../components/Patients/TemperatureMeasurementForm';
-import { GenericMeasurementForm } from '../../components/Patients/GenericMeasurementForm';
+import { PulseMeasurementForm } from './PulseMeasurementForm';
+import { BloodPressureMeasurementForm } from './BloodPressureMeasurementForm';
+import { TemperatureMeasurementForm } from './TemperatureMeasurementForm';
+import { GenericMeasurementForm } from './GenericMeasurementForm';
 import { v4 as uuid } from 'uuid';
 import { Alert, Button, Col, Form, Row } from 'react-bootstrap';
 import { formatObservation } from '../../helpers/Formatters';

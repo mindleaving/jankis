@@ -3,7 +3,7 @@ import { formatDrug } from '../../helpers/Formatters';
 import { isBefore, isToday, isTomorrow, startOfToday } from 'date-fns';
 import { Models } from '../../../localComponents/types/models';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { MedicationDispensionBadge } from '../Medication/MedicationDispensionBadge';
+import { MedicationDispensionBadge } from './MedicationDispensionBadge';
 import { DispensionStateChangeCallback } from '../../types/frontendTypes';
 
 interface MedicationScheduleItemTableRowProps {

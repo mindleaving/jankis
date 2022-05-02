@@ -4,7 +4,7 @@ import { Models } from '../../../localComponents/types/models';
 import { RowFormGroup } from '../../../sharedCommonComponents/components/RowFormGroup';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
-import { MedicationScheduleEditor } from '../../../sharedHealthComponents/components/Patients/MedicationScheduleEditor';
+import { MedicationScheduleEditor } from '../../components/Medication/MedicationScheduleEditor';
 
 interface PatientMedicationsPageProps {}
 

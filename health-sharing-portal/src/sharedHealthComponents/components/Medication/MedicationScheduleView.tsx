@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Alert, Button, FormCheck, Table } from 'react-bootstrap';
 import { Models } from '../../../localComponents/types/models';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { MedicationScheduleItemTableRow } from '../Patients/MedicationScheduleItemTableRow';
+import { MedicationScheduleItemTableRow } from './MedicationScheduleItemTableRow';
 import { DispensionStateChangeCallback } from '../../types/frontendTypes';
 import { MedicationDispensionChart } from './MedicationDispensionChart';
 import { addDays } from 'date-fns';

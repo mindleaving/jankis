@@ -3,13 +3,12 @@ import { Button, ButtonGroup, Col, FormControl, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { Models } from "../../../localComponents/types/models";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
-import { MarkHealthRecordEntryAsSeenCallback, TestResultCategories } from "../../types/frontendTypes.d";
+import { useAppSelector } from "../../redux/store/healthRecordStore";
+import { TestResultCategories } from "../../types/frontendTypes.d";
 import { TestResultTable } from "./TestResultTable";
 
 interface PatientTestResultsViewProps {
     personId: string;
-    testResults: Models.DiagnosticTestResults.DiagnosticTestResult[];
-    onMarkAsSeen: MarkHealthRecordEntryAsSeenCallback;
 }
 
 export const PatientTestResultsView = (props: PatientTestResultsViewProps) => {
@@ -17,8 +16,10 @@ export const PatientTestResultsView = (props: PatientTestResultsViewProps) => {
     const [ searchText, setSearchText ] = useState<string>('');
     const [ filteredTestResults, setFilteredTestResults ] = useState<Models.DiagnosticTestResults.DiagnosticTestResult[]>([]);
     const [ activeCategories, setActiveCategories ] = useState<string[]>(Object.keys(TestResultCategories));
+    
+    const testResults = useAppSelector(state => state.testResults.items.filter(x => x.personId === props.personId));
     const navigate = useNavigate();
-    const hasGenomeSequencing = props.testResults.some(x => x.testCodeLoinc === "86206-0");
+    const hasGenomeSequencing = testResults.some(x => x.testCodeLoinc === "86206-0");
 
     const mapLoincCategoryToOurSimplifiedCategories = (loincCategory: string) => {
         const upperLoincCategory = loincCategory.toUpperCase();
@@ -53,8 +54,9 @@ export const PatientTestResultsView = (props: PatientTestResultsViewProps) => {
         return false;
     }
     useEffect(() => {
-        setFilteredTestResults(props.testResults.filter(isMatch))
-    }, [ props.testResults, searchText, activeCategories ]);
+        setFilteredTestResults(testResults.filter(isMatch))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ testResults, searchText, activeCategories ]);
 
     const toggleCategory = (category: string) => {
         if(category === TestResultCategories.All) {
@@ -101,7 +103,6 @@ export const PatientTestResultsView = (props: PatientTestResultsViewProps) => {
             </div>
             <TestResultTable
                 items={filteredTestResults}
-                onMarkAsSeen={props.onMarkAsSeen}
             />
         </div>
     );

@@ -6,22 +6,23 @@ import { needsHiding } from "../../../localComponents/helpers/HealthRecordEntryH
 import { Models } from "../../../localComponents/types/models";
 import { AccordionCard } from "../../../sharedCommonComponents/components/AccordionCard";
 import { formatDate, formatDiagnosticTestNameOfResult } from "../../helpers/Formatters";
-import { unhideHealthRecordEntry } from "../../helpers/HealthRecordEntryHelpers";
-import { MarkHealthRecordEntryAsSeenCallback } from "../../types/frontendTypes";
 import { DiagnosticTestValueView } from "./DiagnosticTestValueView";
-import { HidableHealthRecordEntryValue } from "./HidableHealthRecordEntryValue";
+import { HidableHealthRecordEntryValue } from "../HidableHealthRecordEntryValue";
+import { useAppDispatch } from "../../redux/store/healthRecordStore";
+import { markTestResultAsSeen } from "../../redux/slices/testResultsSlice";
 
 interface NonQuantitativeTestResultRowProps {
     testResults: Models.DiagnosticTestResults.DiagnosticTestResult[];
-    onMarkAsSeen: MarkHealthRecordEntryAsSeenCallback;
 }
 export const NonQuantitativeTestResultRow = (props: NonQuantitativeTestResultRowProps) => {
 
     const user = useContext(UserContext);
+    const dispatch = useAppDispatch();
 
     if(!props.testResults || props.testResults.length === 0) {
         return null;
     }
+    const unhide = (testResultId: string) => dispatch(markTestResultAsSeen(testResultId));
     if(props.testResults.length === 1) {
         const testResult = props.testResults[0];
         const hideValue = needsHiding(testResult, user!);
@@ -33,7 +34,7 @@ export const NonQuantitativeTestResultRow = (props: NonQuantitativeTestResultRow
             <td>
                 <HidableHealthRecordEntryValue
                     hideValue={hideValue}
-                    onMarkAsSeen={() => unhideHealthRecordEntry(testResult, props.onMarkAsSeen)}
+                    onMarkAsSeen={() => unhide(testResult.id)}
                 >
                     <DiagnosticTestValueView
                         testResult={testResult}
@@ -70,7 +71,7 @@ export const NonQuantitativeTestResultRow = (props: NonQuantitativeTestResultRow
                                 <td>
                                     <HidableHealthRecordEntryValue
                                         hideValue={needsHiding(testResult, user!)}
-                                        onMarkAsSeen={() => unhideHealthRecordEntry(testResult, props.onMarkAsSeen)}
+                                        onMarkAsSeen={() => unhide(testResult.id)}
                                     >
                                         <DiagnosticTestValueView
                                             testResult={testResult}

@@ -1,18 +1,16 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { differenceInSeconds } from 'date-fns';
 import { Models } from '../../../localComponents/types/models';
 import { mathjs } from '../../../sharedCommonComponents/helpers/mathjs';
 import { formatDate, formatDiagnosticTestNameOfResult } from '../../helpers/Formatters';
-import { MarkHealthRecordEntryAsSeenCallback } from '../../types/frontendTypes';
 import UserContext from '../../../localComponents/contexts/UserContext';
 import { needsHiding } from '../../../localComponents/helpers/HealthRecordEntryHelpers';
 
 interface QuantitativeTestResultRowProps {
     commonUnit: string;
     testResults: Models.DiagnosticTestResults.QuantitativeDiagnosticTestResult[];
-    onMarkAsSeen: MarkHealthRecordEntryAsSeenCallback;
 }
 
 export const QuantitativeTestResultRow = (props: QuantitativeTestResultRowProps) => {

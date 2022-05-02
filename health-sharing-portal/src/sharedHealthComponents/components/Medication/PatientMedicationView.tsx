@@ -5,44 +5,47 @@ import { useNavigate } from 'react-router';
 import { MedicationDispensionState } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { MedicationDispensionChart } from '../Medication/MedicationDispensionChart';
-import { MedicationScheduleView } from '../Medication/MedicationScheduleView';
-import { PastMedicationTable } from '../Medication/PastMedicationTable';
+import { MedicationDispensionChart } from './MedicationDispensionChart';
+import { MedicationScheduleView } from './MedicationScheduleView';
+import { PastMedicationTable } from './PastMedicationTable';
 import { NotificationManager } from 'react-notifications';
-import { sendPostRequest } from '../../../sharedCommonComponents/helpers/StoringHelpers';
+import { buildAndStoreObject, sendPostRequest } from '../../../sharedCommonComponents/helpers/StoringHelpers';
 import { ViewModels } from '../../../localComponents/types/viewModels';
 import UserContext from '../../../localComponents/contexts/UserContext';
+import { useAppDispatch, useAppSelector } from '../../redux/store/healthRecordStore';
+import { addMedicationDispension, removeMedicationDispension } from '../../redux/slices/medicationDispensionsSlice';
+import { uuid } from '../../../sharedCommonComponents/helpers/uuid';
+import { addDispensionToMedicationSchedule, addMedicationSchedule, removeDispensionFromMedicationSchedule, setMedicationScheduleIsActive } from '../../redux/slices/medicationSchedulesSlice';
 
 interface PatientMedicationViewProps {
-    medicationSchedules: Models.Medication.MedicationSchedule[];
-    medicationDispensions: Models.Medication.MedicationDispension[];
-    onCreateNewMedicationSchedule: () => void;
-    onMedicationScheduleChanged: (scheduleId: string, update: Update<Models.Medication.MedicationSchedule>) => void;
-    onMedicationDispensionRemoved: (dispensionId: string) => void;
-    onDispensionAdded: (dispension: Models.Medication.MedicationDispension) => void;
+    personId: string;
 }
 
 export const PatientMedicationView = (props: PatientMedicationViewProps) => {
 
     const [ selectedMedicationSchedule, setSelectedMedicationSchedule ] = useState<Models.Medication.MedicationSchedule>();
     const user = useContext(UserContext);
+    const medicationSchedules = useAppSelector(state => state.medicationSchedules.items.filter(x => x.personId === props.personId));
+    const medicationDispensions = useAppSelector(state => state.medicationDispensions.items.filter(x => x.personId === props.personId));
+    const dispatch = useAppDispatch();
+
     const navigate = useNavigate();
 
     useEffect(() => {
-        if(props.medicationSchedules.length === 0) {
+        if(medicationSchedules.length === 0) {
             setSelectedMedicationSchedule(undefined);
             return;
         }
         if(selectedMedicationSchedule) {
-            setSelectedMedicationSchedule(props.medicationSchedules.find(x => x.id === selectedMedicationSchedule.id) ?? props.medicationSchedules[0]);
+            setSelectedMedicationSchedule(medicationSchedules.find(x => x.id === selectedMedicationSchedule.id) ?? medicationSchedules[0]);
             return;
         }
-        setSelectedMedicationSchedule(props.medicationSchedules[0]);
+        setSelectedMedicationSchedule(medicationSchedules[0]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ props.medicationSchedules ]);
+    }, [ medicationSchedules ]);
     
     const switchToActiveMedicationSchedule = () => {
-        const activeSchedule = props.medicationSchedules.find(x => x.isActive);
+        const activeSchedule = medicationSchedules.find(x => x.isActive);
         if(!activeSchedule) {
             NotificationManager.error(resolveText("MedicationSchedules_NoActiveFound"));
             return;
@@ -51,42 +54,37 @@ export const PatientMedicationView = (props: PatientMedicationViewProps) => {
     }
 
     const markAsActive = (scheduleId: string) => {
-        const activeSchedules = props.medicationSchedules.filter(x => x.isActive);
+        const activeSchedules = medicationSchedules.filter(x => x.isActive);
         for (const activeSchedule of activeSchedules) {
             if(activeSchedule.id === scheduleId) {
                 continue;
             }
-            props.onMedicationScheduleChanged(activeSchedule.id, x => ({
-                ...x,
+            dispatch(setMedicationScheduleIsActive({
+                scheduleId: activeSchedule.id,
                 isActive: false
             }));
         }
         if(!activeSchedules.some(x => x.id === scheduleId))
         {
-            props.onMedicationScheduleChanged(scheduleId, x => ({
-                ...x,
+            dispatch(setMedicationScheduleIsActive({
+                scheduleId: scheduleId,
                 isActive: true
             }));
         }
     }
     const moveDispensionToSchedule = async (dispensionId: string) => {
-        const matchingDispension = props.medicationDispensions.find(x => x.id === dispensionId)!;
+        const matchingDispension = medicationDispensions.find(x => x.id === dispensionId)!;
         await sendPostRequest(
             `api/medicationdispensions/${dispensionId}/back-to-schedule`,
             resolveText("MedicationDispension_CouldNotMoveToSchedule"),
             null,
             async response => {
                 const scheduleId = await response.text();
-                props.onMedicationScheduleChanged(scheduleId, x => ({
-                    ...x,
-                    items: x.items.map(item => item.drug.id === matchingDispension.drug.id 
-                        ? {
-                            ...item,
-                            plannedDispensions: item.plannedDispensions.concat(matchingDispension)
-                        }
-                        : item)
+                dispatch(addDispensionToMedicationSchedule({
+                    scheduleId: scheduleId,
+                    dispension: matchingDispension
                 }));
-                props.onMedicationDispensionRemoved(dispensionId);
+                dispatch(removeMedicationDispension(dispensionId));
             }
         );
     }
@@ -121,16 +119,33 @@ export const PatientMedicationView = (props: PatientMedicationViewProps) => {
             resolveText("MedicationSchedule_CouldNotDispense"),
             request,
             () => {
-                props.onMedicationScheduleChanged(selectedMedicationSchedule.id, x => ({
-                    ...x,
-                    items: x.items.map(item => ({
-                        ...item,
-                        plannedDispensions: item.plannedDispensions.filter(dispension => dispension.id !== dispensionId)
-                    }))
+                dispatch(removeDispensionFromMedicationSchedule({
+                    scheduleId: selectedMedicationSchedule.id,
+                    dispensionId: dispensionId
                 }));
                 matchingDispension.state = newState;
-                props.onDispensionAdded(matchingDispension);
+                dispatch(addMedicationDispension(matchingDispension));
             }
+        );
+    }
+
+    const onCreateNewMedicationSchedule = async () => {
+        NotificationManager.info(resolveText('MedicationSchedule_Creating...'));
+        const medicationSchedule: Models.Medication.MedicationSchedule = {
+            id: uuid(),
+            personId: props.personId,
+            note: '',
+            isPaused: false,
+            isDispendedByPatient: false,
+            isActive: true,
+            items: []
+        };
+        await buildAndStoreObject<Models.Medication.MedicationSchedule>(
+            `api/medicationschedules/${medicationSchedule.id}`,
+            resolveText('MedicationSchedule_SuccessfullyStored'),
+            resolveText('MedicationSchedule_CouldNotStore'),
+            () => medicationSchedule,
+            () => dispatch(addMedicationSchedule(medicationSchedule))
         );
     }
     
@@ -146,10 +161,10 @@ export const PatientMedicationView = (props: PatientMedicationViewProps) => {
                         <FormControl
                             as="select"
                             value={selectedMedicationSchedule?.id ?? ''}
-                            onChange={(e:any) => setSelectedMedicationSchedule(props.medicationSchedules.find(x => x.id === e.target.value))}
+                            onChange={(e:any) => setSelectedMedicationSchedule(medicationSchedules.find(x => x.id === e.target.value))}
                             style={{ minWidth: '100px'}}
                         >
-                            {props.medicationSchedules.map((medicationSchedule,index) => (
+                            {medicationSchedules.map((medicationSchedule,index) => (
                                 <option key={medicationSchedule.id} value={medicationSchedule.id}>
                                     {medicationSchedule.name ?? `${resolveText('MedicationSchedule')} #${index}`}
                                 </option>
@@ -175,20 +190,20 @@ export const PatientMedicationView = (props: PatientMedicationViewProps) => {
                 <Col className="text-center">
                     {resolveText('MedicationSchedule_NoneSelected')}
                     <div>
-                        <Button onClick={props.onCreateNewMedicationSchedule} size="lg">{resolveText('CreateNew')}</Button>
+                        <Button onClick={onCreateNewMedicationSchedule} size="lg">{resolveText('CreateNew')}</Button>
                     </div>
                 </Col>
             </Row>}
             <div className='mt-3'>
                 <h3>{resolveText("Medication_PastDispensions")}</h3>
                 <MedicationDispensionChart
-                    medicationDispensions={props.medicationDispensions.filter(x => x.state === MedicationDispensionState.Dispensed)}
+                    medicationDispensions={medicationDispensions.filter(x => x.state === MedicationDispensionState.Dispensed)}
                     groupBy={x => x.drug.id}
                     defaultTimeRangeStart={addDays(now, -180)}
                     defaultTimeRangeEnd={addDays(now, 3)}
                 />
                 <PastMedicationTable
-                    medicationDispensions={props.medicationDispensions}
+                    medicationDispensions={medicationDispensions}
                     moveDispensionToSchedule={moveDispensionToSchedule}
                 />
             </div>

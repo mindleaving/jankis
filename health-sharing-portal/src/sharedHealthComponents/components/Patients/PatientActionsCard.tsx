@@ -3,18 +3,20 @@ import { Card, Button, Col, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { MedicalCommandlineModal } from '../../modals/MedicalCommandlineModal';
+import { fetchHealthRecordForPerson } from '../../redux/slices/healthRecordsSlice';
+import { useAppDispatch } from '../../redux/store/healthRecordStore';
 import { HealthRecordAction } from '../../types/frontendTypes';
 
 interface PatientActionsCardProps {
     personId: string;
     actions: HealthRecordAction[];
-    onCommandSuccessful?: () => void;
 }
 
 export const PatientActionsCard = (props: PatientActionsCardProps) => {
 
     const [ showCommandline, setShowCommandline] = useState<boolean>(false);
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     const onKeyDown = (keyEvent: KeyboardEvent) => {
         if(keyEvent.key === "Enter" && keyEvent.altKey) {
@@ -28,6 +30,10 @@ export const PatientActionsCard = (props: PatientActionsCardProps) => {
             window.removeEventListener("keydown", onKeyDown);
         }
     }, []);
+
+    const onCommandSuccessful = () => {
+        dispatch(fetchHealthRecordForPerson(props.personId));
+    }
     
     return (
         <>
@@ -63,7 +69,7 @@ export const PatientActionsCard = (props: PatientActionsCardProps) => {
                 personId={props.personId}
                 show={showCommandline}
                 onCloseRequested={() => setShowCommandline(false)}
-                onCommandSuccessful={props.onCommandSuccessful}
+                onCommandSuccessful={onCommandSuccessful}
             />
         </>
     );

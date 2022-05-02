@@ -1,5 +1,5 @@
 import React, { FormEvent, useContext, useEffect, useState } from 'react';
-import { Button, Form, FormControl, FormGroup, FormLabel, InputGroup } from 'react-bootstrap';
+import { Form, FormControl, FormGroup, FormLabel, InputGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import UserContext from '../../../localComponents/contexts/UserContext';
 import { AutoCompleteContext, MedicationSchedulePatternType } from '../../../localComponents/types/enums.d';

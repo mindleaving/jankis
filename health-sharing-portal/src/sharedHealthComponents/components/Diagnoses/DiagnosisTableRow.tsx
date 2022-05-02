@@ -9,14 +9,11 @@ import { AsyncButton } from '../../../sharedCommonComponents/components/AsyncBut
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { sendPostRequest } from '../../../sharedCommonComponents/helpers/StoringHelpers';
 import { formatDate } from '../../helpers/Formatters';
-import { unhideHealthRecordEntry } from '../../helpers/HealthRecordEntryHelpers';
-import { MarkHealthRecordEntryAsSeenCallback } from '../../types/frontendTypes';
+import { markDiagnosisAsResolved, markDiagnosisAsSeen } from '../../redux/slices/diagnosesSlice';
+import { useAppDispatch } from '../../redux/store/healthRecordStore';
 
 interface DiagnosisTableRowProps {
-    personId: string;
     diagnosis: ViewModels.DiagnosisViewModel;
-    onMarkAsResolved: (diagnosisId: string) => void;
-    onMarkAsSeen: MarkHealthRecordEntryAsSeenCallback;
 }
 
 export const DiagnosisTableRow = (props: DiagnosisTableRowProps) => {
@@ -24,6 +21,7 @@ export const DiagnosisTableRow = (props: DiagnosisTableRowProps) => {
     const diagnosis = props.diagnosis;
     const user = useContext(UserContext);
     const [ isSubmitting, setIsSubmitting ] = useState<boolean>(false);
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const markAsResolved = async (diagnosisId: string, diagnosisName: string, force: boolean = false) => {
@@ -50,11 +48,11 @@ export const DiagnosisTableRow = (props: DiagnosisTableRowProps) => {
             `api/diagnoses/${diagnosisId}/resolve`,
             resolveText("Diagnosis_CouldNotMarkAsResolved"),
             null,
-            () => props.onMarkAsResolved(diagnosisId),
+            () => dispatch(markDiagnosisAsResolved(diagnosisId)),
             () => setIsSubmitting(false)
         );
     }
-    const unhide = () => unhideHealthRecordEntry(diagnosis, props.onMarkAsSeen);
+    const unhide = () => dispatch(markDiagnosisAsSeen(diagnosis.id));
 
     if(needsHiding(diagnosis, user!)) {
         return (
@@ -94,7 +92,7 @@ export const DiagnosisTableRow = (props: DiagnosisTableRowProps) => {
             <td>
                 <Button 
                     variant="link" 
-                    onClick={() => navigate(`/healthrecord/${props.personId}/edit/diagnosis/${diagnosis.id}`)}
+                    onClick={() => navigate(`/healthrecord/${diagnosis.personId}/edit/diagnosis/${diagnosis.id}`)}
                 >
                     {resolveText("Edit...")}
                 </Button>

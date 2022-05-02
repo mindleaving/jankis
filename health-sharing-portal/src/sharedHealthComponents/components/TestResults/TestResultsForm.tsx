@@ -10,9 +10,10 @@ import { DiagnosticTestAutocomplete } from '../Autocompletes/DiagnosticTestAutoc
 import { DiagnosticTestValueEditor } from './DiagnosticTestValueEditor';
 import { formatDiagnosticTestNameOfResult } from '../../helpers/Formatters';
 import { NotificationManager } from 'react-notifications';
-import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { useNavigate } from 'react-router-dom';
 import { HealthRecordEntryFormProps } from '../../types/frontendTypes';
+import { useAppDispatch } from '../../redux/store/healthRecordStore';
+import { createStoreTestResultAction } from '../../redux/slices/testResultsSlice';
 
 interface TestResultsFormProps extends HealthRecordEntryFormProps {}
 
@@ -21,6 +22,7 @@ export const TestResultsForm = (props: TestResultsFormProps) => {
     const user = useContext(UserContext);
     const [ testResults, setTestResults ] = useState<Models.DiagnosticTestResults.DiagnosticTestResult[]>([]);
     const [ isSubmitting, setIsSubmitting ] = useState<boolean>(false);
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
 
@@ -58,7 +60,7 @@ export const TestResultsForm = (props: TestResultsFormProps) => {
         setIsSubmitting(true);
         try {
             for (const testResult of testResults) {
-                await apiClient.instance!.put(`api/testresults/${testResult.id}`, {}, testResult);
+                dispatch(createStoreTestResultAction(testResult));
             }
             navigate(-1);
         } catch(error: any) {

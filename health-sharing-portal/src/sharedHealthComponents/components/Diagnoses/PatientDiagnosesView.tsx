@@ -1,17 +1,15 @@
 import { Table } from 'react-bootstrap';
-import { ViewModels } from '../../../localComponents/types/viewModels';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { MarkHealthRecordEntryAsSeenCallback } from '../../types/frontendTypes';
+import { useAppSelector } from '../../redux/store/healthRecordStore';
 import { DiagnosisTableRow } from './DiagnosisTableRow';
 
 interface PatientDiagnosisViewProps {
     personId: string;
-    diagnoses: ViewModels.DiagnosisViewModel[];
-    onMarkAsResolved: (diagnosisId: string) => void;
-    onMarkAsSeen: MarkHealthRecordEntryAsSeenCallback;
 }
 
 export const PatientDiagnosesView = (props: PatientDiagnosisViewProps) => {
+
+    const diagnoses = useAppSelector(state => state.diagnoses.items.filter(x => x.personId === props.personId));
 
     return (
         <Table>
@@ -26,14 +24,11 @@ export const PatientDiagnosesView = (props: PatientDiagnosisViewProps) => {
                 </tr>
             </thead>
             <tbody>
-                {props.diagnoses.length > 0
-                ? props.diagnoses.map(x => (
+                {diagnoses.length > 0
+                ? diagnoses.map(x => (
                     <DiagnosisTableRow
                         key={x.id}
-                        personId={props.personId}
                         diagnosis={x}
-                        onMarkAsResolved={props.onMarkAsResolved}
-                        onMarkAsSeen={props.onMarkAsSeen}
                     />
                 ))
                 : <tr>

@@ -7,15 +7,14 @@ import { MeasurementType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { groupBy } from '../../../sharedCommonComponents/helpers/CollectionHelpers';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { MarkHealthRecordEntryAsSeenCallback } from '../../types/frontendTypes';
 import UserContext from '../../../localComponents/contexts/UserContext';
-import { unhideHealthRecordEntry } from '../../helpers/HealthRecordEntryHelpers';
-import { HidableHealthRecordEntryValue } from './HidableHealthRecordEntryValue';
+import { HidableHealthRecordEntryValue } from '../HidableHealthRecordEntryValue';
 import { needsHiding } from '../../../localComponents/helpers/HealthRecordEntryHelpers';
+import { useAppDispatch, useAppSelector } from '../../redux/store/healthRecordStore';
+import { markObservationAsSeen } from '../../redux/slices/observationsSlice';
 
 interface PatientObservationsViewProps {
-    observations: Models.Observations.Observation[];
-    onMarkAsSeen: MarkHealthRecordEntryAsSeenCallback;
+    personId: string;
 }
 interface ObservationDataPoint {
     measurementType: MeasurementType;
@@ -31,7 +30,10 @@ interface Group<T> {
 export const PatientObservationsView = (props: PatientObservationsViewProps) => {
     
     const user = useContext(UserContext);
-    const observationDataPoints = props.observations
+    const dispatch = useAppDispatch();
+    const observations = useAppSelector(state => state.observations.items.filter(x => x.personId === props.personId));
+    
+    const observationDataPoints = observations
     .filter(observation => !needsHiding(observation, user!))
     .flatMap((observation): ObservationDataPoint[] => {
         const measurementType = observation.measurementType as MeasurementType;
@@ -180,6 +182,10 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
         colors: groupedObservations.map(group => getColorForMeasurementType(group.items[0].measurementType))
     }
 
+    const unhide = (observationId: string) => {
+        dispatch(markObservationAsSeen(observationId));
+    }
+
     return (<>
         <Chart
             options={chartOptions}
@@ -196,14 +202,14 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
                 </tr>
             </thead>
             <tbody>
-                {props.observations.map(observation => (
+                {observations.map(observation => (
                     <tr key={observation.id}>
                         <td>{formatDate(new Date(observation.timestamp))}</td>
                         <td>{formatMeasurementType(observation.measurementType)}</td>
                         <td>
                             <HidableHealthRecordEntryValue
                                 hideValue={needsHiding(observation, user!)}
-                                onMarkAsSeen={() => unhideHealthRecordEntry(observation, props.onMarkAsSeen)}
+                                onMarkAsSeen={() => unhide(observation.id)}
                             >
                                 {formatObservationValue(observation)}
                             </HidableHealthRecordEntryValue>

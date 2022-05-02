@@ -1,4 +1,5 @@
 ﻿using System;
+using HealthModels;
 using HealthModels.Interview;
 
 namespace HealthSharingPortal.API.ViewModels

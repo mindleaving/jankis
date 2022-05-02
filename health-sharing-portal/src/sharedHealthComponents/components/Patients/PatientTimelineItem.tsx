@@ -3,25 +3,25 @@ import { Col, Row } from 'react-bootstrap';
 import { Alert } from 'react-bootstrap';
 import UserContext from '../../../localComponents/contexts/UserContext';
 import { needsHiding } from '../../../localComponents/helpers/HealthRecordEntryHelpers';
-import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
+import { HealthRecordEntryType, MedicationDispensionState } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { ViewModels } from '../../../localComponents/types/viewModels';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { canResolveText, resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { formatDate, formatDiagnosisNameAndCode, formatDiagnosticTestNameOfResult, formatObservationValue } from '../../helpers/Formatters';
+import { formatDate, formatDiagnosisNameAndCode, formatDiagnosticTestNameOfResult, formatDrug, formatObservationValue } from '../../helpers/Formatters';
+import { DiagnosticTestValueView } from '../TestResults/DiagnosticTestValueView';
+import { HidableHealthRecordEntryValue } from '../HidableHealthRecordEntryValue';
 import { unhideHealthRecordEntry } from '../../helpers/HealthRecordEntryHelpers';
-import { MarkHealthRecordEntryAsSeenCallback } from '../../types/frontendTypes';
-import { DiagnosticTestValueView } from './DiagnosticTestValueView';
-import { HidableHealthRecordEntryValue } from './HidableHealthRecordEntryValue';
+import { useAppDispatch } from '../../redux/store/healthRecordStore';
 
 interface PatientTimelineItemProps {
     entry: Models.IHealthRecordEntry;
-    onMarkAsSeen: MarkHealthRecordEntryAsSeenCallback;
 }
 
 export const PatientTimelineItem = (props: PatientTimelineItemProps) => {
 
     const user = useContext(UserContext);
+    const dispatch = useAppDispatch();
     const entry = props.entry;
     const hideValue = needsHiding(entry, user!);
 
@@ -50,6 +50,14 @@ export const PatientTimelineItem = (props: PatientTimelineItemProps) => {
             {canResolveText(`MeasurementType_${observation.measurementType}`) ? resolveText(`MeasurementType_${observation.measurementType}`) : observation.measurementType} {formatObservationValue(observation)}
         </>);
     }
+    else if(entry.type === HealthRecordEntryType.MedicationDispension) {
+        const medicationDispension = entry as Models.Medication.MedicationDispension;
+        colorVariant = "secondary";
+        symbol = "fa-medkit";
+        body = (<>
+            {formatDrug(medicationDispension.drug)}: {resolveText(`MedicationDispensionState_${medicationDispension.state}`)} - {medicationDispension.value} {medicationDispension.unit}
+        </>);
+    }
     else if(entry.type === HealthRecordEntryType.Document) {
         const document = entry as Models.PatientDocument;
         colorVariant = "secondary";
@@ -68,7 +76,7 @@ export const PatientTimelineItem = (props: PatientTimelineItemProps) => {
         </>);
     }
 
-    const unhide = () => unhideHealthRecordEntry(entry, props.onMarkAsSeen);
+    const unhide = () => unhideHealthRecordEntry(dispatch, entry.type, entry.id);
 
     return (
         <Alert variant={colorVariant} className="px-2 py-1">

@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { QuestionnaireForm } from '../../components/Patients/QuestionnaireForm';
+import { QuestionnaireForm } from '../../components/QuestionnaireAnswers/QuestionnaireForm';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 
 interface AnswerQuestionnairePageProps {}

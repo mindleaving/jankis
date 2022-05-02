@@ -1,17 +1,16 @@
 import { differenceInSeconds } from 'date-fns';
-import React from 'react';
-import { ViewModels } from '../../../localComponents/types/viewModels';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
+import { useAppSelector } from '../../redux/store/healthRecordStore';
 import { AssignedQuestionnairesList } from './AssignedQuestionnairesList';
 
 interface PatientQuestionnairesViewProps {
     personId: string;
-    questionnaires: ViewModels.QuestionnaireAnswersViewModel[];
 }
 
 export const PatientQuestionnairesView = (props: PatientQuestionnairesViewProps) => {
 
-    const inverseTimeOrderedQuestionnaires = props.questionnaires
+    const questionnaires = useAppSelector(state => state.questionnaireAnswers.items);
+    const inverseTimeOrderedQuestionnaires = questionnaires
         .sort((a,b) => -differenceInSeconds(
             new Date(a.lastChangeTimestamp ?? a.assignedTimestamp), 
             new Date(b.lastChangeTimestamp ?? b.assignedTimestamp)

@@ -1,16 +1,39 @@
 import { confirmAlert } from "react-confirm-alert";
-import { Models } from "../../localComponents/types/models";
+import { HealthRecordEntryType } from "../../localComponents/types/enums.d";
 import { resolveText } from "../../sharedCommonComponents/helpers/Globalizer";
-import { MarkHealthRecordEntryAsSeenCallback, MarkHealthRecordEntryAsVerifiedCallback } from "../types/frontendTypes";
+import { markDiagnosisAsSeen } from "../redux/slices/diagnosesSlice";
+import { markDocumentAsSeen } from "../redux/slices/documentsSlice";
+import { markNoteAsSeen } from "../redux/slices/notesSlice";
+import { markObservationAsSeen } from "../redux/slices/observationsSlice";
+import { markTestResultAsSeen } from "../redux/slices/testResultsSlice";
+import { AppDispatch } from "../redux/store/healthRecordStore";
 
-export const unhideHealthRecordEntry = (
-    healthRecordEntry: Models.IHealthRecordEntry, 
-    onMarkAsSeen: MarkHealthRecordEntryAsSeenCallback) => {
-    const update = (x: Models.PatientDocument) => ({
-        ...x,
-        hasBeenSeenBySharer: true
-    });
-    onMarkAsSeen(healthRecordEntry.type, healthRecordEntry.id, update);
+export const unhideHealthRecordEntry = (dispatch: AppDispatch, entryType: HealthRecordEntryType, entryId: string) => {
+    switch(entryType) {
+        case HealthRecordEntryType.Note:
+            dispatch(markNoteAsSeen(entryId));
+            break;
+        case HealthRecordEntryType.Document:
+            dispatch(markDocumentAsSeen(entryId));
+            break;
+        case HealthRecordEntryType.Observation:
+            dispatch(markObservationAsSeen(entryId));
+            break;
+        case HealthRecordEntryType.Diagnosis:
+            dispatch(markDiagnosisAsSeen(entryId));
+            break;
+        case HealthRecordEntryType.Procedure:
+            // A medical procedure is never hidden
+            break;
+        case HealthRecordEntryType.TestResult:
+            dispatch(markTestResultAsSeen(entryId));
+            break;
+        case HealthRecordEntryType.MedicationDispension:
+            // A medication dispension is never hidden
+            break;
+        default:
+            throw new Error(`Unhiding is not implemented for '${entryType}'`);
+    }
 }
 export const confirmUnhide = (callback: () => void) => {
     confirmAlert({
@@ -30,15 +53,6 @@ export const confirmUnhide = (callback: () => void) => {
     });
 }
 
-export const verifyHealthRecordEntry = (
-    healthRecordEntry: Models.IHealthRecordEntry, 
-    onMarkAsVerified: MarkHealthRecordEntryAsVerifiedCallback) => {
-    const update = (x: Models.PatientDocument) => ({
-        ...x,
-        isVerified: true
-    });
-    onMarkAsVerified(healthRecordEntry.type, healthRecordEntry.id, update);
-}
 export const confirmVerified = (callback: () => void) => {
     confirmAlert({
         title: resolveText('HealthRecordEntry_ConfirmVerify_Title'),
