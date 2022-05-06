@@ -20,18 +20,18 @@ namespace HealthSharingPortal.API.Controllers
 {
     public class StudiesController : RestControllerBase<Study>
     {
-        private readonly IPersonDataStore<StudyEnrollment> enrollmentStore;
+        private readonly IStudyEnrollmentStore enrollmentStore;
         private readonly IStore<StudyAssociation> studyAssociationStore;
-        private readonly IPersonDataReadonlyStore<Person> personStore;
+        private readonly IPersonStore personStore;
         private readonly IViewModelBuilder<StudyEnrollment> studEnrollmentViewModelBuilder;
         private readonly IAuthorizationModule authorizationModule;
 
         public StudiesController(
             IStore<Study> store, 
             IHttpContextAccessor httpContextAccessor, 
-            IPersonDataStore<StudyEnrollment> enrollmentStore, 
+            IStudyEnrollmentStore enrollmentStore, 
             IStore<StudyAssociation> studyAssociationStore,
-            IPersonDataReadonlyStore<Person> personStore,
+            IPersonStore personStore,
             IViewModelBuilder<StudyEnrollment> studEnrollmentViewModelBuilder,
             IAuthorizationModule authorizationModule)
             : base(store, httpContextAccessor)

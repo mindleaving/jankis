@@ -30,7 +30,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IHealthProfessionalAccessInviteStore healthProfessionalInviteStore;
         private readonly IStore<HealthProfessionalAccess> healthProfessionalAccessStore;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IPersonDataReadonlyStore<Person> personStore;
+        private readonly IPersonStore personStore;
         private readonly IReadonlyStore<Account> accountStore;
         private readonly IAccessRequestDistributor accessRequestDistributor;
         private readonly IAuthenticationModule authenticationModule;
@@ -41,7 +41,7 @@ namespace HealthSharingPortal.API.Controllers
             IStore<EmergencyAccess> emergencyAccessStore,
             IHealthProfessionalAccessInviteStore healthProfessionalInviteStore, 
             IStore<HealthProfessionalAccess> healthProfessionalAccessStore,
-            IPersonDataReadonlyStore<Person> personStore,
+            IPersonStore personStore,
             IReadonlyStore<Account> accountStore,
             IAccessRequestDistributor accessRequestDistributor,
             IAuthenticationModule authenticationModule)
@@ -196,9 +196,9 @@ namespace HealthSharingPortal.API.Controllers
             else
             {
                 var emergencyReadAccessGrant = AccessGrantHelpers.GrantReadAccessToAllPersons();
-                var nameMatchingPersons = await personStore.SearchAsync(
-                    x => x.FirstName.ToLower() == emergencyAccessRequest.TargetPersonFirstName.ToLower()
-                         && x.LastName.ToLower() == emergencyAccessRequest.TargetPersonLastName.ToLower(),
+                var nameMatchingPersons = await personStore.SearchByName(
+                    emergencyAccessRequest.TargetPersonFirstName,
+                    emergencyAccessRequest.TargetPersonLastName,
                     emergencyReadAccessGrant);
                 var nameAndBirthdateMatchingPersons = nameMatchingPersons
                     .Where(x => (x.BirthDate - emergencyAccessRequest.TargetPersonBirthdate).Duration() < TimeSpan.FromHours(24))

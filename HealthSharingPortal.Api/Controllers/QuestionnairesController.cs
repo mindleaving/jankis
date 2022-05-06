@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Security;
 using System.Threading.Tasks;
 using HealthModels;
 using HealthModels.Interview;
@@ -9,6 +8,7 @@ using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Storage;
 using HealthSharingPortal.API.Workflow;
+using HealthSharingPortal.API.Workflow.ViewModelBuilders;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,16 +18,19 @@ namespace HealthSharingPortal.API.Controllers
     {
         private readonly IPersonDataStore<QuestionnaireAnswers> answersStore;
         private readonly IAuthorizationModule authorizationModule;
+        private readonly IViewModelBuilder<QuestionnaireAnswers> questionnaireAnswersViewModelBuilder;
 
         public QuestionnairesController(
             IStore<Questionnaire> store,
             IHttpContextAccessor httpContextAccessor,
             IPersonDataStore<QuestionnaireAnswers> answersStore,
-            IAuthorizationModule authorizationModule)
+            IAuthorizationModule authorizationModule,
+            IViewModelBuilder<QuestionnaireAnswers> questionnaireAnswersViewModelBuilder)
             : base(store, httpContextAccessor)
         {
             this.answersStore = answersStore;
             this.authorizationModule = authorizationModule;
+            this.questionnaireAnswersViewModelBuilder = questionnaireAnswersViewModelBuilder;
         }
 
         [HttpGet("{id}/schema")]
@@ -67,16 +70,9 @@ namespace HealthSharingPortal.API.Controllers
                 answer,
                 accessGrants,
                 httpContextAccessor);
-            return Ok();
+            var answerVM = await TransformItem(answer);
+            return Ok(answerVM);
         }
-
-        private async Task<List<IPersonDataAccessGrant>> GetAccessGrants()
-        {
-            var claims = ControllerHelpers.GetClaims(httpContextAccessor);
-            var accessGrants = await authorizationModule.GetAccessGrants(claims);
-            return accessGrants;
-        }
-
 
         [HttpGet("{questionnaireId}/answers/{answerId}")]
         public async Task<IActionResult> GetAnswer(
@@ -89,9 +85,23 @@ namespace HealthSharingPortal.API.Controllers
                 return NotFound();
             if (answer.QuestionnaireId != questionnaireId)
                 return NotFound();
-            return Ok(answer);
+            var answerVM = await TransformItem(answer);
+            return Ok(answerVM);
         }
 
+        private async Task<List<IPersonDataAccessGrant>> GetAccessGrants()
+        {
+            var claims = ControllerHelpers.GetClaims(httpContextAccessor);
+            var accessGrants = await authorizationModule.GetAccessGrants(claims);
+            return accessGrants;
+        }
+
+        protected async Task<object> TransformItem(
+            QuestionnaireAnswers item,
+            Language language = Language.en)
+        {
+            return await questionnaireAnswersViewModelBuilder.Build(item);
+        }
 
         protected override Task<object> TransformItem(
             Questionnaire item,

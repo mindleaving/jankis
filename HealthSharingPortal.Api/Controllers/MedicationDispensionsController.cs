@@ -67,7 +67,7 @@ namespace HealthSharingPortal.API.Controllers
                 return NotFound($"Dispension '{dispensionId}' not found");
             if ((dispension.Timestamp - DateTime.UtcNow).Duration() > TimeSpan.FromDays(1))
                 return BadRequest("Dispensions can only be moved back to schedule within 24 hours of the original schedule time");
-            var activeSchedule = await medicationScheduleStore.FirstOrDefaultAsync(x => x.PersonId == dispension.PersonId && x.IsActive, accessGrants);
+            var activeSchedule = await medicationScheduleStore.FirstOrDefaultAsync(dispension.PersonId, x => x.IsActive, accessGrants);
             if (activeSchedule == null)
             {
                 activeSchedule = new MedicationSchedule(dispension.PersonId)

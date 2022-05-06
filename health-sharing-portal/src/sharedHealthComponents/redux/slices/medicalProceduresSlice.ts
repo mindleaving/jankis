@@ -1,6 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Models } from "../../../localComponents/types/models";
-import { RemoteState } from "../../types/reduxTypes";
+import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
+import { loadObject } from "../../../sharedCommonComponents/helpers/LoadingHelpers";
+import { sendPostRequest } from "../../../sharedCommonComponents/helpers/StoringHelpers";
+import { RemoteState } from "../../types/reduxInterfaces";
+import { AsyncActionCreator } from "../../types/reduxTypes";
 
 interface MedicalProceduresState extends RemoteState {
     items: Models.Procedures.MedicalProcedure[];
@@ -12,7 +16,7 @@ const initialState: MedicalProceduresState = {
     isSubmitting: false
 }
 
-const medicalProceduresSlice = createSlice({
+export const medicalProceduresSlice = createSlice({
     name: 'medicalProcedures',
     initialState,
     reducers: {
@@ -23,7 +27,7 @@ const medicalProceduresSlice = createSlice({
             state.isSubmitting = action.payload;
         },
         setMedicalProcedures: (state, action: PayloadAction<Models.Procedures.MedicalProcedure[]>) => {
-            state.items.push(...action.payload);
+            state.items = action.payload;
         },
         addMedicalProcedure : (state, action: PayloadAction<Models.Procedures.MedicalProcedure>) => {
             state.items.push(action.payload);
@@ -31,5 +35,26 @@ const medicalProceduresSlice = createSlice({
     }
 });
 
-export const { setIsLoading, setIsSubmitting, setMedicalProcedures, addMedicalProcedure } = medicalProceduresSlice.actions;
-export default medicalProceduresSlice.reducer;
+export const loadMedicalProcedures: AsyncActionCreator = (personId: string) => {
+    return async (dispatch) => {
+        dispatch(medicalProceduresSlice.actions.setIsLoading(true));
+        await loadObject<Models.Procedures.MedicalProcedure[]>(
+            `api/persons/${personId}/procedures`, {},
+            resolveText("MedicalProcedures_CouldNotLoad"),
+            medicalProcedures => dispatch(medicalProceduresSlice.actions.setMedicalProcedures(medicalProcedures)),
+            () => dispatch(medicalProceduresSlice.actions.setIsLoading(false))
+        );
+    }
+}
+export const addMedicalProcedure: AsyncActionCreator = (medicalProcedure: Models.Procedures.MedicalProcedure) => {
+    return async (dispatch) => {
+        dispatch(medicalProceduresSlice.actions.setIsSubmitting(true));
+        await sendPostRequest(
+            `api/medicalProcedures`, 
+            resolveText("MedicalProcedure_CouldNotStore"),
+            medicalProcedure,
+            () => dispatch(medicalProceduresSlice.actions.addMedicalProcedure(medicalProcedure)),
+            () => dispatch(medicalProceduresSlice.actions.setIsSubmitting(false))
+        );
+    }
+}

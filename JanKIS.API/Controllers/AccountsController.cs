@@ -34,7 +34,7 @@ namespace JanKIS.API.Controllers
     public class AccountsController : ControllerBase
     {
         private readonly Storage.IAccountStore accountsStore;
-        private readonly IPersonDataReadonlyStore<Person> personsStore;
+        private readonly IPersonStore personsStore;
         private readonly ICachedReadonlyStore<Role> rolesStore;
         private readonly ICachedReadonlyStore<Department> departmentsStore;
         private readonly AuthenticationModule authenticationModule;
@@ -43,7 +43,7 @@ namespace JanKIS.API.Controllers
 
         public AccountsController(
             Storage.IAccountStore accountsStore,
-            IPersonDataReadonlyStore<Person> personsStore,
+            IPersonStore personsStore,
             ICachedReadonlyStore<Role> rolesStore,
             ICachedReadonlyStore<Department> departmentsStore,
             AuthenticationModule authenticationModule,

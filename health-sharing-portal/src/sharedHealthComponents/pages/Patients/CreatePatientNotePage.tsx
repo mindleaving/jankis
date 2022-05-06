@@ -6,12 +6,13 @@ import { v4 as uuid} from 'uuid';
 import { StoreButton } from '../../../sharedCommonComponents/components/StoreButton';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
-import { buildAndStoreObject } from '../../../sharedCommonComponents/helpers/StoringHelpers';
 import { PatientAutocomplete } from '../../../sharedHealthComponents/components/Autocompletes/PatientAutocomplete';
 import { MedicalTextEditor } from '../../../sharedHealthComponents/components/MedicalTextEditor/MedicalTextEditor';
 import UserContext from '../../../localComponents/contexts/UserContext';
 import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
+import { useAppDispatch, useAppSelector } from '../../redux/store/healthRecordStore';
+import { addNote } from '../../redux/slices/notesSlice';
 
 interface CreatePatientNotePageProps {}
 
@@ -22,9 +23,10 @@ export const CreatePatientNotePage = (props: CreatePatientNotePageProps) => {
 
     const [ profileData, setProfileData ] = useState<Models.Person>();
     const [ message, setMessage ] = useState<string>('');
-    const [ isStoring, setIsStoring ] = useState<boolean>(false);
+    const isStoring = useAppSelector(x => x.notes.isSubmitting);
     const navigate = useNavigate();
     const id = useMemo(() => uuid(), []);
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         if(!personId) return;
@@ -43,15 +45,9 @@ export const CreatePatientNotePage = (props: CreatePatientNotePageProps) => {
             NotificationManager.error(resolveText('PleaseSelect_Patient'));
             return;
         }
-        setIsStoring(true);
-        await buildAndStoreObject<Models.PatientNote>(
-            `api/patientnotes/${id}`,
-            resolveText('Patient_Note_SuccessfullyStored'),
-            resolveText('Patient_Note_CouldNotStore'),
-            buildNote,
-            () => navigate(-1), //push(`/healthrecord/${personId}`),
-            () => setIsStoring(false)
-        );
+        const note = buildNote();
+        dispatch(addNote(note));
+        navigate(-1);
     }
     const buildNote = (): Models.PatientNote => {
         return {

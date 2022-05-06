@@ -18,11 +18,11 @@ namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
     }
     public class AccessViewModelBuilder : IViewModelBuilder<ISharedAccess>
     {
-        private readonly IPersonDataReadonlyStore<Person> personStore;
+        private readonly IPersonStore personStore;
         private readonly IReadonlyStore<Account> accountStore;
 
         public AccessViewModelBuilder(
-            IPersonDataReadonlyStore<Person> personStore,
+            IPersonStore personStore,
             IReadonlyStore<Account> accountStore)
         {
             this.personStore = personStore;
@@ -46,7 +46,7 @@ namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
             if(options is not AccessViewModelBuilderOptions typedOptions)
                 throw new ArgumentException($"{nameof(AccessViewModelBuilder)} was called without options, but they are mandatory and must contain access grants");
             var sharerPersonIds = models.Select(x => x.SharerPersonId).Distinct();
-            var persons = await personStore.SearchAsync(x => sharerPersonIds.Contains(x.PersonId), typedOptions.AccessGrants);
+            var persons = await personStore.SearchAsync(x => sharerPersonIds.Contains(x.Id), typedOptions.AccessGrants);
             var personDictionary = persons.ToDictionary(x => x.Id);
             var viewModels = new List<IViewModel<ISharedAccess>>();
             foreach (var model in models)

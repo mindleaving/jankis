@@ -1,9 +1,10 @@
-import { Action, ActionCreator, createSlice, PayloadAction, ThunkAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Models } from "../../../localComponents/types/models";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { loadObject } from "../../../sharedCommonComponents/helpers/LoadingHelpers";
-import { RemoteState } from "../../types/reduxTypes";
-import { RootState } from "../store/healthRecordStore";
+import { sendPutRequest } from "../../../sharedCommonComponents/helpers/StoringHelpers";
+import { RemoteState } from "../../types/reduxInterfaces";
+import { AsyncActionCreator } from "../../types/reduxTypes";
 
 interface PersonsState extends RemoteState {
     items: Models.Person[];
@@ -15,7 +16,7 @@ const initialState: PersonsState = {
     isSubmitting: false
 };
 
-const personsSlice = createSlice({
+export const personsSlice = createSlice({
     name: 'persons',
     initialState,
     reducers: {
@@ -31,18 +32,25 @@ const personsSlice = createSlice({
     }
 });
 
-type AsyncActionCreator = ActionCreator<ThunkAction<Promise<void>, RootState, void, Action>>;
-export const createLoadPersonAction: AsyncActionCreator = (personId: string) => {
+export const loadPerson: AsyncActionCreator = (personId: string) => {
     return async (dispatch) => {
-        dispatch(setIsLoading(true));
+        dispatch(personsSlice.actions.setIsLoading(true));
         await loadObject<Models.Person>(
             `api/persons/${personId}`, {},
             resolveText("Person_CouldNotLoad"),
-            person => dispatch(addPerson(person)),
-            () => dispatch(setIsLoading(false))
+            person => dispatch(personsSlice.actions.addPerson(person)),
+            () => dispatch(personsSlice.actions.setIsLoading(false))
         );
     }
 }
-
-export const { setIsLoading, setIsSubmitting, addPerson } = personsSlice.actions;
-export default personsSlice.reducer;
+export const addPerson: AsyncActionCreator = (person: Models.Person) => {
+    return async (dispatch) => {
+        dispatch(personsSlice.actions.setIsSubmitting(true));
+        await sendPutRequest(
+            `api/persons/${person.id}`,
+            resolveText("Person_CouldNotStore"),
+            () => dispatch(personsSlice.actions.addPerson(person)),
+            () => dispatch(personsSlice.actions.setIsSubmitting(false))
+        );
+    }
+}

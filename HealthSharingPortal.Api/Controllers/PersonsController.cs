@@ -15,7 +15,7 @@ namespace HealthSharingPortal.API.Controllers
     public class PersonsController : PersonDataRestControllerBase<Person>
     {
         public PersonsController(
-            IPersonDataStore<Person> store,
+            IPersonStore store,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,
             IReadonlyStore<PersonDataChange> changeStore)

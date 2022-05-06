@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -45,7 +44,7 @@ namespace HealthSharingPortal.API.Controllers
             var schedule = await store.GetByIdAsync(scheduleId, accessGrants);
             if (schedule == null)
                 return NotFound($"Schedule '{scheduleId}' not found");
-            var currentlyActiveSchedules = await store.SearchAsync(x => x.IsActive && x.PersonId == schedule.PersonId && x.Id != scheduleId, accessGrants);
+            var currentlyActiveSchedules = await store.SearchAsync(schedule.PersonId, x => x.IsActive && x.Id != scheduleId, accessGrants);
             foreach (var currentlyActiveSchedule in currentlyActiveSchedules)
             {
                 currentlyActiveSchedule.IsActive = false;
@@ -81,6 +80,47 @@ namespace HealthSharingPortal.API.Controllers
             if (medicationSchedule == null)
                 return NotFound();
             medicationSchedule.Items.RemoveAll(x => x.Id == itemId);
+            await Store(store, medicationSchedule, accessGrants);
+            return Ok();
+        }
+
+        [HttpPost("{scheduleId}/items/{itemId}/dispensions")]
+        [HttpPost("{scheduleId}/items/{itemId}/dispensions/{dispensionId}")]
+        public async Task<IActionResult> AddDispension(
+            [FromRoute] string scheduleId,
+            [FromRoute] string itemId,
+            [FromRoute] string dispensionId,
+            [FromBody] MedicationDispension dispension)
+        {
+            if (dispensionId != null && dispensionId != dispension.Id)
+                return BadRequest("ID in body doesn't match route");
+            var accessGrants = await GetAccessGrants();
+            var medicationSchedule = await store.GetByIdAsync(scheduleId, accessGrants);
+            if (medicationSchedule == null)
+                return NotFound();
+            var matchingItem = medicationSchedule.Items.FirstOrDefault(x => x.Id == itemId);
+            if (matchingItem == null)
+            {
+                matchingItem = new MedicationScheduleItem(dispension.Drug);
+                medicationSchedule.Items.Add(matchingItem);
+            }
+            matchingItem.PlannedDispensions.RemoveAll(x => x.Id == dispension.Id);
+            matchingItem.PlannedDispensions.Add(dispension);
+            await Store(store, medicationSchedule, accessGrants);
+            return Ok(matchingItem);
+        }
+
+        [HttpDelete("{scheduleId}/dispensions/{dispensionId}")]
+        public async Task<IActionResult> RemoveDispension([FromRoute] string scheduleId, [FromRoute] string dispensionId)
+        {
+            var accessGrants = await GetAccessGrants();
+            var medicationSchedule = await store.GetByIdAsync(scheduleId, accessGrants);
+            if (medicationSchedule == null)
+                return NotFound();
+            foreach (var item in medicationSchedule.Items)
+            {
+                item.PlannedDispensions.RemoveAll(x => x.Id == dispensionId);
+            }
             await Store(store, medicationSchedule, accessGrants);
             return Ok();
         }

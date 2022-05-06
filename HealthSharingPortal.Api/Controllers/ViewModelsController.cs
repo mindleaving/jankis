@@ -28,7 +28,7 @@ namespace HealthSharingPortal.API.Controllers
     public class ViewModelsController : ControllerBase
     {
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IPersonDataReadonlyStore<Person> personStore;
+        private readonly IPersonStore personStore;
         private readonly IPersonDataReadonlyStore<Admission> admissionsStore;
         private readonly IPersonDataReadonlyStore<PatientNote> patientNotesStore;
         private readonly IPersonDataReadonlyStore<MedicationSchedule> medicationSchedulesStore;
@@ -37,7 +37,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IPersonDataReadonlyStore<MedicalProcedure> medicalProceduresStore;
         private readonly IPersonDataReadonlyStore<Observation> observationsStore;
         private readonly IPersonDataReadonlyStore<PatientDocument> documentsStore;
-        private readonly IPersonDataReadonlyStore<StudyEnrollment> studyEnrollmentStore;
+        private readonly IStudyEnrollmentStore studyEnrollmentStore;
         private readonly IReadonlyStore<Study> studyStore;
         private readonly IReadonlyStore<StudyAssociation> studyAssociationStore;
         private readonly IAuthorizationModule authorizationModule;
@@ -52,7 +52,7 @@ namespace HealthSharingPortal.API.Controllers
 
         public ViewModelsController(
             IHttpContextAccessor httpContextAccessor,
-            IPersonDataReadonlyStore<Person> personStore,
+            IPersonStore personStore,
             IPersonDataReadonlyStore<Admission> admissionsStore, 
             IPersonDataReadonlyStore<PatientNote> patientNotesStore, 
             IPersonDataReadonlyStore<MedicationSchedule> medicationSchedulesStore,
@@ -61,7 +61,7 @@ namespace HealthSharingPortal.API.Controllers
             IPersonDataReadonlyStore<MedicalProcedure> medicalProceduresStore,
             IPersonDataReadonlyStore<Observation> observationsStore,
             IPersonDataReadonlyStore<PatientDocument> documentsStore, 
-            IPersonDataReadonlyStore<StudyEnrollment> studyEnrollmentStore,
+            IStudyEnrollmentStore studyEnrollmentStore,
             IReadonlyStore<Study> studyStore,
             IReadonlyStore<StudyAssociation> studyAssociationStore,
             IAuthorizationModule authorizationModule,
@@ -127,18 +127,18 @@ namespace HealthSharingPortal.API.Controllers
             var profileData = await personStore.GetByIdAsync(personId, accessGrants);
             if (profileData == null)
                 return NotFound();
-            var admissions = admissionsStore.SearchAsync(x => x.ProfileData.Id == personId, accessGrants);
-            var notes = patientNotesStore.SearchAsync(x => x.PersonId == personId, accessGrants);
-            var diagnoses = diagnosesStore.SearchAsync(x => x.PersonId == personId, accessGrants)
+            var admissions = admissionsStore.GetAllAsync(personId, accessGrants);
+            var notes = patientNotesStore.GetAllAsync(personId, accessGrants);
+            var diagnoses = diagnosesStore.GetAllAsync(personId, accessGrants)
                 .ContinueWith(result => diagnosisViewModelBuilder.BatchBuild(result.Result, new DiagnosisViewModelBuilderOptions { Language = language }))
                 .Unwrap();
-            var medicationSchedules = medicationSchedulesStore.SearchAsync(x => x.PersonId == personId, accessGrants);
-            var medicationDispensions = medicationDispensionsStore.SearchAsync(x => x.PersonId == personId, accessGrants);
-            var testResults = testResultsStore.SearchAsync(x => x.PersonId == personId, accessGrants);
-            var medicalProcedures = medicalProceduresStore.SearchAsync(x => x.PersonId == personId, accessGrants);
-            var observations = observationsStore.SearchAsync(x => x.PersonId == personId, accessGrants);
-            var documents = documentsStore.SearchAsync(x => x.PersonId == personId, accessGrants);
-            var questionnaireAnswers = questionnaireAnswersStore.SearchAsync(x => x.PersonId == personId, accessGrants)
+            var medicationSchedules = medicationSchedulesStore.GetAllAsync(personId, accessGrants);
+            var medicationDispensions = medicationDispensionsStore.GetAllAsync(personId, accessGrants);
+            var testResults = testResultsStore.GetAllAsync(personId, accessGrants);
+            var medicalProcedures = medicalProceduresStore.GetAllAsync(personId, accessGrants);
+            var observations = observationsStore.GetAllAsync(personId, accessGrants);
+            var documents = documentsStore.GetAllAsync(personId, accessGrants);
+            var questionnaireAnswers = questionnaireAnswersStore.GetAllAsync(personId, accessGrants)
                 .ContinueWith(result => questionnaireAnswersViewModelBuilder.BatchBuild(result.Result))
                 .Unwrap();
             await Task.WhenAll(
@@ -284,13 +284,13 @@ namespace HealthSharingPortal.API.Controllers
             var person = await personStore.GetByIdAsync(personId, accessGrants);
             if (person == null)
                 return NotFound();
-            var referenceSequences = await testResultsStore.SearchAsync(x => x.PersonId == personId && x.TestCodeLoinc == "62374-4", accessGrants);
-            var sequencingTestResults = await testResultsStore.SearchAsync(x => x.PersonId == personId && x.TestCodeLoinc == "86206-0", accessGrants);
+            var referenceSequences = await testResultsStore.SearchAsync(personId, x => x.TestCodeLoinc == "62374-4", accessGrants);
+            var sequencingTestResults = await testResultsStore.SearchAsync(personId, x => x.TestCodeLoinc == "86206-0", accessGrants);
             var associatedDocumentIds = sequencingTestResults.Cast<DocumentDiagnosticTestResult>().Select(x => x.DocumentId).ToList();
             var sequencingDocuments = associatedDocumentIds.Count > 0
-                ? await documentsStore.SearchAsync(x => x.PersonId == personId && associatedDocumentIds.Contains(x.Id), accessGrants)
+                ? await documentsStore.SearchAsync(personId, x => associatedDocumentIds.Contains(x.Id), accessGrants)
                 : new List<PatientDocument>();
-            var deployments = await genomeExplorerDeploymentStore.SearchAsync(x => x.PersonId == personId, accessGrants);
+            var deployments = await genomeExplorerDeploymentStore.GetAllAsync(personId, accessGrants);
             var viewModel = new PersonGenomeSequencesViewModel
             {
                 Person = person,

@@ -13,7 +13,7 @@ import { NotificationManager } from 'react-notifications';
 import { useNavigate } from 'react-router-dom';
 import { HealthRecordEntryFormProps } from '../../types/frontendTypes';
 import { useAppDispatch } from '../../redux/store/healthRecordStore';
-import { createStoreTestResultAction } from '../../redux/slices/testResultsSlice';
+import { addTestResult } from '../../redux/slices/testResultsSlice';
 
 interface TestResultsFormProps extends HealthRecordEntryFormProps {}
 
@@ -60,7 +60,7 @@ export const TestResultsForm = (props: TestResultsFormProps) => {
         setIsSubmitting(true);
         try {
             for (const testResult of testResults) {
-                dispatch(createStoreTestResultAction(testResult));
+                dispatch(addTestResult(testResult));
             }
             navigate(-1);
         } catch(error: any) {

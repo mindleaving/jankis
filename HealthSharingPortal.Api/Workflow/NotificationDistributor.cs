@@ -24,13 +24,13 @@ namespace HealthSharingPortal.API.Workflow
         private readonly INotificationsStore notificationsStore;
         private readonly ISubscriptionsStore subscriptionsStore;
         protected readonly IHubContext<NotificationsHub, INotificationsClient> notificationsHub;
-        protected readonly IPersonDataReadonlyStore<Person> personsStore;
+        protected readonly IPersonStore personsStore;
 
         public NotificationDistributor(
             INotificationsStore notificationsStore,
             ISubscriptionsStore subscriptionsStore,
             IHubContext<NotificationsHub, INotificationsClient> notificationsHub,
-            IPersonDataReadonlyStore<Person> personsStore)
+            IPersonStore personsStore)
         {
             this.notificationsStore = notificationsStore;
             this.subscriptionsStore = subscriptionsStore;

@@ -68,18 +68,6 @@ namespace HealthSharingPortal.API.Storage
             await collection.DeleteOneAsync(x => x.Id == id);
         }
 
-        protected List<AccessPermissions> GetPermissionsForPerson(
-            string personId,
-            List<IPersonDataAccessGrant> accessGrants)
-        {
-            return accessGrants
-                .OfType<PersonDataAccessGrant>()
-                .Where(x => x.PersonId == personId)
-                .SelectMany(x => x.Permissions)
-                .Distinct()
-                .ToList();
-        }
-
         protected async Task LogRecordChange(
             string entryId,
             PersonDataChangeMetadata changedBy,

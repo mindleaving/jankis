@@ -33,7 +33,7 @@ namespace HealthSharingPortal.API.Controllers
     public class AccountsController : ControllerBase
     {
         private readonly IAccountStore accountsStore;
-        private readonly IPersonDataStore<Person> personsStore;
+        private readonly IPersonStore personsStore;
         private readonly IAuthenticationModule authenticationModule;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IAuthorizationModule authorizationModule;
@@ -42,7 +42,7 @@ namespace HealthSharingPortal.API.Controllers
 
         public AccountsController(
             IAccountStore accountsStore,
-            IPersonDataStore<Person> personsStore,
+            IPersonStore personsStore,
             IAuthenticationModule authenticationModule,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,

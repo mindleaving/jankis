@@ -24,6 +24,7 @@ namespace JanKIS.API.Storage
         {
             var utcNow = DateTime.UtcNow;
             return await FirstOrDefaultAsync(
+                personId,
                 x => x.AdmissionTime <= utcNow && (x.DischargeTime == null || x.DischargeTime > utcNow),
                 accessGrants);
         }

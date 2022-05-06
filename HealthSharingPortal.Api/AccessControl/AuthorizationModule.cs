@@ -21,13 +21,13 @@ namespace HealthSharingPortal.API.AccessControl
         private readonly IReadonlyStore<EmergencyAccess> emergencyAccessStore;
         private readonly IReadonlyStore<HealthProfessionalAccess> healthProfessionalAccessStore;
         private readonly IReadonlyStore<StudyAssociation> studyAssociationStore;
-        private readonly IPersonDataReadonlyStore<StudyEnrollment> studyEnrollmentStore;
+        private readonly IStudyEnrollmentStore studyEnrollmentStore;
 
         public AuthorizationModule(
             IReadonlyStore<EmergencyAccess> emergencyAccessStore, 
             IReadonlyStore<HealthProfessionalAccess> healthProfessionalAccessStore, 
             IReadonlyStore<StudyAssociation> studyAssociationStore,
-            IPersonDataReadonlyStore<StudyEnrollment> studyEnrollmentStore)
+            IStudyEnrollmentStore studyEnrollmentStore)
         {
             this.emergencyAccessStore = emergencyAccessStore;
             this.healthProfessionalAccessStore = healthProfessionalAccessStore;
@@ -106,8 +106,8 @@ namespace HealthSharingPortal.API.AccessControl
                 var studyIds = associatedStudies.Select(x => x.StudyId).ToList();
                 var studyEnrollments = 
                     studyIds.Count > 0
-                    ? await studyEnrollmentStore.SearchAsync(
-                        x => studyIds.Contains(x.StudyId) && x.PersonId == personId && x.State == StudyEnrollementState.Enrolled,
+                    ? await studyEnrollmentStore.SearchAsync(personId,
+                        x => studyIds.Contains(x.StudyId) && x.State == StudyEnrollementState.Enrolled,
                         AccessGrantHelpers.GrantForPersonWithPermission(personId, AccessPermissions.Read))
                     : new List<StudyEnrollment>();
                 if (studyEnrollments.Any())
@@ -182,9 +182,7 @@ namespace HealthSharingPortal.API.AccessControl
                 var associatedStudies = await studyAssociationStore.SearchAsync(x => x.AccountId == username);
                 var studyIds = associatedStudies.Select(x => x.StudyId).ToList();
                 var studyEnrollments = studyIds.Count > 0
-                    ? await studyEnrollmentStore.SearchAsync(
-                        x => studyIds.Contains(x.StudyId) && x.State == StudyEnrollementState.Enrolled,
-                        AccessGrantHelpers.GrantReadAccessToAllPersons())
+                    ? await studyEnrollmentStore.GetAllEnrolledInStudies(studyIds, AccessGrantHelpers.GrantReadAccessToAllPersons())
                     : new List<StudyEnrollment>();
                 return accessGrants
                     .Concat(studyEnrollments.Select(x => new PersonDataAccessGrant(x.PersonId, x.Permissions)))

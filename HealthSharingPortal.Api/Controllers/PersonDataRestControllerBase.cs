@@ -52,8 +52,20 @@ namespace HealthSharingPortal.API.Controllers
         }
 
         [HttpGet]
-        [HttpGet("search")]
+        public Task<IActionResult> GetMany(
+            string searchText,
+            int? count = null,
+            int? skip = null,
+            string orderBy = null,
+            OrderDirection orderDirection = OrderDirection.Ascending,
+            Language language = Language.en)
+        {
+            throw new NotSupportedException("Use GetMany with mandatory personId-parameter");
+        }
+
+        [HttpGet("/api/persons/{personId}/[controller]")]
         public virtual async Task<IActionResult> GetMany(
+            [FromRoute] string personId,
             [FromQuery] string searchText, 
             [FromQuery] int? count = null,
             [FromQuery] int? skip = null,
@@ -61,6 +73,8 @@ namespace HealthSharingPortal.API.Controllers
             [FromQuery] OrderDirection orderDirection = OrderDirection.Ascending,
             [FromQuery] Language language = Language.en)
         {
+            if (string.IsNullOrWhiteSpace(personId))
+                return BadRequest("No person ID specified");
             var accessGrants = await GetAccessGrants();
             Expression<Func<T, bool>> searchExpression;
             if(!string.IsNullOrWhiteSpace(searchText))
@@ -73,7 +87,7 @@ namespace HealthSharingPortal.API.Controllers
                 searchExpression = x => true;
             }
             var orderByExpression = BuildOrderByExpression(orderBy);
-            var items = await store.SearchAsync(searchExpression, accessGrants, count, skip, orderByExpression, orderDirection);
+            var items = await store.SearchAsync(personId, searchExpression, accessGrants, count, skip, orderByExpression, orderDirection);
             var transformedItems = await TransformItems(items, language);
             return Ok(transformedItems);
         }

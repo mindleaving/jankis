@@ -16,10 +16,10 @@ namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
     }
     public class StudyEnrollmentViewModelBuilder : IViewModelBuilder<StudyEnrollment>
     {
-        private readonly IPersonDataReadonlyStore<Person> personStore;
+        private readonly IPersonStore personStore;
 
         public StudyEnrollmentViewModelBuilder(
-            IPersonDataReadonlyStore<Person> personStore)
+            IPersonStore personStore)
         {
             this.personStore = personStore;
         }

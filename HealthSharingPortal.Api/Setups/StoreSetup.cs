@@ -89,6 +89,7 @@ namespace HealthSharingPortal.API.Setups
             SetupPersonDataStores<PatientDocument>(services);
             SetupPersonDataStores<PatientNote>(services);
             SetupPersonDataStores<Person>(services);
+            services.AddScoped<IPersonStore, PersonStore>();
             SetupTypeStores<PersonalizedAbbreviation>(services);
             SetupTypeStores<Questionnaire>(services);
             SetupPersonDataStores<QuestionnaireAnswers>(services);
@@ -97,6 +98,7 @@ namespace HealthSharingPortal.API.Setups
             SetupTypeStores<Study>(services);
             SetupTypeStores<StudyAssociation>(services);
             SetupPersonDataStores<StudyEnrollment>(services);
+            services.AddScoped<IStudyEnrollmentStore, StudyEnrollmentStore>();
             SetupTypeStores<SubscriptionBase>(services);
             services.AddScoped<ISubscriptionsStore, SubscriptionsStore>();
         }

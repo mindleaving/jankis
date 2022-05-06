@@ -1,10 +1,10 @@
-import { Action, ActionCreator, createSlice, PayloadAction, ThunkAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Models } from "../../../localComponents/types/models";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { loadObject } from "../../../sharedCommonComponents/helpers/LoadingHelpers";
-import { sendPostRequest, sendPutRequest } from "../../../sharedCommonComponents/helpers/StoringHelpers";
-import { RemoteState } from "../../types/reduxTypes";
-import { RootState } from "../store/healthRecordStore";
+import { sendPostRequest } from "../../../sharedCommonComponents/helpers/StoringHelpers";
+import { RemoteState } from "../../types/reduxInterfaces";
+import { AsyncActionCreator } from "../../types/reduxTypes";
 
 
 interface TestResultsState extends RemoteState {
@@ -16,7 +16,7 @@ const initialState: TestResultsState = {
     isSubmitting: false
 };
 
-const testResultsSlice = createSlice({
+export const testResultsSlice = createSlice({
     name: "testResults",
     initialState,
     reducers: {
@@ -26,60 +26,71 @@ const testResultsSlice = createSlice({
         setIsSubmitting: (state, action: PayloadAction<boolean>) => {
             state.isSubmitting = action.payload;
         },
+        setTestResults: (state, action: PayloadAction<Models.DiagnosticTestResults.DiagnosticTestResult[]>) => {
+            state.items = action.payload;
+        },
+        addTestResult: (state, action: PayloadAction<Models.DiagnosticTestResults.DiagnosticTestResult>) => {
+            state.items.push(action.payload);
+        },
         markTestResultAsSeen: (state, action: PayloadAction<string>) => {
             const matchingItem = state.items.find(x => x.id === action.payload);
             if(matchingItem) {
                 matchingItem.hasBeenSeenBySharer = true;
             }
         },
-        addTestResult: (state, action: PayloadAction<Models.DiagnosticTestResults.DiagnosticTestResult>) => {
-            state.items.push(action.payload);
+        markTestResultAsVerified: (state, action: PayloadAction<string>) => {
+            const matchingItem = state.items.find(x => x.id === action.payload);
+            if(matchingItem) {
+                matchingItem.isVerified = true;
+            }
         },
-        setTestResults: (state, action: PayloadAction<Models.DiagnosticTestResults.DiagnosticTestResult[]>) => {
-            state.items.push(...action.payload);
-        }
     }
 });
 
-type AsyncActionCreator = ActionCreator<ThunkAction<Promise<void>, RootState, void, Action>>
-
-export const createLoadTestResultsAction: AsyncActionCreator = (personId: string) => {
+export const loadTestResults: AsyncActionCreator = (personId: string) => {
     return async (dispatch) => {
-        dispatch(setIsLoading(true));
+        dispatch(testResultsSlice.actions.setIsLoading(true));
         await loadObject<Models.DiagnosticTestResults.DiagnosticTestResult[]>(
-            `api/testresults/for/${personId}`, {},
+            `api/persons/${personId}/testresults`, {},
             resolveText("TestResults_CouldNotLoad"),
             testResults => {
-                dispatch(setTestResults(testResults));
-            }
+                dispatch(testResultsSlice.actions.setTestResults(testResults));
+            },
+            () => dispatch(testResultsSlice.actions.setIsLoading(false))
         );
-        dispatch(setIsLoading(false));
     };
 }
-export const createStoreTestResultAction: AsyncActionCreator = (testResult: Models.DiagnosticTestResults.DiagnosticTestResult) => {
+export const addTestResult: AsyncActionCreator = (testResult: Models.DiagnosticTestResults.DiagnosticTestResult) => {
     return async (dispatch) => {
-        dispatch(setIsSubmitting(true));
-        await sendPutRequest(
+        dispatch(testResultsSlice.actions.setIsSubmitting(true));
+        await sendPostRequest(
             `api/testresults`,
             resolveText("TestResults_CouldNotStore"),
             testResult,
             () => {
-                dispatch(addTestResult(testResult));
-            }
+                dispatch(testResultsSlice.actions.addTestResult(testResult));
+            },
+            () => dispatch(testResultsSlice.actions.setIsSubmitting(false))
         );
-        dispatch(setIsSubmitting(false));
     }
 }
-export const createMarkTestResultAsSeenAction: AsyncActionCreator = (testResultId: string) => {
+export const markTestResultAsSeen: AsyncActionCreator = (testResultId: string) => {
     return async (dispatch) => {
         await sendPostRequest(
             `api/testresults/${testResultId}/seen`,
             resolveText('HealthRecordEntry_CouldNotMarkAsSeen'),
-            null
+            null,
+            () => dispatch(testResultsSlice.actions.markTestResultAsSeen(testResultId))
         );
-        dispatch(markTestResultAsSeen(testResultId));
     }
 }
-
-export const { addTestResult, setTestResults, setIsLoading, setIsSubmitting, markTestResultAsSeen } = testResultsSlice.actions;
-export default testResultsSlice.reducer;
+export const markTestResultAsVerified: AsyncActionCreator = (testResultId: string) => {
+    return async (dispatch) => {
+        await sendPostRequest(
+            `api/testresults/${testResultId}/verified`,
+            resolveText('HealthRecordEntry_CouldNotMarkAsVerified'),
+            null,
+            () => dispatch(testResultsSlice.actions.markTestResultAsVerified(testResultId))
+        );
+    }
+}

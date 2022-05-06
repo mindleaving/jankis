@@ -8,6 +8,7 @@ using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Storage;
 using HealthSharingPortal.API.Workflow;
+using HealthSharingPortal.API.Workflow.ViewModelBuilders;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,16 +17,19 @@ namespace HealthSharingPortal.API.Controllers
     public class DiagnosesController : HealthRecordEntryControllerBase<Diagnosis>
     {
         private readonly INotificationDistributor notificationDistributor;
+        private readonly IViewModelBuilder<Diagnosis> viewModelBuilder;
 
         public DiagnosesController(
             IPersonDataStore<Diagnosis> store,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,
             IReadonlyStore<PersonDataChange> changeStore,
-            INotificationDistributor notificationDistributor)
+            INotificationDistributor notificationDistributor,
+            IViewModelBuilder<Diagnosis> viewModelBuilder)
             : base(store, httpContextAccessor, authorizationModule, changeStore)
         {
             this.notificationDistributor = notificationDistributor;
+            this.viewModelBuilder = viewModelBuilder;
         }
 
         [HttpPost("{diagnosisId}/resolve")]
@@ -44,11 +48,11 @@ namespace HealthSharingPortal.API.Controllers
         }
 
 
-        protected override Task<object> TransformItem(
+        protected override async Task<object> TransformItem(
             Diagnosis item,
             Language language = Language.en)
         {
-            return Task.FromResult<object>(item);
+            return await viewModelBuilder.Build(item);
         }
 
         protected override Expression<Func<Diagnosis, object>> BuildOrderByExpression(

@@ -56,6 +56,7 @@ import { NoUserLayout } from './localComponents/components/NoUserLayout';
 import { Models } from './localComponents/types/models';
 import { CreateMedicalProcedurePage } from './sharedHealthComponents/pages/Patients/CreateMedicalProcedurePage';
 import { AddMedicationPage } from './sharedHealthComponents/pages/Medication/AddMedicationPage';
+import { reset, useAppDispatch } from './sharedHealthComponents/redux/store/healthRecordStore';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";
@@ -69,6 +70,7 @@ if(!!sessionStorage.getItem(accessTokenSessionStorageKey)) {
 interface AppProps {}
 export const App = (props: AppProps) => {
 
+    const dispatch = useAppDispatch();
     const [loggedInUser, setLoggedInUser] = useState<ViewModels.IUserViewModel | undefined>(
         !!sessionStorage.getItem(userSessionStorageKey) 
             ? JSON.parse(sessionStorage.getItem(userSessionStorageKey)!)
@@ -95,6 +97,7 @@ export const App = (props: AppProps) => {
         setLoggedInUser(undefined);
         sessionStorage.removeItem(accessTokenSessionStorageKey);
         sessionStorage.removeItem(userSessionStorageKey);
+        dispatch(reset());
         navigate("/");
     }
 

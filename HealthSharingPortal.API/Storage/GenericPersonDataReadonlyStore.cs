@@ -25,9 +25,13 @@ namespace HealthSharingPortal.API.Storage
             backingStore = new GenericReadonlyStore<T>(mongoDatabase, collectionName, bypassPersonDataTypeCheck: true);
         }
 
-        public Task<List<T>> GetAllAsync(List<IPersonDataAccessGrant> accessGrants)
+        public Task<List<T>> GetAllAsync(
+            string personId,
+            List<IPersonDataAccessGrant> accessGrants)
         {
-            return backingStore.SearchAsync(AddPersonFilter(x => true, accessGrants));
+            if(!HasReadPermissionForPerson(personId, accessGrants))
+                return Task.FromResult(new List<T>());
+            return backingStore.SearchAsync(x => x.PersonId == personId);
         }
 
         public async Task<bool> ExistsAsync(
@@ -53,6 +57,7 @@ namespace HealthSharingPortal.API.Storage
         }
 
         public Task<List<T>> SearchAsync(
+            string personId,
             Expression<Func<T, bool>> filter,
             List<IPersonDataAccessGrant> accessGrants,
             int? count = null,
@@ -60,19 +65,24 @@ namespace HealthSharingPortal.API.Storage
             Expression<Func<T, object>> orderBy = null,
             OrderDirection orderDirection = OrderDirection.Ascending)
         {
-            filter = AddPersonFilter(filter, accessGrants);
+            if(!HasReadPermissionForPerson(personId, accessGrants))
+                return Task.FromResult(new List<T>());
+            filter = SearchExpressionBuilder.And(filter, x => x.PersonId == personId);
             return backingStore.SearchAsync(filter, count, skip, orderBy, orderDirection);
         }
 
         public Task<T> FirstOrDefaultAsync(
+            string personId,
             Expression<Func<T, bool>> filter,
             List<IPersonDataAccessGrant> accessGrants)
         {
-            filter = AddPersonFilter(filter, accessGrants);
+            if(!HasReadPermissionForPerson(personId, accessGrants))
+                return Task.FromResult(default(T));
+            filter = SearchExpressionBuilder.And(filter, x => x.PersonId == personId);
             return backingStore.FirstOrDefaultAsync(filter);
         }
 
-        private Expression<Func<T, bool>> AddPersonFilter(
+        protected Expression<Func<T, bool>> AddPersonFilter(
             Expression<Func<T, bool>> filter,
             List<IPersonDataAccessGrant> accessGrants)
         {
@@ -109,12 +119,36 @@ namespace HealthSharingPortal.API.Storage
                 return;
             if(typeof(T) == typeof(StudyEnrollment) && accessGrants.OfType<StudyEnrollmentStatisticsAccessGrant>().Any())
                 return;
-            var personAccessGrants = accessGrants.OfType<PersonDataAccessGrant>().Where(x => x.PersonId == item.PersonId);
-            var permissions = personAccessGrants
-                .SelectMany(x => x.Permissions)
-                .Distinct();
+            var permissions = GetPermissionsForPerson(item.PersonId, accessGrants);
             if(!permissions.Contains(AccessPermissions.Read))
                 throw new SecurityException(SecurityErrorMessage);
+        }
+
+        private bool HasReadPermissionForPerson(
+            string personId,
+            List<IPersonDataAccessGrant> accessGrants)
+        {
+            if(typeof(T) == typeof(Account) && accessGrants.OfType<AccountChangeAccessGrant>().Any())
+                return true;
+            if(typeof(T) == typeof(StudyEnrollment) && accessGrants.OfType<StudyEnrollmentStatisticsAccessGrant>().Any())
+                return true;
+            if(accessGrants.OfType<ReadAnyPersonDataAccessGrant>().Any())
+                return true;
+            if (GetPermissionsForPerson(personId, accessGrants).Contains(AccessPermissions.Read))
+                return true;
+            return false;
+        }
+
+        protected List<AccessPermissions> GetPermissionsForPerson(
+            string personId,
+            List<IPersonDataAccessGrant> accessGrants)
+        {
+            return accessGrants
+                .OfType<PersonDataAccessGrant>()
+                .Where(x => x.PersonId == personId)
+                .SelectMany(x => x.Permissions)
+                .Distinct()
+                .ToList();
         }
     }
 }

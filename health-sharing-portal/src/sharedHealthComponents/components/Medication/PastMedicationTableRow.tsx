@@ -1,10 +1,11 @@
 import { differenceInHours } from 'date-fns';
 import React from 'react';
 import { Table, Button } from 'react-bootstrap';
+import { MedicationDispensionState } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { AccordionCard } from '../../../sharedCommonComponents/components/AccordionCard';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { formatDrug, formatDate } from '../../helpers/Formatters';
+import { formatDrug, formatDate, formatDispension } from '../../helpers/Formatters';
 
 interface PastMedicationTableRowProps {
     dispensions: Models.Medication.MedicationDispension[];
@@ -16,6 +17,8 @@ export const PastMedicationTableRow = (props: PastMedicationTableRowProps) => {
     const lastDispension = props.dispensions[0];
     const drugId = lastDispension.drug.id;
     const now = new Date();
+
+    
     return (
         <tr>
             <td>
@@ -27,7 +30,7 @@ export const PastMedicationTableRow = (props: PastMedicationTableRowProps) => {
             <td>
                 <AccordionCard standalone
                     eventKey={drugId}
-                    title={`${resolveText(`MedicationDispensionState_${lastDispension.state}`)} - ${lastDispension.value} ${lastDispension.unit}`}
+                    title={formatDispension(lastDispension)}
                 >
                     <Table>
                         <tbody>
@@ -37,7 +40,7 @@ export const PastMedicationTableRow = (props: PastMedicationTableRowProps) => {
                                     <tr key={dispension.id}>
                                         <td>{formatDate(new Date(dispension.timestamp))}</td>
                                         <td>{resolveText(`MedicationDispensionState_${dispension.state}`)}</td>
-                                        <td>{dispension.value} {dispension.unit}</td>
+                                        <td>{dispension.state === MedicationDispensionState.Dispensed ? `${dispension.value} ${dispension.unit}` : ''}</td>
                                         <td>
                                             {canMoveToSchedule 
                                             ? <Button 

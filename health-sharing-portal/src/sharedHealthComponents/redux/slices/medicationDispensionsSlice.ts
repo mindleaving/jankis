@@ -1,6 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Models } from "../../../localComponents/types/models";
-import { RemoteState } from "../../types/reduxTypes";
+import { deleteObject } from "../../../sharedCommonComponents/helpers/DeleteHelpers";
+import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
+import { loadObject } from "../../../sharedCommonComponents/helpers/LoadingHelpers";
+import { sendPostRequest } from "../../../sharedCommonComponents/helpers/StoringHelpers";
+import { RemoteState } from "../../types/reduxInterfaces";
+import { AsyncActionCreator } from "../../types/reduxTypes";
 
 interface MedicationDispensionsState extends RemoteState {
     items: Models.Medication.MedicationDispension[];
@@ -12,7 +17,7 @@ const initialState: MedicationDispensionsState = {
     isSubmitting: false
 }
 
-const medicationDispensionsSlice = createSlice({
+export const medicationDispensionsSlice = createSlice({
     name: 'medicationDispensions',
     initialState,
     reducers: {
@@ -23,7 +28,7 @@ const medicationDispensionsSlice = createSlice({
             state.isSubmitting = action.payload;
         },
         setMedicationDispensions: (state, action: PayloadAction<Models.Medication.MedicationDispension[]>) => {
-            state.items.push(...action.payload);
+            state.items = action.payload;
         },
         addMedicationDispension : (state, action: PayloadAction<Models.Medication.MedicationDispension>) => {
             state.items.push(action.payload);
@@ -34,11 +39,37 @@ const medicationDispensionsSlice = createSlice({
     }
 });
 
-export const { 
-    setIsLoading, 
-    setIsSubmitting, 
-    setMedicationDispensions, 
-    addMedicationDispension,
-    removeMedicationDispension
-} = medicationDispensionsSlice.actions;
-export default medicationDispensionsSlice.reducer;
+export const loadMedicationDispensions: AsyncActionCreator = (personId: string) => {
+    return async (dispatch) => {
+        dispatch(medicationDispensionsSlice.actions.setIsLoading(true));
+        await loadObject<Models.Medication.MedicationDispension[]>(
+            `api/persons/${personId}/medicationDispensions`, {},
+            resolveText("MedicationDispensions_CouldNotLoad"),
+            medicationDispensions => dispatch(medicationDispensionsSlice.actions.setMedicationDispensions(medicationDispensions)),
+            () => dispatch(medicationDispensionsSlice.actions.setIsLoading(false))
+        );
+    }
+}
+export const addMedicationDispension: AsyncActionCreator = (medicationDispension: Models.Medication.MedicationDispension) => {
+    return async (dispatch) => {
+        dispatch(medicationDispensionsSlice.actions.setIsSubmitting(true));
+        await sendPostRequest(
+            `api/medicationDispensions`, 
+            resolveText("MedicationDispension_CouldNotStore"),
+            medicationDispension,
+            () => dispatch(medicationDispensionsSlice.actions.addMedicationDispension(medicationDispension)),
+            () => dispatch(medicationDispensionsSlice.actions.setIsSubmitting(false))
+        );
+    }
+}
+export const removeMedicationDispension: AsyncActionCreator = (medicationDispensionId: string) => {
+    return async (dispatch) => {
+        await deleteObject(
+            `api/medicationDispensions/${medicationDispensionId}`, {},
+            resolveText("MedicationDispension_SuccessfullyDeleted"),
+            resolveText("MedicationDispension_CouldNotDelete"),
+            () => dispatch(medicationDispensionsSlice.actions.removeMedicationDispension(medicationDispensionId)),
+            () => {}
+        );
+    }
+}

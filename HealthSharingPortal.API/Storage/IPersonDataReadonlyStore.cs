@@ -10,16 +10,17 @@ namespace HealthSharingPortal.API.Storage
 {
     public interface IPersonDataReadonlyStore<T> where T: IPersonData
     {
-        Task<List<T>> GetAllAsync(List<IPersonDataAccessGrant> accessGrants);
+        Task<List<T>> GetAllAsync(string personId, List<IPersonDataAccessGrant> accessGrants);
         Task<bool> ExistsAsync(string id, List<IPersonDataAccessGrant> accessGrants);
         Task<T> GetByIdAsync(string id, List<IPersonDataAccessGrant> accessGrants);
         Task<List<T>> SearchAsync(
+            string personId,
             Expression<Func<T, bool>> filter,
             List<IPersonDataAccessGrant> accessGrants,
             int? count = null,
             int? skip = null,
             Expression<Func<T, object>> orderBy = null,
             OrderDirection orderDirection = OrderDirection.Ascending);
-        Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> filter, List<IPersonDataAccessGrant> accessGrants);
+        Task<T> FirstOrDefaultAsync(string personId, Expression<Func<T, bool>> filter, List<IPersonDataAccessGrant> accessGrants);
     }
 }

@@ -3,12 +3,12 @@ import { Col, Row } from 'react-bootstrap';
 import { Alert } from 'react-bootstrap';
 import UserContext from '../../../localComponents/contexts/UserContext';
 import { needsHiding } from '../../../localComponents/helpers/HealthRecordEntryHelpers';
-import { HealthRecordEntryType, MedicationDispensionState } from '../../../localComponents/types/enums.d';
+import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { ViewModels } from '../../../localComponents/types/viewModels';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { canResolveText, resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { formatDate, formatDiagnosisNameAndCode, formatDiagnosticTestNameOfResult, formatDrug, formatObservationValue } from '../../helpers/Formatters';
+import { formatDate, formatDiagnosisNameAndCode, formatDiagnosticTestNameOfResult, formatDispension, formatDrug, formatObservationValue } from '../../helpers/Formatters';
 import { DiagnosticTestValueView } from '../TestResults/DiagnosticTestValueView';
 import { HidableHealthRecordEntryValue } from '../HidableHealthRecordEntryValue';
 import { unhideHealthRecordEntry } from '../../helpers/HealthRecordEntryHelpers';
@@ -55,7 +55,7 @@ export const PatientTimelineItem = (props: PatientTimelineItemProps) => {
         colorVariant = "secondary";
         symbol = "fa-medkit";
         body = (<>
-            {formatDrug(medicationDispension.drug)}: {resolveText(`MedicationDispensionState_${medicationDispension.state}`)} - {medicationDispension.value} {medicationDispension.unit}
+            {formatDrug(medicationDispension.drug)}: {formatDispension(medicationDispension)}
         </>);
     }
     else if(entry.type === HealthRecordEntryType.Document) {

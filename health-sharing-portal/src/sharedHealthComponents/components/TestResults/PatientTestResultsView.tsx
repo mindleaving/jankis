@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button, ButtonGroup, Col, FormControl, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { Models } from "../../../localComponents/types/models";
@@ -14,12 +14,7 @@ interface PatientTestResultsViewProps {
 export const PatientTestResultsView = (props: PatientTestResultsViewProps) => {
 
     const [ searchText, setSearchText ] = useState<string>('');
-    const [ filteredTestResults, setFilteredTestResults ] = useState<Models.DiagnosticTestResults.DiagnosticTestResult[]>([]);
     const [ activeCategories, setActiveCategories ] = useState<string[]>(Object.keys(TestResultCategories));
-    
-    const testResults = useAppSelector(state => state.testResults.items.filter(x => x.personId === props.personId));
-    const navigate = useNavigate();
-    const hasGenomeSequencing = testResults.some(x => x.testCodeLoinc === "86206-0");
 
     const mapLoincCategoryToOurSimplifiedCategories = (loincCategory: string) => {
         const upperLoincCategory = loincCategory.toUpperCase();
@@ -53,10 +48,10 @@ export const PatientTestResultsView = (props: PatientTestResultsViewProps) => {
         }
         return false;
     }
-    useEffect(() => {
-        setFilteredTestResults(testResults.filter(isMatch))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ testResults, searchText, activeCategories ]);
+
+    const filteredTestResults = useAppSelector(state => state.testResults.items.filter(x => x.personId === props.personId).filter(isMatch));
+    const navigate = useNavigate();
+    const hasGenomeSequencing = filteredTestResults.some(x => x.testCodeLoinc === "86206-0");
 
     const toggleCategory = (category: string) => {
         if(category === TestResultCategories.All) {
