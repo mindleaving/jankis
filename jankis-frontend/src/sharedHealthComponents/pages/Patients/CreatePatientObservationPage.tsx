@@ -6,7 +6,7 @@ import { Models } from '../../../localComponents/types/models';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { PatientAutocomplete } from '../../../sharedHealthComponents/components/Autocompletes/PatientAutocomplete';
-import { ObservationsForm } from '../../../sharedHealthComponents/components/Patients/ObservationsForm';
+import { ObservationsForm } from '../../components/Observations/ObservationsForm';
 
 interface CreatePatientObservationPageProps { }
 
@@ -44,7 +44,7 @@ export const CreatePatientObservationPage = (props: CreatePatientObservationPage
             {profileData 
             ? <ObservationsForm 
                 personId={profileData.id} 
-                onStore={() => navigate(-1)}
+                onObservationsStored={() => navigate(-1)}
             /> : null}
     </>);
 

@@ -234,7 +234,7 @@ namespace HealthSharingPortal.API.Controllers
                 httpContextAccessor);
             item.PlannedDispensions.Remove(dispension);
             await Store(store, schedule, accessGrants);
-            return Ok();
+            return Ok(dispension);
         }
 
 

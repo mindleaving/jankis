@@ -49,8 +49,7 @@ export const AccessRequestList = (props: AccessRequestListProps) => {
             `api/accessrequests`,
             {},
             resolveText("AccessRequests_CouldNotLoad"),
-            setAccessRequests,
-            () => {}
+            setAccessRequests
         );
         loadAccessRequests();
     }, []);

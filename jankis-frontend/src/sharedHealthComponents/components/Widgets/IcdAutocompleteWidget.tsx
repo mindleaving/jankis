@@ -20,6 +20,7 @@ export const IcdAutocompleteWidget = (props: WidgetProps) => {
             `api/classifications/icd11/${props.value}`, {},
             resolveText("IcdCategory_CouldNotLoad"),
             setIcdCategory,
+            () => {},
             () => setIsLoading(false)
         );
         loadIcdCategory();

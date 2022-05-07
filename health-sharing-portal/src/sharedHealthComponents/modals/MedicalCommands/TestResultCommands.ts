@@ -3,16 +3,18 @@ import { Models } from "../../../localComponents/types/models";
 import { CommandPartType } from "../../types/medicalCommandEnums";
 import { MedicalCommands } from "../../types/medicalCommandTypes";
 import { v4 as uuid } from 'uuid';
-import { sendPutRequest } from "../../../sharedCommonComponents/helpers/StoringHelpers";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { ViewModels } from "../../../localComponents/types/viewModels";
 import { formatDiagnosticTestCode } from "../../helpers/Formatters";
 import { NotificationManager } from 'react-notifications';
+import { AppDispatch } from "../../../localComponents/redux/store/healthRecordStore";
+import { addTestResult } from "../../redux/slices/testResultsSlice";
 
 export class TestResultCommands {
     personId: string;
     user: ViewModels.IUserViewModel;
     navigate: (path: string) => void;
+    dispatch: AppDispatch;
     commandHierarchy: MedicalCommands.CommandPart;
 
     addTestResult = async (commandParts: MedicalCommands.SelectedCommandPart[]) => {
@@ -60,12 +62,11 @@ export class TestResultCommands {
                 return;
         }
         let isSuccess = false;
-        await sendPutRequest(
-            `api/testresults/${testResult.id}`,
-            resolveText("TestResult_CouldNotStore"),
-            testResult,
-            response => isSuccess = response.ok
-        );
+        this.dispatch(addTestResult({
+            args: testResult,
+            body: testResult,
+            onSuccess: () => isSuccess = true
+        }));
         return isSuccess;
     }
 
@@ -86,10 +87,12 @@ export class TestResultCommands {
     constructor(
         personId: string, 
         user: ViewModels.IUserViewModel, 
-        navigate: (path: string) => void) {
+        navigate: (path: string) => void,
+        dispatch: AppDispatch) {
             this.personId = personId;
             this.user = user;
             this.navigate = navigate;
+            this.dispatch = dispatch;
             this.commandHierarchy = {
                 type: CommandPartType.Keyword,
                 keywords: ['test', 'testresult', 'lab', 'labresult' ],

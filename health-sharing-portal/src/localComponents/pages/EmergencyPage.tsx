@@ -43,6 +43,7 @@ export const EmergencyPage = (props: EmergencyPageProps) => {
             resolveText("Emergency_CouldNotEstablishGuestAccess"),
             guestEmergencyAccessRequest,
             onEmergencyGuestAccess,
+            () => {},
             () => setIsEstabilishingAccess(false)
         );
     }

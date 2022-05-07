@@ -31,16 +31,20 @@ namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
         {
             return new QuestionnaireAnswersViewModel
             {
-                AnswersId = model.Id,
-                AssignedBy = model.CreatedBy,
-                AssignedTimestamp = model.CreatedTimestamp,
+                Id = model.Id,
+                PersonId = model.PersonId,
+                Timestamp = model.Timestamp,
+                CreatedBy = model.CreatedBy,
+                Answers = model.Answers ?? new List<QuestionAnswer>(),
+                IsVerified = model.IsVerified,
+                HasBeenSeenBySharer = model.HasBeenSeenBySharer,
+                CreatedTimestamp = model.CreatedTimestamp,
                 HasAnswered = model.Answers.Any(),
-                LastChangeTimestamp = model.Timestamp,
+                QuestionCount = questionnaire.Questions.Count,
                 QuestionnaireId = questionnaire.Id,
                 QuestionnaireTitle = questionnaire.Title,
                 QuestionnaireDescription = questionnaire.Description,
-                QuestionnaireLanguage = questionnaire.Language,
-                QuestionCount = questionnaire.Questions.Count
+                QuestionnaireLanguage = questionnaire.Language
             };
         }
 

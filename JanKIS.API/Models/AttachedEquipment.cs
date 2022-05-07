@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using HealthModels;
 using TypescriptGenerator.Attributes;
 
@@ -25,8 +26,10 @@ namespace JanKIS.API.Models
             DetachmentTime = detachmentTime;
         }
 
+        [Required]
         public string Id { get; set; }
         public HealthRecordEntryType Type => HealthRecordEntryType.Equipment;
+        [Required]
         public string PersonId { get; set; }
         public string CreatedBy { get; set; }
         public DateTime Timestamp { get; set; }

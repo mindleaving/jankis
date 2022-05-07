@@ -21,6 +21,12 @@ export enum Sex {
     Female = "Female",
     Other = "Other"
 }
+export enum StorageOperation {
+    Undefined = "Undefined",
+    Created = "Created",
+    Changed = "Changed",
+    Deleted = "Deleted"
+}
 export enum ServiceAudienceType {
     All = "All",
     Role = "Role",
@@ -51,9 +57,15 @@ export enum MeasurementType {
     Weight = "Weight"
 }
 export enum MedicationDispensionState {
+    Undefined = "Undefined",
     Scheduled = "Scheduled",
     Dispensed = "Dispensed",
-    Missed = "Missed"
+    Missed = "Missed",
+    Skipped = "Skipped"
+}
+export enum MedicationSchedulePatternType {
+    PillCount = "PillCount",
+    Amount = "Amount"
 }
 export enum MedicalTextPartType {
     Text = "Text",
@@ -438,8 +450,4 @@ export enum OrderDirection {
 export enum DataRepresentationType {
     Model = "Model",
     ViewModel = "ViewModel"
-}
-export enum StorageOperation {
-    Created = "Created",
-    Changed = "Changed"
 }

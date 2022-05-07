@@ -9,6 +9,7 @@ import { IcdAutocompleteWidget } from '../../components/Widgets/IcdAutocompleteW
 import { PersonAutocompleteWidget } from '../../components/Widgets/PersonAutocompleteWidget';
 import { v4 as uuid } from 'uuid';
 import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
+import { FlatpickrTimeWidget } from '../../components/Widgets/FlatpickrTimeWidget';
 
 interface CreateDiagnosisPageProps {}
 
@@ -62,6 +63,9 @@ export const CreateDiagnosisPage = (props: CreateDiagnosisPageProps) => {
                     },
                     type: {
                         "ui:widget": "hidden"
+                    },
+                    timestamp: {
+                        "ui:widget": FlatpickrTimeWidget
                     },
                     createdBy: {
                         "ui:readonly": true,

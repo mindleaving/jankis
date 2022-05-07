@@ -6,8 +6,8 @@ import { PatientDataTabControl } from '../../../sharedHealthComponents/component
 import { PatientActionsCard } from '../../../sharedHealthComponents/components/Patients/PatientActionsCard';
 import { HealthRecordAction } from '../../../sharedHealthComponents/types/frontendTypes';
 import { useParams } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../../sharedHealthComponents/redux/store/healthRecordStore';
-import { fetchHealthRecordForPerson } from '../../../sharedHealthComponents/redux/slices/healthRecordsSlice';
+import { useAppDispatch, useAppSelector } from '../../redux/store/healthRecordStore';
+import { fetchHealthRecordForPerson } from '../../redux/actions/healthRecordActions';
 
 interface HealthRecordPageProps {}
 
@@ -22,7 +22,7 @@ export const HealthRecordPage = (props: HealthRecordPageProps) => {
         if(!personId) {
             return;
         }
-        dispatch(fetchHealthRecordForPerson(personId));
+        dispatch(fetchHealthRecordForPerson({ personId }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ personId ]);
 

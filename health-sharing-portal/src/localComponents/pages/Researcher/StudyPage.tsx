@@ -40,6 +40,7 @@ export const StudyPage = (props: StudyPageProps) => {
                 setMyAssociation(vm.myAssociation);
                 setMyEnrollment(vm.myEnrollment);
             },
+            () => {},
             () => setIsLoading(false)
         );
         loadStudyData();

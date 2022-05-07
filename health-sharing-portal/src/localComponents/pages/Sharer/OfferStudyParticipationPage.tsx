@@ -44,11 +44,12 @@ export const OfferStudyParticipationPage = (props: OfferStudyParticipationPagePr
                 setStudy(vm.study);
                 setInclusionCriteriaQuestionnaires(vm.inclusionCriteriaQuestionnaires);
                 setInclusionCriteriaSchemas(vm.inclusionCriteriaSchemas);
-                setInclusionCriteriaDatas(vm.inclusionCriteriaAnswers.map(questionnaireAnswersToFormData));
+                setInclusionCriteriaDatas(vm.inclusionCriteriaAnswers.map(x => questionnaireAnswersToFormData(x.answers)));
                 setExclusionCriteriaQuestionnaires(vm.exclusionCriteriaQuestionnaires);
                 setExclusionCriteriaSchemas(vm.exclusionCriteriaSchemas);
-                setExclusionCriteriaDatas(vm.exclusionCriteriaAnswers.map(questionnaireAnswersToFormData));
+                setExclusionCriteriaDatas(vm.exclusionCriteriaAnswers.map(x => questionnaireAnswersToFormData(x.answers)));
             },
+            () => {},
             () => setIsLoading(false)
         );
         loadStudy();

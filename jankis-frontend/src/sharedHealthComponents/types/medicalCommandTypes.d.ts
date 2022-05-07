@@ -12,6 +12,7 @@ export namespace MedicalCommands {
         objectType: string;
         autocompleteUrl: string;
         searchParameter: string;
+        orderBy?: string;
         displayFunc: (item: any) => string;
     }
     interface AutoCompleteCommandPart extends CommandPart {

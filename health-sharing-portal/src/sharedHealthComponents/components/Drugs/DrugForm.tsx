@@ -50,6 +50,7 @@ export const DrugForm = (props: DrugFormProps) => {
                 setAmountValue(item.amountValue);
                 setAmountUnit(item.amountUnit);
             },
+            () => {},
             () => setIsLoading(false)
         );
         loadDrug();
@@ -81,6 +82,7 @@ export const DrugForm = (props: DrugFormProps) => {
                     props.onDrugCreated(drug);
                 }
             },
+            () => {},
             () => setIsStoring(false)
         );
     }

@@ -23,6 +23,7 @@ export const PatientMedicationsPage = (props: PatientMedicationsPageProps) => {
             {},
             resolveText('MedicationSchedules_CouldNotLoad'),
             setMedicationSchedules,
+            () => {},
             () => setIsLoading(false)
         );
         loadMedicationSchedules();

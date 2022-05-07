@@ -91,7 +91,7 @@ namespace HealthSharingPortal.API.Controllers
                 httpContextAccessor);
             await Delete(store, dispension.Id, accessGrants);
 
-            return Ok(activeSchedule.Id);
+            return Ok(matchingItem);
         }
 
 

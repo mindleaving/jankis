@@ -1,14 +1,14 @@
-import { compareDesc, format } from 'date-fns';
-import React, { useEffect, useState } from 'react';
+import { format } from 'date-fns';
+import { useEffect, useState } from 'react';
 import { Accordion, Alert, Button, ButtonGroup, Card, Col, Row, Table } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router';
 import { AccordionCard } from '../../../sharedCommonComponents/components/AccordionCard';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
-import { ObservationsForm } from '../../../sharedHealthComponents/components/Patients/ObservationsForm';
+import { ObservationsForm } from '../../../sharedHealthComponents/components/Observations/ObservationsForm';
 import { formatPerson, formatMeasurementType, formatObservationValue } from '../../../sharedHealthComponents/helpers/Formatters';
 import { formatEquipmentMaterial } from '../../helpers/Formatters';
-import { Models } from '../../types/models';
+import { useAppSelector } from '../../redux/store/healthRecordStore';
 import { ViewModels } from '../../types/viewModels';
 
 interface PatientNursingPageProps {}
@@ -22,9 +22,9 @@ export const PatientNursingPage = (props: PatientNursingPageProps) => {
     const { personId } = useParams();
 
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
-    const [ profileData, setProfileData ] = useState<Models.Person>();
-    const [ equipments, setEquipments ] = useState<ViewModels.AttachedEquipmentViewModel[]>([]);
-    const [ observations, setObservations ] = useState<Models.Observations.Observation[]>([]);
+    const profileData = useAppSelector(x => x.persons.items.find(x => x.id === personId));
+    const equipments = useAppSelector(x => x.attachedEquipments.items.filter(x => x.personId === personId));
+    const observations = useAppSelector(x => x.observations.items.filter(x => x.personId === personId));
     const [ bodyViewType, setBodyViewType ] = useState<BodyViewType>(BodyViewType.Front);
     const [ showAddEquipmentModal, setShowAddEquipmentModal] = useState<boolean>(false);
     const [ showObservationForm, setShowObservationForm ] = useState<boolean>(false);
@@ -46,11 +46,6 @@ export const PatientNursingPage = (props: PatientNursingPageProps) => {
         );
         loadPatient();
     }, [ personId ]);
-
-    const onObservationsAdded = (newObservations: Models.Observations.Observation[]) => {
-        setObservations(observations.concat(newObservations).sort((a,b) => compareDesc(new Date(a.timestamp), new Date(b.timestamp))));
-        setShowObservationForm(false);
-    }
 
     if(isLoading || !personId || !profileData) {
         return (<h1>{resolveText('Loading...')}</h1>);
@@ -126,7 +121,7 @@ export const PatientNursingPage = (props: PatientNursingPageProps) => {
                         <Card.Body>
                             <ObservationsForm
                                 personId={personId}
-                                onStore={onObservationsAdded}
+                                onObservationsStored={() => setShowObservationForm(false)}
                             />
                         </Card.Body>
                     </Card>

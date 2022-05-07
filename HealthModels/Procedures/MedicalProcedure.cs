@@ -5,7 +5,9 @@ namespace HealthModels.Procedures
 {
     public class MedicalProcedure : IHealthRecordEntry
     {
+        [Required]
         public string Id { get; set; }
+        [Required]
         public string PersonId { get; set; }
         public HealthRecordEntryType Type => HealthRecordEntryType.Procedure;
         public string CreatedBy { get; set; }

@@ -21,6 +21,7 @@ export const PersonAutocompleteWidget = (props: WidgetProps) => {
             {},
             resolveText('Person_CouldNotLoad'),
             setPerson,
+            () => {},
             () => setIsLoading(false)
         );
         loadProfileData();

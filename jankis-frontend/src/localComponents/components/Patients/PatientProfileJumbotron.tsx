@@ -6,9 +6,10 @@ import { apiClient } from '../../../sharedCommonComponents/communication/ApiClie
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { loadObject } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { formatAge } from '../../../sharedHealthComponents/helpers/Formatters';
+import { useAppSelector } from '../../../sharedHealthComponents/redux/store/healthRecordStore';
 
 interface PatientProfileJumbotronProps {
-    profileData: Models.Person;
+    personId: string;
     bedOccupancy?: Models.BedOccupancy;
     showSubscription?: boolean
     subscription?: Models.Subscriptions.PatientSubscription;
@@ -21,9 +22,10 @@ export const PatientProfileJumbotron = (props: PatientProfileJumbotronProps) => 
         throw new Error("When subscription is shown, the onSubscriptionChanged-method must be provided");
     }
 
-    const firstName = props.profileData.firstName;
-    const lastName = props.profileData.lastName;
-    const birthDate = props.profileData.birthDate;
+    const profileData = useAppSelector(x => x.persons.items.find(x => x.id === props.personId));
+    const firstName = profileData?.firstName ?? '';
+    const lastName = profileData?.lastName ?? '';
+    const birthDate = profileData?.birthDate ?? new Date();
 
     // TODO
     const ward = props.bedOccupancy?.department.name ?? `(${resolveText('NotAdmitted')})`;
@@ -36,7 +38,7 @@ export const PatientProfileJumbotron = (props: PatientProfileJumbotronProps) => 
 
     const subscribe = async () => {
         try {
-            const response = await apiClient.instance!.post(`api/patients/${props.profileData.id}/subscribe`, {}, {}, { handleError: false });
+            const response = await apiClient.instance!.post(`api/patients/${props.personId}/subscribe`, {}, {}, { handleError: false });
             if(!(response.ok || response.status === 209)) {
                 const errorMessage = await response.text();
                 throw new Error(errorMessage);
@@ -58,7 +60,7 @@ export const PatientProfileJumbotron = (props: PatientProfileJumbotronProps) => 
     }
     const unsubscribe = async () => {
         try {
-            await apiClient.instance!.post(`api/patients/${props.profileData.id}/unsubscribe`, {}, {});
+            await apiClient.instance!.post(`api/patients/${props.personId}/unsubscribe`, {}, {});
             if(props.onSubscriptionChanged) {
                 props.onSubscriptionChanged(undefined);
             }

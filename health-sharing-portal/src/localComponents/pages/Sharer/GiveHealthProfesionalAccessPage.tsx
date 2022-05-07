@@ -34,6 +34,7 @@ export const GiveHealthProfesionalAccessPage = (props: GiveHealthProfesionalAcce
             {},
             resolveText("ReceiveAccess_CouldNotLoadAccessInvite"),
             setAccessInvite,
+            () => {},
             () => setIsLoading(false)
         );
         loadAccessInvite();

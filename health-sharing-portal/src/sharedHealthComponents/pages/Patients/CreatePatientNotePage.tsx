@@ -11,7 +11,7 @@ import { MedicalTextEditor } from '../../../sharedHealthComponents/components/Me
 import UserContext from '../../../localComponents/contexts/UserContext';
 import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
-import { useAppDispatch, useAppSelector } from '../../redux/store/healthRecordStore';
+import { useAppDispatch, useAppSelector } from '../../../localComponents/redux/store/healthRecordStore';
 import { addNote } from '../../redux/slices/notesSlice';
 
 interface CreatePatientNotePageProps {}
@@ -46,8 +46,11 @@ export const CreatePatientNotePage = (props: CreatePatientNotePageProps) => {
             return;
         }
         const note = buildNote();
-        dispatch(addNote(note));
-        navigate(-1);
+        dispatch(addNote({ 
+            args: note, 
+            body: note, 
+            onSuccess: () => navigate(-1)
+        }));
     }
     const buildNote = (): Models.PatientNote => {
         return {

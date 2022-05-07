@@ -27,3 +27,4 @@ export interface HealthRecordEntryFormProps {
 }
 export type MarkHealthRecordEntryAsSeenCallback = (entryType: HealthRecordEntryType, entryId: string, update: Update<Models.IHealthRecordEntry>) => void;
 export type MarkHealthRecordEntryAsVerifiedCallback = (entryType: HealthRecordEntryType, entryId: string, update: Update<Models.IHealthRecordEntry>) => void;
+export type DispensionStateChangeCallback = (dispensionId: string, oldState: MedicationDispensionState, newState: MedicationDispensionState) => void;

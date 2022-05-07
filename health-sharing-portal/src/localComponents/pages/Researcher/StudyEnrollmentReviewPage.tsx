@@ -25,6 +25,7 @@ export const StudyEnrollmentReviewPage = (props: StudyEnrollmentReviewPageProps)
             `api/studies/${studyId}/enrollments/${enrollmentId}`, {},
             resolveText("StudyEnrollment_CouldNotLoad"),
             setEnrollment,
+            () => {},
             () => setIsLoading(false)
         );
         loadEnrollment();
@@ -38,6 +39,7 @@ export const StudyEnrollmentReviewPage = (props: StudyEnrollmentReviewPageProps)
             resolveText("StudyEnrollment_CouldNotMarkEligible"),
             undefined,
             () => navigate(`/study/${studyId}`),
+            () => {},
             () => setIsSubmitting(false)
         );
     }
@@ -67,6 +69,7 @@ export const StudyEnrollmentReviewPage = (props: StudyEnrollmentReviewPageProps)
             resolveText("StudyEnrollment_CouldNotExclude"),
             undefined,
             () => navigate(`/study/${studyId}`),
+            () => {},
             () => setIsSubmitting(false)
         );
     }

@@ -62,6 +62,7 @@ export const AssignQuestionnairePage = (props: AssignQuestionnairePageProps) => 
             resolveText("QuestionnaireAnswers_CouldNotCreate"),
             answer,
             () => navigate(-1),
+            () => {},
             () => setIsStoring(false)
         );
     }

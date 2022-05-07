@@ -16,6 +16,7 @@ import { groupBy } from '../../sharedCommonComponents/helpers/CollectionHelpers'
 import { AutocompleteRunner } from '../../sharedCommonComponents/helpers/AutocompleteRunner';
 
 import '../styles/medical-command-line.css';
+import { useAppDispatch } from '../../localComponents/redux/store/healthRecordStore';
 
 interface MedicalCommandlineModalProps {
     personId: string;
@@ -30,11 +31,12 @@ export const MedicalCommandlineModal = (props: MedicalCommandlineModalProps) => 
     const navigate = useNavigate();
     const user = useContext(UserContext);
     const personId = props.personId;
+    const dispatch = useAppDispatch();
 
-    const diagnosisCommands = useMemo(() => new DiagnosisCommands(personId, user!, navigate), [ personId, user, navigate ]);
-    const observationCommands = useMemo(() => new ObservationCommands(personId, user!, navigate), [ personId, user, navigate ]);
-    const medicationCommands = useMemo(() => new MedicationCommands(personId, user!, navigate), [ personId, user, navigate ]);
-    const testResultCommands = useMemo(() => new TestResultCommands(personId, user!, navigate), [ personId, user, navigate ]);
+    const diagnosisCommands = useMemo(() => new DiagnosisCommands(personId, user!, navigate, dispatch), [ personId, user, navigate ]);
+    const observationCommands = useMemo(() => new ObservationCommands(personId, user!, navigate, dispatch), [ personId, user, navigate ]);
+    const medicationCommands = useMemo(() => new MedicationCommands(personId, user!, navigate, dispatch), [ personId, user, navigate ]);
+    const testResultCommands = useMemo(() => new TestResultCommands(personId, user!, navigate, dispatch), [ personId, user, navigate ]);
     const commandHierarchy: MedicalCommands.CommandPart[] = useMemo(() => [
         diagnosisCommands.commandHierarchy,
         observationCommands.commandHierarchy,
@@ -68,7 +70,7 @@ export const MedicalCommandlineModal = (props: MedicalCommandlineModalProps) => 
             ?? [];
         const selectedObjectReferences: MedicalCommands.SelectedCommandPart[] = [];
         for (const part of objectReferenceParts) {
-            const autocompleteRunner = new AutocompleteRunner(part.autocompleteUrl, part.searchParameter, 10);
+            const autocompleteRunner = new AutocompleteRunner(part.autocompleteUrl, part.searchParameter, 10, part.orderBy);
             const matches = await autocompleteRunner.search(searchText);
             for (const match of matches) {
                 const selectedObjectReference: MedicalCommands.SelectedCommandPart = {
@@ -138,7 +140,6 @@ export const MedicalCommandlineModal = (props: MedicalCommandlineModalProps) => 
             setActiveCommandParts(commandHierarchy);
             setSelectedParts([]);
         }
-        console.log(selectedParts);
         const parentCommandPart = selectedParts[selectedParts.length-2];
         setActiveCommandParts(parentCommandPart.commandPart.contextCommands);
         setSelectedParts(state => state.filter((_,index) => index < state.length - 1));

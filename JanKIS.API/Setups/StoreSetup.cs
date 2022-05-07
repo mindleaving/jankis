@@ -108,6 +108,8 @@ namespace JanKIS.API.Setups
             SetupPersonDataStores<PatientDocument>(services);
             SetupPersonDataStores<PatientNote>(services);
             SetupPersonDataStores<Person>(services);
+            services.AddScoped<IPersonStore, PersonStore>();
+            SetupTypeStores<PersonDataChange>(services);
             SetupTypeStores<PersonalizedAbbreviation>(services);
             SetupTypeStores<Questionnaire>(services);
             SetupPersonDataStores<QuestionnaireAnswers>(services);

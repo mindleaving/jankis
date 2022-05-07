@@ -27,10 +27,13 @@ namespace HealthModels.Medication
             Note = note;
         }
 
+        [Required]
         public string Id { get; set; }
         public HealthRecordEntryType Type => HealthRecordEntryType.MedicationDispension;
+        [Required]
         public string PersonId { get; set; }
         public string CreatedBy { get; set; }
+        [Required]
         public DateTime Timestamp { get; set; }
         public bool IsVerified { get; set; }
         public bool HasBeenSeenBySharer { get; set; }

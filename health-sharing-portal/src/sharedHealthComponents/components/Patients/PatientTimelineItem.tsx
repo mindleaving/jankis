@@ -12,7 +12,7 @@ import { formatDate, formatDiagnosisNameAndCode, formatDiagnosticTestNameOfResul
 import { DiagnosticTestValueView } from '../TestResults/DiagnosticTestValueView';
 import { HidableHealthRecordEntryValue } from '../HidableHealthRecordEntryValue';
 import { unhideHealthRecordEntry } from '../../helpers/HealthRecordEntryHelpers';
-import { useAppDispatch } from '../../redux/store/healthRecordStore';
+import { useAppDispatch } from '../../../localComponents/redux/store/healthRecordStore';
 
 interface PatientTimelineItemProps {
     entry: Models.IHealthRecordEntry;

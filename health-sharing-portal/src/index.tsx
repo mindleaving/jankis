@@ -10,7 +10,7 @@ import 'react-notifications/dist/react-notifications.css';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import "flatpickr/dist/themes/material_green.css";
 import { Provider } from 'react-redux';
-import healthRecordStore from './sharedHealthComponents/redux/store/healthRecordStore';
+import healthRecordStore from './localComponents/redux/store/healthRecordStore';
 
 ReactDOM.render(
     <React.StrictMode>

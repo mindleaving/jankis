@@ -3,13 +3,13 @@ import { v4 as uuid } from 'uuid';
 import { HealthRecordEntryType } from "../../localComponents/types/enums.d";
 import { ViewModels } from "../../localComponents/types/viewModels";
 
-export const questionnaireAnswersToFormData = (questionnaireAnswers: Models.Interview.QuestionnaireAnswers): { [key: string]: string } => {
+export const questionnaireAnswersToFormData = (questionnaireAnswers: Models.Interview.QuestionAnswer[]): { [key: string]: string } => {
     const formData: { [key: string]: string } = {};
     if(!questionnaireAnswers) {
         return formData;
     }
-    for (let answerIndex = 0; answerIndex < questionnaireAnswers.answers.length; answerIndex++) {
-        const answer = questionnaireAnswers.answers[answerIndex];
+    for (let answerIndex = 0; answerIndex < questionnaireAnswers.length; answerIndex++) {
+        const answer = questionnaireAnswers[answerIndex];
         formData[`Q${answerIndex+1}`] = JSON.parse(answer.answer);
     }
     return formData;

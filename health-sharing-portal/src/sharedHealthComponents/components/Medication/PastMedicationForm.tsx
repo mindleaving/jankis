@@ -73,6 +73,7 @@ export const PastMedicationForm = (props: PastMedicationFormProps) => {
             resolveText("Medication_CouldNotStore"),
             vm,
             () => navigate(-1),
+            () => {},
             () => setIsSubmitting(false)
         );
     }

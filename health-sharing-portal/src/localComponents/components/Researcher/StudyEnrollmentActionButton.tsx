@@ -46,6 +46,7 @@ export const StudyEnrollmentActionButton = (props: StudyEnrollmentActionButtonPr
             resolveText("StudyEnrollmentAction_CouldNotReject"),
             undefined,
             () => props.onStateChanged(StudyEnrollementState.Rejected),
+            () => {},
             () => setIsSubmitting(false)
         );
     };
@@ -74,6 +75,7 @@ export const StudyEnrollmentActionButton = (props: StudyEnrollmentActionButtonPr
             resolveText("StudyEnrollmentAction_CouldNotExclude"),
             undefined,
             () => props.onStateChanged(StudyEnrollementState.Excluded),
+            () => {},
             () => setIsSubmitting(false)
         );
     }

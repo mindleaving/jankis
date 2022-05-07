@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { MedicationScheduleEditor } from '../../../sharedHealthComponents/components/Patients/MedicationScheduleEditor';
+import { MedicationScheduleEditor } from '../../components/Medication/MedicationScheduleEditor';
 
 interface EditMedicationSchedulePageProps  {}
 

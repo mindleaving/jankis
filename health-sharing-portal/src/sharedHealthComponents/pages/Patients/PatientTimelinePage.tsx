@@ -3,8 +3,8 @@ import { useParams } from 'react-router';
 import { Models } from '../../../localComponents/types/models';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { PatientTimelineItem } from '../../../sharedHealthComponents/components/Patients/PatientTimelineItem';
-import { fetchHealthRecordForPerson } from '../../redux/slices/healthRecordsSlice';
-import { useAppDispatch, useAppSelector } from '../../redux/store/healthRecordStore';
+import { useAppDispatch, useAppSelector } from '../../../localComponents/redux/store/healthRecordStore';
+import { fetchHealthRecordForPerson } from '../../../localComponents/redux/actions/healthRecordActions';
 
 interface PatientTimelinePageProps {}
 
@@ -31,7 +31,9 @@ export const PatientTimelinePage = (props: PatientTimelinePageProps) => {
         if(!personId) {
             return;
         }
-        dispatch(fetchHealthRecordForPerson(personId));
+        dispatch(fetchHealthRecordForPerson({
+            personId
+        }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ personId ]);
 

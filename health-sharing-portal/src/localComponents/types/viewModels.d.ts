@@ -111,17 +111,12 @@ export namespace ViewModels {
         deployments: Models.GenomeExplorerDeployment[];
     }
 
-    interface QuestionnaireAnswersViewModel extends ViewModels.IViewModel<Models.Interview.QuestionnaireAnswers> {
-        questionnaireId: string;
+    interface QuestionnaireAnswersViewModel extends Models.Interview.QuestionnaireAnswers, ViewModels.IViewModel<Models.Interview.QuestionnaireAnswers> {
         questionnaireTitle: string;
         questionnaireDescription: string;
         questionnaireLanguage: Enums.Language;
         questionCount: number;
-        answersId: string;
         hasAnswered: boolean;
-        lastChangeTimestamp: Date;
-        assignedBy: string;
-        assignedTimestamp: Date;
     }
 
     interface StudyEnrollmentViewModel extends ViewModels.IViewModel<Models.StudyEnrollment> {

@@ -2,7 +2,7 @@ import { PatientTimelineItem } from './PatientTimelineItem';
 import { compareDesc } from 'date-fns';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { Models } from '../../../localComponents/types/models';
-import { useAppSelector } from '../../redux/store/healthRecordStore';
+import { useAppSelector } from '../../../localComponents/redux/store/healthRecordStore';
 
 interface HealthRecordOverviewProps {
     personId: string;
@@ -26,7 +26,7 @@ export const HealthRecordOverview = (props: HealthRecordOverviewProps) => {
             <div className="timelineSeparator">
                 <span className="text-secondary">{resolveText('Now')}</span>
             </div>
-            {events
+            {[...events]
                 .sort((a,b) => compareDesc(new Date(a.timestamp), new Date(b.timestamp)))
                 .map(event => (
                 <PatientTimelineItem 

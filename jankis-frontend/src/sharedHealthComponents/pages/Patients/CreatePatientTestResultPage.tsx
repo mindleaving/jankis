@@ -5,7 +5,7 @@ import { Models } from '../../../localComponents/types/models';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { PatientAutocomplete } from '../../../sharedHealthComponents/components/Autocompletes/PatientAutocomplete';
-import { TestResultsForm } from '../../components/Patients/TestResultsForm';
+import { TestResultsForm } from '../../components/TestResults/TestResultsForm';
 
 interface CreatePatientTestResultPageProps {}
 

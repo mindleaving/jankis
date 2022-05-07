@@ -20,6 +20,7 @@ export const SnomedCtAutocompleteWidget = (props: WidgetProps) => {
             `api/medicalproceduredefinitions/${props.value}`, {},
             resolveText("MedicalProcedureDefinition_CouldNotLoad"),
             setProcedureDefinition,
+            () => {},
             () => setIsLoading(false)
         );
         loadIcdCategory();

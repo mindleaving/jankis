@@ -23,6 +23,7 @@ export const QuestionnaireAutocompleteWidget = (props: WidgetProps) => {
             `api/questionnaires/${props.value}`, {},
             resolveText("Questionnaire_CouldNotLoad"),
             setItem,
+            () => {},
             () => setIsLoading(false)
         );
         loadItem();

@@ -8,11 +8,14 @@ import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer"
 import { getObjectReferenceValue } from "../../helpers/MedicalCommandHelpers";
 import { formatObservation } from "../../helpers/Formatters";
 import { ViewModels } from "../../../localComponents/types/viewModels";
+import { AppDispatch } from "../../../localComponents/redux/store/healthRecordStore";
+import { addObservation } from "../../redux/slices/observationsSlice";
 
 export class ObservationCommands {
     personId: string;
     user: ViewModels.IUserViewModel;
     navigate: (path: string) => void;
+    dispatch: AppDispatch;
     commandHierarchy: MedicalCommands.CommandPart;
 
     addPulseObservation = async (commandParts: MedicalCommands.SelectedCommandPart[]) => {
@@ -54,12 +57,11 @@ export class ObservationCommands {
             diastolic: diastolic
         };
         let isSuccess = false;
-        await sendPutRequest(
-            `api/observations/${bloodPressureObservation.id}`,
-            resolveText("Observation_CouldNotStore"),
-            bloodPressureObservation,
-            response => isSuccess = response.ok
-        );
+        this.dispatch(addObservation({
+            args: bloodPressureObservation, 
+            body: bloodPressureObservation,
+            onSuccess: (response: Response) => isSuccess = response.ok
+        }));
         return isSuccess;
     }
     addTemperatureObservation = async (commandParts: MedicalCommands.SelectedCommandPart[]) => {
@@ -77,12 +79,11 @@ export class ObservationCommands {
             unit: '°C'
         };
         let isSuccess = false;
-        await sendPutRequest(
-            `api/observations/${temperatureObservation.id}`,
-            resolveText("Observation_CouldNotStore"),
-            temperatureObservation,
-            response => isSuccess = response.ok
-        );
+        this.dispatch(addObservation({
+            args: temperatureObservation, 
+            body: temperatureObservation,
+            onSuccess: (response: Response) => isSuccess = response.ok
+        }));
         return isSuccess;
     }
     addGenericObservation = async (commandParts: MedicalCommands.SelectedCommandPart[]) => {
@@ -102,12 +103,11 @@ export class ObservationCommands {
             unit: unit
         };
         let isSuccess = false;
-        await sendPutRequest(
-            `api/observations/${genericObservation.id}`,
-            resolveText("Observation_CouldNotStore"),
-            genericObservation,
-            response => isSuccess = response.ok
-        );
+        this.dispatch(addObservation({
+            args: genericObservation, 
+            body: genericObservation,
+            onSuccess: (response: Response) => isSuccess = response.ok
+        }));
         return isSuccess;
     }
 
@@ -121,10 +121,12 @@ export class ObservationCommands {
     constructor(
         personId: string, 
         user: ViewModels.IUserViewModel, 
-        navigate: (path: string) => void) {
+        navigate: (path: string) => void,
+        dispatch: AppDispatch) {
             this.personId = personId;
             this.user = user;
             this.navigate = navigate;
+            this.dispatch = dispatch;
             this.commandHierarchy = {
                 type: CommandPartType.Keyword,
                 keywords: ['observation'],

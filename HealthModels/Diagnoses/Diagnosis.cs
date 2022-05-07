@@ -6,8 +6,10 @@ namespace HealthModels.Diagnoses
 {
     public class Diagnosis : IHealthRecordEntry
     {
+        [Required]
         public string Id { get; set; }
         public HealthRecordEntryType Type => HealthRecordEntryType.Diagnosis;
+        [Required]
         public string PersonId { get; set; }
         public string CreatedBy { get; set; }
         public DateTime Timestamp { get; set; }

@@ -6,27 +6,27 @@ import { markDocumentAsSeen } from "../redux/slices/documentsSlice";
 import { markNoteAsSeen } from "../redux/slices/notesSlice";
 import { markObservationAsSeen } from "../redux/slices/observationsSlice";
 import { markTestResultAsSeen } from "../redux/slices/testResultsSlice";
-import { AppDispatch } from "../redux/store/healthRecordStore";
+import { AppDispatch } from "../../localComponents/redux/store/healthRecordStore";
 
 export const unhideHealthRecordEntry = (dispatch: AppDispatch, entryType: HealthRecordEntryType, entryId: string) => {
     switch(entryType) {
         case HealthRecordEntryType.Note:
-            dispatch(markNoteAsSeen(entryId));
+            dispatch(markNoteAsSeen({ args: entryId }));
             break;
         case HealthRecordEntryType.Document:
-            dispatch(markDocumentAsSeen(entryId));
+            dispatch(markDocumentAsSeen({ args: entryId }));
             break;
         case HealthRecordEntryType.Observation:
-            dispatch(markObservationAsSeen(entryId));
+            dispatch(markObservationAsSeen({ args: entryId }));
             break;
         case HealthRecordEntryType.Diagnosis:
-            dispatch(markDiagnosisAsSeen(entryId));
+            dispatch(markDiagnosisAsSeen({ args: entryId }));
             break;
         case HealthRecordEntryType.Procedure:
             // A medical procedure is never hidden
             break;
         case HealthRecordEntryType.TestResult:
-            dispatch(markTestResultAsSeen(entryId));
+            dispatch(markTestResultAsSeen({ args: entryId }));
             break;
         case HealthRecordEntryType.MedicationDispension:
             // A medication dispension is never hidden

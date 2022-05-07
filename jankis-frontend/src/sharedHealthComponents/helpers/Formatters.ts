@@ -1,11 +1,14 @@
 import { differenceInYears, differenceInMonths, differenceInDays, format } from 'date-fns';
-import { Sex, MeasurementType, DiagnosticTestScaleType } from '../../localComponents/types/enums.d';
+import { Sex, MeasurementType, DiagnosticTestScaleType, MedicationDispensionState } from '../../localComponents/types/enums.d';
 import { Models } from '../../localComponents/types/models';
 import { ViewModels } from '../../localComponents/types/viewModels';
 import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
 
 export const formatDate = (date: Date) => {
     return format(date, 'yyyy-MM-dd HH:mm');
+}
+export const formatTime = (date: Date) => {
+    return format(date, 'HH:mm');
 }
 export const formatPerson = (person: Models.Person) => {
     const genderSymbol = person.sex === Sex.Male ? '♂'
@@ -118,4 +121,11 @@ export const formatDiagnosisNameAndCode = (diagnosis: ViewModels.DiagnosisViewMo
 }
 export const formatMedicalProcedureCodeAndName = (medicalProcedure: Models.Procedures.MedicalProcedure) => {
     return `SNOMED CT: ${medicalProcedure.snomedCtCode}: ${medicalProcedure.snomedCtName}`;
+}
+export const formatDispension = (dispension: Models.Medication.MedicationDispension) => {
+    let str = resolveText(`MedicationDispensionState_${dispension.state}`);
+    if(dispension.state === MedicationDispensionState.Dispensed) {
+        str += ` - ${dispension.value} ${dispension.unit}`;
+    }
+    return str;
 }

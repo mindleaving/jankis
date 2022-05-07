@@ -52,6 +52,7 @@ export const MenschIdVerificationModal = (props: MenschIdVerificationModalProps)
                 props.onVerified();
                 props.onCloseRequested();
             },
+            () => {},
             () => setIsVerifying(false)
         );
     }

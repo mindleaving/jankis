@@ -6,11 +6,14 @@ import { getObjectReferenceValue } from "../../helpers/MedicalCommandHelpers";
 import { Models } from "../../../localComponents/types/models";
 import { formatDrug } from "../../helpers/Formatters";
 import { ViewModels } from "../../../localComponents/types/viewModels";
+import { AppDispatch } from "../../../localComponents/redux/store/healthRecordStore";
+import { pauseMedication } from "../../redux/slices/medicationSchedulesSlice";
 
 export class MedicationCommands {
     personId: string;
     user: ViewModels.IUserViewModel;
     navigate: (path: string) => void;
+    dispatch: AppDispatch;
     commandHierarchy: MedicalCommands.CommandPart;
 
     addMedication = async (commandParts: MedicalCommands.SelectedCommandPart[]) => {
@@ -38,12 +41,13 @@ export class MedicationCommands {
         const medication = getObjectReferenceValue<Models.Medication.MedicationScheduleItem>(commandParts, "Medication");
         const medicationId = medication!.id;
         let isSuccess = false;
-        sendPostRequest(
-            `api/persons/${this.personId}/medications/${medicationId}/pause`,
-            resolveText("Medication_CouldNotPause"),
-            null,
-            response => isSuccess = response.ok
-        );
+        this.dispatch(pauseMedication({
+            args: {
+                itemId: medicationId
+            },
+            body: null,
+            onSuccess: () => isSuccess = true
+        }));
         return isSuccess;
     }
 
@@ -65,10 +69,12 @@ export class MedicationCommands {
     constructor(
         personId: string, 
         user: ViewModels.IUserViewModel, 
-        navigate: (path: string) => void) {
+        navigate: (path: string) => void,
+        dispatch: AppDispatch) {
             this.personId = personId;
             this.user = user;
             this.navigate = navigate;
+            this.dispatch = dispatch;
             this.commandHierarchy = {
                 type: CommandPartType.Keyword,
                 keywords: ['medication'],

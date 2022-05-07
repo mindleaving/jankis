@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useParams } from 'react-router';
-import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
+import { fetchHealthRecordForPerson } from '../../../localComponents/redux/actions/healthRecordActions';
+import { useAppSelector, useAppDispatch } from '../../../localComponents/redux/store/healthRecordStore';
 import { Models } from '../../../localComponents/types/models';
-import { ViewModels } from '../../../localComponents/types/viewModels';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { PatientTimelineItem } from '../../../sharedHealthComponents/components/Patients/PatientTimelineItem';
 
 interface PatientTimelinePageProps {}
@@ -15,37 +14,28 @@ export const PatientTimelinePage = (props: PatientTimelinePageProps) => {
 
     const { personId } = useParams();
 
-    const [ events, setEvents ] = useState<Models.IHealthRecordEntry[]>([]);
-    const [ isLoading, setIsLoading ] = useState<boolean>(true);
+    const events = useAppSelector(state => 
+        (state.notes.items as Models.IHealthRecordEntry[])
+        .concat(state.documents.items)
+        .concat(state.observations.items)
+        .concat(state.diagnoses.items)
+        .concat(state.medicalProcedures.items)
+        .concat(state.testResults.items)
+        .concat(state.medicationDispensions.items)
+        .filter(x => x.personId === personId)
+    );
+    const isLoading = useAppSelector(state => state.healthRecords.isLoading);
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if(!personId) return;
-        setIsLoading(true);
-        const loadHealthRecordEntrys = buildLoadObjectFunc<ViewModels.PatientOverviewViewModel>(
-            `api/viewmodels/healthdata/${personId}`,
-            {},
-            resolveText('Patient_CouldNotLoad'),
-            data => {
-                setEvents(
-                    (data.notes as Models.IHealthRecordEntry[])
-                    .concat(data.observations)
-                    .concat(data.testResults)
-                    .concat(data.documents)
-                    .sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()));
-            },
-            () => setIsLoading(false)
-        );
-        loadHealthRecordEntrys();
-    }, [ personId ]);
-
-    const onMarkAsSeen = (entryType: HealthRecordEntryType, entryId: string, update: Update<Models.IHealthRecordEntry>) => {
-        setEvents(state => state.map(x => {
-            if(x.type === entryType && x.id === entryId) {
-                return update(x);
-            }
-            return x;
+        if(!personId) {
+            return;
+        }
+        dispatch(fetchHealthRecordForPerson({
+            personId
         }));
-    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ personId ]);
 
     if(!personId) {
         return (<h1>{resolveText('MissingID')}</h1>);
@@ -63,7 +53,6 @@ export const PatientTimelinePage = (props: PatientTimelinePageProps) => {
             {events.map(event => (
                 <PatientTimelineItem 
                     entry={event}
-                    onMarkAsSeen={onMarkAsSeen}
                 />
             ))}
         </>

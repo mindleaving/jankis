@@ -42,6 +42,7 @@ export const CreateEmergencyAccessTokenForm = (props: CreateEmergencyAccessToken
                 const token = await response.json() as Models.AccessControl.EmergencyAccess;
                 props.onEmergencyAccessTokenCreated(token);
             },
+            () => {},
             () => setIsSubmitting(false)
         );
     }

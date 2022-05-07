@@ -90,6 +90,15 @@ export namespace Models {
         healthInsurance?: Models.HealthInsurance;
     }
 
+    interface PersonDataChange extends Models.IId {
+        type: string;
+        entryId: string;
+        changedByAccountId: string;
+        changedByPersonId: string;
+        timestamp: Date;
+        changeType: Enums.StorageOperation;
+    }
+
     interface AttachedEquipment extends Models.IHealthRecordEntry {
         equipmentType: string;
         materials: Models.MaterialReference[];
@@ -422,6 +431,12 @@ export namespace Models {
             value: number;
             state: Enums.MedicationDispensionState;
             note?: string;
+            administeredBy?: string;
+        }
+    
+        interface MedicationDosage {
+            value: number;
+            unit: string;
         }
     
         interface MedicationSchedule extends Models.IPersonData {
@@ -430,14 +445,30 @@ export namespace Models {
             note: string;
             isPaused: boolean;
             isDispendedByPatient: boolean;
+            isActive: boolean;
         }
     
         interface MedicationScheduleItem extends Models.IId {
             drug: Models.Medication.Drug;
-            dispensions: Models.Medication.MedicationDispension[];
+            plannedDispensions: Models.Medication.MedicationDispension[];
+            pattern?: Models.Medication.MedicationSchedulePattern;
+            instructions?: Models.Medication.MedicationAdministrationInstructions;
             note: string;
             isPaused: boolean;
             isDispendedByPatient: boolean;
+        }
+    
+        interface MedicationAdministrationInstructions {
+            inConjunctionWithMeal: boolean;
+        }
+    
+        interface MedicationSchedulePattern {
+            patternType: Enums.MedicationSchedulePatternType;
+            unit?: string;
+            morning: number;
+            noon: number;
+            evening: number;
+            night: number;
         }
     }
 
@@ -876,6 +907,12 @@ export namespace Models {
             isDismissed: boolean;
             submitter: string;
             timestamp: Date;
+        }
+    
+        interface MedicationScheduleNotification extends Models.Subscriptions.NotificationBase {
+            patient: Models.Person;
+            scheduleId: string;
+            storageOperation: Enums.StorageOperation;
         }
     
         interface NotificationBase extends Models.Subscriptions.INotification {

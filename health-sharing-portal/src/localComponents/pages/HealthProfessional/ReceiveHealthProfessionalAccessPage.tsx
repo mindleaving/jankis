@@ -24,6 +24,7 @@ export const ReceiveHealthProfessionalAccessPage = (props: ReceiveHealthProfessi
             `api/accessrequests/healthprofessional/${accessInviteId}`, {}, 
             resolveText("ReceiveAccess_CouldNotLoadAccessInvite"),
             setAccessInvite,
+            () => {},
             () => setIsLoading(false));
         loadAccessRequest();
     }, [ accessInviteId ]);

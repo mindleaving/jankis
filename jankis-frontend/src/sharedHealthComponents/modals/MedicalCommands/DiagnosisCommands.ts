@@ -1,22 +1,23 @@
 import { HealthRecordEntryType } from "../../../localComponents/types/enums.d";
 import { Models } from "../../../localComponents/types/models";
-import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
-import { sendPutRequest, sendPostRequest } from "../../../sharedCommonComponents/helpers/StoringHelpers";
 import { CommandPartType } from "../../types/medicalCommandEnums";
 import { v4 as uuid } from 'uuid';
 import { MedicalCommands } from "../../types/medicalCommandTypes";
 import { ViewModels } from "../../../localComponents/types/viewModels";
 import { getObjectReferenceValue } from "../../helpers/MedicalCommandHelpers";
+import { AppDispatch } from "../../../localComponents/redux/store/healthRecordStore";
+import { addDiagnosis, markDiagnosisAsResolved } from "../../redux/slices/diagnosesSlice";
 
 export class DiagnosisCommands {
 
     personId: string;
     user: ViewModels.IUserViewModel;
     navigate: (path: string) => void;
+    dispatch: AppDispatch;
     
     addDiagnosis = async (commandParts: MedicalCommands.SelectedCommandPart[]) => {
         const icdCategory = getObjectReferenceValue<Models.Icd.IcdCategory>(commandParts, "IcdCategory");
-        const diagnosis: Models.Diagnoses.Diagnosis = {
+        const diagnosis: ViewModels.DiagnosisViewModel = {
             id: uuid(),
             type: HealthRecordEntryType.Diagnosis,
             createdBy: this.user.accountId,
@@ -25,27 +26,26 @@ export class DiagnosisCommands {
             hasBeenSeenBySharer: this.user.profileData.id === this.personId,
             personId: this.personId,
             icd11Code: icdCategory!.code,
-            hasResolved: false
+            hasResolved: false,
+            name: icdCategory!.name
         };
         let isSuccess = false;
-        await sendPutRequest(
-            `api/diagnoses/${diagnosis.id}`,
-            resolveText("Diagnosis_CouldNotCreate"),
-            diagnosis,
-            response => isSuccess = response.ok
-        );
+        this.dispatch(addDiagnosis({
+            args: diagnosis,
+            body: diagnosis,
+            onSuccess: () => isSuccess = true
+        }));
         return isSuccess;
     }
     resolveDiagnosis = async (commandParts: MedicalCommands.SelectedCommandPart[]) => {
         const diagnosis = getObjectReferenceValue<ViewModels.DiagnosisViewModel>(commandParts, "Diagnosis");
         const diagnosisId = diagnosis!.id;
         let isSuccess = false;
-        await sendPostRequest(
-            `api/diagnoses/${diagnosisId}/resolve`,
-            resolveText("Diagnosis_CouldNotMarkAsResolved"),
-            null,
-            response => isSuccess = response.ok
-        );
+        this.dispatch(markDiagnosisAsResolved({
+            args: diagnosisId,
+            body: null,
+            onSuccess: () => isSuccess = true
+        }));
         return isSuccess;
     }
     editDiagnosis = async (commandParts: MedicalCommands.SelectedCommandPart[]) => {
@@ -60,10 +60,12 @@ export class DiagnosisCommands {
     constructor(
         personId: string, 
         user: ViewModels.IUserViewModel, 
-        navigate: (path: string) => void) {
+        navigate: (path: string) => void,
+        dispatch: AppDispatch) {
             this.personId = personId;
             this.user = user;
             this.navigate = navigate;
+            this.dispatch = dispatch;
             this.commandHierarchy = {
                 type: CommandPartType.Keyword,
                 keywords: ["diagnosis"],

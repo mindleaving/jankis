@@ -56,7 +56,7 @@ import { NoUserLayout } from './localComponents/components/NoUserLayout';
 import { Models } from './localComponents/types/models';
 import { CreateMedicalProcedurePage } from './sharedHealthComponents/pages/Patients/CreateMedicalProcedurePage';
 import { AddMedicationPage } from './sharedHealthComponents/pages/Medication/AddMedicationPage';
-import { reset, useAppDispatch } from './sharedHealthComponents/redux/store/healthRecordStore';
+import { reset, useAppDispatch } from './localComponents/redux/store/healthRecordStore';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";

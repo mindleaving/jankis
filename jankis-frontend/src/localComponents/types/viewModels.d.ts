@@ -102,8 +102,25 @@ export namespace ViewModels {
         hasEmergencyToken: boolean;
     }
 
+    interface CopyMedicationScheduleItemViewModel {
+        sourceScheduleId: string;
+        itemId: string;
+        targetScheduleId: string;
+    }
+
     interface DiagnosisViewModel extends Models.Diagnoses.Diagnosis, ViewModels.IViewModel<Models.Diagnoses.Diagnosis> {
         name: string;
+    }
+
+    interface DispenseMedicationViewModel {
+        scheduleId: string;
+        itemId: string;
+        dispensionId: string;
+        dispensionState: Enums.MedicationDispensionState;
+        administrationTime?: Date | null;
+        administeredBy: string;
+        note: string;
+        administeredAmount: Models.Medication.MedicationDosage;
     }
 
     interface GuestEmergencyAccessViewModel {
@@ -137,6 +154,17 @@ export namespace ViewModels {
         challengeShortId: string;
     }
 
+    interface PastMedicationViewModel {
+        personId: string;
+        drug: Models.Medication.Drug;
+        createdBy: string;
+        administeredBy?: string;
+        dosage: Models.Medication.MedicationDosage;
+        startTimestamp: Date;
+        endTimestamp: Date;
+        pattern: Models.Medication.MedicationSchedulePattern;
+    }
+
     interface PatientOverviewViewModel {
         profileData: Models.Person;
         admissions: Models.Admission[];
@@ -159,17 +187,12 @@ export namespace ViewModels {
         deployments: Models.GenomeExplorerDeployment[];
     }
 
-    interface QuestionnaireAnswersViewModel extends ViewModels.IViewModel<Models.Interview.QuestionnaireAnswers> {
-        questionnaireId: string;
+    interface QuestionnaireAnswersViewModel extends Models.Interview.QuestionnaireAnswers, ViewModels.IViewModel<Models.Interview.QuestionnaireAnswers> {
         questionnaireTitle: string;
         questionnaireDescription: string;
         questionnaireLanguage: Enums.Language;
         questionCount: number;
-        answersId: string;
         hasAnswered: boolean;
-        lastChangeTimestamp: Date;
-        assignedBy: string;
-        assignedTimestamp: Date;
     }
 
     interface QuestionnaireSchema {
