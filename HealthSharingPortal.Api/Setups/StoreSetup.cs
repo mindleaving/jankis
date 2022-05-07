@@ -73,7 +73,7 @@ namespace HealthSharingPortal.API.Setups
             SetupPersonDataStores<GenomeExplorerDeployment>(services);
             SetupTypeStores<HealthProfessionalAccess>(services);
             services.AddScoped<IHealthProfessionalAccessInviteStore, HealthProfessionalAccessInviteStore>();
-            SetupTypeStores<PersonDataChange>(services);
+            SetupPersonDataStores<Immunization>(services);
             SetupTypeStores<Login>(services);
             services.AddScoped<ILoginStore, LoginStore>();
             SetupPersonDataStores<MedicationSchedule>(services);
@@ -91,6 +91,7 @@ namespace HealthSharingPortal.API.Setups
             SetupPersonDataStores<Person>(services);
             services.AddScoped<IPersonStore, PersonStore>();
             SetupTypeStores<PersonalizedAbbreviation>(services);
+            SetupTypeStores<PersonDataChange>(services);
             SetupTypeStores<Questionnaire>(services);
             SetupPersonDataStores<QuestionnaireAnswers>(services);
             SetupTypeStores<ServiceDefinition>(services);

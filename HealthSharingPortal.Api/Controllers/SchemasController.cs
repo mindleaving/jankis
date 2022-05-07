@@ -4,6 +4,7 @@ using System.Linq;
 using HealthModels;
 using HealthModels.Diagnoses;
 using HealthModels.Interview;
+using HealthModels.Medication;
 using HealthModels.Procedures;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.ViewModels;
@@ -30,6 +31,7 @@ namespace HealthSharingPortal.API.Controllers
                 typeof(Person),
                 typeof(Questionnaire),
                 typeof(Diagnosis),
+                typeof(Immunization),
                 typeof(MedicalProcedure),
                 typeof(PastMedicationViewModel)
             }.ToDictionary(x => x.Name.ToLower(), x => x);

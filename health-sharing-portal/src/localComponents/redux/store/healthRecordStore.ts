@@ -13,6 +13,7 @@ import { medicalProceduresSlice } from '../../../sharedHealthComponents/redux/sl
 import { questionnaireAnswersSlice } from '../../../sharedHealthComponents/redux/slices/questionnaireAnswersSlice';
 import { healthRecordsSlice } from '../../../sharedHealthComponents/redux/slices/healthRecordsSlice';
 import { admissionsSlice } from '../../../sharedHealthComponents/redux/slices/admissionsSlice';
+import { immunizationsSlice } from '../../../sharedHealthComponents/redux/slices/immunizationsSlice';
 
 const appReducer = combineReducers({
     persons: personsSlice.reducer,
@@ -22,6 +23,7 @@ const appReducer = combineReducers({
     testResults: testResultsSlice.reducer,
     medicationSchedules: medicationSchedulesSlice.reducer,
     medicationDispensions: medicationDispensionsSlice.reducer,
+    immunizations: immunizationsSlice.reducer,
     notes: notesSlice.reducer,
     documents: documentsSlice.reducer,
     medicalProcedures: medicalProceduresSlice.reducer,

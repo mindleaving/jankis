@@ -29,7 +29,7 @@ namespace HealthModels.Medication
 
         [Required]
         public string Id { get; set; }
-        public HealthRecordEntryType Type => HealthRecordEntryType.MedicationDispension;
+        public virtual HealthRecordEntryType Type => HealthRecordEntryType.MedicationDispension;
         [Required]
         public string PersonId { get; set; }
         public string CreatedBy { get; set; }

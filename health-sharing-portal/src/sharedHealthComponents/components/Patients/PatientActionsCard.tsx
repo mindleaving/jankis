@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, Button, Col, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { MedicalCommandlineModal } from '../../modals/MedicalCommandlineModal';
-import { useAppDispatch } from '../../../localComponents/redux/store/healthRecordStore';
 import { HealthRecordAction } from '../../types/frontendTypes';
-import { fetchHealthRecordForPerson } from '../../../localComponents/redux/actions/healthRecordActions';
 
 interface PatientActionsCardProps {
     personId: string;
@@ -16,7 +14,6 @@ export const PatientActionsCard = (props: PatientActionsCardProps) => {
 
     const [ showCommandline, setShowCommandline] = useState<boolean>(false);
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
 
     const onKeyDown = (keyEvent: KeyboardEvent) => {
         if(keyEvent.key === "Enter" && keyEvent.altKey) {

@@ -94,6 +94,7 @@ namespace JanKIS.API.Setups
             SetupTypeStores<InstitutionPolicy>(services);
             SetupPersonDataStores<GenomeExplorerDeployment>(services);
             SetupTypeStores<HealthProfessionalAccess>(services);
+            SetupPersonDataStores<Immunization>(services);
             SetupTypeStores<Login>(services);
             services.AddScoped<ILoginStore, LoginStore>();
             SetupPersonDataStores<MedicalProcedure>(services);

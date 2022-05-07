@@ -57,6 +57,7 @@ import { Models } from './localComponents/types/models';
 import { CreateMedicalProcedurePage } from './sharedHealthComponents/pages/Patients/CreateMedicalProcedurePage';
 import { AddMedicationPage } from './sharedHealthComponents/pages/Medication/AddMedicationPage';
 import { reset, useAppDispatch } from './localComponents/redux/store/healthRecordStore';
+import { AddImmunizationPage } from './sharedHealthComponents/pages/Medication/AddImmunizationPage';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";
@@ -166,6 +167,8 @@ export const App = (props: AppProps) => {
         { path: '/healthrecord/:personId/timeline', element: <PatientTimelinePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/medications', element: <PatientMedicationsPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/add/medication', element: <AddMedicationPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/add/immunization', element: <AddImmunizationPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/edit/immunization/:id', element: <AddImmunizationPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/create/testresult', element: <CreatePatientTestResultPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/create/procedure', element: <CreateMedicalProcedurePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/edit/procedure/:entryId', element: <CreateMedicalProcedurePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},

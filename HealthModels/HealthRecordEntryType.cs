@@ -12,5 +12,6 @@
         Diagnosis = 7,
         Questionnaire = 8,
         Procedure = 9,
+        Immunization = 10,
     }
 }
