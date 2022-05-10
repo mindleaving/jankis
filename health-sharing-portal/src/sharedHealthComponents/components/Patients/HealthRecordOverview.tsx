@@ -18,6 +18,7 @@ export const HealthRecordOverview = (props: HealthRecordOverviewProps) => {
         .concat(state.medicalProcedures.items)
         .concat(state.testResults.items)
         .concat(state.medicationDispensions.items)
+        .concat(state.immunizations.items)
         .filter(x => x.personId === props.personId)
     );
 

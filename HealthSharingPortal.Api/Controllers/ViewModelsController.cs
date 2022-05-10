@@ -33,6 +33,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IPersonDataReadonlyStore<PatientNote> patientNotesStore;
         private readonly IPersonDataReadonlyStore<MedicationSchedule> medicationSchedulesStore;
         private readonly IPersonDataReadonlyStore<MedicationDispension> medicationDispensionsStore;
+        private readonly IPersonDataReadonlyStore<Immunization> immunizationsStore;
         private readonly IPersonDataReadonlyStore<DiagnosticTestResult> testResultsStore;
         private readonly IPersonDataReadonlyStore<MedicalProcedure> medicalProceduresStore;
         private readonly IPersonDataReadonlyStore<Observation> observationsStore;
@@ -57,10 +58,11 @@ namespace HealthSharingPortal.API.Controllers
             IPersonDataReadonlyStore<PatientNote> patientNotesStore, 
             IPersonDataReadonlyStore<MedicationSchedule> medicationSchedulesStore,
             IPersonDataReadonlyStore<MedicationDispension> medicationDispensionsStore, 
+            IPersonDataReadonlyStore<Immunization> immunizationsStore,
             IPersonDataReadonlyStore<DiagnosticTestResult> testResultsStore,
             IPersonDataReadonlyStore<MedicalProcedure> medicalProceduresStore,
-            IPersonDataReadonlyStore<Observation> observationsStore,
-            IPersonDataReadonlyStore<PatientDocument> documentsStore, 
+            IPersonDataReadonlyStore<Observation> observationsStore, 
+            IPersonDataReadonlyStore<PatientDocument> documentsStore,
             IStudyEnrollmentStore studyEnrollmentStore,
             IReadonlyStore<Study> studyStore,
             IReadonlyStore<StudyAssociation> studyAssociationStore,
@@ -95,6 +97,7 @@ namespace HealthSharingPortal.API.Controllers
             this.genomeExplorerDeploymentStore = genomeExplorerDeploymentStore;
             this.accountStore = accountStore;
             this.loginStore = loginStore;
+            this.immunizationsStore = immunizationsStore;
             this.medicalProceduresStore = medicalProceduresStore;
         }
 
@@ -134,6 +137,7 @@ namespace HealthSharingPortal.API.Controllers
                 .Unwrap();
             var medicationSchedules = medicationSchedulesStore.GetAllAsync(personId, accessGrants);
             var medicationDispensions = medicationDispensionsStore.GetAllAsync(personId, accessGrants);
+            var immunizations = immunizationsStore.GetAllAsync(personId, accessGrants);
             var testResults = testResultsStore.GetAllAsync(personId, accessGrants);
             var medicalProcedures = medicalProceduresStore.GetAllAsync(personId, accessGrants);
             var observations = observationsStore.GetAllAsync(personId, accessGrants);
@@ -160,6 +164,7 @@ namespace HealthSharingPortal.API.Controllers
                 diagnoses.Result.Cast<DiagnosisViewModel>().ToList(),
                 medicationSchedules.Result,
                 medicationDispensions.Result,
+                immunizations.Result,
                 testResults.Result,
                 medicalProcedures.Result,
                 observations.Result,

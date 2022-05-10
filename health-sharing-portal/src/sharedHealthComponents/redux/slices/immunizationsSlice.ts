@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Models } from "../../../localComponents/types/models";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { RemoteState } from "../../types/reduxInterfaces";
-import { loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
+import { deleteActionBuilder, loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
 
 export interface ImmunizationsState extends RemoteState<Models.Medication.Immunization> {
 }
@@ -51,4 +51,10 @@ export const addOrUpdateImmunization = postActionBuilder(
     () => resolveText("Immunization_CouldNotStore"),
     immunizationsSlice.actions.setIsSubmitting,
     immunizationsSlice.actions.addOrUpdateImmunization
+);
+export const deleteImmunization = deleteActionBuilder(
+    args => `api/immunizations/${args}`,
+    () => resolveText("Immunization_SuccessfullyDeleted"),
+    () => resolveText("Immunization_CouldNotDelete"),
+    immunizationsSlice.actions.removeImmunization
 );

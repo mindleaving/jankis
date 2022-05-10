@@ -43,6 +43,7 @@ namespace JanKIS.API.Controllers
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IPersonDataReadonlyStore<MedicationSchedule> medicationSchedulesStore;
         private readonly IPersonDataReadonlyStore<MedicationDispension> medicationDispensionsStore;
+        private readonly IPersonDataReadonlyStore<Immunization> immunizationsStore;
         private readonly IPersonDataReadonlyStore<AttachedEquipment> patientEquipmentStore;
         private readonly IViewModelBuilder<AttachedEquipment> attachedEquipmentViewModelBuilder;
         private readonly IPersonDataReadonlyStore<Diagnosis> diagnosesStore;
@@ -64,6 +65,7 @@ namespace JanKIS.API.Controllers
             IHttpContextAccessor httpContextAccessor,
             IPersonDataReadonlyStore<MedicationSchedule> medicationSchedulesStore,
             IPersonDataReadonlyStore<MedicationDispension> medicationDispensionsStore,
+            IPersonDataReadonlyStore<Immunization> immunizationsStore,
             IPersonDataReadonlyStore<AttachedEquipment> patientEquipmentStore,
             IViewModelBuilder<AttachedEquipment> attachedEquipmentViewModelBuilder,
             IViewModelBuilder<Diagnosis> diagnosisViewModelBuilder,
@@ -84,6 +86,7 @@ namespace JanKIS.API.Controllers
             this.httpContextAccessor = httpContextAccessor;
             this.medicationSchedulesStore = medicationSchedulesStore;
             this.medicationDispensionsStore = medicationDispensionsStore;
+            this.immunizationsStore = immunizationsStore;
             this.patientEquipmentStore = patientEquipmentStore;
             this.attachedEquipmentViewModelBuilder = attachedEquipmentViewModelBuilder;
             this.diagnosisViewModelBuilder = diagnosisViewModelBuilder;
@@ -110,6 +113,7 @@ namespace JanKIS.API.Controllers
                 .Unwrap();
             var medicationSchedules = medicationSchedulesStore.GetAllAsync(personId, accessGrants);
             var medicationDispensions = medicationDispensionsStore.GetAllAsync(personId, accessGrants);
+            var immunizations = immunizationsStore.GetAllAsync(personId, accessGrants);
             var testResults = testResultsStore.GetAllAsync(personId, accessGrants);
             var medicalProcedures = medicalProceduresStore.GetAllAsync(personId, accessGrants);
             var observations = observationsStore.GetAllAsync(personId, accessGrants);
@@ -141,6 +145,7 @@ namespace JanKIS.API.Controllers
                 diagnoses.Result.Cast<DiagnosisViewModel>().ToList(),
                 medicationSchedules.Result,
                 medicationDispensions.Result.OrderByDescending(x => x.Timestamp).ToList(),
+                immunizations.Result.OrderByDescending(x => x.Timestamp).ToList(),
                 testResults.Result.OrderByDescending(x => x.Timestamp).ToList(),
                 medicalProcedures.Result.OrderByDescending(x => x.Timestamp).ToList(),
                 observations.Result.OrderByDescending(x => x.Timestamp).ToList(),

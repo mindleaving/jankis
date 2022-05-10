@@ -16,6 +16,7 @@ namespace HealthSharingPortal.API.ViewModels
             List<DiagnosisViewModel> diagnoses,
             List<MedicationSchedule> medicationSchedules,
             List<MedicationDispension> medicationDispensions,
+            List<Immunization> immunizations,
             List<DiagnosticTestResult> testResults,
             List<MedicalProcedure> medicalProcedures,
             List<Observation> observations,
@@ -33,6 +34,7 @@ namespace HealthSharingPortal.API.ViewModels
             Observations = observations;
             Documents = documents;
             Questionnaires = questionnaires;
+            Immunizations = immunizations;
         }
 
         public Person ProfileData { get; set; }
@@ -41,6 +43,7 @@ namespace HealthSharingPortal.API.ViewModels
         public List<DiagnosisViewModel> Diagnoses { get; set; }
         public List<MedicationSchedule> MedicationSchedules { get; }
         public List<MedicationDispension> MedicationDispensions { get; }
+        public List<Immunization> Immunizations { get; set; }
         public List<DiagnosticTestResult> TestResults { get; set; }
         public List<MedicalProcedure> MedicalProcedures { get; }
         public List<Observation> Observations { get; set; }

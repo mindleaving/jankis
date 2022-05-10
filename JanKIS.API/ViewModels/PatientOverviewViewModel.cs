@@ -20,13 +20,26 @@ namespace JanKIS.API.ViewModels
             List<DiagnosisViewModel> diagnoses,
             List<MedicationSchedule> medicationSchedules,
             List<MedicationDispension> medicationDispensions,
+            List<Immunization> immunizations,
             List<DiagnosticTestResult> testResults,
             List<MedicalProcedure> medicalProcedures,
             List<Observation> observations,
             List<PatientDocument> documents,
             List<QuestionnaireAnswersViewModel> questionnaires,
             PatientSubscription subscription)
-            : base(profileData, admissions, notes, diagnoses, medicationSchedules, medicationDispensions, testResults, medicalProcedures, observations, documents, questionnaires)
+            : base(
+                profileData,
+                admissions,
+                notes,
+                diagnoses,
+                medicationSchedules,
+                medicationDispensions,
+                immunizations,
+                testResults,
+                medicalProcedures,
+                observations,
+                documents,
+                questionnaires)
         {
             CurrentBedOccupancy = currentBedOccupancy;
             Subscription = subscription;

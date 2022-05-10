@@ -96,6 +96,7 @@ export namespace ViewModels {
         diagnoses: ViewModels.DiagnosisViewModel[];
         medicationSchedules: Models.Medication.MedicationSchedule[];
         medicationDispensions: Models.Medication.MedicationDispension[];
+        immunizations: Models.Medication.Immunization[];
         testResults: Models.DiagnosticTestResults.DiagnosticTestResult[];
         medicalProcedures: Models.Procedures.MedicalProcedure[];
         observations: Models.Observations.Observation[];

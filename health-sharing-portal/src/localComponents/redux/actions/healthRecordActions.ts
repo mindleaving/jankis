@@ -4,6 +4,7 @@ import { admissionsSlice } from "../../../sharedHealthComponents/redux/slices/ad
 import { diagnosesSlice } from "../../../sharedHealthComponents/redux/slices/diagnosesSlice";
 import { documentsSlice } from "../../../sharedHealthComponents/redux/slices/documentsSlice";
 import { healthRecordsSlice } from "../../../sharedHealthComponents/redux/slices/healthRecordsSlice";
+import { immunizationsSlice } from "../../../sharedHealthComponents/redux/slices/immunizationsSlice";
 import { medicalProceduresSlice } from "../../../sharedHealthComponents/redux/slices/medicalProceduresSlice";
 import { medicationDispensionsSlice } from "../../../sharedHealthComponents/redux/slices/medicationDispensionsSlice";
 import { medicationSchedulesSlice } from "../../../sharedHealthComponents/redux/slices/medicationSchedulesSlice";
@@ -33,6 +34,7 @@ export const fetchHealthRecordForPerson: ApiGetPersonDataActionCreator<ViewModel
                 dispatch(diagnosesSlice.actions.setDiagnoses(vm.diagnoses));
                 dispatch(medicationSchedulesSlice.actions.setMedicationSchedules(vm.medicationSchedules));
                 dispatch(medicationDispensionsSlice.actions.setMedicationDispensions(vm.medicationDispensions));
+                dispatch(immunizationsSlice.actions.setImmunizations(vm.immunizations));
                 dispatch(observationsSlice.actions.setObservations(vm.observations));
                 dispatch(testResultsSlice.actions.setTestResults(vm.testResults));
                 dispatch(medicalProceduresSlice.actions.setMedicalProcedures(vm.medicalProcedures));

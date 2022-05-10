@@ -33,7 +33,6 @@ export const DrugsList = (props: DrugsListProps) => {
     const deleteDrug = async (id: string, name: string, force: boolean = false) => {
         if(!force) {
             openConfirmDeleteAlert(
-                id,
                 name,
                 resolveText('Drug_ConfirmDelete_Title'),
                 resolveText('Drug_ConfirmDelete_Message').replace('{0}', name),
