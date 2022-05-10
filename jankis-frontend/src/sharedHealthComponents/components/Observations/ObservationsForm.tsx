@@ -1,4 +1,4 @@
-import { FormEvent, Fragment, useState } from 'react';
+import React, { FormEvent, Fragment, useState } from 'react';
 import { PulseMeasurementForm } from './PulseMeasurementForm';
 import { BloodPressureMeasurementForm } from './BloodPressureMeasurementForm';
 import { TemperatureMeasurementForm } from './TemperatureMeasurementForm';
@@ -6,16 +6,16 @@ import { GenericMeasurementForm } from './GenericMeasurementForm';
 import { v4 as uuid } from 'uuid';
 import { Alert, Button, Col, Form, Row } from 'react-bootstrap';
 import { formatObservation } from '../../helpers/Formatters';
+import { NotificationManager } from 'react-notifications';
 import { MeasurementType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
+import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { StoreButton } from '../../../sharedCommonComponents/components/StoreButton';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { useAppDispatch, useAppSelector } from '../../../localComponents/redux/store/healthRecordStore';
-import { addObservation as addObservationToStore } from '../../../sharedHealthComponents/redux/slices/observationsSlice';
 
 interface ObservationsFormProps {
     personId: string;
-    onObservationsStored?: () => void;
+    onStore?: (observations: Models.Observations.Observation[]) => void;
 }
 interface MeasurementForm {
     id: string;
@@ -26,21 +26,23 @@ export const ObservationsForm = (props: ObservationsFormProps) => {
 
     const [ measurementForms, setMeasurementForms ] = useState<MeasurementForm[]>([]);
     const [ observations, setObservations ] = useState<Models.Observations.Observation[]>([]);
-    const isStoring = useAppSelector(x => x.observations.isSubmitting);
-    const dispatch = useAppDispatch();
+    const [isStoring, setIsStoring ] = useState<boolean>(false);
 
     const store = async (e: FormEvent) => {
         e.preventDefault();
-        for (const observation of observations) {
-            dispatch(addObservationToStore({
-                args: observation,
-                body: observation,
-                onSuccess: () => {
-                    if(props.onObservationsStored) {
-                        props.onObservationsStored();
-                    }
-                }
-            }));
+        setIsStoring(true);
+        try {
+            for (const observation of observations) {
+                await apiClient.instance!.put(`api/observations/${observation.id}`, {}, observation);
+            }
+            NotificationManager.success(resolveText('Patient_Observation_SuccessfullyStored'));
+            if(props.onStore) {
+                props.onStore(observations);
+            }
+        } catch(error: any) {
+            NotificationManager.error(error.message, resolveText('Patient_Observation_CouldNotStore'));
+        } finally {
+            setIsStoring(false);
         }
     }
 

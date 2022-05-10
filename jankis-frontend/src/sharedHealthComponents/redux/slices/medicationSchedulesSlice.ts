@@ -4,10 +4,12 @@ import { Models } from "../../../localComponents/types/models";
 import { ViewModels } from "../../../localComponents/types/viewModels";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { sendPostRequest } from "../../../sharedCommonComponents/helpers/StoringHelpers";
+import { uuid } from "../../../sharedCommonComponents/helpers/uuid";
 import { RemoteState } from "../../types/reduxInterfaces";
-import { ApiPostActionCreator } from "../../types/reduxTypes";
+import { ApiPostActionCreator, AsyncActionCreator } from "../../types/reduxTypes";
 import { deleteActionBuilder, loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
 import { medicationDispensionsSlice } from "./medicationDispensionsSlice";
+import { NotificationManager } from 'react-notifications';
 
 interface MedicationSchedulesState extends RemoteState<Models.Medication.MedicationSchedule> {
 }
@@ -113,6 +115,27 @@ export const loadMedicationSchedules = loadPersonDataActionBuilder(
     medicationSchedulesSlice.actions.setIsLoading,
     medicationSchedulesSlice.actions.setMedicationSchedules
 );
+export const createNewMedicationSchedule: AsyncActionCreator = (personId: string) => {
+    return async (dispatch) => {
+        NotificationManager.info(resolveText('MedicationSchedule_Creating...'));
+        const medicationSchedule: Models.Medication.MedicationSchedule = {
+            id: uuid(),
+            personId: personId,
+            note: '',
+            isPaused: false,
+            isDispendedByPatient: false,
+            isActive: true,
+            items: []
+        };
+        dispatch(addMedicationSchedule({
+            args: medicationSchedule,
+            body: medicationSchedule,
+            onSuccess: () => {
+                NotificationManager.success(resolveText('MedicationSchedule_SuccessfullyStored'));
+            }
+        }));
+    }
+}
 export const addMedicationSchedule = postActionBuilder(
     () => `api/medicationSchedules`, 
     () => resolveText("MedicationSchedule_CouldNotStore"),

@@ -23,7 +23,6 @@ interface MedicalCommandlineModalProps {
     show: boolean;
     closeOnSuccess?: boolean;
     onCloseRequested: () => void;
-    onCommandSuccessful?: () => void;
 }
 
 export const MedicalCommandlineModal = (props: MedicalCommandlineModalProps) => {
@@ -155,9 +154,6 @@ export const MedicalCommandlineModal = (props: MedicalCommandlineModalProps) => 
         }
         if(await lastSelectedPart.commandPart.action(selectedParts)) {
             NotificationManager.success(resolveText("MedicalCommand_SuccessfullyExecuted"));
-            if(props.onCommandSuccessful) {
-                props.onCommandSuccessful();
-            }
             if(props.closeOnSuccess) {
                 props.onCloseRequested();
             }

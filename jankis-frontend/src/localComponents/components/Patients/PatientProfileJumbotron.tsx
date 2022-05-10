@@ -6,7 +6,7 @@ import { apiClient } from '../../../sharedCommonComponents/communication/ApiClie
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { loadObject } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { formatAge } from '../../../sharedHealthComponents/helpers/Formatters';
-import { useAppSelector } from '../../../sharedHealthComponents/redux/store/healthRecordStore';
+import { useAppSelector } from '../../redux/store/healthRecordStore';
 
 interface PatientProfileJumbotronProps {
     personId: string;
@@ -22,7 +22,7 @@ export const PatientProfileJumbotron = (props: PatientProfileJumbotronProps) => 
         throw new Error("When subscription is shown, the onSubscriptionChanged-method must be provided");
     }
 
-    const profileData = useAppSelector(x => x.persons.items.find(x => x.id === props.personId));
+    const profileData = useAppSelector(state => state.persons.items.find(x => x.id === props.personId));
     const firstName = profileData?.firstName ?? '';
     const lastName = profileData?.lastName ?? '';
     const birthDate = profileData?.birthDate ?? new Date();

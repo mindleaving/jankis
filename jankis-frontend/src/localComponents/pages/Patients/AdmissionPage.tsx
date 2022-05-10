@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, ButtonGroup, Col, Row } from 'react-bootstrap';
 import { useParams } from 'react-router';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
+import { loadAdmission } from '../../../sharedHealthComponents/redux/slices/admissionsSlice';
 import { CardsAdmissionView } from '../../components/Patients/CardsAdmissionView';
 import { PatientProfileJumbotron } from '../../components/Patients/PatientProfileJumbotron';
 import { TimelineAdmissionView } from '../../components/Patients/TimelineAdmissionView';
-import { ViewModels } from '../../types/viewModels';
+import { useAppDispatch, useAppSelector } from '../../redux/store/healthRecordStore';
 
 interface AdmissionPageProps {}
 enum AdmissionViewType {
@@ -17,20 +17,16 @@ export const AdmissionPage = (props: AdmissionPageProps) => {
 
     const { admissionId } = useParams();
 
-    const [ isLoading, setIsLoading ] = useState<boolean>(true);
-    const [ admission, setAdmission ] = useState<ViewModels.PatientOverviewViewModel>();
+    const isLoading = useAppSelector(state => state.admissions.isLoading);
+    const admission = useAppSelector(state => state.admissions.items.find(x => x.id === admissionId));
     const [ viewType, setViewType ] = useState<AdmissionViewType>(AdmissionViewType.Cards);
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if(!admissionId) return;
-        const loadAdmission = buildLoadObjectFunc<ViewModels.PatientOverviewViewModel>(
-            `api/patients/${admissionId}/overviewviewmodel`,
-            {},
-            resolveText('Admission_CouldNotLoad'),
-            setAdmission,
-            () => setIsLoading(false)
-        );
-        loadAdmission();
+        if(!admissionId) {
+            return;
+        }
+        dispatch(loadAdmission({ args: admissionId }));
     }, [ admissionId ]);
 
     if(!admissionId) {
@@ -42,7 +38,7 @@ export const AdmissionPage = (props: AdmissionPageProps) => {
 
     return (
         <>
-            <PatientProfileJumbotron profileData={admission!.profileData} />
+            <PatientProfileJumbotron personId={admission!.profileData.id} />
             <Row>
                 <Col></Col>
                 <Col xs="auto">
@@ -62,13 +58,12 @@ export const AdmissionPage = (props: AdmissionPageProps) => {
                     </ButtonGroup>
                 </Col>
             </Row>
-            {viewType === AdmissionViewType.Cards 
+            {/* {viewType === AdmissionViewType.Cards 
                 ? <CardsAdmissionView admission={admission!} />
                 : <TimelineAdmissionView 
                     admission={admission!}
-                    onMarkAsSeen={() => { throw new Error("Not implemented"); }}
                 />
-            }
+            } */}
         </>
     );
 

@@ -50,7 +50,7 @@ export const PatientTimelineItem = (props: PatientTimelineItemProps) => {
             {canResolveText(`MeasurementType_${observation.measurementType}`) ? resolveText(`MeasurementType_${observation.measurementType}`) : observation.measurementType} {formatObservationValue(observation)}
         </>);
     }
-    else if(entry.type === HealthRecordEntryType.MedicationDispension) {
+    else if(entry.type === HealthRecordEntryType.MedicationDispension || entry.type === HealthRecordEntryType.Immunization) {
         const medicationDispension = entry as Models.Medication.MedicationDispension;
         colorVariant = "secondary";
         symbol = "fa-medkit";

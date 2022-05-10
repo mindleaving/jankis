@@ -425,6 +425,10 @@ export namespace Models {
             applicationSite: string;
         }
     
+        interface Immunization extends Models.Medication.MedicationDispension {
+            batchNumber?: string;
+        }
+    
         interface MedicationDispension extends Models.IHealthRecordEntry {
             drug: Models.Medication.Drug;
             unit: string;

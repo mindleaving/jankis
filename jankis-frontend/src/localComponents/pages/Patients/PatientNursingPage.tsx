@@ -4,12 +4,13 @@ import { Accordion, Alert, Button, ButtonGroup, Card, Col, Row, Table } from 're
 import { useNavigate, useParams } from 'react-router';
 import { AccordionCard } from '../../../sharedCommonComponents/components/AccordionCard';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { ObservationsForm } from '../../../sharedHealthComponents/components/Observations/ObservationsForm';
 import { formatPerson, formatMeasurementType, formatObservationValue } from '../../../sharedHealthComponents/helpers/Formatters';
+import { loadObservations } from '../../../sharedHealthComponents/redux/slices/observationsSlice';
+import { loadPerson } from '../../../sharedHealthComponents/redux/slices/personsSlice';
 import { formatEquipmentMaterial } from '../../helpers/Formatters';
-import { useAppSelector } from '../../redux/store/healthRecordStore';
-import { ViewModels } from '../../types/viewModels';
+import { loadAttachedEquipments } from '../../redux/slices/attachedEquipmentsSlice';
+import { useAppDispatch, useAppSelector } from '../../redux/store/healthRecordStore';
 
 interface PatientNursingPageProps {}
 
@@ -21,30 +22,23 @@ export const PatientNursingPage = (props: PatientNursingPageProps) => {
 
     const { personId } = useParams();
 
-    const [ isLoading, setIsLoading ] = useState<boolean>(true);
+    const isLoading = useAppSelector(state => state.persons.isLoading || state.attachedEquipments.isLoading || state.observations.isLoading);
     const profileData = useAppSelector(x => x.persons.items.find(x => x.id === personId));
     const equipments = useAppSelector(x => x.attachedEquipments.items.filter(x => x.personId === personId));
     const observations = useAppSelector(x => x.observations.items.filter(x => x.personId === personId));
     const [ bodyViewType, setBodyViewType ] = useState<BodyViewType>(BodyViewType.Front);
     const [ showAddEquipmentModal, setShowAddEquipmentModal] = useState<boolean>(false);
     const [ showObservationForm, setShowObservationForm ] = useState<boolean>(false);
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
-        if(!personId) return;
-        setIsLoading(true);
-        const loadPatient = buildLoadObjectFunc<ViewModels.PatientNursingViewModel>(
-            `api/patients/${personId}/nursingviewmodel`,
-            {},
-            resolveText('Patient_CouldNotLoad'),
-            patient => {
-                setProfileData(patient.profileData);
-                setEquipments(patient.equipments);
-                setObservations(patient.observations);
-            },
-            () => setIsLoading(false)
-        );
-        loadPatient();
+        if(!personId) {
+            return;
+        }
+        dispatch(loadPerson({ personId }));
+        dispatch(loadAttachedEquipments({ personId }));
+        dispatch(loadObservations({ personId }));
     }, [ personId ]);
 
     if(isLoading || !personId || !profileData) {
@@ -121,7 +115,7 @@ export const PatientNursingPage = (props: PatientNursingPageProps) => {
                         <Card.Body>
                             <ObservationsForm
                                 personId={personId}
-                                onObservationsStored={() => setShowObservationForm(false)}
+                                onStore={() => setShowObservationForm(false)}
                             />
                         </Card.Body>
                     </Card>

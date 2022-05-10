@@ -141,7 +141,12 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
     }
     const deleteRoom = (id: string, name: string, force: boolean = false) => {
         if (!force) {
-            openConfirmDeleteAlert(id, name, resolveText('Room_ConfirmDelete_Title'), resolveText('Room_ConfirmDelete_Message'), () => deleteRoom(id, name, true));
+            openConfirmDeleteAlert(
+                name, 
+                resolveText('Room_ConfirmDelete_Title'), 
+                resolveText('Room_ConfirmDelete_Message'), 
+                () => deleteRoom(id, name, true)
+            );
         }
         setRooms(rooms.filter(x => x.id !== id));
         setDepartments(departments.map(department => {
@@ -153,7 +158,12 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
     }
     const deleteDepartment = (id: string, name: string, force: boolean = false) => {
         if (!force) {
-            openConfirmDeleteAlert(id, name, resolveText('Department_ConfirmDelete_Title'), resolveText('Department_ConfirmDelete_Message'), () => deleteDepartment(id, name, true));
+            openConfirmDeleteAlert(
+                name, 
+                resolveText('Department_ConfirmDelete_Title'), 
+                resolveText('Department_ConfirmDelete_Message'), 
+                () => deleteDepartment(id, name, true)
+            );
         }
         setDepartments(departments.filter(x => x.id !== id));
     }

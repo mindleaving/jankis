@@ -12,7 +12,7 @@ import { DrugsFilter } from '../../types/frontendTypes';
 
 interface DrugsListProps {
     filter: DrugsFilter;
-    onDrugSelected: (drugId: string) => void;
+    onDrugSelected?: (drugId: string) => void;
     onCreateDrug?: () => void;
 }
 

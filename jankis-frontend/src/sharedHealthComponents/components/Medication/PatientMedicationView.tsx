@@ -1,7 +1,6 @@
 import { addDays } from 'date-fns';
 import { useEffect, useState } from 'react';
-import { Button, Col, FormControl, FormLabel, InputGroup, Row } from 'react-bootstrap';
-import { useNavigate } from 'react-router';
+import { Button, Col, Row, Tab, Tabs } from 'react-bootstrap';
 import { MedicationDispensionState } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
@@ -10,8 +9,10 @@ import { MedicationScheduleView } from './MedicationScheduleView';
 import { PastMedicationTable } from './PastMedicationTable';
 import { NotificationManager } from 'react-notifications';
 import { useAppDispatch, useAppSelector } from '../../../localComponents/redux/store/healthRecordStore';
-import { uuid } from '../../../sharedCommonComponents/helpers/uuid';
-import { addMedicationSchedule } from '../../redux/slices/medicationSchedulesSlice';
+import { createNewMedicationSchedule } from '../../redux/slices/medicationSchedulesSlice';
+import { MedicationScheduleSelectorRow } from './MedicationScheduleSelectorRow';
+import { ImmunizationTable } from './ImmunizationTable';
+import { useNavigate } from 'react-router-dom';
 
 interface PatientMedicationViewProps {
     personId: string;
@@ -23,8 +24,8 @@ export const PatientMedicationView = (props: PatientMedicationViewProps) => {
     const medicationSchedules = useAppSelector(state => state.medicationSchedules.items.filter(x => x.personId === props.personId));
     const medicationDispensions = useAppSelector(state => state.medicationDispensions.items.filter(x => x.personId === props.personId));
     const dispatch = useAppDispatch();
-
     const navigate = useNavigate();
+
 
     useEffect(() => {
         if(medicationSchedules.length === 0) {
@@ -47,83 +48,79 @@ export const PatientMedicationView = (props: PatientMedicationViewProps) => {
         }
         setSelectedMedicationSchedule(activeSchedule);
     }
-
-    const onCreateNewMedicationSchedule = async () => {
-        NotificationManager.info(resolveText('MedicationSchedule_Creating...'));
-        const medicationSchedule: Models.Medication.MedicationSchedule = {
-            id: uuid(),
-            personId: props.personId,
-            note: '',
-            isPaused: false,
-            isDispendedByPatient: false,
-            isActive: true,
-            items: []
-        };
-        dispatch(addMedicationSchedule({
-            args: medicationSchedule,
-            body: medicationSchedule,
-            onSuccess: () => {
-                NotificationManager.success(resolveText('MedicationSchedule_SuccessfullyStored'));
-            }
-        }));
-    }
     
     const now = new Date();
     return (
         <>
-            <Row className="mt-2">
-                <Col>
-                </Col>
-                <FormLabel column xs="auto">{resolveText('MedicationSchedule')}</FormLabel>
-                <Col xs="auto">
-                    <InputGroup>
-                        <FormControl
-                            as="select"
-                            value={selectedMedicationSchedule?.id ?? ''}
-                            onChange={(e:any) => setSelectedMedicationSchedule(medicationSchedules.find(x => x.id === e.target.value))}
-                            style={{ minWidth: '100px'}}
-                        >
-                            {medicationSchedules.map((medicationSchedule,index) => (
-                                <option key={medicationSchedule.id} value={medicationSchedule.id}>
-                                    {medicationSchedule.name ?? `${resolveText('MedicationSchedule')} #${index}`}
-                                </option>
-                            ))}
-                        </FormControl>
-                        {selectedMedicationSchedule
-                        ? <i className="fa fa-edit clickable m-2" style={{ fontSize: '20px'}} onClick={() => navigate(`/medicationschedules/${selectedMedicationSchedule.id}/edit`)} />
-                        : null}
-                    </InputGroup>
-                </Col>
-            </Row>
-            {selectedMedicationSchedule
-            ? <>
-                <h3>{resolveText("Medication_UpcomingDispensions")}</h3>
-                <MedicationScheduleView
-                    medicationSchedule={selectedMedicationSchedule}
-                    onSwitchToActive={switchToActiveMedicationSchedule}
-                />
-            </>
-            : <Row>
-                <Col className="text-center">
-                    {resolveText('MedicationSchedule_NoneSelected')}
-                    <div>
-                        <Button onClick={onCreateNewMedicationSchedule} size="lg">{resolveText('CreateNew')}</Button>
-                    </div>
-                </Col>
-            </Row>}
-            <div className='mt-3'>
-                <h3>{resolveText("Medication_PastDispensions")}</h3>
-                <MedicationDispensionChart
-                    medicationDispensions={medicationDispensions.filter(x => x.state === MedicationDispensionState.Dispensed)}
-                    groupBy={x => x.drug.id}
-                    defaultTimeRangeStart={addDays(now, -180)}
-                    defaultTimeRangeEnd={addDays(now, 3)}
-                />
-                <PastMedicationTable
-                    medicationDispensions={medicationDispensions}
-                />
-            </div>
-            <div style={{ height: '200px'}}></div>
+            <Tabs 
+                defaultActiveKey='upcoming'
+                className='mt-3'
+            >
+                <Tab 
+                    eventKey='upcoming'
+                    title={resolveText("Medication_UpcomingDispensions")}
+                >
+                    <MedicationScheduleSelectorRow
+                        medicationSchedules={medicationSchedules}
+                        selectedMedicationSchedule={selectedMedicationSchedule}
+                        onSelectionChanged={setSelectedMedicationSchedule}
+                    />
+                    {selectedMedicationSchedule
+                    ? <>
+                        <h3>{}</h3>
+                        <MedicationScheduleView
+                            medicationSchedule={selectedMedicationSchedule}
+                            onSwitchToActive={switchToActiveMedicationSchedule}
+                        />
+                    </>
+                    : <Row>
+                        <Col className="text-center">
+                            {resolveText('MedicationSchedule_NoneSelected')}
+                            <div>
+                                <Button 
+                                    onClick={() => dispatch(createNewMedicationSchedule(props.personId))} 
+                                    size="lg"
+                                >
+                                    {resolveText('CreateNew')}
+                                </Button>
+                            </div>
+                        </Col>
+                    </Row>}
+                </Tab>
+                <Tab 
+                    eventKey='past'
+                    title={resolveText("Medication_PastDispensions")}
+                >
+                    <MedicationDispensionChart
+                        medicationDispensions={medicationDispensions.filter(x => x.state === MedicationDispensionState.Dispensed)}
+                        groupBy={x => x.drug.id}
+                        defaultTimeRangeStart={addDays(now, -180)}
+                        defaultTimeRangeEnd={addDays(now, 3)}
+                    />
+                    <PastMedicationTable
+                        personId={props.personId}
+                    />
+                </Tab>
+                <Tab 
+                    eventKey='immunizations'
+                    title={resolveText("Immunizations")}
+                >
+                    <Row>
+                        <Col></Col>
+                        <Col xs="auto">
+                            <Button 
+                                onClick={() => navigate(`/healthrecord/${props.personId}/add/immunization`)}
+                                className="m-3"
+                            >
+                                {resolveText("CreateNew")}
+                            </Button>
+                        </Col>
+                    </Row>
+                    <ImmunizationTable
+                        personId={props.personId}
+                    />
+                </Tab>
+            </Tabs>
         </>
     );
 

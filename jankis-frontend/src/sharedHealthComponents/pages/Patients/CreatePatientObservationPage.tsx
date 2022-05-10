@@ -44,7 +44,7 @@ export const CreatePatientObservationPage = (props: CreatePatientObservationPage
             {profileData 
             ? <ObservationsForm 
                 personId={profileData.id} 
-                onObservationsStored={() => navigate(-1)}
+                onStore={() => navigate(-1)}
             /> : null}
     </>);
 

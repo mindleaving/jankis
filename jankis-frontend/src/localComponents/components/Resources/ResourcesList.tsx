@@ -28,7 +28,6 @@ export const ResourcesList = (props: ResourcesListProps) => {
     const deleteResource = async (id: string, name: string, force: boolean = false) => {
         if(!force) {
             openConfirmDeleteAlert(
-                id,
                 name,
                 resolveText('Resource_ConfirmDelete_Title'),
                 resolveText('Resource_ConfirmDelete_Message').replace('{0}', name),

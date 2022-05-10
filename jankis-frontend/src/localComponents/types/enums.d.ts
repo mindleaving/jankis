@@ -13,7 +13,8 @@ export enum HealthRecordEntryType {
     Equipment = "Equipment",
     Diagnosis = "Diagnosis",
     Questionnaire = "Questionnaire",
-    Procedure = "Procedure"
+    Procedure = "Procedure",
+    Immunization = "Immunization"
 }
 export enum Sex {
     Both = "Both",

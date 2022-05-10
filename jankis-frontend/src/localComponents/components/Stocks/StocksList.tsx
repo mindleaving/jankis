@@ -28,7 +28,6 @@ export const StocksList = (props: StocksListProps) => {
     const deleteStock = async (id: string, name: string, force: boolean = false) => {
         if(!force) {
             openConfirmDeleteAlert(
-                id,
                 name,
                 resolveText('Stock_ConfirmDelete_Title'),
                 resolveText('Stock_ConfirmDelete_Message').replace('{0}', name),

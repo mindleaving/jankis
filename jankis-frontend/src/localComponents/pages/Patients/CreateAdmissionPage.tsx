@@ -78,7 +78,7 @@ export const CreateAdmissionPage = (props: CreateAdmissionPageProps) => {
                     <Col></Col>
                     <Col>
                         <PatientProfileJumbotron
-                            profileData={person}
+                            personId={person.id}
                         />
                     </Col>
                 </Row> : null}

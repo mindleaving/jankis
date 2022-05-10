@@ -40,7 +40,6 @@ export const PersonsList = (props: PersonsListProps) => {
     const deletePerson = async (id: string, name: string, force: boolean = false) => {
         if(!force) {
             openConfirmDeleteAlert(
-                id,
                 name,
                 resolveText('Person_ConfirmDelete_Title'),
                 resolveText('Person_ConfirmDelete_Message'),

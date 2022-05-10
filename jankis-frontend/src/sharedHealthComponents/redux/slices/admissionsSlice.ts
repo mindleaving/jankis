@@ -3,7 +3,7 @@ import { Models } from "../../../localComponents/types/models";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { RemoteState } from "../../types/reduxInterfaces";
 import { ApiGetPersonDataActionCreator, ApiPostActionCreator } from "../../types/reduxTypes";
-import { loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
+import { loadActionBuilder, loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
 
 interface AdmissionsState extends RemoteState<Models.Admission> {
 }
@@ -37,11 +37,18 @@ export const admissionsSlice = createSlice({
     }
 });
 
-export const loadAdmissions: ApiGetPersonDataActionCreator<Models.Admission[]> = loadPersonDataActionBuilder(
+export const loadAdmissions = loadPersonDataActionBuilder(
     personId => `api/persons/${personId}/admissions`,
     () => resolveText("Admissions_CouldNotLoad"),
     admissionsSlice.actions.setIsLoading,
     admissionsSlice.actions.setAdmissions
+);
+
+export const loadAdmission = loadActionBuilder(
+    args => `api/admissions/${args}`,
+    () => resolveText("Admission_CouldNotLoad"),
+    admissionsSlice.actions.setIsLoading,
+    admissionsSlice.actions.addOrUpdateAdmission
 );
 
 export const addAdmission: ApiPostActionCreator<Models.Admission, Models.Admission> = postActionBuilder(

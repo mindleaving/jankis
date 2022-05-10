@@ -1,12 +1,9 @@
-import React from 'react';
 import { PatientTimelineItem } from '../../../sharedHealthComponents/components/Patients/PatientTimelineItem';
-import { MarkHealthRecordEntryAsSeenCallback } from '../../../sharedHealthComponents/types/frontendTypes';
 import { Models } from '../../types/models';
 import { ViewModels } from '../../types/viewModels';
 
 interface TimelineAdmissionViewProps {
     admission: ViewModels.PatientOverviewViewModel;
-    onMarkAsSeen: MarkHealthRecordEntryAsSeenCallback;
 }
 
 export const TimelineAdmissionView = (props: TimelineAdmissionViewProps) => {
@@ -20,7 +17,6 @@ export const TimelineAdmissionView = (props: TimelineAdmissionViewProps) => {
             {events.map(x => (
                 <PatientTimelineItem 
                     entry={x}
-                    onMarkAsSeen={props.onMarkAsSeen}
                 />
             ))}
         </>

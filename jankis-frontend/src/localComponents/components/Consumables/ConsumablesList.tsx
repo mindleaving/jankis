@@ -35,7 +35,6 @@ export const ConsumablesList = (props: ConsumablesListProps) => {
     const deleteConsumable = async (id: string, name: string, force: boolean = false) => {
         if(!force) {
             openConfirmDeleteAlert(
-                id,
                 name,
                 resolveText('Consumable_ConfirmDelete_Title'),
                 resolveText('Consumable_ConfirmDelete_Message').replace('{0}', name),

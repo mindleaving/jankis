@@ -29,7 +29,7 @@ export const InstitutionsListPage = (props: InstitutionsListPageProps) => {
     const deleteInstitution = (id: string, name: string, force: boolean = false) => {
         if(!force) {
             openConfirmDeleteAlert(
-                id, name,
+                name,
                 resolveText('Institution_ConfirmDelete_Title'),
                 resolveText('Institution_ConfirmDelete_Message'),
                 () => deleteInstitution(id, name, true)

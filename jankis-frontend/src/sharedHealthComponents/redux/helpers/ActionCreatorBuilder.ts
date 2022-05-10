@@ -2,7 +2,7 @@ import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
 import { deleteObject } from "../../../sharedCommonComponents/helpers/DeleteHelpers";
 import { loadObject } from "../../../sharedCommonComponents/helpers/LoadingHelpers";
 import { sendPostRequest } from "../../../sharedCommonComponents/helpers/StoringHelpers";
-import { ApiDeleteActionCreator, ApiGetPersonDataActionCreator, ApiPostActionCreator } from "../../types/reduxTypes";
+import { ApiDeleteActionCreator, ApiGetActionCreator, ApiGetPersonDataActionCreator, ApiPostActionCreator } from "../../types/reduxTypes";
 
 
 export const postActionBuilder = <ArgsType extends unknown, BodyType extends unknown>(
@@ -43,6 +43,29 @@ export const loadPersonDataActionBuilder = <T extends unknown>(
             dispatch(setIsLoading(true));
             await loadObject<T>(
                 apiPathBuilder(personId), {},
+                errorTextBuilder(),
+                item => {
+                    dispatch(setItem(item));
+                    if(onSuccess) {
+                        onSuccess(item);
+                    }
+                },
+                onFailure,
+                () => dispatch(setIsLoading(false))
+            );
+        }
+    }
+}
+export const loadActionBuilder = <ArgsType extends unknown,ItemType extends unknown>(
+    apiPathBuilder: (args: any) => string,
+    errorTextBuilder: () => string,
+    setIsLoading: ActionCreatorWithPayload<boolean>,
+    setItem: ActionCreatorWithPayload<ItemType>): ApiGetActionCreator<ArgsType,ItemType> => {
+    return ({ args, onSuccess, onFailure }) => {
+        return async (dispatch) => {
+            dispatch(setIsLoading(true));
+            await loadObject<ItemType>(
+                apiPathBuilder(args), {},
                 errorTextBuilder(),
                 item => {
                     dispatch(setItem(item));

@@ -41,7 +41,6 @@ export const ServicesList = (props: ServicesListProps) => {
     const deleteService = async (id: string, name: string, force: boolean = false) => {
         if(!force) {
             openConfirmDeleteAlert(
-                id, 
                 name,
                 resolveText('Service_ConfirmDelete_Title'),
                 resolveText('Service_ConfirmDelete_Message'),

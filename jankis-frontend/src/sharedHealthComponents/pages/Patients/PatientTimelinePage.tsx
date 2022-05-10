@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router';
-import { fetchHealthRecordForPerson } from '../../../localComponents/redux/actions/healthRecordActions';
-import { useAppSelector, useAppDispatch } from '../../../localComponents/redux/store/healthRecordStore';
 import { Models } from '../../../localComponents/types/models';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { PatientTimelineItem } from '../../../sharedHealthComponents/components/Patients/PatientTimelineItem';
+import { useAppDispatch, useAppSelector } from '../../../localComponents/redux/store/healthRecordStore';
+import { fetchHealthRecordForPerson } from '../../../localComponents/redux/actions/healthRecordActions';
 
 interface PatientTimelinePageProps {}
 

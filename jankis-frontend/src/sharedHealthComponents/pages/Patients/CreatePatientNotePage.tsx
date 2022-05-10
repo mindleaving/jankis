@@ -11,8 +11,8 @@ import { MedicalTextEditor } from '../../../sharedHealthComponents/components/Me
 import UserContext from '../../../localComponents/contexts/UserContext';
 import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
-import { addNote } from '../../redux/slices/notesSlice';
 import { useAppDispatch, useAppSelector } from '../../../localComponents/redux/store/healthRecordStore';
+import { addNote } from '../../redux/slices/notesSlice';
 
 interface CreatePatientNotePageProps {}
 
