@@ -1,8 +1,6 @@
-import { Button } from 'react-bootstrap';
 import { DiagnosticTestScaleType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
-import { downloadFile } from '../../../sharedCommonComponents/communication/FileDownloader';
-import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
+import { DocumentButtons } from './DocumentButtons';
 
 interface DiagnosticTestValueViewProps {
     testResult: Models.DiagnosticTestResults.DiagnosticTestResult;
@@ -18,14 +16,7 @@ export const DiagnosticTestValueView = (props: DiagnosticTestValueViewProps) => 
         </>);
     } else if(testResult.scaleType === DiagnosticTestScaleType.Document) {
         const documentTestResult = testResult as Models.DiagnosticTestResults.DocumentDiagnosticTestResult;
-        return (<>
-            <Button 
-                size="sm" 
-                onClick={() => downloadFile(`api/documents/${documentTestResult.documentId}/download`)}
-            >
-                {resolveText('Download')}
-            </Button>
-        </>);
+        return (<DocumentButtons documentId={documentTestResult.documentId} />);
     } else if(testResult.scaleType === DiagnosticTestScaleType.Quantitative) {
         const quantitiveResult = testResult as Models.DiagnosticTestResults.QuantitativeDiagnosticTestResult;
         return (<>

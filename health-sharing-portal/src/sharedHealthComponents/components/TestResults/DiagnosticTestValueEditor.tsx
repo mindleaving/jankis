@@ -186,7 +186,7 @@ const DocumentValueEditor = (props: DiagnosticTestValueEditorProps) => {
         setIsUploading(true);
         try {
             const document: Models.PatientDocument = {
-                id: uuid(),
+                id: documentId ?? uuid(),
                 type: HealthRecordEntryType.Document,
                 isVerified: false,
                 hasBeenSeenBySharer: user!.profileData.id === props.testResult.personId,
@@ -216,7 +216,7 @@ const DocumentValueEditor = (props: DiagnosticTestValueEditorProps) => {
         {file ?
             <Alert variant="info" dismissible onClose={() => setFile(undefined)}>
                 {file.name} 
-                {!isFileUploaded ? <AsyncButton 
+                {!isFileUploaded ? <AsyncButton
                     size="sm"
                     className='mx-2'
                     activeText={resolveText('Upload')}

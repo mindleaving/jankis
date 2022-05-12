@@ -1,7 +1,7 @@
 import { compareDesc } from 'date-fns';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { useAppSelector } from '../../../localComponents/redux/store/healthRecordStore';
-import { PatientDocumentView } from './PatientDocumentView';
+import { PatientDocumentTimelineItem } from './PatientDocumentTimelineItem';
 
 interface PatientDocumentsViewProps {
     personId: string;
@@ -18,7 +18,7 @@ export const PatientDocumentsView = (props: PatientDocumentsViewProps) => {
         {[...documents]
             .sort((a,b) => compareDesc(new Date(a.timestamp), new Date(b.timestamp)))
             .map(document => (
-                <PatientDocumentView
+                <PatientDocumentTimelineItem
                     key={document.id}
                     document={document}
                 />

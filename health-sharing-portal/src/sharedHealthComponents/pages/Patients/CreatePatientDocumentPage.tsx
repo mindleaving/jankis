@@ -13,6 +13,8 @@ import { StoreButton } from '../../../sharedCommonComponents/components/StoreBut
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { PatientAutocomplete } from '../../components/Autocompletes/PatientAutocomplete';
+import { useAppDispatch, useAppSelector } from '../../../localComponents/redux/store/healthRecordStore';
+import { addDocument } from '../../redux/slices/documentsSlice';
 
 interface CreatePatientDocumentPageProps {}
 
@@ -22,10 +24,12 @@ export const CreatePatientDocumentPage = (props: CreatePatientDocumentPageProps)
     const user = useContext(UserContext);
 
     const [ profileData, setProfileData ] = useState<Models.Person>();
+    const [ timestamp, setTimestamp ] = useState<Date>(new Date());
     const [ note, setNote ] = useState<string>('');
     const [ file, setFile ] = useState<File>();
-    const [ isStoring, setIsStoring ] = useState<boolean>(false);
+    const isStoring = useAppSelector(state => state.documents.isSubmitting);
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
     const documentId = useMemo(() => uuid(), []);
 
     useEffect(() => {
@@ -49,18 +53,20 @@ export const CreatePatientDocumentPage = (props: CreatePatientDocumentPageProps)
             NotificationManager.error(resolveText('PleaseSelect_Patient'));
             return;
         }
-        setIsStoring(true);
-        try {
-            const document = buildDocument();
-            await apiClient.instance!.put(`api/documents/${documentId}`, {}, document);
-            await apiClient.instance!.put(`api/documents/${documentId}/upload`, {}, file, { stringifyBody: false });
-            NotificationManager.success(resolveText('Patient_Document_SuccessfullyStored'));
-            navigate(-1);
-        } catch(error: any) {
-            NotificationManager.error(error.message, resolveText('Patient_Document_CouldNotStore'));
-        } finally {
-            setIsStoring(false);
-        }
+        const document = buildDocument();
+        dispatch(addDocument({
+            args: document,
+            body: document,
+            onSuccess: async () => {
+                try {
+                    await apiClient.instance!.put(`api/documents/${documentId}/upload`, {}, file, { stringifyBody: false });
+                    NotificationManager.success(resolveText('Document_SuccessfullyUploaded'));
+                    navigate(-1);
+                } catch(error:any) {
+                    NotificationManager.error(error.message, resolveText('Document_CouldNotUpload'));
+                }
+            }
+        }));
     }
     const buildDocument = (): Models.PatientDocument => {
         return {
@@ -68,7 +74,7 @@ export const CreatePatientDocumentPage = (props: CreatePatientDocumentPageProps)
             type: HealthRecordEntryType.Document,
             personId: profileData!.id,
             createdBy: user!.accountId,
-            timestamp: new Date(),
+            timestamp: timestamp,
             isVerified: false,
             hasBeenSeenBySharer: user!.profileData.id === profileData!.id,
             note: note,
@@ -89,6 +95,12 @@ export const CreatePatientDocumentPage = (props: CreatePatientDocumentPageProps)
                         />
                     </Col>
                 </FormGroup>
+                <RowFormGroup
+                    type='datetime'
+                    label={resolveText("Document_Timestamp")}
+                    value={timestamp}
+                    onChange={setTimestamp}
+                />
                 <RowFormGroup
                     label={resolveText('Patient_Document_Note')}
                     value={note}

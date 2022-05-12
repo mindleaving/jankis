@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Commons.Misc;
 using HealthSharingPortal.API.AccessControl;
@@ -74,7 +75,12 @@ namespace HealthSharingPortal.API.Setups
 
                             // If the request is for our hub...
                             var path = context.HttpContext.Request.Path;
-                            if (!string.IsNullOrEmpty(accessToken) && (path.StartsWithSegments(AccessRequestHub.Route)))
+                            if (!string.IsNullOrEmpty(accessToken)
+                                && (
+                                    path.StartsWithSegments(AccessRequestHub.Route)
+                                    || path.StartsWithSegments("/api/documents")
+                                )
+                            )
                             {
                                 // Read the token out of the query string
                                 context.Token = accessToken;

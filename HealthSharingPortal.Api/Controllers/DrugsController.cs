@@ -9,6 +9,7 @@ using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HealthSharingPortal.API.Controllers
 {
@@ -24,6 +25,33 @@ namespace HealthSharingPortal.API.Controllers
         {
             this.autocompleteCache = autocompleteCache;
         }
+
+        [HttpGet("immunizations")]
+        public async Task<IActionResult> GetImmunizations(
+            [FromQuery] string searchText,
+            [FromQuery] int? count = null,
+            [FromQuery] int? skip = 0,
+            [FromQuery] string orderBy = null,
+            [FromQuery] OrderDirection orderDirection = OrderDirection.Ascending,
+            [FromQuery] Language language = Language.en)
+        {
+            Expression<Func<Drug, bool>> searchExpression;
+            if(!string.IsNullOrWhiteSpace(searchText))
+            {
+                var searchTerms = SearchTermSplitter.SplitAndToLower(searchText);
+                searchExpression = BuildSearchExpression(searchTerms);
+            }
+            else
+            {
+                searchExpression = x => true;
+            }
+            searchExpression = SearchExpressionBuilder.And(searchExpression, x => x.Type == DrugType.Immunization);
+            var orderByExpression = BuildOrderByExpression(orderBy);
+            var items = await store.SearchAsync(searchExpression, count, skip, orderByExpression, orderDirection);
+            var transformedItems = await TransformItems(items, language);
+            return Ok(transformedItems);
+        }
+
 
         protected override Task<object> TransformItem(
             Drug item,

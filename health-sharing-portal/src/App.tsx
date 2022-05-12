@@ -58,6 +58,7 @@ import { CreateMedicalProcedurePage } from './sharedHealthComponents/pages/Patie
 import { AddMedicationPage } from './sharedHealthComponents/pages/Medication/AddMedicationPage';
 import { reset, useAppDispatch } from './localComponents/redux/store/healthRecordStore';
 import { AddImmunizationPage } from './sharedHealthComponents/pages/Medication/AddImmunizationPage';
+import { CreateEditDrugPage } from './sharedHealthComponents/pages/Medication/CreateEditDrugPage';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";
@@ -137,6 +138,7 @@ export const App = (props: AppProps) => {
         audience: AccountType[];
     };
     const routes: Route[] = [
+        { path: "/create/drug", element: <CreateEditDrugPage />, audience: [ AccountType.Admin, AccountType.HealthProfessional, AccountType.Researcher, AccountType.Sharer ]},
         { path: '/create/study', element: <CreateEditStudyPage />, audience: [ AccountType.Researcher ]},
         { path: '/edit/study/:id', element: <CreateEditStudyPage />, audience: [ AccountType.Researcher ]},
         { path: '/study/:studyId', element: <StudyPage />, audience: [ AccountType.Researcher, AccountType.Sharer, AccountType.Admin ]},

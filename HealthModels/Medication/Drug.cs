@@ -6,6 +6,7 @@ namespace HealthModels.Medication
     public class Drug : IId
     {
         public string Id { get; set; }
+        public DrugType Type { get; set; }
         public string Brand { get; set; }
         public string ProductName { get; set; }
         [OfferAutocomplete(Context = "DrugActiveIngredients")]
@@ -17,5 +18,11 @@ namespace HealthModels.Medication
         public double AmountValue { get; set; }
         [OfferAutocomplete(Context = "DrugApplicationSite")]
         public string ApplicationSite { get; set; }
+    }
+
+    public enum DrugType
+    {
+        Unknown = 0,
+        Immunization = 1
     }
 }

@@ -1,6 +1,6 @@
 import React, { FormEvent, useEffect, useState } from 'react';
-import { Form, FormGroup, Row, FormLabel, Col, InputGroup, Button, FormControl } from 'react-bootstrap';
-import { AutoCompleteContext } from '../../../localComponents/types/enums.d';
+import { Form, FormGroup, Row, FormLabel, Col, InputGroup, Button, FormControl, FormCheck } from 'react-bootstrap';
+import { AutoCompleteContext, DrugType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { ListFormControl } from '../../../sharedCommonComponents/components/ListFormControl';
 import { MemoryFormControl } from '../../../sharedCommonComponents/components/MemoryFormControl';
@@ -21,6 +21,7 @@ export const DrugForm = (props: DrugFormProps) => {
 
     const [ isLoading, setIsLoading ] = useState<boolean>(false);
     const [ id, setId ] = useState<string>(props.drugId ?? uuid());
+    const [ isImmunization, setIsImmunization ] = useState<boolean>(false);
     const [ productName, setProductName ] = useState<string>('');
     const [ brand, setBrand ] = useState<string>('');
     const [ newActiveIngredient, setNewActiveIngredient ] = useState<string>('');
@@ -42,6 +43,7 @@ export const DrugForm = (props: DrugFormProps) => {
             {},
             resolveText('Drug_CouldNotLoad'),
             item => {
+                setIsImmunization(item.type === DrugType.Immunization);
                 setProductName(item.productName);
                 setBrand(item.brand);
                 setActiveIngredients(item.activeIngredients);
@@ -89,6 +91,7 @@ export const DrugForm = (props: DrugFormProps) => {
     const buildDrug = (): Models.Medication.Drug => {
         return {
             id: id,
+            type: isImmunization ? DrugType.Immunization : DrugType.Unknown,
             productName: productName,
             brand: brand,
             activeIngredients: activeIngredients,
@@ -104,6 +107,16 @@ export const DrugForm = (props: DrugFormProps) => {
     }
     return (
         <Form onSubmit={store}>
+            <FormGroup as={Row}>
+                <Col></Col>
+                <Col>
+                    <FormCheck
+                        checked={isImmunization}
+                        onChange={(e:any) => setIsImmunization(e.target.checked)}
+                        label={resolveText("Drug_IsImmunization")}
+                    />
+                </Col>
+            </FormGroup>
             <RowFormGroup required
                 label={resolveText('Drug_ProductName')}
                 value={productName}

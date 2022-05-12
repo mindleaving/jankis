@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Models } from "../../../localComponents/types/models";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { RemoteState } from "../../types/reduxInterfaces";
-import { loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
+import { loadActionBuilder, loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
 
 interface DocumentsState extends RemoteState<Models.PatientDocument> {
 }
@@ -53,6 +53,12 @@ export const loadDocuments = loadPersonDataActionBuilder(
     () => resolveText("Documents_CouldNotLoad"),
     documentsSlice.actions.setIsLoading,
     documentsSlice.actions.setDocuments
+);
+export const loadDocument = loadActionBuilder(
+    args => `api/documents/${args}`,
+    () => resolveText("Document_CouldNotLoad"),
+    documentsSlice.actions.setIsLoading,
+    documentsSlice.actions.addOrUpdateDocument
 );
 export const addDocument = postActionBuilder(
     () => `api/documents`, 

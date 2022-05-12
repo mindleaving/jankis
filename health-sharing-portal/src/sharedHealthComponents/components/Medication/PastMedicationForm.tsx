@@ -1,5 +1,5 @@
 import React, { FormEvent, useContext, useEffect, useState } from 'react';
-import { Form, FormControl, FormGroup, FormLabel, InputGroup } from 'react-bootstrap';
+import { Button, Form, FormControl, FormGroup, FormLabel, InputGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import UserContext from '../../../localComponents/contexts/UserContext';
 import { AutoCompleteContext, MedicationSchedulePatternType } from '../../../localComponents/types/enums.d';
@@ -109,10 +109,18 @@ export const PastMedicationForm = (props: PastMedicationFormProps) => {
             </FormGroup>
             <FormGroup>
                 <FormLabel>{resolveText("Drug")}</FormLabel>
-                <DrugAutocomplete required
-                    value={drug} 
-                    onChange={setDrug}
-                />
+                <InputGroup>
+                    <DrugAutocomplete required
+                        value={drug} 
+                        onChange={setDrug}
+                    />
+                    <Button
+                        onClick={() => navigate("/create/drug")}
+                        className="mx-2"
+                    >
+                        {resolveText("CreateNew")}
+                    </Button>
+                </InputGroup>
             </FormGroup>
             <FormGroup>
                 <FormLabel>{resolveText("Medication_Pattern")}</FormLabel>
