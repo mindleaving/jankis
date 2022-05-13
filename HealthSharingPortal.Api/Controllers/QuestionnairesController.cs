@@ -75,6 +75,7 @@ namespace HealthSharingPortal.API.Controllers
         }
 
         [HttpGet("{questionnaireId}/answers/{answerId}")]
+        [HttpGet("/api/questionnaireAnswers/{answerId}")]
         public async Task<IActionResult> GetAnswer(
             [FromRoute] string questionnaireId,
             [FromRoute] string answerId)
@@ -83,11 +84,32 @@ namespace HealthSharingPortal.API.Controllers
             var answer = await answersStore.GetByIdAsync(answerId, accessGrants);
             if (answer == null)
                 return NotFound();
-            if (answer.QuestionnaireId != questionnaireId)
+            if (questionnaireId != null && answer.QuestionnaireId != questionnaireId)
                 return NotFound();
             var answerVM = await TransformItem(answer);
             return Ok(answerVM);
         }
+
+        [HttpDelete("{questionnaireId}/answers/{answerId}")]
+        [HttpDelete("/api/questionnaireAnswers/{answerId}")]
+        public async Task<IActionResult> DeleteAnswer(
+            [FromRoute] string questionnaireId,
+            [FromRoute] string answerId)
+        {
+            var accessGrants = await GetAccessGrants();
+            var answer = await answersStore.GetByIdAsync(answerId, accessGrants);
+            if (answer == null)
+                return NotFound();
+            if (questionnaireId != null && answer.QuestionnaireId != questionnaireId)
+                return NotFound();
+            await PersonDataControllerHelpers.Delete(
+                answersStore,
+                answer.Id,
+                accessGrants,
+                httpContextAccessor);
+            return Ok();
+        }
+
 
         private async Task<List<IPersonDataAccessGrant>> GetAccessGrants()
         {

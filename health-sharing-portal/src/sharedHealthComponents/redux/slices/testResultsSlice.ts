@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Models } from "../../../localComponents/types/models";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { RemoteState } from "../../types/reduxInterfaces";
-import { loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
+import { deleteActionBuilder, loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
 
 
 interface TestResultsState extends RemoteState<Models.DiagnosticTestResults.DiagnosticTestResult> {
@@ -34,6 +34,9 @@ export const testResultsSlice = createSlice({
                 state.items.push(item);
             }
         },
+        removeTestResult: (state, action: PayloadAction<string>) => {
+            state.items = state.items.filter(x => x.id !== action.payload);
+        },
         markTestResultAsSeen: (state, action: PayloadAction<string>) => {
             const matchingItem = state.items.find(x => x.id === action.payload);
             if(matchingItem) {
@@ -60,6 +63,12 @@ export const addTestResult = postActionBuilder(
     () => resolveText("TestResult_CouldNotStore"),
     testResultsSlice.actions.setIsSubmitting,
     testResultsSlice.actions.addOrUpdateTestResult
+);
+export const deleteTestResult = deleteActionBuilder(
+    args => `api/testResults/${args}`,
+    () => resolveText("TestResult_SuccessfullyDeleted"),
+    () => resolveText("TestResult_CouldNotDelete"),
+    testResultsSlice.actions.removeTestResult
 );
 export const markTestResultAsSeen = postActionBuilder(
     testResultId => `api/testResults/${testResultId}/seen`, 

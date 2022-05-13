@@ -26,7 +26,6 @@ namespace HealthSharingPortal.API.Controllers
             T item)
         {
             item.CreatedBy = ControllerHelpers.GetAccountId(httpContextAccessor);
-            item.Timestamp = DateTime.UtcNow;
             return await base.CreateOrReplace(id, item);
         }
 

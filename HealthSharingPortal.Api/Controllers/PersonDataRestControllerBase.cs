@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Threading.Tasks;
 using HealthModels;
 using HealthModels.Interview;
@@ -52,7 +53,8 @@ namespace HealthSharingPortal.API.Controllers
         }
 
         [HttpGet]
-        public Task<IActionResult> GetMany(
+        [HttpGet("search")]
+        public virtual Task<IActionResult> GetMany(
             string searchText,
             int? count = null,
             int? skip = null,

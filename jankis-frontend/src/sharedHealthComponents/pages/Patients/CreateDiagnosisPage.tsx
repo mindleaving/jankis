@@ -10,6 +10,10 @@ import { PersonAutocompleteWidget } from '../../components/Widgets/PersonAutocom
 import { v4 as uuid } from 'uuid';
 import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
 import { FlatpickrTimeWidget } from '../../components/Widgets/FlatpickrTimeWidget';
+import { useAppDispatch } from '../../../localComponents/redux/store/healthRecordStore';
+import { addDiagnosis } from '../../redux/slices/diagnosesSlice';
+import { ViewModels } from '../../../localComponents/types/viewModels';
+import { loadObject } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 
 interface CreateDiagnosisPageProps {}
 
@@ -18,6 +22,7 @@ export const CreateDiagnosisPage = (props: CreateDiagnosisPageProps) => {
     const { personId } = useParams();
     const user = useContext(UserContext);
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     if(!personId) {
         return (<h3>{resolveText("NoPersonIdSpecified")}</h3>);
@@ -29,8 +34,21 @@ export const CreateDiagnosisPage = (props: CreateDiagnosisPageProps) => {
     }
 
     const submit = async (diagnosis: Models.Diagnoses.Diagnosis) => {
-        await apiClient.instance!.put(`api/diagnoses/${diagnosis.id}`, {}, diagnosis);
-        navigate(-1);
+        let icdCategoryItem: Models.Icd.IcdCategory | undefined;
+        await loadObject<Models.Icd.IcdCategory>(
+            `api/classifications/icd11/${diagnosis.icd11Code}`, {},
+            resolveText("ICD11_CouldNotLoad"),
+            item => icdCategoryItem = item
+        );
+        const diagnosisVM: ViewModels.DiagnosisViewModel = {
+            ...diagnosis,
+            name: icdCategoryItem?.name ?? diagnosis.icd11Code
+        };
+        dispatch(addDiagnosis({
+            args: diagnosisVM,
+            body: diagnosis,
+            onSuccess: () => navigate(-1)
+        }));
     }
 
     const diagnosis: Models.Diagnoses.Diagnosis = {
@@ -50,7 +68,7 @@ export const CreateDiagnosisPage = (props: CreateDiagnosisPageProps) => {
             <h1>{resolveText("Diagnosis")}</h1>
             <GenericTypeCreateEditPage<Models.Diagnoses.Diagnosis>
                 typeName='diagnosis'
-                paramName='entryId'
+                paramName='id'
                 item={diagnosis}
                 itemLoader={loadDiagnoses}
                 onSubmit={submit}
@@ -73,6 +91,9 @@ export const CreateDiagnosisPage = (props: CreateDiagnosisPageProps) => {
                     },
                     icd11Code: {
                         "ui:widget": IcdAutocompleteWidget
+                    },
+                    resolvedTimestamp: {
+                        "ui:widget": FlatpickrTimeWidget
                     }
                 }}
             />

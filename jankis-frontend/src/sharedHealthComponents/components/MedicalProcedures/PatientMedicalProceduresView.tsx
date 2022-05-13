@@ -1,7 +1,6 @@
-import React from 'react';
 import { Table } from 'react-bootstrap';
-import { formatDate, formatMedicalProcedureCodeAndName } from '../../helpers/Formatters';
 import { useAppSelector } from '../../../localComponents/redux/store/healthRecordStore';
+import { MedicalProcedureTableRow } from './MedicalProcedureTableRow';
 
 interface PatientMedicalProceduresViewProps {
     personId: string;
@@ -16,15 +15,10 @@ export const PatientMedicalProceduresView = (props: PatientMedicalProceduresView
             <Table hover>
                 <tbody>
                     {medicalProcedures.map(medicalProcedure => (
-                        <tr key={medicalProcedure.id}>
-                            <td>
-                                <strong>{formatMedicalProcedureCodeAndName(medicalProcedure)}</strong>
-                                <div><small>{formatDate(new Date(medicalProcedure.timestamp))}</small></div>
-                            </td>
-                            <td>
-                                <small>{medicalProcedure.note}</small>
-                            </td>
-                        </tr>
+                        <MedicalProcedureTableRow
+                            key={medicalProcedure.id}
+                            medicalProcedure={medicalProcedure}
+                        />
                     ))}
                 </tbody>
             </Table>

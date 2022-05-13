@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { Table } from 'react-bootstrap';
-import { formatDate, formatMeasurementType, formatObservationValue } from '../../helpers/Formatters';
+import { formatDate, formatMeasurementType, formatObservation, formatObservationValue } from '../../helpers/Formatters';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { MeasurementType } from '../../../localComponents/types/enums.d';
@@ -11,7 +11,8 @@ import UserContext from '../../../localComponents/contexts/UserContext';
 import { HidableHealthRecordEntryValue } from '../HidableHealthRecordEntryValue';
 import { needsHiding } from '../../../localComponents/helpers/HealthRecordEntryHelpers';
 import { useAppDispatch, useAppSelector } from '../../../localComponents/redux/store/healthRecordStore';
-import { markObservationAsSeen } from '../../redux/slices/observationsSlice';
+import { deleteObservation, markObservationAsSeen } from '../../redux/slices/observationsSlice';
+import { openConfirmDeleteAlert } from '../../../sharedCommonComponents/helpers/AlertHelpers';
 
 interface PatientObservationsViewProps {
     personId: string;
@@ -188,6 +189,16 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
         }));
     }
 
+    const dispatchDeleteObservation = (observationId: string) => {
+        const observation = observations.find(x => x.id === observationId)!;
+        openConfirmDeleteAlert(
+            formatObservation(observation),
+            resolveText("Observation_Delete_Title"),
+            resolveText("Observation_Delete_Message"),
+            () => dispatch(deleteObservation({ args: observationId }))
+        );
+    }
+
     return (<>
         <Chart
             options={chartOptions}
@@ -217,6 +228,12 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
                             </HidableHealthRecordEntryValue>
                         </td>
                         <td>{observation.createdBy}</td>
+                        <td>
+                            <i
+                                className='fa fa-trash red clickable'
+                                onClick={() => dispatchDeleteObservation(observation.id)}
+                            />
+                        </td>
                     </tr>
                 ))}
             </tbody>

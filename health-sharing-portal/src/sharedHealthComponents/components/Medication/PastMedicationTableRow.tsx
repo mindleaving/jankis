@@ -7,6 +7,8 @@ import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer'
 import { formatDrug, formatDate, formatDispension } from '../../helpers/Formatters';
 import { moveDispensionBackToSchedule } from '../../redux/slices/medicationSchedulesSlice';
 import { useAppDispatch } from '../../../localComponents/redux/store/healthRecordStore';
+import { openConfirmDeleteAlert } from '../../../sharedCommonComponents/helpers/AlertHelpers';
+import { deleteMedicationDispension } from '../../redux/slices/medicationDispensionsSlice';
 
 interface PastMedicationTableRowProps {
     dispensions: Models.Medication.MedicationDispension[];
@@ -27,6 +29,15 @@ export const PastMedicationTableRow = (props: PastMedicationTableRowProps) => {
             }
         }));
     }
+
+    const dispatchDeleteDispension = (dispensionId: string, dispensionName: string) => {
+        openConfirmDeleteAlert(
+            dispensionName,
+            resolveText("MedicationDispension_Delete_Title"),
+            resolveText("MedicationDispension_Delete_Message"),
+            () => dispatch(deleteMedicationDispension({ args: dispensionId }))
+        );
+    }
     
     return (
         <tr>
@@ -45,8 +56,16 @@ export const PastMedicationTableRow = (props: PastMedicationTableRowProps) => {
                         <tbody>
                             {props.dispensions.map(dispension => {
                                 const canMoveToSchedule = differenceInHours(now, new Date(dispension.timestamp)) < 24;
+                                const formattedTime = formatDate(new Date(dispension.timestamp));
+                                const dispensionName = `${dispension.drug.productName} (${formattedTime})`;
                                 return (
                                     <tr key={dispension.id}>
+                                        <td>
+                                            <i 
+                                                className='fa fa-trash red clickable' 
+                                                onClick={() => dispatchDeleteDispension(dispension.id, dispensionName)}
+                                            />
+                                        </td>
                                         <td>{formatDate(new Date(dispension.timestamp))}</td>
                                         <td>{resolveText(`MedicationDispensionState_${dispension.state}`)}</td>
                                         <td>{dispension.state === MedicationDispensionState.Dispensed ? `${dispension.value} ${dispension.unit}` : ''}</td>

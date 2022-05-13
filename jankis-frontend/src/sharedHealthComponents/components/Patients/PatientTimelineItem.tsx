@@ -13,6 +13,7 @@ import { DiagnosticTestValueView } from '../TestResults/DiagnosticTestValueView'
 import { HidableHealthRecordEntryValue } from '../HidableHealthRecordEntryValue';
 import { unhideHealthRecordEntry } from '../../helpers/HealthRecordEntryHelpers';
 import { useAppDispatch } from '../../../localComponents/redux/store/healthRecordStore';
+import { DocumentButtons } from '../TestResults/DocumentButtons';
 
 interface PatientTimelineItemProps {
     entry: Models.IHealthRecordEntry;
@@ -63,7 +64,7 @@ export const PatientTimelineItem = (props: PatientTimelineItemProps) => {
         colorVariant = "secondary";
         symbol = "fa-file";
         body = (<>
-           {resolveText('HealthRecordEntryType_Document')}: <a href={apiClient.instance!.buildUrl(`api/documents/${document.id}/download`, {})} download>{document.fileName}</a>
+            <DocumentButtons documentId={document.id} /> {document.fileName}
         </>)
     }
     else if(entry.type === HealthRecordEntryType.TestResult) {

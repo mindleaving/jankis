@@ -33,6 +33,8 @@ namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
             ISharedAccess model,
             IViewModelBuilderOptions<ISharedAccess> options = null)
         {
+            if (options == null)
+                options = new AccessViewModelBuilderOptions();
             var viewModels = await BatchBuild(new List<ISharedAccess> { model }, options);
             if (viewModels.Count != 1)
                 throw new Exception("Could not build view model for shared access");

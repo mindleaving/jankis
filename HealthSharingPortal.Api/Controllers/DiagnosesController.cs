@@ -52,7 +52,7 @@ namespace HealthSharingPortal.API.Controllers
             Diagnosis item,
             Language language = Language.en)
         {
-            return await viewModelBuilder.Build(item);
+            return await viewModelBuilder.Build(item, new DiagnosisViewModelBuilderOptions { Language = language });
         }
 
         protected override Expression<Func<Diagnosis, object>> BuildOrderByExpression(

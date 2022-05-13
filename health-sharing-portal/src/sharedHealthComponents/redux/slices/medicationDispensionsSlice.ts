@@ -52,7 +52,7 @@ export const addMedicationDispension = postActionBuilder(
     medicationDispensionsSlice.actions.setIsSubmitting,
     medicationDispensionsSlice.actions.addOrUpdateMedicationDispension
 );
-export const removeMedicationDispension = deleteActionBuilder(
+export const deleteMedicationDispension = deleteActionBuilder(
     medicationDispensionId => `api/medicationDispensions/${medicationDispensionId}`,
     () => resolveText("MedicationDispension_SuccessfullyDeleted"),
     () => resolveText("MedicationDispension_CouldNotDelete"),

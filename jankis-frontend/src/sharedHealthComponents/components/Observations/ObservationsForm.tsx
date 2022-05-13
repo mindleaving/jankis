@@ -35,12 +35,12 @@ export const ObservationsForm = (props: ObservationsFormProps) => {
             for (const observation of observations) {
                 await apiClient.instance!.put(`api/observations/${observation.id}`, {}, observation);
             }
-            NotificationManager.success(resolveText('Patient_Observation_SuccessfullyStored'));
+            NotificationManager.success(resolveText('Observation_SuccessfullyStored'));
             if(props.onStore) {
                 props.onStore(observations);
             }
         } catch(error: any) {
-            NotificationManager.error(error.message, resolveText('Patient_Observation_CouldNotStore'));
+            NotificationManager.error(error.message, resolveText('Observation_CouldNotStore'));
         } finally {
             setIsStoring(false);
         }

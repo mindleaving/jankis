@@ -13,25 +13,25 @@ export const CardsAdmissionView = (props: CardsAdmissionViewProps) => {
     return (
         <Accordion>
             <AccordionCard
-                title={resolveText('Patient_PreexistingConditions')}
+                title={resolveText('PreexistingConditions')}
                 eventKey="preexistingConditions"
             >
 
             </AccordionCard>
             <AccordionCard
-                title={resolveText('Patient_Medications')}
+                title={resolveText('Medications')}
                 eventKey="medication"
             >
 
             </AccordionCard>
             <AccordionCard
-                title={resolveText('Patient_Treatments')}
+                title={resolveText('Treatments')}
                 eventKey="treatments"
             >
 
             </AccordionCard>
             <AccordionCard
-                title={resolveText('Patient_TestDiagnostics')}
+                title={resolveText('TestDiagnostics')}
                 eventKey="tests"
             >
 

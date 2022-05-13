@@ -1,19 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels;
 using HealthModels.Interview;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
+using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HealthSharingPortal.API.Controllers
 {
     public class PersonsController : PersonDataRestControllerBase<Person>
     {
+        private readonly IPersonStore store;
+
         public PersonsController(
             IPersonStore store,
             IHttpContextAccessor httpContextAccessor,
@@ -21,6 +23,39 @@ namespace HealthSharingPortal.API.Controllers
             IReadonlyStore<PersonDataChange> changeStore)
             : base(store, httpContextAccessor, authorizationModule, changeStore)
         {
+            this.store = store;
+        }
+
+        [HttpGet]
+        [HttpGet("search")]
+        public override async Task<IActionResult> GetMany(
+            string searchText,
+            int? count = null,
+            int? skip = null,
+            string orderBy = null,
+            OrderDirection orderDirection = OrderDirection.Ascending,
+            Language language = Language.en)
+        {
+            Expression<Func<Person, bool>> searchExpression;
+            if(!string.IsNullOrWhiteSpace(searchText))
+            {
+                var searchTerms = SearchTermSplitter.SplitAndToLower(searchText);
+                searchExpression = BuildSearchExpression(searchTerms);
+            }
+            else
+            {
+                searchExpression = x => true;
+            }
+            var accessGrants = await GetAccessGrants();
+            var orderExpression = BuildOrderByExpression(orderBy);
+            var items = await store.SearchAsync(
+                searchExpression,
+                accessGrants,
+                count,
+                skip,
+                orderExpression,
+                orderDirection);
+            return Ok(items);
         }
 
         protected override Task<object> TransformItem(

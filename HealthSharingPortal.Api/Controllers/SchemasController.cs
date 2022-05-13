@@ -45,6 +45,7 @@ namespace HealthSharingPortal.API.Controllers
             var type = exposedTypes[lowerTypeName];
             var jsonSchema = JsonSchema.FromType(type, new JsonSchemaGeneratorSettings
             {
+                AlwaysAllowAdditionalObjectProperties = true,
                 SerializerSettings = new JsonSerializerSettings
                 {
                     ContractResolver = new CamelCasePropertyNamesContractResolver(),

@@ -7,7 +7,7 @@ import { AccordionCard } from '../../../sharedCommonComponents/components/Accord
 import { openConfirmDeleteAlert } from '../../../sharedCommonComponents/helpers/AlertHelpers';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { formatDrug, formatDate, formatDispension } from '../../helpers/Formatters';
-import { deleteImmunization as deleteImmunizationFromStore } from '../../redux/slices/immunizationsSlice';
+import { deleteImmunization } from '../../redux/slices/immunizationsSlice';
 
 interface ImmunizationTableRowProps {
     immunizations: Models.Medication.Immunization[];
@@ -20,14 +20,12 @@ export const ImmunizationTableRow = (props: ImmunizationTableRowProps) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const deleteImmunization = (immunizationId: string, immunizationName: string) => {
+    const dispatchDeleteImmunization = (immunizationId: string, immunizationName: string) => {
         openConfirmDeleteAlert(
             immunizationName,
             resolveText("Immunization_ConfirmDelete_Title"),
             resolveText("Immunization_ConfirmDelete_Description"),
-            () => dispatch(deleteImmunizationFromStore({ 
-                args: immunizationId
-            }))
+            () => dispatch(deleteImmunization({ args: immunizationId }))
         );
     }
     return (
@@ -61,7 +59,10 @@ export const ImmunizationTableRow = (props: ImmunizationTableRowProps) => {
                                 return (
                                     <tr key={immunization.id}>
                                         <td>
-                                            <i className='fa fa-trash red clickable' onClick={() => deleteImmunization(immunization.id, immunizationName)} />
+                                            <i 
+                                                className='fa fa-trash red clickable' 
+                                                onClick={() => dispatchDeleteImmunization(immunization.id, immunizationName)}
+                                            />
                                         </td>
                                         <td>{formattedTime}</td>
                                         <td>{resolveText(`MedicationDispensionState_${immunization.state}`)}</td>

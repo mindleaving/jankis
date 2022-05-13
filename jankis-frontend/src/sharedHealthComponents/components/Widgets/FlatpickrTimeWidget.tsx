@@ -15,7 +15,7 @@ export const FlatpickrTimeWidget = (props: WidgetProps) => {
                     time_24hr: true
                 }}
                 value={props.value}
-                onChange={(dates: Date[], dateStr: string) => props.onChange(dates[0].toISOString())}
+                onChange={(dates: Date[]) => props.onChange(dates[0].toISOString())}
             />
         </FormGroup>
     );

@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Models } from "../../../localComponents/types/models";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { RemoteState } from "../../types/reduxInterfaces";
-import { loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
+import { deleteActionBuilder, loadActionBuilder, loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
 
 interface DocumentsState extends RemoteState<Models.PatientDocument> {
 }
@@ -33,6 +33,9 @@ export const documentsSlice = createSlice({
                 state.items.push(item);
             }
         },
+        removeDocument: (state, action: PayloadAction<string>) => {
+            state.items = state.items.filter(x => x.id !== action.payload);
+        },
         markDocumentAsSeen: (state, action: PayloadAction<string>) => {
             const matchingItem = state.items.find(x => x.id === action.payload);
             if(matchingItem) {
@@ -54,11 +57,23 @@ export const loadDocuments = loadPersonDataActionBuilder(
     documentsSlice.actions.setIsLoading,
     documentsSlice.actions.setDocuments
 );
+export const loadDocument = loadActionBuilder(
+    args => `api/documents/${args}`,
+    () => resolveText("Document_CouldNotLoad"),
+    documentsSlice.actions.setIsLoading,
+    documentsSlice.actions.addOrUpdateDocument
+);
 export const addDocument = postActionBuilder(
     () => `api/documents`, 
     () => resolveText("Document_CouldNotStore"),
     documentsSlice.actions.setIsSubmitting,
     documentsSlice.actions.addOrUpdateDocument
+);
+export const deleteDocument = deleteActionBuilder(
+    args => `api/documents/${args}`,
+    () => resolveText("Document_SuccessfullyDeleted"),
+    () => resolveText("Document_CouldNotDelete"),
+    documentsSlice.actions.removeDocument
 );
 export const markDocumentAsSeen = postActionBuilder(
     documentId => `api/documents/${documentId}/seen`, 

@@ -1,17 +1,19 @@
-import React, { FormEvent, useContext, useEffect, useState } from 'react';
+import { FormEvent, useContext, useEffect, useState } from 'react';
 import { Button, Col, Form, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Models } from '../../../localComponents/types/models';
 import { StoreButton } from '../../../sharedCommonComponents/components/StoreButton';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { PatientAutocomplete } from '../../components/Autocompletes/PatientAutocomplete';
 import { NotificationManager } from 'react-notifications';
-import { sendPostRequest } from '../../../sharedCommonComponents/helpers/StoringHelpers';
 import { v4 as uuid } from 'uuid';
 import { QuestionnaireAutocomplete } from '../../components/Autocompletes/QuestionnaireAutocomplete';
 import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
 import UserContext from '../../../localComponents/contexts/UserContext';
+import { useAppDispatch, useAppSelector } from '../../../localComponents/redux/store/healthRecordStore';
+import { loadPerson } from '../../redux/slices/personsSlice';
+import { addQuestionnaireAnswer } from '../../redux/slices/questionnaireAnswersSlice';
+import { ViewModels } from '../../../localComponents/types/viewModels';
 
 interface AssignQuestionnairePageProps {}
 
@@ -19,20 +21,23 @@ export const AssignQuestionnairePage = (props: AssignQuestionnairePageProps) => 
 
     const { personId } = useParams();
     const user = useContext(UserContext);
-    const [ person, setPerson ] = useState<Models.Person>();
+    const matchedProfileData = useAppSelector(state => state.persons.items.find(x => x.id === personId));
+    const [ person, setPerson ] = useState<Models.Person | undefined>(matchedProfileData);
     const [ questionnaire, setQuestionnaire ] = useState<Models.Interview.Questionnaire>();
-    const [ isStoring, setIsStoring ] = useState<boolean>(false);
+    const isStoring = useAppSelector(state => state.questionnaireAnswers.isSubmitting);
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
         if(!personId) return;
-        const loadProfileData = buildLoadObjectFunc<Models.Person>(
-            `api/persons/${personId}`, {},
-            resolveText('Patient_CouldNotLoad'),
-            setPerson
-        );
-        loadProfileData();
+        dispatch(loadPerson({ personId }));
     }, [ personId ]);
+
+    useEffect(() => {
+        if(!person) {
+            setPerson(matchedProfileData);
+        }
+    }, [ matchedProfileData ]);
 
     const store = async (e: FormEvent) => {
         e.preventDefault();
@@ -50,21 +55,34 @@ export const AssignQuestionnairePage = (props: AssignQuestionnairePageProps) => 
             personId: person.id,
             questionnaireId: questionnaire.id,
             createdBy: user!.accountId,
-            createdTimestamp: new Date(),
-            timestamp: new Date(),
+            createdTimestamp: new Date().toISOString() as any,
+            timestamp: new Date().toISOString() as any,
             isVerified: false,
             hasBeenSeenBySharer: user!.profileData.id === person.id,
             answers: []
         };
-        setIsStoring(true);
-        await sendPostRequest(
-            `api/questionnaires/${questionnaire.id}/answers`,
-            resolveText("QuestionnaireAnswers_CouldNotCreate"),
-            answer,
-            () => navigate(-1),
-            () => {},
-            () => setIsStoring(false)
-        );
+        const answerVM: ViewModels.QuestionnaireAnswersViewModel = {
+            id: answer.id,
+            answers: answer.answers,
+            createdBy: answer.createdBy,
+            createdTimestamp: answer.createdTimestamp,
+            hasAnswered: false,
+            hasBeenSeenBySharer: answer.hasBeenSeenBySharer,
+            isVerified: answer.isVerified,
+            personId: answer.personId,
+            questionCount: questionnaire.questions.length,
+            questionnaireDescription: questionnaire.description,
+            questionnaireId: questionnaire.id,
+            questionnaireLanguage: questionnaire.language,
+            questionnaireTitle: questionnaire.title,
+            timestamp: answer.timestamp,
+            type: answer.type
+        };
+        dispatch(addQuestionnaireAnswer({
+            args: answerVM,
+            body: answer,
+            onSuccess: () => navigate(-1)
+        }));
     }
     
     return (

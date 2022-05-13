@@ -69,10 +69,10 @@ export const GenomeUploadPage = (props: GenomeUploadPageProps) => {
                 const referenceGenomeTestResult = buildReferenceGeneomeTestResult();
                 await apiClient.instance!.put(`api/testresults/${referenceGenomeTestResult.id}`, {}, referenceGenomeTestResult);
             }
-            NotificationManager.success(resolveText('Patient_Document_SuccessfullyStored'));
+            NotificationManager.success(resolveText('Document_SuccessfullyStored'));
             navigate(-1);
         } catch(error: any) {
-            NotificationManager.error(error.message, resolveText('Patient_Document_CouldNotStore'));
+            NotificationManager.error(error.message, resolveText('Document_CouldNotStore'));
         } finally {
             setIsSubmitting(false);
         }
@@ -150,7 +150,7 @@ export const GenomeUploadPage = (props: GenomeUploadPageProps) => {
                     />
                 </FormGroup>
                 <FormGroup>
-                    <FormLabel>{resolveText("Patient_Document_Note")}</FormLabel>
+                    <FormLabel>{resolveText("Document_Note")}</FormLabel>
                     <FormControl
                         as="textarea"
                         value={note}

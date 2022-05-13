@@ -57,6 +57,10 @@ export enum MeasurementType {
     Height = "Height",
     Weight = "Weight"
 }
+export enum DrugType {
+    Unknown = "Unknown",
+    Immunization = "Immunization"
+}
 export enum MedicationDispensionState {
     Undefined = "Undefined",
     Scheduled = "Scheduled",

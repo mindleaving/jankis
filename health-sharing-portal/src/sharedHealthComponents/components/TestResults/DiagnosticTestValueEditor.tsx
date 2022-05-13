@@ -198,11 +198,11 @@ const DocumentValueEditor = (props: DiagnosticTestValueEditorProps) => {
             }
             await apiClient.instance!.put(`api/documents/${document.id}`, {}, document);
             await apiClient.instance!.put(`api/documents/${document.id}/upload`, {}, file, { stringifyBody: false });
-            NotificationManager.success(resolveText('Patient_Document_SuccessfullyStored'));
+            NotificationManager.success(resolveText('Document_SuccessfullyStored'));
             setDocumentId(document.id);
             setIsFileUploaded(true);
         } catch(error: any) {
-            NotificationManager.error(error.message, resolveText('Patient_Document_CouldNotStore'));
+            NotificationManager.error(error.message, resolveText('Document_CouldNotStore'));
         } finally {
             setIsUploading(false);
         }

@@ -2,8 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Models } from "../../../localComponents/types/models";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { RemoteState } from "../../types/reduxInterfaces";
-import { ApiGetPersonDataActionCreator, ApiPostActionCreator } from "../../types/reduxTypes";
-import { loadActionBuilder, loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
+import { deleteActionBuilder, loadActionBuilder, loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
 
 interface AdmissionsState extends RemoteState<Models.Admission> {
 }
@@ -33,6 +32,9 @@ export const admissionsSlice = createSlice({
             } else {
                 state.items.push(item);
             }
+        },
+        removeAdmission: (state, action: PayloadAction<string>) => {
+            state.items = state.items.filter(x => x.id !== action.payload);
         }
     }
 });
@@ -43,17 +45,21 @@ export const loadAdmissions = loadPersonDataActionBuilder(
     admissionsSlice.actions.setIsLoading,
     admissionsSlice.actions.setAdmissions
 );
-
 export const loadAdmission = loadActionBuilder(
     args => `api/admissions/${args}`,
     () => resolveText("Admission_CouldNotLoad"),
     admissionsSlice.actions.setIsLoading,
     admissionsSlice.actions.addOrUpdateAdmission
 );
-
-export const addAdmission: ApiPostActionCreator<Models.Admission, Models.Admission> = postActionBuilder(
+export const addAdmission = postActionBuilder(
     () => `api/admissions`,
     () => resolveText("Admissions_CouldNotStore"),
     admissionsSlice.actions.setIsSubmitting,
     admissionsSlice.actions.addOrUpdateAdmission
+);
+export const deleteAdmission = deleteActionBuilder(
+    args => `api/admissions/${args}`,
+    () => resolveText("Admission_SuccessfullyDeleted"),
+    () => resolveText("Admission_CouldNotDelete"),
+    admissionsSlice.actions.removeAdmission
 );

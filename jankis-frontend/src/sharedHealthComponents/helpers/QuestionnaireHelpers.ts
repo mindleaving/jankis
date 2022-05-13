@@ -18,7 +18,8 @@ export const formDataToQuestionnaireAnswers = (
     formData: { [key:string]: string }, 
     questionnaire: Models.Interview.Questionnaire,
     personId: string,
-    currentUser: ViewModels.IUserViewModel)
+    currentUser: ViewModels.IUserViewModel,
+    existingAnswer?: ViewModels.QuestionnaireAnswersViewModel)
     : Models.Interview.QuestionnaireAnswers => {
 
     const answers = questionnaire.questions.map((question, questionIndex) => {
@@ -34,15 +35,15 @@ export const formDataToQuestionnaireAnswers = (
     .filter(answer => answer !== null)
     .map(answer => answer as Models.Interview.QuestionAnswer);
     return {
-        id: uuid(),
+        id: existingAnswer?.id ?? uuid(),
         type: HealthRecordEntryType.Questionnaire,
-        createdBy: currentUser.accountId,
-        createdTimestamp: new Date(),
+        createdBy: existingAnswer?.createdBy ?? currentUser!.accountId,
+        createdTimestamp: existingAnswer?.createdTimestamp ?? new Date().toISOString() as any,
         isVerified: false,
         hasBeenSeenBySharer: currentUser.profileData.id === personId,
         personId: personId,
         questionnaireId: questionnaire.id,
-        timestamp: new Date(),
+        timestamp: new Date().toISOString() as any,
         answers: answers
     };
 }

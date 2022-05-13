@@ -18,50 +18,50 @@ export const PatientDataTabControl = (props: PatientDataTabControlProps) => {
 
     return (
         <Tabs defaultActiveKey="overview">
-            <Tab eventKey="overview" title={resolveText('Patient_Overview')}>
+            <Tab eventKey="overview" title={resolveText('Overview')}>
                 <HealthRecordOverview
                     personId={props.personId}
                 />
             </Tab>
-            <Tab eventKey="notes" title={resolveText('Patient_Notes')}>
+            <Tab eventKey="notes" title={resolveText('Notes')}>
                 <PatientNotesView
                     personId={props.personId}
                 />
             </Tab>
-            <Tab eventKey="diagnosis" title={resolveText("Patient_Diagnosis")}>
+            <Tab eventKey="diagnosis" title={resolveText("Diagnosis")}>
                 <PatientDiagnosesView 
                     personId={props.personId}
                 />
             </Tab>
-            <Tab eventKey="observations" title={resolveText('Patient_Observations')}>
+            <Tab eventKey="observations" title={resolveText('Observations')}>
                 <PatientObservationsView 
                     personId={props.personId}
                 />
             </Tab>
-            <Tab eventKey="medications" title={resolveText('Patient_Medications')}>
+            <Tab eventKey="medications" title={resolveText('Medications')}>
                 <PatientMedicationView 
                     personId={props.personId}
                 />
             </Tab>
-            <Tab eventKey="equipment" title={resolveText('Patient_Equipment')}>
+            <Tab eventKey="equipment" title={resolveText('Equipment')}>
 
             </Tab>
-            <Tab eventKey="questionnaires" title={resolveText('Patient_Questionnaires')}>
+            <Tab eventKey="questionnaires" title={resolveText('Questionnaires')}>
                 <PatientQuestionnairesView 
                     personId={props.personId}
                 />
             </Tab>
-            <Tab eventKey="testResults" title={resolveText('Patient_TestResults')}>
+            <Tab eventKey="testResults" title={resolveText('TestResults')}>
                 <PatientTestResultsView 
                     personId={props.personId} 
                 />
             </Tab>
-            <Tab eventKey="procedures" title={resolveText('Patient_MedicalProcedures')}>
+            <Tab eventKey="procedures" title={resolveText('MedicalProcedures')}>
                 <PatientMedicalProceduresView 
                     personId={props.personId}
                 />
             </Tab>
-            <Tab eventKey="documents" title={resolveText('Patient_Documents')}>
+            <Tab eventKey="documents" title={resolveText('Documents')}>
                 <PatientDocumentsView 
                     personId={props.personId}
                 />

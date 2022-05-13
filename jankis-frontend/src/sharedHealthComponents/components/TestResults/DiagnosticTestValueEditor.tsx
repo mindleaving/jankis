@@ -186,7 +186,7 @@ const DocumentValueEditor = (props: DiagnosticTestValueEditorProps) => {
         setIsUploading(true);
         try {
             const document: Models.PatientDocument = {
-                id: uuid(),
+                id: documentId ?? uuid(),
                 type: HealthRecordEntryType.Document,
                 isVerified: false,
                 hasBeenSeenBySharer: user!.profileData.id === props.testResult.personId,
@@ -198,11 +198,11 @@ const DocumentValueEditor = (props: DiagnosticTestValueEditorProps) => {
             }
             await apiClient.instance!.put(`api/documents/${document.id}`, {}, document);
             await apiClient.instance!.put(`api/documents/${document.id}/upload`, {}, file, { stringifyBody: false });
-            NotificationManager.success(resolveText('Patient_Document_SuccessfullyStored'));
+            NotificationManager.success(resolveText('Document_SuccessfullyStored'));
             setDocumentId(document.id);
             setIsFileUploaded(true);
         } catch(error: any) {
-            NotificationManager.error(error.message, resolveText('Patient_Document_CouldNotStore'));
+            NotificationManager.error(error.message, resolveText('Document_CouldNotStore'));
         } finally {
             setIsUploading(false);
         }
@@ -216,7 +216,7 @@ const DocumentValueEditor = (props: DiagnosticTestValueEditorProps) => {
         {file ?
             <Alert variant="info" dismissible onClose={() => setFile(undefined)}>
                 {file.name} 
-                {!isFileUploaded ? <AsyncButton 
+                {!isFileUploaded ? <AsyncButton
                     size="sm"
                     className='mx-2'
                     activeText={resolveText('Upload')}

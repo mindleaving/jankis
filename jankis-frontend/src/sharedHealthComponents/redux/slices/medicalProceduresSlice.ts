@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Models } from "../../../localComponents/types/models";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { RemoteState } from "../../types/reduxInterfaces";
-import { loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
+import { deleteActionBuilder, loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
 
 interface MedicalProceduresState extends RemoteState<Models.Procedures.MedicalProcedure> {
 }
@@ -33,6 +33,9 @@ export const medicalProceduresSlice = createSlice({
             } else {
                 state.items.push(item);
             }
+        },
+        removeMedicalProcedure: (state, action: PayloadAction<string>) => {
+            state.items = state.items.filter(x => x.id !== action.payload);
         }
     }
 });
@@ -48,4 +51,10 @@ export const addMedicalProcedure = postActionBuilder(
     () => resolveText("MedicalProcedure_CouldNotStore"),
     medicalProceduresSlice.actions.setIsSubmitting,
     medicalProceduresSlice.actions.addOrUpdateMedicalProcedure
+);
+export const deleteMedicalProcedure = deleteActionBuilder(
+    args => `api/medicalProcedures/${args}`,
+    () => resolveText("MedicalProcedure_SuccessfullyDeleted"),
+    () => resolveText("MedicalProcedure_CouldNotDelete"),
+    medicalProceduresSlice.actions.removeMedicalProcedure
 );

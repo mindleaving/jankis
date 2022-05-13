@@ -31,6 +31,8 @@ namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
             Diagnosis model, 
             IViewModelBuilderOptions<Diagnosis> options = null)
         {
+            if(options == null)
+                options = new DiagnosisViewModelBuilderOptions();
             var icdCategoryFilters = new List<Expression<Func<IcdCategory, bool>>>();
             if(model.Icd11Code != null)
                 icdCategoryFilters.Add(x => x.Version == "11" && x.Code == model.Icd11Code);
@@ -76,7 +78,7 @@ namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
         {
             if (icdCategory == null)
                 return fallbackValue;
-            var hasTranslation = icdCategory.Translations.ContainsKey(options.Language);
+            var hasTranslation = icdCategory.Translations?.ContainsKey(options.Language) ?? false;
             if (hasTranslation)
                 return icdCategory.Translations[options.Language];
             return icdCategory.Name;

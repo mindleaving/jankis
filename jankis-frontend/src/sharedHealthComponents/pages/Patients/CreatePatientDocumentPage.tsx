@@ -1,4 +1,4 @@
-import { FormEvent, useContext, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useContext, useEffect, useState } from 'react';
 import { Alert, Col, Form, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router';
 import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
@@ -13,20 +13,25 @@ import { StoreButton } from '../../../sharedCommonComponents/components/StoreBut
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { PatientAutocomplete } from '../../components/Autocompletes/PatientAutocomplete';
+import { useAppDispatch, useAppSelector } from '../../../localComponents/redux/store/healthRecordStore';
+import { addDocument, loadDocument } from '../../redux/slices/documentsSlice';
 
 interface CreatePatientDocumentPageProps {}
 
 export const CreatePatientDocumentPage = (props: CreatePatientDocumentPageProps) => {
 
-    const { personId } = useParams();
+    const { personId, id } = useParams();
     const user = useContext(UserContext);
 
-    const [ profileData, setProfileData ] = useState<Models.Person>();
+    const matchedProfileData = useAppSelector(state => state.persons.items.find(x => x.id === personId));
+    const matchedDocument = useAppSelector(state => state.documents.items.find(x => x.id === id));
+    const [ profileData, setProfileData ] = useState<Models.Person | undefined>(matchedProfileData);
+    const [ timestamp, setTimestamp ] = useState<Date>(new Date());
     const [ note, setNote ] = useState<string>('');
     const [ file, setFile ] = useState<File>();
-    const [ isStoring, setIsStoring ] = useState<boolean>(false);
+    const isStoring = useAppSelector(state => state.documents.isSubmitting);
     const navigate = useNavigate();
-    const documentId = useMemo(() => uuid(), []);
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         if(!personId) return;
@@ -39,9 +44,24 @@ export const CreatePatientDocumentPage = (props: CreatePatientDocumentPageProps)
         loadProfileData();
     }, [ personId ]);
 
+    useEffect(() => {
+        if(!id) {
+            return;
+        }
+        dispatch(loadDocument({ args: id }));
+    }, [ id ]);
+
+    useEffect(() => {
+        if(!matchedDocument) {
+            return;
+        }
+        setTimestamp(matchedDocument.timestamp);
+        setNote(matchedDocument.note);
+    }, [ matchedDocument ]);
+
     const store = async (e: FormEvent) => {
         e.preventDefault();
-        if(!file) {
+        if(!file && !matchedDocument) {
             NotificationManager.error(resolveText('Document_NoFileSelected'));
             return;
         }
@@ -49,36 +69,49 @@ export const CreatePatientDocumentPage = (props: CreatePatientDocumentPageProps)
             NotificationManager.error(resolveText('PleaseSelect_Patient'));
             return;
         }
-        setIsStoring(true);
-        try {
-            const document = buildDocument();
-            await apiClient.instance!.put(`api/documents/${documentId}`, {}, document);
-            await apiClient.instance!.put(`api/documents/${documentId}/upload`, {}, file, { stringifyBody: false });
-            NotificationManager.success(resolveText('Patient_Document_SuccessfullyStored'));
-            navigate(-1);
-        } catch(error: any) {
-            NotificationManager.error(error.message, resolveText('Patient_Document_CouldNotStore'));
-        } finally {
-            setIsStoring(false);
+        const document = buildDocument();
+        dispatch(addDocument({
+            args: document,
+            body: document,
+            onSuccess: async () => {
+                try {
+                    if(file) {
+                        await apiClient.instance!.put(`api/documents/${document.id}/upload`, {}, file, { stringifyBody: false });
+                        NotificationManager.success(resolveText('Document_SuccessfullyUploaded'));
+                    }
+                    navigate(-1);
+                } catch(error:any) {
+                    NotificationManager.error(error.message, resolveText('Document_CouldNotUpload'));
+                }
+            }
+        }));
+    }
+    const canStore = () => {
+        if(!profileData) {
+            return false;
         }
+        if(!file && !matchedDocument) {
+            return false;
+        }
+        return true;
     }
     const buildDocument = (): Models.PatientDocument => {
         return {
-            id: documentId,
+            id: id ?? uuid(),
             type: HealthRecordEntryType.Document,
             personId: profileData!.id,
             createdBy: user!.accountId,
-            timestamp: new Date(),
+            timestamp: timestamp,
             isVerified: false,
             hasBeenSeenBySharer: user!.profileData.id === profileData!.id,
             note: note,
-            fileName: file!.name
+            fileName: file?.name ?? matchedDocument!.fileName
         };
     }
 
     return (
         <>
-            <h1>{resolveText('Patient_Document')}</h1>
+            <h1>{resolveText('Document')}</h1>
             <Form onSubmit={store}>
                 <FormGroup as={Row}>
                     <FormLabel column>{resolveText('Patient')}</FormLabel>
@@ -90,12 +123,18 @@ export const CreatePatientDocumentPage = (props: CreatePatientDocumentPageProps)
                     </Col>
                 </FormGroup>
                 <RowFormGroup
-                    label={resolveText('Patient_Document_Note')}
+                    type='datetime'
+                    label={resolveText("Document_Timestamp")}
+                    value={timestamp}
+                    onChange={setTimestamp}
+                />
+                <RowFormGroup
+                    label={resolveText('Document_Note')}
                     value={note}
                     onChange={setNote}
                 />
                 <FormGroup>
-                    <FormLabel>{resolveText('Patient_Document_Upload')}</FormLabel>
+                    <FormLabel>{resolveText('Document_Upload')}</FormLabel>
                     {file ? <Alert variant="success" dismissible onClose={() => setFile(undefined)}>{resolveText('SelectedFile')}: <b>{file.name}</b></Alert> : null}
                     <FileUpload
                         onDrop={files => setFile(files[0])}
@@ -104,7 +143,7 @@ export const CreatePatientDocumentPage = (props: CreatePatientDocumentPageProps)
                 <StoreButton
                     type="submit"
                     isStoring={isStoring}
-                    disabled={!profileData || !file}
+                    disabled={!canStore()}
                 />
             </Form>
         </>

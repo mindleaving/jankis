@@ -57,12 +57,12 @@ export const PatientNursingPage = (props: PatientNursingPageProps) => {
             </Row>
             <Row>
                 <Col xs="7" lg="4">
-                    <h3>{resolveText('Patient_Equipment')}</h3>
+                    <h3>{resolveText('Equipment')}</h3>
                     {equipments.map(equipment => (
                         <Card>
                             <Card.Header>{equipment.equipmentType}</Card.Header>
                             <Card.Body>
-                                <h4>{resolveText('Patient_Equipment_Materials')}</h4>
+                                <h4>{resolveText('Equipment_Materials')}</h4>
                                 <li className="bulletFreeList">
                                 {equipment.materialViewModels.map(material => (
                                     <ul>{formatEquipmentMaterial(material)}</ul>

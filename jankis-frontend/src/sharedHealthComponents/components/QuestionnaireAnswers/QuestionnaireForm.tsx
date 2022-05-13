@@ -1,6 +1,6 @@
 import Form from '@rjsf/bootstrap-4';
 import { IChangeEvent } from '@rjsf/core';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { translateSchema } from '../../../sharedCommonComponents/helpers/SchemaTranslator';
@@ -8,10 +8,11 @@ import { formDataToQuestionnaireAnswers, questionnaireAnswersToFormData } from '
 import { Models } from '../../../localComponents/types/models';
 import { StoreButton } from '../../../sharedCommonComponents/components/StoreButton';
 import UserContext from '../../../localComponents/contexts/UserContext';
-import { buildAndStoreObject } from '../../../sharedCommonComponents/helpers/StoringHelpers';
 import { v4 as uuid } from 'uuid';
 import { useNavigate } from 'react-router-dom';
 import { ViewModels } from '../../../localComponents/types/viewModels';
+import { useAppDispatch, useAppSelector } from '../../../localComponents/redux/store/healthRecordStore';
+import { addQuestionnaireAnswer } from '../../redux/slices/questionnaireAnswersSlice';
 
 interface QuestionnaireFormProps {
     questionnaireId: string;
@@ -27,8 +28,10 @@ export const QuestionnaireForm = (props: QuestionnaireFormProps) => {
     const [ isLoadingAnswer, setIsLoadingAnswer ] = useState<boolean>(!!props.answerId);
     const [ schema, setSchema ] = useState<any>();
     const [ questionnaire, setQuestionnaire ] = useState<Models.Interview.Questionnaire>();
+    const [ loadedQuestionnaireAnswers, setLoadedQuestionnaireAnswers ] = useState<ViewModels.QuestionnaireAnswersViewModel>();
     const [ answers, setAnswers ] = useState<any>({});
-    const [ isSubmitting, setIsSubmitting ] = useState<boolean>(false);
+    const isSubmitting = useAppSelector(state => state.questionnaireAnswers.isSubmitting);
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -68,6 +71,7 @@ export const QuestionnaireForm = (props: QuestionnaireFormProps) => {
             {},
             resolveText("Questionnaire_CouldNotLoadAnswers"),
             item => {
+                setLoadedQuestionnaireAnswers(item);
                 const formData = questionnaireAnswersToFormData(item.answers);
                 setAnswers(formData);
             },
@@ -82,20 +86,34 @@ export const QuestionnaireForm = (props: QuestionnaireFormProps) => {
     }
 
     const onSubmit = async () => {
-        setIsSubmitting(true);
-        const answerId = props.answerId ?? uuid();
-        buildAndStoreObject(
-            `api/questionnaires/${props.questionnaireId}/answers/${answerId}`,
-            resolveText("Questionnaire_SuccessfullyStored"),
-            resolveText("Questionnaire_CouldNotSubmit"),
-            () => {
-                const questionnaireAnswers = formDataToQuestionnaireAnswers(answers, questionnaire!, props.personId, user!);
-                questionnaireAnswers.id = answerId;
-                return questionnaireAnswers;
-            },
-            () => { navigate(-1); },
-            () => setIsSubmitting(false)
-        );
+        const questionnaireAnswers = formDataToQuestionnaireAnswers(
+            answers, 
+            questionnaire!, 
+            props.personId, 
+            user!, 
+            loadedQuestionnaireAnswers);
+        const questionnaireAnswersVM: ViewModels.QuestionnaireAnswersViewModel = {
+            id: questionnaireAnswers.id,
+            answers: questionnaireAnswers.answers,
+            createdBy: questionnaireAnswers.createdBy,
+            createdTimestamp: questionnaireAnswers.createdTimestamp,
+            hasAnswered: true,
+            hasBeenSeenBySharer: questionnaireAnswers.hasBeenSeenBySharer,
+            isVerified: questionnaireAnswers.isVerified,
+            personId: questionnaireAnswers.personId,
+            questionCount: questionnaire!.questions.length,
+            questionnaireDescription: questionnaire!.description,
+            questionnaireId: questionnaire!.id,
+            questionnaireLanguage: questionnaire!.language,
+            questionnaireTitle: questionnaire!.title,
+            timestamp: questionnaireAnswers.timestamp,
+            type: questionnaireAnswers.type
+        };
+        dispatch(addQuestionnaireAnswer({
+            args: questionnaireAnswersVM,
+            body: questionnaireAnswers,
+            onSuccess: () => navigate(-1)
+        }));
     }
 
     if(isLoadingSchema || isLoadingQuestionnaire || isLoadingAnswer) {

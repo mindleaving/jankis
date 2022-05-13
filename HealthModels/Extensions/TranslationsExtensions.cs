@@ -10,7 +10,7 @@ namespace HealthModels.Extensions
         {
             if(language == Language.en)
                 return;
-            if (item.Translations.ContainsKey(language)) 
+            if (item.Translations?.ContainsKey(language) ?? false) 
                 item.Name = item.Translations[language];
         }
     }

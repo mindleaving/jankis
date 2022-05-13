@@ -1,16 +1,16 @@
 import { FormEvent, useContext, useEffect, useState } from 'react';
-import { Button, Form, FormControl, FormGroup, FormLabel, InputGroup } from 'react-bootstrap';
+import { Button, Col, Form, FormControl, FormGroup, FormLabel, InputGroup, Row } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import UserContext from '../../../localComponents/contexts/UserContext';
 import { useAppDispatch, useAppSelector } from '../../../localComponents/redux/store/healthRecordStore';
-import { AccountType, HealthRecordEntryType, MedicationDispensionState } from '../../../localComponents/types/enums.d';
+import { HealthRecordEntryType, MedicationDispensionState } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { DateFormControl } from '../../../sharedCommonComponents/components/DateFormControl';
 import { StoreButton } from '../../../sharedCommonComponents/components/StoreButton';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { uuid } from '../../../sharedCommonComponents/helpers/uuid';
-import { DrugAutocomplete } from '../../components/Autocompletes/DrugAutocomplete';
+import { ImmunizationDrugAutocomplete } from '../../components/Autocompletes/ImmunizationDrugAutocomplete';
 import { PersonAutocomplete } from '../../components/Autocompletes/PersonAutocomplete';
 import { UnitValueFormControl } from '../../components/UnitValueFormControl';
 import { addOrUpdateImmunization } from '../../redux/slices/immunizationsSlice';
@@ -118,11 +118,23 @@ export const AddImmunizationPage = (props: AddImmunizationPageProps) => {
                 </FormGroup>
                 <FormGroup>
                     <FormLabel>{resolveText("Immunization_Drug")}</FormLabel>
-                    <DrugAutocomplete
-                        value={drug}
-                        onChange={setDrug}
-                        isLoading={isLoading}
-                    />
+                    <Row>
+                        <Col>
+                            <ImmunizationDrugAutocomplete
+                                value={drug}
+                                onChange={setDrug}
+                                isLoading={isLoading}
+                            />
+                        </Col>
+                        <Col xs="auto">
+                            <Button
+                                onClick={() => navigate("/create/drug")}
+                                className="mx-2"
+                            >
+                                {resolveText("CreateNew")}
+                            </Button>
+                        </Col>
+                    </Row>
                 </FormGroup>
                 <FormGroup>
                     <FormLabel>{resolveText("Immunization_Timestamp")}</FormLabel>

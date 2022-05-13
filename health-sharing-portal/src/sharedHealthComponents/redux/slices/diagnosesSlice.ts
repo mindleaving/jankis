@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ViewModels } from "../../../localComponents/types/viewModels";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { RemoteState } from "../../types/reduxInterfaces";
-import { loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
+import { deleteActionBuilder, loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
 
 interface DiagnosesState extends RemoteState<ViewModels.DiagnosisViewModel> {
 }
@@ -33,6 +33,9 @@ export const diagnosesSlice = createSlice({
             } else {
                 state.items.push(item);
             }
+        },
+        removeDiagnosis: (state, action: PayloadAction<string>) => {
+            state.items = state.items.filter(x => x.id !== action.payload);
         },
         markDiagnosisAsSeen: (state, action: PayloadAction<string>) => {
             const matchingItem = state.items.find(x => x.id === action.payload);
@@ -67,6 +70,12 @@ export const addDiagnosis = postActionBuilder(
     () => resolveText("Diagnosis_CouldNotStore"),
     diagnosesSlice.actions.setIsSubmitting,
     diagnosesSlice.actions.addOrUpdateDiagnosis
+);
+export const deleteDiagnosis = deleteActionBuilder(
+    args => `api/diagnoses/${args}`,
+    () => resolveText("Diagnosis_SuccessfullyDeleted"),
+    () => resolveText("Diagnosis_CouldNotDelete"),
+    diagnosesSlice.actions.removeDiagnosis
 );
 export const markDiagnosisAsSeen = postActionBuilder(
     diagnosisId => `api/diagnoses/${diagnosisId}/seen`, 

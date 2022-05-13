@@ -8,8 +8,9 @@ import { ViewModels } from '../../../localComponents/types/viewModels';
 import { AsyncButton } from '../../../sharedCommonComponents/components/AsyncButton';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { formatDate } from '../../helpers/Formatters';
-import { markDiagnosisAsResolved, markDiagnosisAsSeen } from '../../redux/slices/diagnosesSlice';
+import { deleteDiagnosis, markDiagnosisAsResolved, markDiagnosisAsSeen } from '../../redux/slices/diagnosesSlice';
 import { useAppDispatch, useAppSelector } from '../../../localComponents/redux/store/healthRecordStore';
+import { openConfirmDeleteAlert } from '../../../sharedCommonComponents/helpers/AlertHelpers';
 
 interface DiagnosisTableRowProps {
     diagnosis: ViewModels.DiagnosisViewModel;
@@ -47,10 +48,19 @@ export const DiagnosisTableRow = (props: DiagnosisTableRowProps) => {
         }));
     }
     const unhide = () => dispatch(markDiagnosisAsSeen({ args: diagnosis.id }));
+    const dispatchDeleteDiagnosis = () => {
+        openConfirmDeleteAlert(
+            `${diagnosis.name} (${formatDate(new Date(diagnosis.timestamp))})`,
+            resolveText("Diagnosis_Delete_Title"),
+            resolveText("Diagnosis_Delete_Message"),
+            () => dispatch(deleteDiagnosis({ args: diagnosis.id }))
+        );
+    }
 
     if(needsHiding(diagnosis, user!)) {
         return (
             <tr key={diagnosis.id}>
+                <td></td>
                 <td colSpan={3}>
                     <i className='fa fa-eye-slash clickable' onClick={unhide} />
                 </td>
@@ -62,6 +72,12 @@ export const DiagnosisTableRow = (props: DiagnosisTableRowProps) => {
     }
     return (
         <tr key={diagnosis.id}>
+            <td>
+                <i
+                    className='fa fa-trash red clickable'
+                    onClick={dispatchDeleteDiagnosis}
+                />
+            </td>
             <td>{diagnosis.icd11Code}</td>
             <td>{diagnosis.icd10Code}</td>
             <td>{diagnosis.name}</td>

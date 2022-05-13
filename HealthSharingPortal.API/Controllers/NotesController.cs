@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using HealthModels;
@@ -12,11 +11,11 @@ using Microsoft.AspNetCore.Http;
 
 namespace HealthSharingPortal.API.Controllers
 {
-    public class PatientNotesController : HealthRecordEntryControllerBase<PatientNote>
+    public class NotesController : HealthRecordEntryControllerBase<PatientNote>
     {
         private readonly INotificationDistributor notificationDistributor;
 
-        public PatientNotesController(
+        public NotesController(
             IPersonDataStore<PatientNote> store,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,

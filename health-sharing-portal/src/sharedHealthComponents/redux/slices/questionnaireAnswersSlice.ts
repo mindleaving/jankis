@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ViewModels } from "../../../localComponents/types/viewModels";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { RemoteState } from "../../types/reduxInterfaces";
-import { loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
+import { deleteActionBuilder, loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
 
 interface QuestionnairesState extends RemoteState<ViewModels.QuestionnaireAnswersViewModel> {
 }
@@ -33,6 +33,9 @@ export const questionnaireAnswersSlice = createSlice({
             } else {
                 state.items.push(item);
             }
+        },
+        removeQuestionnaireAnswer: (state, action: PayloadAction<string>) => {
+            state.items = state.items.filter(x => x.id !== action.payload);
         }
     }
 });
@@ -44,8 +47,14 @@ export const loadQuestionnaireAnswers = loadPersonDataActionBuilder(
     questionnaireAnswersSlice.actions.setQuestionnaireAnswers
 );
 export const addQuestionnaireAnswer = postActionBuilder(
-    () => `api/questionnaireAnswers`, 
+    args => `api/questionnaires/${args.questionnaireId}/answers`, 
     () => resolveText("QuestionnaireAnswer_CouldNotStore"),
     questionnaireAnswersSlice.actions.setIsSubmitting,
     questionnaireAnswersSlice.actions.addOrUpdateQuestionnaireAnswer
+);
+export const deleteQuestionnaireAnswer = deleteActionBuilder(
+    args => `api/questionnaireAnswers/${args}`,
+    () => resolveText("QuestionnaireAnswer_SuccessfullyDeleted"),
+    () => resolveText("QuestionnaireAnswer_CouldNotDelete"),
+    questionnaireAnswersSlice.actions.removeQuestionnaireAnswer
 );

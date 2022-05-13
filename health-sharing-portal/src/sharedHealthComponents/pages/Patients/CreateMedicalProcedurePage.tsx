@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import UserContext from '../../../localComponents/contexts/UserContext';
+import { useAppSelector } from '../../../localComponents/redux/store/healthRecordStore';
 import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
@@ -51,7 +52,7 @@ export const CreateMedicalProcedurePage = (props: CreateMedicalProcedurePageProp
             <h1>{resolveText("MedicalProcedure")}</h1>
             <GenericTypeCreateEditPage<Models.Procedures.MedicalProcedure>
                 typeName='medicalprocedure'
-                paramName='entryId'
+                paramName='id'
                 item={medicalProcedure}
                 itemLoader={loadMedicalProcedure}
                 onSubmit={submit}

@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Models } from "../../../localComponents/types/models";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { RemoteState } from "../../types/reduxInterfaces";
-import { loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
+import { deleteActionBuilder, loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
 
 interface ObservationsState extends RemoteState<Models.Observations.Observation> {
 }
@@ -32,6 +32,9 @@ export const observationsSlice = createSlice({
                 state.items.push(item);
             }
         },
+        removeObservation: (state, action: PayloadAction<string>) => {
+            state.items = state.items.filter(x => x.id !== action.payload);
+        },
         markObservationAsSeen: (state, action: PayloadAction<string>) => {
             const matchingItem = state.items.find(x => x.id === action.payload);
             if(matchingItem) {
@@ -58,6 +61,12 @@ export const addObservation = postActionBuilder(
     () => resolveText("Observation_CouldNotStore"),
     observationsSlice.actions.setIsSubmitting,
     observationsSlice.actions.addOrUpdateObservation
+);
+export const deleteObservation = deleteActionBuilder(
+    args => `api/observations/${args}`,
+    () => resolveText("Observation_SuccessfullyDeleted"),
+    () => resolveText("Observation_CouldNotDelete"),
+    observationsSlice.actions.removeObservation
 );
 export const markObservationAsSeen = postActionBuilder(
     observationId => `api/observations/${observationId}/seen`,

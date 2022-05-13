@@ -1,5 +1,5 @@
-import { FormEvent, useContext, useState } from 'react';
-import { Button, Form, Table } from 'react-bootstrap';
+import { FormEvent, useContext, useEffect, useState } from 'react';
+import { Table } from 'react-bootstrap';
 import UserContext from '../../../localComponents/contexts/UserContext';
 import { Models } from '../../../localComponents/types/models';
 import { AsyncButton } from '../../../sharedCommonComponents/components/AsyncButton';
@@ -7,24 +7,36 @@ import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer'
 import { v4 as uuid } from 'uuid';
 import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
 import { DiagnosticTestAutocomplete } from '../Autocompletes/DiagnosticTestAutocomplete';
-import { DiagnosticTestValueEditor } from './DiagnosticTestValueEditor';
-import { formatDiagnosticTestNameOfResult } from '../../helpers/Formatters';
 import { NotificationManager } from 'react-notifications';
 import { useNavigate } from 'react-router-dom';
 import { HealthRecordEntryFormProps } from '../../types/frontendTypes';
 import { useAppDispatch } from '../../../localComponents/redux/store/healthRecordStore';
 import { addTestResult } from '../../redux/slices/testResultsSlice';
+import { RowFormGroup } from '../../../sharedCommonComponents/components/RowFormGroup';
+import { TestResultsFormRow } from './TestResultsFormRow';
+import { differenceInMinutes } from 'date-fns';
 
 interface TestResultsFormProps extends HealthRecordEntryFormProps {}
 
 export const TestResultsForm = (props: TestResultsFormProps) => {
 
     const user = useContext(UserContext);
+    const [ defaultTimestamp, setDefaultTimestamp ] = useState<Date>(new Date());
     const [ testResults, setTestResults ] = useState<Models.DiagnosticTestResults.DiagnosticTestResult[]>([]);
     const [ isSubmitting, setIsSubmitting ] = useState<boolean>(false);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
+    useEffect(() => {
+        setTestResults(state => state.map(x => ({
+            ...x,
+            timestamp: defaultTimestamp
+        })));
+    }, [ defaultTimestamp ]);
+    
+    const changeDefaultTimestamp = (newDate: Date) => {
+        setDefaultTimestamp(state => Math.abs(differenceInMinutes(newDate, defaultTimestamp)) >= 1 ? newDate : state);
+    }
 
     const addNewTest = (testDefinition?: Models.Services.DiagnosticTestDefinition) => {
         if(!testDefinition) {
@@ -40,7 +52,7 @@ export const TestResultsForm = (props: TestResultsFormProps) => {
             testCodeLoinc: testDefinition.testCodeLoinc,
             testName: testDefinition.name,
             testCategory: testDefinition.category,
-            timestamp: new Date(),
+            timestamp: defaultTimestamp,
             isVerified: false,
             hasBeenSeenBySharer: user!.profileData.id === props.personId,
         };
@@ -73,38 +85,30 @@ export const TestResultsForm = (props: TestResultsFormProps) => {
         }
     }
     return (
-        <Form onSubmit={store}>
+        <>
+            <RowFormGroup
+                label={resolveText("TestResult_Timestamp")}
+                value={defaultTimestamp}
+                onChange={changeDefaultTimestamp}
+                type='datetime'
+            />
             <Table>
                 <thead>
                     <tr>
                         <th></th>
                         <th>{resolveText("TestResult_Name")}</th>
+                        <th>{resolveText("TestResult_Timestamp")}</th>
                         <th>{resolveText("TestResult_Value")}</th>
                     </tr>
                 </thead>
                 <tbody>
                     {testResults.map(testResult => {
-                        return (
-                        <tr key={testResult.id}>
-                            <td>
-                                <Button 
-                                    size='sm'
-                                    variant='danger'
-                                    onClick={() => removeTest(testResult.id)}
-                                >
-                                    {resolveText("Remove")}
-                                </Button>
-                            </td>
-                            <td>
-                                <b>{formatDiagnosticTestNameOfResult(testResult)}</b>
-                            </td>
-                            <td>
-                                <DiagnosticTestValueEditor
-                                    testResult={testResult}
-                                    onChange={(update) => updateTestResult(testResult.id, update)}
-                                />
-                            </td>
-                        </tr>);
+                        return (<TestResultsFormRow
+                            key={testResult.id} 
+                            testResult={testResult}
+                            removeTest={removeTest}
+                            updateTestResult={updateTestResult}
+                        />);
                     })}
                     <tr>
                         <td></td>
@@ -114,16 +118,17 @@ export const TestResultsForm = (props: TestResultsFormProps) => {
                             />
                         </td>
                         <td></td>
+                        <td></td>
                     </tr>
                 </tbody>
             </Table>
             <AsyncButton
-                type='submit'
+                onClick={store}
                 activeText={resolveText("Submit")}
                 executingText={resolveText("Submitting...")}
                 isExecuting={isSubmitting}
             />
-        </Form>
+        </>
     );
 
 }

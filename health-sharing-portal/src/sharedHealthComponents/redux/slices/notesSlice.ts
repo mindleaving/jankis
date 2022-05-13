@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Models } from "../../../localComponents/types/models";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { RemoteState } from "../../types/reduxInterfaces";
-import { loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
+import { deleteActionBuilder, loadActionBuilder, loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
 
 interface NotesState extends RemoteState<Models.PatientNote> {
 }
@@ -34,6 +34,9 @@ export const notesSlice = createSlice({
                 state.items.push(item);
             }
         },
+        removeNote: (state, action: PayloadAction<string>) => {
+            state.items = state.items.filter(x => x.id !== action.payload);
+        },
         markNoteAsSeen: (state, action: PayloadAction<string>) => {
             const matchingItem = state.items.find(x => x.id === action.payload);
             if(matchingItem) {
@@ -55,11 +58,23 @@ export const loadNotes = loadPersonDataActionBuilder(
     notesSlice.actions.setIsLoading,
     notesSlice.actions.setNotes
 );
+export const loadNote = loadActionBuilder(
+    args => `api/notes/${args}`,
+    () => resolveText("Note_CouldNotLoad"),
+    notesSlice.actions.setIsLoading,
+    notesSlice.actions.addOrUpdateNote
+);
 export const addNote = postActionBuilder(
     () => `api/notes`, 
     () => resolveText("Note_CouldNotStore"),
     notesSlice.actions.setIsSubmitting,
     notesSlice.actions.addOrUpdateNote
+);
+export const deleteNote = deleteActionBuilder(
+    args => `api/notes/${args}`,
+    () => resolveText("Note_SuccessfullyDeleted"),
+    () => resolveText("Note_CouldNotDelete"),
+    notesSlice.actions.removeNote
 );
 export const markNoteAsSeen = postActionBuilder(
     noteId => `api/notes/${noteId}/seen`, 

@@ -416,6 +416,7 @@ export namespace Models {
 
     export namespace Medication {
         interface Drug extends Models.IId {
+            type: Enums.DrugType;
             brand: string;
             productName: string;
             activeIngredients: string[];

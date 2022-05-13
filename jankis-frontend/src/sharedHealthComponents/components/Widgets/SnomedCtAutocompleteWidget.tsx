@@ -16,14 +16,14 @@ export const SnomedCtAutocompleteWidget = (props: WidgetProps) => {
             return;
         }
         setIsLoading(true);
-        const loadIcdCategory = buildLoadObjectFunc(
+        const loadSnomedCtMedicalProcedure = buildLoadObjectFunc(
             `api/medicalproceduredefinitions/${props.value}`, {},
             resolveText("MedicalProcedureDefinition_CouldNotLoad"),
             setProcedureDefinition,
             () => {},
             () => setIsLoading(false)
         );
-        loadIcdCategory();
+        loadSnomedCtMedicalProcedure();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ props.value]);
 
