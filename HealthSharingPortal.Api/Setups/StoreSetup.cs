@@ -102,6 +102,7 @@ namespace HealthSharingPortal.API.Setups
             services.AddScoped<IStudyEnrollmentStore, StudyEnrollmentStore>();
             SetupTypeStores<SubscriptionBase>(services);
             services.AddScoped<ISubscriptionsStore, SubscriptionsStore>();
+            services.AddScoped<ITestResultStore, TestResultStore>();
         }
 
         private static void SetupTypeStores<T>(IServiceCollection services) where T: IId

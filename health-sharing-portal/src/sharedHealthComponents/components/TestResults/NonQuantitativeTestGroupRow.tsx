@@ -10,22 +10,27 @@ import { DiagnosticTestValueView } from "./DiagnosticTestValueView";
 import { HidableHealthRecordEntryValue } from "../HidableHealthRecordEntryValue";
 import { useAppDispatch } from "../../../localComponents/redux/store/healthRecordStore";
 import { markTestResultAsSeen } from "../../redux/slices/testResultsSlice";
+import { TestResultTableRow } from "./TestResultTableRow";
+import { useNavigate } from "react-router-dom";
+import { dispatchDeleteTestResult } from "../../helpers/TestResultHelpers";
 
-interface NonQuantitativeTestResultRowProps {
+interface NonQuantitativeTestGroupRowProps {
     testResults: Models.DiagnosticTestResults.DiagnosticTestResult[];
 }
-export const NonQuantitativeTestResultRow = (props: NonQuantitativeTestResultRowProps) => {
+export const NonQuantitativeTestGroupRow = (props: NonQuantitativeTestGroupRowProps) => {
 
     const user = useContext(UserContext);
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     if(!props.testResults || props.testResults.length === 0) {
         return null;
     }
-    const unhide = (testResultId: string) => dispatch(markTestResultAsSeen({ args: testResultId }));
+    
     if(props.testResults.length === 1) {
         const testResult = props.testResults[0];
         const hideValue = needsHiding(testResult, user!);
+        const unhide = () => dispatch(markTestResultAsSeen({ args: testResult.id }));
         return (<tr>
             <td>
                 <strong>{formatDiagnosticTestNameOfResult(testResult)}</strong>
@@ -34,15 +39,27 @@ export const NonQuantitativeTestResultRow = (props: NonQuantitativeTestResultRow
             <td>
                 <HidableHealthRecordEntryValue
                     hideValue={hideValue}
-                    onMarkAsSeen={() => unhide(testResult.id)}
+                    onMarkAsSeen={unhide}
                 >
                     <DiagnosticTestValueView
                         testResult={testResult}
                     />
                 </HidableHealthRecordEntryValue>
             </td>
+            <td>
+                <i
+                    className="fa fa-edit clickable mx-2"
+                    onClick={() => navigate(`/healthrecord/${testResult.personId}/edit/testresult/${testResult.id}`)}
+                />
+                <i
+                    className="fa fa-trash red clickable"
+                    onClick={() => dispatchDeleteTestResult(testResult, dispatch)}
+                />
+            </td>
         </tr>);
     }
+
+
     const inverseTimeOrderedTests = [...props.testResults].sort((a,b) => -differenceInSeconds(new Date(a.timestamp), new Date(b.timestamp)));
     const lastTest = inverseTimeOrderedTests[0];
     const hideLastTest = needsHiding(lastTest, user!);
@@ -51,7 +68,7 @@ export const NonQuantitativeTestResultRow = (props: NonQuantitativeTestResultRow
             <strong>{formatDiagnosticTestNameOfResult(lastTest)}</strong>
             <div><small>{formatDate(new Date(lastTest.timestamp))}</small></div>
         </td>
-        <td>
+        <td colSpan={2}>
             <AccordionCard standalone
                 eventKey={lastTest.testCodeLoinc}
                 title={hideLastTest
@@ -64,21 +81,10 @@ export const NonQuantitativeTestResultRow = (props: NonQuantitativeTestResultRow
                 <Table>
                     <tbody>
                         {inverseTimeOrderedTests.map(testResult => (
-                            <tr key={testResult.id}>
-                                <td>
-                                    {formatDate(new Date(testResult.timestamp))}
-                                </td>
-                                <td>
-                                    <HidableHealthRecordEntryValue
-                                        hideValue={needsHiding(testResult, user!)}
-                                        onMarkAsSeen={() => unhide(testResult.id)}
-                                    >
-                                        <DiagnosticTestValueView
-                                            testResult={testResult}
-                                        />
-                                    </HidableHealthRecordEntryValue>
-                                </td>
-                            </tr>
+                            <TestResultTableRow
+                                key={testResult.id}
+                                testResult={testResult}
+                            />
                         ))}
                     </tbody>
                 </Table>

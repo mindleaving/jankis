@@ -15,6 +15,7 @@ export const PatientDiagnosesView = (props: PatientDiagnosisViewProps) => {
         <Table>
             <thead>
                 <tr>
+                    <th></th>
                     <th>{resolveText("ICD11")}</th>
                     <th>{resolveText("ICD10")}</th>
                     <th>{resolveText("Diagnosis_Name")}</th>

@@ -3,18 +3,18 @@ import { Models } from "../../../localComponents/types/models";
 import { groupBy, mostCommonValue } from "../../../sharedCommonComponents/helpers/CollectionHelpers";
 import { canConvertTo } from "../../../sharedCommonComponents/helpers/mathjs";
 import { DiagnosticTestScaleType } from "../../../localComponents/types/enums.d";
-import { NonQuantitativeTestResultRow } from "./NonQuantitativeTestResultRow";
-import { QuantitativeTestResultRow } from "./QuantitativeTestResultRow";
+import { NonQuantitativeTestGroupRow } from "./NonQuantitativeTestGroupRow";
+import { QuantitativeTestGroupRow } from "./QuantitativeTestGroupRow";
 import { differenceInSeconds } from "date-fns";
 import { useContext } from "react";
 import UserContext from "../../../localComponents/contexts/UserContext";
 import { needsHiding } from "../../../localComponents/helpers/HealthRecordEntryHelpers";
 
-interface TestResultTableProps {
+interface TestResultGroupTableProps {
     items: Models.DiagnosticTestResults.DiagnosticTestResult[];
 }
 
-export const TestResultTable = (props: TestResultTableProps) => {
+export const TestResultGroupTable = (props: TestResultGroupTableProps) => {
 
     const user = useContext(UserContext);
     const inverseTimeOrderedTests = [...props.items].sort((a,b) => -differenceInSeconds(new Date(a.timestamp), new Date(b.timestamp)));
@@ -25,14 +25,14 @@ export const TestResultTable = (props: TestResultTableProps) => {
             <tbody>
                 {groupedTestResults.map(testGroup => {
                     if(testGroup.items.length === 1) {
-                        return (<NonQuantitativeTestResultRow
+                        return (<NonQuantitativeTestGroupRow
                             key={testGroup.key}
                             testResults={testGroup.items}
                         />);
                     }
                     const isQuantitativeTest = testGroup.items.every(x => x.scaleType === DiagnosticTestScaleType.Quantitative);
                     if(!isQuantitativeTest) {
-                        return (<NonQuantitativeTestResultRow
+                        return (<NonQuantitativeTestGroupRow
                             key={testGroup.key}
                             testResults={testGroup.items}
                         />);
@@ -42,19 +42,19 @@ export const TestResultTable = (props: TestResultTableProps) => {
                     const commonUnit = mostCommonValue(units)!;
                     const hasSharedUnit = quantitativeTestResults.every(x => canConvertTo(x.value, x.unit!, commonUnit));
                     if(!hasSharedUnit) {
-                        return (<NonQuantitativeTestResultRow
+                        return (<NonQuantitativeTestGroupRow
                             key={testGroup.key}
                             testResults={quantitativeTestResults}
                         />);
                     }
                     const hasHiddenValues = quantitativeTestResults.some(x => needsHiding(x, user!));
                     if(hasHiddenValues) {
-                        return (<NonQuantitativeTestResultRow
+                        return (<NonQuantitativeTestGroupRow
                             key={testGroup.key}
                             testResults={quantitativeTestResults}
                         />);
                     }
-                    return (<QuantitativeTestResultRow
+                    return (<QuantitativeTestGroupRow
                         key={testGroup.key}
                         commonUnit={commonUnit}
                         testResults={quantitativeTestResults}

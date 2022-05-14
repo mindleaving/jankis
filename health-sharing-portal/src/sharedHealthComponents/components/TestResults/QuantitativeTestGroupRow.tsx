@@ -7,13 +7,16 @@ import { mathjs } from '../../../sharedCommonComponents/helpers/mathjs';
 import { formatDate, formatDiagnosticTestNameOfResult } from '../../helpers/Formatters';
 import UserContext from '../../../localComponents/contexts/UserContext';
 import { needsHiding } from '../../../localComponents/helpers/HealthRecordEntryHelpers';
+import { AccordionCard } from '../../../sharedCommonComponents/components/AccordionCard';
+import { Table } from 'react-bootstrap';
+import { TestResultTableRow } from './TestResultTableRow';
 
-interface QuantitativeTestResultRowProps {
+interface QuantitativeTestGroupRowProps {
     commonUnit: string;
     testResults: Models.DiagnosticTestResults.QuantitativeDiagnosticTestResult[];
 }
 
-export const QuantitativeTestResultRow = (props: QuantitativeTestResultRowProps) => {
+export const QuantitativeTestGroupRow = (props: QuantitativeTestGroupRowProps) => {
 
     const user = useContext(UserContext);
     const commonUnit = props.commonUnit;
@@ -103,12 +106,29 @@ export const QuantitativeTestResultRow = (props: QuantitativeTestResultRowProps)
             <strong>{formatDiagnosticTestNameOfResult(lastTest)}</strong>
             <div><small>{formatDate(new Date(lastTest.timestamp))}</small></div>
         </td>
-        <td>
-            <Chart
-                options={chartOptions}
-                series={series}
-                height="60px"
-            />
+        <td colSpan={2}>
+            <AccordionCard standalone
+                eventKey={testName}
+                className='p-0'
+                title={
+                    <Chart
+                        options={chartOptions}
+                        series={series}
+                        height="60px"
+                    />
+                }
+            >
+                <Table>
+                    <tbody>
+                        {props.testResults.map(testResult => (
+                            <TestResultTableRow
+                                key={testResult.id}
+                                testResult={testResult}
+                            />
+                        ))}
+                    </tbody>
+                </Table>
+            </AccordionCard>
         </td>
     </tr>);
 

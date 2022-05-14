@@ -59,6 +59,7 @@ import { AddMedicationPage } from './sharedHealthComponents/pages/Medication/Add
 import { reset, useAppDispatch } from './localComponents/redux/store/healthRecordStore';
 import { AddImmunizationPage } from './sharedHealthComponents/pages/Medication/AddImmunizationPage';
 import { CreateEditDrugPage } from './sharedHealthComponents/pages/Medication/CreateEditDrugPage';
+import { EditTestResultPage } from './sharedHealthComponents/pages/Patients/EditTestResultPage';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";
@@ -172,6 +173,7 @@ export const App = (props: AppProps) => {
         { path: '/healthrecord/:personId/add/immunization', element: <AddImmunizationPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/edit/immunization/:id', element: <AddImmunizationPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/create/testresult', element: <CreatePatientTestResultPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/edit/testresult/:id', element: <EditTestResultPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/create/procedure', element: <CreateMedicalProcedurePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/edit/procedure/:id', element: <CreateMedicalProcedurePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/create/observation', element: <CreatePatientObservationPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},

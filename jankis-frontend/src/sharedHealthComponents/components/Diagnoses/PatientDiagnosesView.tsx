@@ -15,6 +15,7 @@ export const PatientDiagnosesView = (props: PatientDiagnosisViewProps) => {
         <Table>
             <thead>
                 <tr>
+                    <th></th>
                     <th>{resolveText("ICD11")}</th>
                     <th>{resolveText("ICD10")}</th>
                     <th>{resolveText("Diagnosis_Name")}</th>
@@ -32,7 +33,7 @@ export const PatientDiagnosesView = (props: PatientDiagnosisViewProps) => {
                     />
                 ))
                 : <tr>
-                    <td colSpan={5} className="text-center">{resolveText("NoEntries")}</td>
+                    <td colSpan={6} className="text-center">{resolveText("NoEntries")}</td>
                 </tr>}
             </tbody>
         </Table>

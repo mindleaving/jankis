@@ -125,6 +125,7 @@ namespace JanKIS.API.Setups
             SetupTypeStores<SubscriptionBase>(services);
             services.AddScoped<Storage.ISubscriptionsStore, Storage.SubscriptionsStore>();
             services.AddScoped<HealthSharingPortal.API.Storage.ISubscriptionsStore, HealthSharingPortal.API.Storage.SubscriptionsStore>();
+            services.AddScoped<ITestResultStore, TestResultStore>();
         }
 
         private static void SetupTypeStores<T>(IServiceCollection services) where T: IId

@@ -5,7 +5,7 @@ import { Models } from "../../../localComponents/types/models";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { useAppSelector } from "../../../localComponents/redux/store/healthRecordStore";
 import { TestResultCategories } from "../../types/frontendTypes.d";
-import { TestResultTable } from "./TestResultTable";
+import { TestResultGroupTable } from "./TestResultGroupTable";
 
 interface PatientTestResultsViewProps {
     personId: string;
@@ -96,7 +96,7 @@ export const PatientTestResultsView = (props: PatientTestResultsViewProps) => {
             <div className="timelineSeparator">
                 <span className="text-secondary">{resolveText('Now')}</span>
             </div>
-            <TestResultTable
+            <TestResultGroupTable
                 items={filteredTestResults}
             />
         </div>

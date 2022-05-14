@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
+using System.Net;
 using System.Security;
 using System.Threading.Tasks;
 using HealthModels;
+using HealthModels.DiagnosticTestResults;
 using HealthModels.Interview;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
@@ -18,6 +20,7 @@ namespace HealthSharingPortal.API.Controllers
     public class DocumentsController : HealthRecordEntryControllerBase<PatientDocument>
     {
         private readonly IFilesStore filesStore;
+        private readonly ITestResultStore testResultsStore;
         private readonly INotificationDistributor notificationDistributor;
 
         public DocumentsController(
@@ -26,11 +29,13 @@ namespace HealthSharingPortal.API.Controllers
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,
             IReadonlyStore<PersonDataChange> changeStore,
-            INotificationDistributor notificationDistributor)
+            INotificationDistributor notificationDistributor,
+            ITestResultStore testResultsStore)
             : base(store, httpContextAccessor, authorizationModule, changeStore)
         {
             this.filesStore = filesStore;
             this.notificationDistributor = notificationDistributor;
+            this.testResultsStore = testResultsStore;
         }
 
         [DisableRequestSizeLimit]
@@ -59,6 +64,8 @@ namespace HealthSharingPortal.API.Controllers
 
         public override async Task<IActionResult> Delete(string id)
         {
+            if (await testResultsStore.HasTestResultsDependentOnDocument(id))
+                return StatusCode((int) HttpStatusCode.Forbidden, "Document is associated with at least one test result");
             var documentDeletionResult = await base.Delete(id);
             if(documentDeletionResult is OkResult)
                 filesStore.Delete(id);
