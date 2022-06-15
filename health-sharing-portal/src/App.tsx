@@ -113,6 +113,7 @@ export const App = (props: AppProps) => {
                 <Routes>
                     <Route path="/emergency/:emergencyToken" element={<EmergencyPage onNewAccessToken={onNewAccessToken} onGuestLogin={onLoggedIn} />} />
                     <Route path="/login/:accountType" element={<LoginPage onNewAccessToken={onNewAccessToken} onLoggedIn={onLoggedIn} />} />
+                    <Route path="/register" element={<RegisterAccountPage />} />
                     <Route path="/register/:accountType" element={<RegisterAccountPage />} />
                     <Route path="/" element={<HomePage />} />
                 </Routes>
