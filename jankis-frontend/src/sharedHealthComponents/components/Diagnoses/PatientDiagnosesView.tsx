@@ -33,7 +33,7 @@ export const PatientDiagnosesView = (props: PatientDiagnosisViewProps) => {
                     />
                 ))
                 : <tr>
-                    <td colSpan={6} className="text-center">{resolveText("NoEntries")}</td>
+                    <td colSpan={7} className="text-center">{resolveText("NoEntries")}</td>
                 </tr>}
             </tbody>
         </Table>

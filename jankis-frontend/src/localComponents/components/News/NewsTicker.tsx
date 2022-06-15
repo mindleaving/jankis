@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import NewsItemFetcher from '../../helpers/NewsItemFetcher';
-import { Models } from '../../types/models';
+import { loadMoreNewsItems } from '../../redux/slices/newsSlice';
+import { useAppDispatch, useAppSelector } from '../../redux/store/healthRecordStore';
 
 interface NewsTickerProps {
     scope: string;
@@ -9,23 +8,24 @@ interface NewsTickerProps {
 
 export const NewsTicker = (props: NewsTickerProps) => {
 
-    const newsItemFetcher = new NewsItemFetcher(props.scope);
-    const [items, setItems] = useState<Models.NewsItem[]>([]);
-    const [hasMore, setHasMore] = useState<boolean>(true);
+    const newsItems = useAppSelector(state => state.news.items);
+    const hasMore = useAppSelector(state => state.news.hasMore);
+    const dispatch = useAppDispatch();
 
-    const fetchMoreNewsItems = async () => {
-        const newItems = await newsItemFetcher.fetch(items.length);
-        setItems(items.concat(newItems));
+    const fetchMoreNewsItems = () => {
+        const beforeDate = newsItems[newsItems.length-1].publishTimestamp;
+        const count = 10;
+        dispatch(loadMoreNewsItems(beforeDate, count));
     }
 
     return (
         <InfiniteScroll
-            dataLength={items.length}
+            dataLength={newsItems.length}
             next={fetchMoreNewsItems}
             hasMore={hasMore}
             loader={<h4>Loading...</h4>}
         >
-            {items}
+            {newsItems}
         </InfiniteScroll>
     );
 

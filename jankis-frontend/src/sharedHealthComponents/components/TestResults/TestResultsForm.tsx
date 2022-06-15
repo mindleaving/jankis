@@ -9,19 +9,20 @@ import { HealthRecordEntryType } from '../../../localComponents/types/enums.d';
 import { DiagnosticTestAutocomplete } from '../Autocompletes/DiagnosticTestAutocomplete';
 import { NotificationManager } from 'react-notifications';
 import { useNavigate } from 'react-router-dom';
-import { HealthRecordEntryFormProps } from '../../types/frontendTypes';
 import { useAppDispatch } from '../../../localComponents/redux/store/healthRecordStore';
 import { addTestResult } from '../../redux/slices/testResultsSlice';
 import { RowFormGroup } from '../../../sharedCommonComponents/components/RowFormGroup';
 import { TestResultsFormRow } from './TestResultsFormRow';
 import { differenceInMinutes } from 'date-fns';
 
-interface TestResultsFormProps extends HealthRecordEntryFormProps {}
+interface TestResultsFormProps {
+    personId: string;
+}
 
 export const TestResultsForm = (props: TestResultsFormProps) => {
 
     const user = useContext(UserContext);
-    const [ defaultTimestamp, setDefaultTimestamp ] = useState<Date>(new Date());
+    const [ defaultTimestamp, setDefaultTimestamp ] = useState<Date>((new Date().toISOString() as any));
     const [ testResults, setTestResults ] = useState<Models.DiagnosticTestResults.DiagnosticTestResult[]>([]);
     const [ isSubmitting, setIsSubmitting ] = useState<boolean>(false);
     const dispatch = useAppDispatch();
@@ -35,7 +36,7 @@ export const TestResultsForm = (props: TestResultsFormProps) => {
     }, [ defaultTimestamp ]);
     
     const changeDefaultTimestamp = (newDate: Date) => {
-        setDefaultTimestamp(state => Math.abs(differenceInMinutes(newDate, defaultTimestamp)) >= 1 ? newDate : state);
+        setDefaultTimestamp(state => Math.abs(differenceInMinutes(new Date(newDate), new Date(defaultTimestamp))) >= 1 ? newDate : state);
     }
 
     const addNewTest = (testDefinition?: Models.Services.DiagnosticTestDefinition) => {

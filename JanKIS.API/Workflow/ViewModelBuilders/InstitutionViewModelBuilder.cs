@@ -29,7 +29,7 @@ namespace JanKIS.API.Workflow.ViewModelBuilders
 
         public async Task<IViewModel<Institution>> Build(Institution model, IViewModelBuilderOptions<Institution> options = null)
         {
-            var rooms = await roomsStore.SearchAsync(x => model.RoomIds.Contains(x.Id));
+            var rooms = await roomsStore.SearchAsync(x => x.InstitutionId == model.Id);
             var departments = await departmentsStore.SearchAsync(x => x.InstitutionId == model.Id);
             var departmentViewModels = new List<DepartmentViewModel>();
             foreach (var department in departments)

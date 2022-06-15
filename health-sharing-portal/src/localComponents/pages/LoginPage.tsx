@@ -7,10 +7,11 @@ import { apiClient } from '../../sharedCommonComponents/communication/ApiClient'
 import { AsyncButton } from '../../sharedCommonComponents/components/AsyncButton';
 import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
 import { Models } from '../types/models';
+import { ApiError } from '../../sharedCommonComponents/communication/ApiError';
 
 interface LoginPageProps {
     onNewAccessToken: (authenticationResult: Models.AuthenticationResult) => void;
-    onLoggedIn: (userViewModel: ViewModels.IUserViewModel, redirectUrl?: string) => void;
+    onLoggedIn: (userViewModel: ViewModels.IUserViewModel | null, redirectUrl?: string) => void;
 }
 
 export const LoginPage = (props: LoginPageProps) => {
@@ -26,15 +27,30 @@ export const LoginPage = (props: LoginPageProps) => {
         e?.preventDefault();
         try {
             setIsLoggingIn(true);
-            const loginResponse = await apiClient.instance!.post(`api/accounts/${username}/login?accountType=${accountType}`, {}, `"${password}"`);
+            const loginResponse = await apiClient.instance!.post(
+                `api/accounts/${username}/login?accountType=${accountType}`, {}, 
+                `"${password}"`, 
+                { handleError: false});
+            if(loginResponse.status === 401) {
+                const authenticationResult = await loginResponse.json() as Models.AuthenticationResult;
+                throw new ApiError(loginResponse.status, resolveText(`AuthenticationErrorType_${authenticationResult.error}`));
+            }
+            if(!loginResponse.ok) {
+                throw new ApiError(loginResponse.status, '');
+            }
             const authenticationResult = await loginResponse.json() as Models.AuthenticationResult;
             props.onNewAccessToken(authenticationResult);
-            const userViewModelResponse = await apiClient.instance!.get('api/viewmodels/currentuser', {});
-            const userViewModel = await userViewModelResponse.json() as ViewModels.IUserViewModel;
-            if(!userViewModel.accountId || !userViewModel.profileData) {
+            const userViewModelResponse = await apiClient.instance!.get('api/viewmodels/currentuser', {}, { handleError: false });
+            if(userViewModelResponse.status === 404) {
                 redirectUrl = `/register/${accountType}`;
+                props.onLoggedIn(null, redirectUrl ?? undefined);
+            } else {
+                const userViewModel = await userViewModelResponse.json() as ViewModels.IUserViewModel;
+                if(!userViewModel.accountId || !userViewModel.profileData) {
+                    redirectUrl = `/register/${accountType}`;
+                }
+                props.onLoggedIn(userViewModel, redirectUrl ?? undefined);
             }
-            props.onLoggedIn(userViewModel, redirectUrl ?? undefined);
         } catch(error: any) {
             NotificationManager.error(error.message, resolveText('Login_CouldNotLogIn'));
         } finally {

@@ -16,6 +16,14 @@ import { admissionsSlice } from '../../../sharedHealthComponents/redux/slices/ad
 import { attachedEquipmentsSlice } from '../slices/attachedEquipmentsSlice';
 import { subscriptionsSlice } from '../slices/subscriptionsSlice';
 import { immunizationsSlice } from '../../../sharedHealthComponents/redux/slices/immunizationsSlice';
+import { institutionsSlice } from '../slices/institutionsSlice';
+import { stocksSlice } from '../slices/stocksSlice';
+import { consumablesSlice } from '../slices/consumablesSlice';
+import { resourcesSlice } from '../slices/resourcesSlice';
+import { bedOccupanciesSlice } from '../slices/bedOccupanciesSlice';
+import { departmentsSlice } from '../slices/departmentsSlice';
+import { roomsSlice } from '../slices/roomsSlice';
+import { newsSlice } from '../slices/newsSlice';
 
 const appReducer = combineReducers({
     persons: personsSlice.reducer,
@@ -32,7 +40,16 @@ const appReducer = combineReducers({
     questionnaireAnswers: questionnaireAnswersSlice.reducer,
     attachedEquipments: attachedEquipmentsSlice.reducer,
     subscriptions: subscriptionsSlice.reducer,
-    healthRecords: healthRecordsSlice.reducer
+    healthRecords: healthRecordsSlice.reducer,
+    
+    institutions: institutionsSlice.reducer,
+    departments: departmentsSlice.reducer,
+    rooms: roomsSlice.reducer,
+    bedOccupancies: bedOccupanciesSlice.reducer,
+    stocks: stocksSlice.reducer,
+    consumables: consumablesSlice.reducer,
+    resources: resourcesSlice.reducer,
+    news: newsSlice.reducer
 });
 const rootReducer: Reducer<ReturnType<typeof appReducer>>  = (state, action) => {
     if(action.type === resetActionType) {

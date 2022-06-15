@@ -2,6 +2,7 @@ import React, { FormEvent, useContext, useEffect, useState } from 'react';
 import { Button, Form, FormControl, FormGroup, FormLabel, InputGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import UserContext from '../../../localComponents/contexts/UserContext';
+import { useAppDispatch } from '../../../localComponents/redux/store/healthRecordStore';
 import { AutoCompleteContext, MedicationSchedulePatternType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { ViewModels } from '../../../localComponents/types/viewModels';
@@ -11,6 +12,7 @@ import { StoreButton } from '../../../sharedCommonComponents/components/StoreBut
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { sendPostRequest } from '../../../sharedCommonComponents/helpers/StoringHelpers';
+import { loadMedicationDispensions } from '../../redux/slices/medicationDispensionsSlice';
 import { DrugAutocomplete } from '../Autocompletes/DrugAutocomplete';
 import { PersonAutocomplete } from '../Autocompletes/PersonAutocomplete';
 
@@ -30,6 +32,7 @@ export const PastMedicationForm = (props: PastMedicationFormProps) => {
     const [ startTime, setStartTime ] = useState<Date>();
     const [ endTime, setEndTime ] = useState<Date>();
     const [ isSubmitting, setIsSubmitting ] = useState<boolean>(false);
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -72,7 +75,10 @@ export const PastMedicationForm = (props: PastMedicationFormProps) => {
             `api/medicationdispensions/pastmedication`,
             resolveText("Medication_CouldNotStore"),
             vm,
-            () => navigate(-1),
+            () => {
+                dispatch(loadMedicationDispensions({ personId: profileData!.id }));
+                navigate(-1);
+            },
             () => {},
             () => setIsSubmitting(false)
         );

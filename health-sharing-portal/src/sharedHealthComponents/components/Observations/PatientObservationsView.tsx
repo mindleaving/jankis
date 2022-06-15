@@ -13,6 +13,8 @@ import { needsHiding } from '../../../localComponents/helpers/HealthRecordEntryH
 import { useAppDispatch, useAppSelector } from '../../../localComponents/redux/store/healthRecordStore';
 import { deleteObservation, markObservationAsSeen } from '../../redux/slices/observationsSlice';
 import { openConfirmDeleteAlert } from '../../../sharedCommonComponents/helpers/AlertHelpers';
+import { useNavigate } from 'react-router-dom';
+import { compareDesc } from 'date-fns';
 
 interface PatientObservationsViewProps {
     personId: string;
@@ -32,9 +34,11 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
     
     const user = useContext(UserContext);
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const observations = useAppSelector(state => state.observations.items.filter(x => x.personId === props.personId));
+    const timeOrderedObservations = [...observations].sort((a,b) => compareDesc(new Date(a.timestamp), new Date(b.timestamp)));
     
-    const observationDataPoints = observations
+    const observationDataPoints = timeOrderedObservations
     .filter(observation => !needsHiding(observation, user!))
     .flatMap((observation): ObservationDataPoint[] => {
         const measurementType = observation.measurementType as MeasurementType;
@@ -163,7 +167,7 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
         },
         tooltip: {
             x: {
-                format: 'dd MMM HH:mm'
+                format: 'yyyy-MM-dd HH:mm'
             }
         },
         grid: {
@@ -208,15 +212,23 @@ export const PatientObservationsView = (props: PatientObservationsViewProps) => 
         <Table>
             <thead>
                 <tr>
+                    <th></th>
                     <th>{resolveText('Observation_Timestamp')}</th>
                     <th>{resolveText('Observation_MeausurementType')}</th>
                     <th>{resolveText('Observation_Value')}</th>
                     <th>{resolveText('Observation_CreatedBy')}</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
-                {observations.map(observation => (
+                {timeOrderedObservations.map(observation => (
                     <tr key={observation.id}>
+                        <td>
+                            <i
+                                className='fa fa-edit clickable'
+                                onClick={() => navigate(`/healthrecord/${observation.personId}/edit/observation/${observation.id}`)}
+                            />
+                        </td>
                         <td>{formatDate(new Date(observation.timestamp))}</td>
                         <td>{formatMeasurementType(observation.measurementType)}</td>
                         <td>

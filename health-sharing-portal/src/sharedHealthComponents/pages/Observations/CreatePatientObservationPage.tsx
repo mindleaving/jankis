@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Models } from '../../../localComponents/types/models';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
-import { PatientAutocomplete } from '../../../sharedHealthComponents/components/Autocompletes/PatientAutocomplete';
+import { PatientAutocomplete } from '../../components/Autocompletes/PatientAutocomplete';
 import { ObservationsForm } from '../../components/Observations/ObservationsForm';
 
 interface CreatePatientObservationPageProps { }
@@ -15,6 +15,7 @@ export const CreatePatientObservationPage = (props: CreatePatientObservationPage
     const { personId } = useParams();
 
     const [ profileData, setProfileData ] = useState<Models.Person>();
+    
     
     const navigate = useNavigate();
 

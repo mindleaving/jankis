@@ -1,72 +1,56 @@
-import React from 'react';
 import { Button, Card, Col, Container, InputGroup, Row } from 'react-bootstrap';
 import { Models } from '../../types/models';
-import { NotificationManager } from 'react-notifications';
-import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { loadObject } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
 import { formatAge } from '../../../sharedHealthComponents/helpers/Formatters';
-import { useAppSelector } from '../../redux/store/healthRecordStore';
+import { useAppDispatch, useAppSelector } from '../../redux/store/healthRecordStore';
+import { isAfter, isBefore } from 'date-fns';
+import { SubscriptionObjectType } from '../../types/enums';
+import { subscribeToPerson, unsubscribeFromPerson } from '../../redux/slices/subscriptionsSlice';
 
 interface PatientProfileJumbotronProps {
     personId: string;
-    bedOccupancy?: Models.BedOccupancy;
     showSubscription?: boolean
-    subscription?: Models.Subscriptions.PatientSubscription;
-    onSubscriptionChanged?: (subscription: Models.Subscriptions.PatientSubscription | undefined) => void;
 }
 
 export const PatientProfileJumbotron = (props: PatientProfileJumbotronProps) => {
-
-    if(props.showSubscription && !props.onSubscriptionChanged) {
-        throw new Error("When subscription is shown, the onSubscriptionChanged-method must be provided");
-    }
 
     const profileData = useAppSelector(state => state.persons.items.find(x => x.id === props.personId));
     const firstName = profileData?.firstName ?? '';
     const lastName = profileData?.lastName ?? '';
     const birthDate = profileData?.birthDate ?? new Date();
 
-    // TODO
-    const ward = props.bedOccupancy?.department.name ?? `(${resolveText('NotAdmitted')})`;
-    const room = props.bedOccupancy?.room.name ?? `(${resolveText('NotAdmitted')})`;
-    const bed = props.bedOccupancy?.bedPosition ?? `(${resolveText('NotAdmitted')})`;
+    const now = new Date();
+    const isCurrentBedOccupancy = (x: Models.BedOccupancy, personId: string, now: Date) => {
+        if(!x.patient || x.patient.personId !== personId) {
+            return false;
+        }
+        if(isBefore(now, x.startTime)) {
+            return false;
+        }
+        if(x.endTime && isAfter(now, x.endTime)) {
+            return false;
+        }
+        return true;
+    }
+    const bedOccupancy = useAppSelector(state => state.bedOccupancies.items.find(x => isCurrentBedOccupancy(x, props.personId, now)));
+    const ward = bedOccupancy?.department.name ?? `(${resolveText('NotAdmitted')})`;
+    const room = bedOccupancy?.room.name ?? `(${resolveText('NotAdmitted')})`;
+    const bed = bedOccupancy?.bedPosition ?? `(${resolveText('NotAdmitted')})`;
     const height = "172 cm";
     const weight = "68 kg";
 
-    const isSubscribed = !!props.subscription;
+    const subscription = useAppSelector(state => state.subscriptions.items
+        .filter(x => x.type === SubscriptionObjectType.Patient)
+        .map(x => x as Models.Subscriptions.PatientSubscription)
+        .find(x => x.personId === props.personId));
+    const isSubscribed = !!subscription;
 
-    const subscribe = async () => {
-        try {
-            const response = await apiClient.instance!.post(`api/patients/${props.personId}/subscribe`, {}, {}, { handleError: false });
-            if(!(response.ok || response.status === 209)) {
-                const errorMessage = await response.text();
-                throw new Error(errorMessage);
-            }
-            if(props.onSubscriptionChanged) {
-                const subscriptionId = await response.text();
-                await loadObject<Models.Subscriptions.PatientSubscription>(
-                    `api/subscriptions/${subscriptionId}`,
-                    {},
-                    resolveText('Subscription_CouldNotLoad'),
-                    subscription => {
-                        props.onSubscriptionChanged!(subscription)
-                    }
-                );
-            }
-        } catch(error: any) {
-            NotificationManager.error(error.message, resolveText('Patient_CouldNotSubscribe'));
-        }
+    const dispatch = useAppDispatch();
+    const subscribe = () => {
+        dispatch(subscribeToPerson(props.personId));
     }
-    const unsubscribe = async () => {
-        try {
-            await apiClient.instance!.post(`api/patients/${props.personId}/unsubscribe`, {}, {});
-            if(props.onSubscriptionChanged) {
-                props.onSubscriptionChanged(undefined);
-            }
-        } catch(error: any) {
-            NotificationManager.error(error.message, resolveText('Patient_CouldNotUnsubscribe'));
-        }
+    const unsubscribe = () => {
+        dispatch(unsubscribeFromPerson(props.personId));
     }
 
     return (

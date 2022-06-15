@@ -1,27 +1,18 @@
-import React from 'react';
-import { Card, Accordion, Row, Col, Button, Alert } from 'react-bootstrap';
-import { useNavigate } from 'react-router';
-import { AccordionCard } from '../../../sharedCommonComponents/components/AccordionCard';
+import { Card, Accordion } from 'react-bootstrap';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { formatPerson } from '../../../sharedHealthComponents/helpers/Formatters';
-import { BedState } from '../../types/enums.d';
+import { useAppSelector } from '../../redux/store/healthRecordStore';
 import { Models } from '../../types/models';
+import { RoomBedCard } from './RoomBedCard';
 
 interface RoomCardProps {    
     room: Models.Room;
     department: Models.Department;
-    bedOccupancies: Models.BedOccupancy[];
-    now?: Date;
 }
 
 export const RoomCard = (props: RoomCardProps) => {
 
     const room = props.room;
-    const department= props.department;
-    const bedOccupancies = props.bedOccupancies;
-    const now = (props.now ?? new Date()).getTime();
-
-    const navigate = useNavigate();
+    const bedOccupancies = useAppSelector(state => state.bedOccupancies.items.filter(x => x.))
 
     return (
         <Card className="m-2">
@@ -29,79 +20,12 @@ export const RoomCard = (props: RoomCardProps) => {
             <Card.Body>
                 <Accordion>
                 {room.bedPositions.map(bedPosition => {
-                    const occupancies = bedOccupancies
-                        .filter(x => 
-                            x.department.id === department.id
-                            && x.room.id === room.id
-                            && x.bedPosition === bedPosition
-                            && (!x.endTime || x.endTime.getTime() > now))
-                        .sort((a,b) => a.startTime.getTime() - b.startTime.getTime());
-                    const currentOccupancy = occupancies.find(x => x.startTime.getTime() <= now);
-                    const stateColor = !currentOccupancy ? "light"
-                        : currentOccupancy.state === BedState.Occupied ? "success"
-                        : currentOccupancy.state === BedState.Reserved ? "warning"
-                        : currentOccupancy.state === BedState.Unavailable ? "danger"
-                        : "light";
-                    const textColor = !currentOccupancy ? 'text-dark'
-                        : [BedState.Unavailable, BedState.Occupied].includes(currentOccupancy.state) ? 'text-dark'
-                        : 'text-dark';
-                    return (
-                        <AccordionCard 
-                            key={bedPosition}
-                            title={<Row className="align-items-center">
-                                <Col>
-                                    {resolveText('Bed')} {bedPosition} ({resolveText(`BedState_${currentOccupancy?.state ?? BedState.Empty}`)})
-                                </Col>
-                                <Col xs="auto">
-                                    <Button 
-                                        size="sm" 
-                                        className="mr-auto" 
-                                        onClick={() => navigate(`/create/bedoccupancy/department/${department.id}/room/${room.id}/bed/${bedPosition}`)}
-                                    >
-                                        {resolveText('Bed_AddOccupancy')}
-                                    </Button>
-                                </Col>
-                            </Row>}
-                            eventKey={bedPosition}
-                            className={`m-1 ${textColor}`} 
-                            bg={stateColor}
-                        >
-                            {occupancies.map(occupancy => (
-                                <Alert key={occupancy.id}>
-                                    <Row>
-                                        <Col xs={4}>
-                                            <small>{`${occupancy.startTime.toLocaleDateString()} - ${occupancy.endTime?.toLocaleDateString() ?? ''}`}</small>
-                                        </Col>
-                                        <Col />
-                                        <Col xs="auto">
-                                            <i className="fa fa-edit clickable" onClick={() => navigate(`/bedoccupancies/${occupancy.id}/edit`)} />
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col xs={4}>{resolveText('BedState')}</Col>
-                                        <Col>{resolveText(`BedState_${occupancy.state}`)}</Col>
-                                    </Row>
-                                    {occupancy.state === BedState.Unavailable ? 
-                                    <Row>
-                                        <Col xs={4}>{resolveText('BedOccupancy_UnavailabilityReason')}</Col>
-                                        <Col>{occupancy.unavailabilityReason}</Col>
-                                    </Row> : 
-                                    occupancy.patient ? 
-                                    <Row>
-                                        <Col xs={4}>{resolveText('Patient')}</Col>
-                                        <Col>
-                                            <Button 
-                                                variant="link"
-                                                className={`p-0 m-0 text-left ${textColor}`}
-                                                onClick={() => navigate(`/healthrecord/${occupancy.patient!.id}`)}
-                                            >
-                                                {formatPerson(occupancy.patient)}
-                                            </Button>
-                                        </Col>
-                                    </Row> : null}
-                                </Alert>
-                            ))}
-                        </AccordionCard>);
+                    <RoomBedCard
+                        key={bedPosition}
+                        departmentId={props.department.id}
+                        roomId={room.id}
+                        bedPosition={bedPosition}
+                    />
                 })}
                 </Accordion>
             </Card.Body>

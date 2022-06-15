@@ -1,40 +1,20 @@
-import React from 'react';
-import { UniformGrid } from '../../../sharedCommonComponents/components/UniformGrid';
-import { Models } from '../../types/models';
-import { ViewModels } from '../../types/viewModels';
-import { RoomCard } from './RoomCard';
+import { useAppSelector } from '../../redux/store/healthRecordStore';
+import { RoomGridDepartmentSection } from './RoomGridDepartmentSection';
 
 interface RoomGridViewProps {
-    institution: ViewModels.InstitutionViewModel;
-    bedOccupancies: Models.BedOccupancy[];
+    institutionId: string;
 }
 
 export const RoomGridView = (props: RoomGridViewProps) => {
 
-    const now = new Date();
+    const departments = useAppSelector(state => state.departments.items.filter(x => x.institutionId === props.institutionId));
     return (
         <>
-            {props.institution.departments.map(department => (
-                <>
-                    <h2>{department.name}</h2>
-                    <UniformGrid
-                        columnCount={3}
-                        size="lg"
-                        items={department.roomIds.map(roomId => {
-                            const room = props.institution.rooms.find(x => x.id === roomId)!;
-                            if(room.bedPositions.length === 0) {
-                                return null;
-                            }
-                            return (<RoomCard
-                                room={room}
-                                department={department}
-                                bedOccupancies={props.bedOccupancies}
-                                now={now}
-                            />);
-                        }).filter(x => x !== null)}
-                    />
-                    
-                </>
+            {departments.map(department => (
+                <RoomGridDepartmentSection
+                    key={department.id}
+                    department={department}
+                />
             ))}
         </>
     );

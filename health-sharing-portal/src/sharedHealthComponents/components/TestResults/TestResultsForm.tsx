@@ -72,12 +72,16 @@ export const TestResultsForm = (props: TestResultsFormProps) => {
         e?.preventDefault();
         setIsSubmitting(true);
         try {
+            let isSuccess = true;
             for (const testResult of testResults) {
                 dispatch(addTestResult({
                     args: testResult,
                     body: testResult,
-                    onSuccess: () => navigate(-1)
+                    onFailure: () => { isSuccess = false; }
                 }));
+            }
+            if(isSuccess) {
+                navigate(-1);
             }
         } catch(error: any) {
             NotificationManager.error(error.message, resolveText("TestResults_CouldNotStore"));

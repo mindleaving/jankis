@@ -20,7 +20,7 @@ export const ConsumableOrdersFilterView = (props: ConsumableOrdersFilterViewProp
     useEffect(() => {
         if(!props.filter?.consumableId) return;
         const loadConsumable = buildLoadObjectFunc<ViewModels.ConsumableViewModel>(
-            `api/services/${props.filter.consumableId}`,
+            `api/consumables/${props.filter.consumableId}`,
             {},
             resolveText('Consumable_CouldNotLoad'),
             setConsumable

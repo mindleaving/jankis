@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Models } from "../../../localComponents/types/models";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { RemoteState } from "../../types/reduxInterfaces";
-import { deleteActionBuilder, loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
+import { deleteActionBuilder, loadActionBuilder, loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
 
 
 interface TestResultsState extends RemoteState<Models.DiagnosticTestResults.DiagnosticTestResult> {
@@ -57,6 +57,12 @@ export const loadTestResults = loadPersonDataActionBuilder(
     () => resolveText("TestResults_CouldNotLoad"),
     testResultsSlice.actions.setIsLoading,
     testResultsSlice.actions.setTestResults
+);
+export const loadTestResult = loadActionBuilder(
+    args => `api/testresults/${args}`,
+    () => resolveText("TestResult_CouldNotLoad"),
+    testResultsSlice.actions.setIsLoading,
+    testResultsSlice.actions.addOrUpdateTestResult
 );
 export const addTestResult = postActionBuilder(
     () => `api/testResults`, 

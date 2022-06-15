@@ -1,17 +1,18 @@
-import React, { FormEvent, Fragment, useState } from 'react';
+import { FormEvent, Fragment, useEffect, useState } from 'react';
 import { PulseMeasurementForm } from './PulseMeasurementForm';
 import { BloodPressureMeasurementForm } from './BloodPressureMeasurementForm';
 import { TemperatureMeasurementForm } from './TemperatureMeasurementForm';
 import { GenericMeasurementForm } from './GenericMeasurementForm';
 import { v4 as uuid } from 'uuid';
-import { Alert, Button, Col, Form, Row } from 'react-bootstrap';
+import { Alert, Button, Col, Form, FormGroup, FormLabel, InputGroup, Row } from 'react-bootstrap';
 import { formatObservation } from '../../helpers/Formatters';
-import { NotificationManager } from 'react-notifications';
 import { MeasurementType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
-import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { StoreButton } from '../../../sharedCommonComponents/components/StoreButton';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
+import { DateFormControl } from '../../../sharedCommonComponents/components/DateFormControl';
+import { useAppDispatch, useAppSelector } from '../../../localComponents/redux/store/healthRecordStore';
+import { addObservation as addObservationToStore } from '../../redux/slices/observationsSlice';
 
 interface ObservationsFormProps {
     personId: string;
@@ -24,25 +25,34 @@ interface MeasurementForm {
 
 export const ObservationsForm = (props: ObservationsFormProps) => {
 
+    const [ timestamp, setTimestamp ] = useState<Date | undefined>(new Date());
     const [ measurementForms, setMeasurementForms ] = useState<MeasurementForm[]>([]);
     const [ observations, setObservations ] = useState<Models.Observations.Observation[]>([]);
-    const [isStoring, setIsStoring ] = useState<boolean>(false);
+    const isStoring = useAppSelector(state => state.observations.isSubmitting);
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if(!timestamp) {
+            return;
+        }
+        setObservations(state => state.map(observation => ({
+            ...observation,
+            timestamp: timestamp
+        })));
+    }, [ timestamp ]);
 
     const store = async (e: FormEvent) => {
         e.preventDefault();
-        setIsStoring(true);
-        try {
-            for (const observation of observations) {
-                await apiClient.instance!.put(`api/observations/${observation.id}`, {}, observation);
-            }
-            NotificationManager.success(resolveText('Observation_SuccessfullyStored'));
-            if(props.onStore) {
-                props.onStore(observations);
-            }
-        } catch(error: any) {
-            NotificationManager.error(error.message, resolveText('Observation_CouldNotStore'));
-        } finally {
-            setIsStoring(false);
+        let isSuccess = true;
+        for (const observation of observations) {
+            dispatch(addObservationToStore({
+                args: observation,
+                body: observation,
+                onFailure: () => isSuccess = false
+            }))
+        }
+        if(isSuccess && props.onStore) {
+            props.onStore(observations);
         }
     }
 
@@ -56,6 +66,9 @@ export const ObservationsForm = (props: ObservationsFormProps) => {
         setMeasurementForms(measurementForms.filter(x => x.id !== measurementFormId));
     }
     const addObservation = (observation: Models.Observations.Observation, measurementFormId: string) => {
+        if(timestamp) {
+            observation.timestamp = timestamp;
+        }
         setObservations(observations.concat(observation));
         removeMeasurementForm(measurementFormId);
     }
@@ -65,6 +78,21 @@ export const ObservationsForm = (props: ObservationsFormProps) => {
 
     return (
         <>
+            <FormGroup as={Row}>
+                <FormLabel column>{resolveText("Observation_Timestamp")}</FormLabel>
+                <Col>
+                    <InputGroup>
+                        <DateFormControl required
+                            value={timestamp}
+                            onChange={setTimestamp}
+                            enableTime
+                        />
+                        <Button onClick={() => setTimestamp(new Date().toISOString() as any)}>
+                            {resolveText("Now")}
+                        </Button>
+                    </InputGroup>
+                </Col>
+            </FormGroup>
             <Row>
                 <Col md="4">{resolveText('Observation_MeasurementType')}</Col>
                 <Col md="8">

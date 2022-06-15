@@ -1,6 +1,5 @@
 ﻿using System;
 using HealthModels;
-using JanKIS.API.Storage;
 using TypescriptGenerator.Attributes;
 
 namespace JanKIS.API.Models
@@ -9,6 +8,7 @@ namespace JanKIS.API.Models
     {
         public string Id { get; set; }
         public BedState State { get; set; }
+        public string InstitutionId { get; set; }
         public Department Department { get; set; }
         public Room Room { get; set; }
         public string BedPosition { get; set; }

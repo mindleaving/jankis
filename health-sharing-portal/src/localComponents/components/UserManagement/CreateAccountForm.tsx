@@ -50,6 +50,7 @@ export const CreateAccountForm = (props: CreateAccountFormProps) => {
             <GenericTypeCreateEditPage
                 typeName='person'
                 onSubmit={store}
+                item={{ id: '' } as any}
                 uiSchema={{
                     "id": {
                         "ui:widget": MenschIdWidget

@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { distinct } from "../../../sharedCommonComponents/helpers/CollectionHelpers";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
-import { loadPersonDataActionBuilder, postActionBuilder } from "../../../sharedHealthComponents/redux/helpers/ActionCreatorBuilder";
+import { loadActionBuilder, loadPersonDataActionBuilder, postActionBuilder } from "../../../sharedHealthComponents/redux/helpers/ActionCreatorBuilder";
 import { RemoteState } from "../../../sharedHealthComponents/types/reduxInterfaces";
 import { Models } from "../../types/models";
 
@@ -26,6 +27,9 @@ export const bedOccupanciesSlice = createSlice({
         setBedOccupancies: (state, action: PayloadAction<Models.BedOccupancy[]>) => {
             state.items = action.payload;
         },
+        addBedOccupancies: (state, action: PayloadAction<Models.BedOccupancy[]>) => {
+            state.items = distinct(state.items.concat(action.payload));
+        },
         addOrUpdateBedOccupancy: (state, action: PayloadAction<Models.BedOccupancy>) => {
             const item = action.payload;
             if(state.items.some(x => x.id === item.id)) {
@@ -37,13 +41,19 @@ export const bedOccupanciesSlice = createSlice({
     }
 });
 
-export const loadBedOccupancies = loadPersonDataActionBuilder(
+export const loadBedOccupanciesForPerson = loadPersonDataActionBuilder(
     personId => `api/persons/${personId}/bedOccupancies`,
     () => resolveText("BedOccupancies_CouldNotLoad"),
     bedOccupanciesSlice.actions.setIsLoading,
     bedOccupanciesSlice.actions.setBedOccupancies
 );
-export const addBedOccupancy = postActionBuilder(
+export const loadBedOccupanciesForInstitution = loadActionBuilder(
+    args => `api/institutions/${args}/bedoccupancies`,
+    () => resolveText("BedOccupancies_CouldNotLoad"),
+    bedOccupanciesSlice.actions.setIsLoading,
+    bedOccupanciesSlice.actions.addBedOccupancies
+);
+export const addOrUpdateBedOccupancy = postActionBuilder(
     () => `api/bedoccupancies`, 
     () => resolveText("BedOccupancy_CouldNotStore"),
     bedOccupanciesSlice.actions.setIsSubmitting,

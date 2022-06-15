@@ -28,7 +28,6 @@ namespace JanKIS.API.Setups
                 .IncludeAllInNamespace(Assembly.GetAssembly(typeof(StudyViewModel)), "HealthSharingPortal.API.ViewModels")
                 .Include<SubscriptionObjectType>()
                 .Include<NotificationType>()
-                .Exclude<Account>()
                 .Exclude<HealthSharingPortal.API.Models.Filters.SharedAccessFilter>()
                 .Exclude<HealthSharingPortal.API.Models.Subscriptions.AdmissionNotification>()
                 .Exclude<HealthSharingPortal.API.Models.Account>()

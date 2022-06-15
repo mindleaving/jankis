@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ButtonGroup, Button, Col, FormControl, FormGroup, FormLabel, Row } from 'react-bootstrap';
 import { RoomGridView } from '../../components/Departments/RoomGridView';
 import { Models } from '../../types/models';
-import { ViewModels } from '../../types/viewModels';
 import { BedOccupancyTimelineView } from '../../components/Departments/BedOccupancyTimelineView';
-import { addDays } from 'date-fns';
-import { isAfter } from 'date-fns/esm';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { buildLoadObjectFunc } from '../../../sharedCommonComponents/helpers/LoadingHelpers';
+import { useAppDispatch, useAppSelector } from '../../redux/store/healthRecordStore';
+import { loadInsitutions } from '../../redux/slices/institutionsSlice';
+import { loadBedOccupanciesForInstitution } from '../../redux/slices/bedOccupanciesSlice';
 
 interface RoomsPageProps {}
 
@@ -17,50 +16,28 @@ enum RoomsViewType {
 }
 export const RoomsPage = (props: RoomsPageProps) => {
 
-    const [ isLoading, setIsLoading] = useState<boolean>(true);
-    const [ institutions, setInstitutions] = useState<ViewModels.InstitutionViewModel[]>([]);
-    const [ selectedInstitution, setSelectedInstitution ] = useState<ViewModels.InstitutionViewModel>();
+    const isLoading = useAppSelector(state => state.institutions.isLoading || state.bedOccupancies.isLoading);
+    const institutions = useAppSelector(x => x.institutions.items);
+    const [ selectedInstitutionId, setSelectedInstitutionId ] = useState<string>();
     const [ viewType, setViewType ] = useState<RoomsViewType>(RoomsViewType.Grid);
-    const [ bedOccupancies, setBedOccupancies] = useState<Models.BedOccupancy[]>([]);
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
-        setIsLoading(true);
-        const loadInstitutions = buildLoadObjectFunc<ViewModels.InstitutionViewModel[]>(
-            'api/institutions',
-            {},
-            resolveText('Institutions_CouldNotLoad'),
-            items => {
-                setInstitutions(items);
-                if(items.length === 1) {
-                    setSelectedInstitution(items[0]);
-                }
-            },
-            () => setIsLoading(false)
-        );
-        loadInstitutions();
+        dispatch(loadInsitutions({}));
     }, []);
     useEffect(() => {
-        if(!selectedInstitution) return;
-        setIsLoading(true);
-        const loadOccupancies = buildLoadObjectFunc<Models.BedOccupancy[]>(
-            `api/institutions/${selectedInstitution.id}/bedoccupancies`,
-            {},
-            resolveText('BedOccupancies_CouldNotLoad'),
-            items => {
-                const now = new Date();
-                const cutoffDate = addDays(now, -30);
-                items = items.map(item => ({
-                    ...item,
-                    startTime: new Date(item.startTime),
-                    endTime: item.endTime ? new Date(item.endTime) : undefined
-                }));
-                items = items.filter(item => !item.endTime || isAfter(item.endTime, cutoffDate));
-                setBedOccupancies(items);
-            },
-            () => setIsLoading(false)
-        );
-        loadOccupancies();
-    }, [ selectedInstitution ]);
+        if(!selectedInstitutionId && institutions.length > 0) {
+            setSelectedInstitutionId(institutions[0].id);
+        }
+    }, [ institutions ]);
+    useEffect(() => {
+        if(!selectedInstitutionId) {
+            return;
+        }
+        dispatch(loadBedOccupanciesForInstitution({ 
+            args: selectedInstitutionId
+        }));
+    }, [ selectedInstitutionId ]);
 
     if(isLoading) {
         return (<h1>{resolveText('Loading...')}</h1>);
@@ -74,8 +51,8 @@ export const RoomsPage = (props: RoomsPageProps) => {
                 <Col>
                     <FormControl
                         as="select"
-                        value={selectedInstitution?.id ?? ''}
-                        onChange={(e: any) => setSelectedInstitution(institutions.find(x => x.id === e.target.value))}
+                        value={selectedInstitutionId ?? ''}
+                        onChange={(e: any) => setSelectedInstitutionId(e.target.value)}
                     >
                         {institutions.length > 0
                         ? <>
@@ -111,12 +88,11 @@ export const RoomsPage = (props: RoomsPageProps) => {
                     </ButtonGroup>
                 </Col>
             </Row>
-            {selectedInstitution
-                ? viewType === RoomsViewType.Grid ? <RoomGridView institution={selectedInstitution} bedOccupancies={bedOccupancies} />
-                : viewType === RoomsViewType.Timeline ? <BedOccupancyTimelineView institution={selectedInstitution} bedOccupancies={bedOccupancies} />
-                : null
+            {selectedInstitutionId 
+            ? viewType === RoomsViewType.Grid ? <RoomGridView institutionId={selectedInstitutionId} />
+            : viewType === RoomsViewType.Timeline ? <BedOccupancyTimelineView institutionId={selectedInstitutionId} />
+            : null
             : null}
         </>
     );
-
 }

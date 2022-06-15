@@ -14,7 +14,7 @@ interface ConsumableAutocompleteProps {
 
 export const ConsumableAutocomplete = (props: ConsumableAutocompleteProps) => {
 
-    const serviceAutocompleteRunner = useMemo(() => new AutocompleteRunner<ViewModels.ConsumableViewModel>('api/consumables/search', 'searchText', 10), []);
+    const consumableAutocompleteRunner = useMemo(() => new AutocompleteRunner<ViewModels.ConsumableViewModel>('api/consumables/search', 'searchText', 10), []);
 
     if(props.value || props.isLoading) {
         return (<Alert 
@@ -28,7 +28,7 @@ export const ConsumableAutocomplete = (props: ConsumableAutocompleteProps) => {
         </Alert>);
     }
     return (<Autocomplete
-        search={serviceAutocompleteRunner.search}
+        search={consumableAutocompleteRunner.search}
         displayNameSelector={x => x.name}
         onItemSelected={props.onChange}
     />);

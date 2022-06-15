@@ -63,8 +63,6 @@ export namespace Models {
 
     interface Institution extends Models.IId {
         name: string;
-        roomIds: string[];
-        departmentIds: string[];
     }
 
     interface IPersonData extends Models.IId {
@@ -99,6 +97,13 @@ export namespace Models {
         changeType: Enums.StorageOperation;
     }
 
+    interface Account extends Models.IId {
+        accountType: Enums.AccountType;
+        personId: string;
+        preferedLanguage: Enums.Language;
+        loginIds: string[];
+    }
+
     interface AttachedEquipment extends Models.IHealthRecordEntry {
         equipmentType: string;
         materials: Models.MaterialReference[];
@@ -108,6 +113,7 @@ export namespace Models {
 
     interface BedOccupancy extends Models.IId {
         state: Enums.BedState;
+        institutionId: string;
         department: Models.Department;
         room: Models.Room;
         bedPosition: string;
@@ -209,6 +215,7 @@ export namespace Models {
     interface Room extends Models.IId {
         name: string;
         bedPositions: string[];
+        institutionId: string;
     }
 
     interface ServiceBatchOrder extends Models.IId {

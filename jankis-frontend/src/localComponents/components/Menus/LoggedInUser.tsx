@@ -1,18 +1,18 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Button } from 'react-bootstrap';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
-import { ViewModels } from '../../types/viewModels';
+import UserContext from '../../contexts/UserContext';
 
 interface LoggedInUserProps {
-    user: ViewModels.IUserViewModel;
     onLogOut: () => void;
 }
 
 export const LoggedInUser = (props: LoggedInUserProps) => {
 
+    const user = useContext(UserContext);
     return (
         <>
-            <div className="mx-2">{resolveText('Hello')}, {props.user.profileData.firstName}</div>
+            <div className="mx-2">{resolveText('Hello')}, {user!.profileData.firstName}</div>
             <Button variant="danger" onClick={props.onLogOut}>{resolveText('LogOut')}</Button>
         </>
     );

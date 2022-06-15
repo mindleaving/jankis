@@ -1,16 +1,17 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Alert, FormControl, InputGroup } from 'react-bootstrap';
+import { useContext, useEffect, useState } from 'react';
+import { FormControl, InputGroup } from 'react-bootstrap';
 import { getAutoCompleteContextForDiagnosticTestOptions, getAutoCompleteContextForDiagnosticTestUnit } from '../../helpers/AutoCompleteContexts';
 import { v4 as uuid } from 'uuid';
 import { NotificationManager } from 'react-notifications';
 import { DiagnosticTestScaleType, HealthRecordEntryType } from '../../../localComponents/types/enums.d';
 import { Models } from '../../../localComponents/types/models';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
-import { AsyncButton } from '../../../sharedCommonComponents/components/AsyncButton';
-import { FileUpload } from '../../../sharedCommonComponents/components/FileUpload';
 import { MemoryFormControl } from '../../../sharedCommonComponents/components/MemoryFormControl';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import UserContext from '../../../localComponents/contexts/UserContext';
+import { useAppDispatch, useAppSelector } from '../../../localComponents/redux/store/healthRecordStore';
+import { addDocument, loadDocument } from '../../redux/slices/documentsSlice';
+import { DocumentAlertOrUpload } from '../Documents/DocumentAlertOrUpload';
 
 interface DiagnosticTestValueEditorProps {
     testResult: Models.DiagnosticTestResults.DiagnosticTestResult;
@@ -164,72 +165,90 @@ const DocumentValueEditor = (props: DiagnosticTestValueEditorProps) => {
 
     const user = useContext(UserContext);
     const documentTestResult = props.testResult as Models.DiagnosticTestResults.DocumentDiagnosticTestResult;
-    const [ documentId, setDocumentId] = useState<string>(documentTestResult.documentId);
+    const matchedDocument = useAppSelector(state => state.documents.items.find(x => x.id === documentTestResult.documentId));
+    const [ document, setDocument ] = useState<Models.PatientDocument | undefined>(matchedDocument);
     const [ file, setFile ] = useState<File>();
     const [ isUploading, setIsUploading ] = useState<boolean>(false);
     const [ isFileUploaded, setIsFileUploaded ] = useState<boolean>(false);
+    const dispatch = useAppDispatch();
 
-    const onChange = props.onChange;
     useEffect(() => {
-        if(!documentId) return;
+        if(document && document.id === documentTestResult.documentId) {
+            return;
+        }
+        if(!documentTestResult.documentId) {
+            return;
+        }
+        dispatch(loadDocument({ args: documentTestResult.documentId }));
+    }, [ documentTestResult.documentId ]);
+    useEffect(() => {
+        if(!document && matchedDocument) {
+            setDocument({ ...matchedDocument });
+        }
+    }, [ matchedDocument ]);
+    useEffect(() => {
+        if(!document) return;
         const update: Update<Models.DiagnosticTestResults.DiagnosticTestResult> = (testResult) => {
             const updatedItem: Models.DiagnosticTestResults.DocumentDiagnosticTestResult = {
                 ...testResult,
-                documentId: documentId
+                documentId: document.id
             }
             return updatedItem;
         }
-        onChange(update);
+        props.onChange(update);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ documentId ]);
-    const uploadFile = async (file: File) => {
-        setIsUploading(true);
-        try {
-            const document: Models.PatientDocument = {
-                id: documentId ?? uuid(),
-                type: HealthRecordEntryType.Document,
-                isVerified: false,
-                hasBeenSeenBySharer: user!.profileData.id === props.testResult.personId,
-                fileName: file.name,
-                createdBy: '',
-                timestamp: new Date(),
-                note: '',
-                personId: props.testResult.personId
-            }
-            await apiClient.instance!.put(`api/documents/${document.id}`, {}, document);
-            await apiClient.instance!.put(`api/documents/${document.id}/upload`, {}, file, { stringifyBody: false });
-            NotificationManager.success(resolveText('Document_SuccessfullyStored'));
-            setDocumentId(document.id);
-            setIsFileUploaded(true);
-        } catch(error: any) {
-            NotificationManager.error(error.message, resolveText('Document_CouldNotStore'));
-        } finally {
-            setIsUploading(false);
+    }, [ document ]);
+    const uploadFile = async () => {
+        if(!file) {
+            return;
         }
+        setIsUploading(true);
+        const documentCandidate: Models.PatientDocument = document ?
+        {
+            ...document
+        } 
+        : {
+            id: uuid(),
+            type: HealthRecordEntryType.Document,
+            isVerified: false,
+            hasBeenSeenBySharer: user!.profileData.id === props.testResult.personId,
+            fileName: file.name,
+            createdBy: documentTestResult.createdBy,
+            timestamp: documentTestResult.timestamp,
+            note: '',
+            personId: props.testResult.personId
+        };
+        documentCandidate.fileName = file.name;
+
+        dispatch(addDocument({
+            args: documentCandidate,
+            body: documentCandidate,
+            onSuccess: async () => {
+                setDocument(documentCandidate);
+                try {
+                    if(file) {
+                        await apiClient.instance!.put(`api/documents/${documentCandidate.id}/upload`, {}, file, { stringifyBody: false });
+                        NotificationManager.success(resolveText('Document_SuccessfullyUploaded'));
+                    }
+                    setIsFileUploaded(true);
+                } catch(error:any) {
+                    NotificationManager.error(error.message, resolveText('Document_CouldNotUpload'));
+                }
+            }
+        }));
+        setIsUploading(false);
     }
     useEffect(() => {
         setIsFileUploaded(false);
     }, [ file ]);
 
     return (
-    <>
-        {file ?
-            <Alert variant="info" dismissible onClose={() => setFile(undefined)}>
-                {file.name} 
-                {!isFileUploaded ? <AsyncButton
-                    size="sm"
-                    className='mx-2'
-                    activeText={resolveText('Upload')}
-                    executingText={resolveText('Uploading...')}
-                    isExecuting={isUploading}
-                    disabled={!file}
-                    onClick={() => uploadFile(file)} 
-                /> 
-                : <i className="fa fa-check green" />}
-            </Alert>
-        : <FileUpload
-            onDrop={files => setFile(files[0])}
-        />}
-    </>
+        <DocumentAlertOrUpload
+            document={document}
+            onFileSelected={setFile}
+            onUploadClicked={uploadFile}
+            isUploading={isUploading}
+            isFileUploaded={isFileUploaded}
+        />
     );
 }

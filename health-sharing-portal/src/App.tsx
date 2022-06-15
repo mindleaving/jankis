@@ -22,8 +22,8 @@ import englishTranslation from './localComponents/resources/translation.en.json'
 import { NotFoundPage } from './localComponents/pages/NotFoundPage';
 import { CreatePatientDocumentPage } from './sharedHealthComponents/pages/Patients/CreatePatientDocumentPage';
 import { CreatePatientNotePage } from './sharedHealthComponents/pages/Patients/CreatePatientNotePage';
-import { CreatePatientObservationPage } from './sharedHealthComponents/pages/Patients/CreatePatientObservationPage';
-import { CreatePatientTestResultPage } from './sharedHealthComponents/pages/Patients/CreatePatientTestResultPage';
+import { CreatePatientObservationPage } from './sharedHealthComponents/pages/Observations/CreatePatientObservationPage';
+import { CreatePatientTestResultPage } from './sharedHealthComponents/pages/TestResults/CreatePatientTestResultPage';
 import { EditMedicationSchedulePage } from './sharedHealthComponents/pages/Patients/EditMedicationSchedulePage';
 import { PatientMedicationsPage } from './sharedHealthComponents/pages/Patients/PatientMedicationsPage';
 import { PatientTimelinePage } from './sharedHealthComponents/pages/Patients/PatientTimelinePage';
@@ -31,7 +31,7 @@ import { HealthProfessionalHomePage } from './localComponents/pages/HealthProfes
 import { HomePage } from './localComponents/pages/HomePage';
 import { StudiesPage } from './localComponents/pages/Researcher/StudiesPage';
 import { StudyPage } from './localComponents/pages/Researcher/StudyPage';
-import { GenomeUploadPage } from './sharedHealthComponents/pages/Patients/GenomeUploadPage';
+import { GenomeUploadPage } from './sharedHealthComponents/pages/TestResults/GenomeUploadPage';
 import { GiveHealthProfesionalAccessPage } from './localComponents/pages/Sharer/GiveHealthProfesionalAccessPage';
 import { HealthRecordPage } from './localComponents/pages/Sharer/HealthRecordPage';
 import { ReceiveHealthProfessionalAccessPage } from './localComponents/pages/HealthProfessional/ReceiveHealthProfessionalAccessPage';
@@ -44,8 +44,8 @@ import { CreateDiagnosisPage } from './sharedHealthComponents/pages/Patients/Cre
 import { AnswerQuestionnairePage } from './sharedHealthComponents/pages/Patients/AnswerQuestionnairePage';
 import { AssignQuestionnairePage } from './sharedHealthComponents/pages/Patients/AssignQuestionnairePage';
 import { ImagingUploadPage } from './sharedHealthComponents/pages/Patients/ImagingUploadPage';
-import { GenomeExplorationPage } from './sharedHealthComponents/pages/Patients/GenomeExplorationPage';
-import { ImagingExplorationPage } from './sharedHealthComponents/pages/Patients/ImagingExplorationPage';
+import { GenomeExplorationPage } from './sharedHealthComponents/pages/TestResults/GenomeExplorationPage';
+import { ImagingExplorationPage } from './sharedHealthComponents/pages/TestResults/ImagingExplorationPage';
 import { differenceInMilliseconds } from 'date-fns';
 import { extractJwtBody } from './sharedCommonComponents/helpers/JwtHelpers';
 import { RequestEmergencyAccessPage } from './localComponents/pages/HealthProfessional/RequestEmergencyAccessPage';
@@ -59,7 +59,8 @@ import { AddMedicationPage } from './sharedHealthComponents/pages/Medication/Add
 import { reset, useAppDispatch } from './localComponents/redux/store/healthRecordStore';
 import { AddImmunizationPage } from './sharedHealthComponents/pages/Medication/AddImmunizationPage';
 import { CreateEditDrugPage } from './sharedHealthComponents/pages/Medication/CreateEditDrugPage';
-import { EditTestResultPage } from './sharedHealthComponents/pages/Patients/EditTestResultPage';
+import { EditTestResultPage } from './sharedHealthComponents/pages/TestResults/EditTestResultPage';
+import { EditObservationPage } from './sharedHealthComponents/pages/Observations/EditObservationPage';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";
@@ -91,9 +92,11 @@ export const App = (props: AppProps) => {
             setTimeout(() => onLogOut(), millisecondsUntilExpiration-60*1000);
         }
     }
-    const onLoggedIn = (userViewModel: ViewModels.IUserViewModel, redirectUrl?: string) => {
-        sessionStorage.setItem(userSessionStorageKey, JSON.stringify(userViewModel));
-        setLoggedInUser(userViewModel);
+    const onLoggedIn = (userViewModel: ViewModels.IUserViewModel | null, redirectUrl?: string) => {
+        if(userViewModel) {
+            sessionStorage.setItem(userSessionStorageKey, JSON.stringify(userViewModel));
+            setLoggedInUser(userViewModel);
+        }
         navigate(redirectUrl ?? "/");
     }
     const onLogOut = () => {
@@ -177,6 +180,7 @@ export const App = (props: AppProps) => {
         { path: '/healthrecord/:personId/create/procedure', element: <CreateMedicalProcedurePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/edit/procedure/:id', element: <CreateMedicalProcedurePage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/create/observation', element: <CreatePatientObservationPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
+        { path: '/healthrecord/:personId/edit/observation/:id', element: <EditObservationPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/create/diagnosis', element: <CreateDiagnosisPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/edit/diagnosis/:id', element: <CreateDiagnosisPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},
         { path: '/healthrecord/:personId/create/document', element: <CreatePatientDocumentPage />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.EmergencyGuest, AccountType.Researcher ]},

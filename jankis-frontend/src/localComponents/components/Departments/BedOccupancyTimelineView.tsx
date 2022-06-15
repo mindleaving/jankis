@@ -1,25 +1,25 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
-import { ViewModels } from '../../types/viewModels';
-import { Models } from '../../types/models';
 import { formatBed } from '../../helpers/Formatters';
 import { addDays, addYears } from 'date-fns/esm';
 import { BedState } from '../../types/enums.d';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { formatPerson } from '../../../sharedHealthComponents/helpers/Formatters';
+import { useAppSelector } from '../../redux/store/healthRecordStore';
 
 
 interface BedOccupancyTimelineViewProps {
-    institution: ViewModels.InstitutionViewModel;
-    bedOccupancies: Models.BedOccupancy[];
+    institutionId: string;
 }
 
 export const BedOccupancyTimelineView = (props: BedOccupancyTimelineViewProps) => {
 
     const now = new Date();
     const nowTicks = now.getTime();
-    const bedCount = props.institution.rooms.flatMap(x => x.bedPositions).length;
+    const bedOccupancies = useAppSelector(state => state.bedOccupancies.items.filter(x => x.institutionId === props.institutionId));
+    const rooms = useAppSelector(state => state.rooms.items.filter(x => x.institutionId === props.institutionId));
+    const bedCount = rooms.flatMap(x => x.bedPositions).length;
     const minTime = addDays(now, -1).getTime();
     const maxTime = addDays(now, 7).getTime();
     const chartOptions: ApexOptions = {
@@ -56,7 +56,7 @@ export const BedOccupancyTimelineView = (props: BedOccupancyTimelineViewProps) =
             enabled: true,
             formatter: (val, options) => {
                 const dataPointIndex = options.dataPointIndex;
-                const bedOccupancy = props.bedOccupancies[dataPointIndex-bedCount];
+                const bedOccupancy = bedOccupancies[dataPointIndex-bedCount];
                 if(!bedOccupancy || bedOccupancy.state === BedState.Empty) {
                     return '';
                 } else if(bedOccupancy.state === BedState.Reserved || bedOccupancy.state === BedState.Occupied) {
@@ -107,7 +107,7 @@ export const BedOccupancyTimelineView = (props: BedOccupancyTimelineViewProps) =
     }
     const bedTimelineSeries: any[] = [
     {
-        data: props.institution.rooms.flatMap(room => 
+        data: rooms.flatMap(room => 
             room.bedPositions.map(bedPosition => {
                 return {
                     x: formatBed(room, bedPosition),
@@ -115,7 +115,7 @@ export const BedOccupancyTimelineView = (props: BedOccupancyTimelineViewProps) =
                     fillColor: ''
                 }
             })).concat(
-                props.bedOccupancies.map(bedOccupancy => {
+                bedOccupancies.map(bedOccupancy => {
                     const startTime = new Date(bedOccupancy.startTime); 
                     const endTime = bedOccupancy.endTime 
                         ? new Date(bedOccupancy.endTime) 

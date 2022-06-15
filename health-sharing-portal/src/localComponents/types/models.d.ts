@@ -63,8 +63,6 @@ export namespace Models {
 
     interface Institution extends Models.IId {
         name: string;
-        roomIds: string[];
-        departmentIds: string[];
     }
 
     interface IPersonData extends Models.IId {

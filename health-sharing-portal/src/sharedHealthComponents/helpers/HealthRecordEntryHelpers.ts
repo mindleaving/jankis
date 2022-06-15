@@ -7,6 +7,8 @@ import { markNoteAsSeen } from "../redux/slices/notesSlice";
 import { markObservationAsSeen } from "../redux/slices/observationsSlice";
 import { markTestResultAsSeen } from "../redux/slices/testResultsSlice";
 import { AppDispatch } from "../../localComponents/redux/store/healthRecordStore";
+import { Models } from "../../localComponents/types/models";
+import { compareDesc } from "date-fns";
 
 export const unhideHealthRecordEntry = (dispatch: AppDispatch, entryType: HealthRecordEntryType, entryId: string) => {
     switch(entryType) {
@@ -69,4 +71,8 @@ export const confirmVerified = (callback: () => void) => {
             }
         ]
     });
+}
+
+export const sortByTimeDescending = <T extends Models.IHealthRecordEntry>(entries: T[]): T[] => {
+    return [...entries].sort((a,b) => compareDesc(new Date(a.timestamp), new Date(b.timestamp)));
 }

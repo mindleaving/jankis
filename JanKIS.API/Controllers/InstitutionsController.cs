@@ -47,11 +47,7 @@ namespace JanKIS.API.Controllers
         [HttpGet("{institutionId}/bedoccupancies")]
         public async Task<IActionResult> GetBedOccupancies([FromRoute] string institutionId)
         {
-            var institution = await store.GetByIdAsync(institutionId);
-            if (institution == null)
-                return NotFound();
-            var departmentIds = institution.DepartmentIds.ToList();
-            var bedOccupancies = await bedOccupanciesStore.SearchAsync(x => departmentIds.Contains(x.Department.Id));
+            var bedOccupancies = await bedOccupanciesStore.SearchAsync(x => x.InstitutionId == institutionId);
             return Ok(bedOccupancies);
         }
 
@@ -66,13 +62,11 @@ namespace JanKIS.API.Controllers
             foreach (var room in viewModel.Rooms)
             {
                 await roomsStore.StoreAsync(room);
-                institution.RoomIds.Add(room.Id);
             }
             foreach (var departmentViewModel in viewModel.Departments)
             {
                 var department = departmentViewModel.ToModel();
                 await departmentsStore.StoreAsync(department);
-                institution.DepartmentIds.Add(departmentViewModel.Id);
             }
             await store.StoreAsync(institution);
             return Ok();

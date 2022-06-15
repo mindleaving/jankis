@@ -105,6 +105,8 @@ namespace HealthSharingPortal.API.Controllers
         public async Task<IActionResult> CurrentUser()
         {
             var accountId = ControllerHelpers.GetAccountId(httpContextAccessor);
+            if (accountId == null)
+                return NotFound();
             var account = await accountStore.GetByIdAsync(accountId);
             var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
             var claims = ControllerHelpers.GetClaims(httpContextAccessor);

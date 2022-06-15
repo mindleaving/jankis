@@ -10,7 +10,6 @@ import FrequencyMeasurer from '../../helpers/FrequencyMeasurer';
 
 interface PulseMeasurementFormProps {
     personId: string;
-    admissionId?: string;
     onSubmit: (observation: Models.Observations.PulseObservation) => void;
     hasSubmitButton?: boolean;
     submitButtonText?: string;
