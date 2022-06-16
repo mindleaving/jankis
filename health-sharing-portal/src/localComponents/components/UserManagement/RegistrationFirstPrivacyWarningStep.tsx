@@ -24,12 +24,12 @@ export const RegistrationFirstPrivacyWarningStep = (props: RegistrationFirstPriv
                 </p>
                 <p>
                     Examples of what your data could be used for: 
-                    <ul>
-                        <li>Blackmailing</li>
-                        <li>Rejecting health insurance</li>
-                        <li>Rejecting your job application</li>
-                    </ul>
                 </p>
+                <ul>
+                    <li>Blackmailing</li>
+                    <li>Rejecting health insurance</li>
+                    <li>Rejecting your job application</li>
+                </ul>
             </Alert>
             <FormCheck
                 checked={hasConfirmed}

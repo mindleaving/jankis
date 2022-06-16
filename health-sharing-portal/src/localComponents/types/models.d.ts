@@ -85,6 +85,7 @@ export namespace Models {
         sex: Enums.Sex;
         addresses: Models.Address[];
         phoneNumber?: string;
+        email?: string;
         healthInsurance?: Models.HealthInsurance;
     }
 

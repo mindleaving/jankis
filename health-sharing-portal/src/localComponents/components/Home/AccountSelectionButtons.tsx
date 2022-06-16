@@ -14,6 +14,7 @@ export const AccountSelectionButtons = (props: AccountSelectionButtonsProps) => 
             <div className="d-flex align-items-stretch mx-auto">
                 {[ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ].map(accountType => (
                     <AccountSelectionButton
+                        key={accountType}
                         title={resolveText(`AccountType_${accountType}`)}
                         imageUrl={`/${accountType.toLowerCase()}.jpg`}
                         imageAltText={resolveText(`${accountType}_ImageAltText`)}

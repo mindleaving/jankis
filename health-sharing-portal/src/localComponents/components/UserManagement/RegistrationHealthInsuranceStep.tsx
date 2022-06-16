@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col, Button } from 'react-bootstrap';
+import { Row, Col, Button, Alert } from 'react-bootstrap';
 import { RowFormGroup } from '../../../sharedCommonComponents/components/RowFormGroup';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { Models } from '../../types/models';
@@ -16,6 +16,21 @@ export const RegistrationHealthInsuranceStep = (props: RegistrationHealthInsuran
     return (
         <>
             <h1>{resolveText("Registration_HealthInsuranceStep_Title")}</h1>
+            <Alert variant="info">
+                {resolveText("Registration_InformationOptional")}
+            </Alert>
+            <RowFormGroup
+                label={resolveText("HealthInsurance_InsuranceNumber")}
+                value={props.profileData.healthInsurance?.insuranceNumber ?? ''}
+                onChange={value => props.onChange(state => ({
+                    ...state,
+                    healthInsurance: {
+                        insurerName: state.healthInsurance?.insurerName ?? '',
+                        insuranceNumber: value,
+                        insurerNumber: state.healthInsurance?.insurerNumber ?? ''
+                    }
+                }))}
+            />
             <RowFormGroup
                 label={resolveText("HealthInsurance_InsurerName")}
                 value={props.profileData.healthInsurance?.insurerName ?? ''}
@@ -37,18 +52,6 @@ export const RegistrationHealthInsuranceStep = (props: RegistrationHealthInsuran
                         insurerName: state.healthInsurance?.insurerName ?? '',
                         insuranceNumber: state.healthInsurance?.insuranceNumber ?? '',
                         insurerNumber: value
-                    }
-                }))}
-            />
-            <RowFormGroup
-                label={resolveText("HealthInsurance_InsuranceNumber")}
-                value={props.profileData.healthInsurance?.insuranceNumber ?? ''}
-                onChange={value => props.onChange(state => ({
-                    ...state,
-                    healthInsurance: {
-                        insurerName: state.healthInsurance?.insurerName ?? '',
-                        insuranceNumber: value,
-                        insurerNumber: state.healthInsurance?.insurerNumber ?? ''
                     }
                 }))}
             />

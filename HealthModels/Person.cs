@@ -33,6 +33,8 @@ namespace HealthModels
         public List<Address> Addresses { get; set; }
         [TypescriptIsOptional]
         public string PhoneNumber { get; set; }
+        [TypescriptIsOptional]
+        public string Email { get; set; }
 
         [TypescriptIsOptional]
         public HealthInsurance HealthInsurance { get; set; }

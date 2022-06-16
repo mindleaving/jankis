@@ -20,6 +20,7 @@
         DrugApplicationSite,
         DrugDispensionForm,
         ResourceGroup,
-        ExternalLocation
+        ExternalLocation,
+        Country
     }
 }

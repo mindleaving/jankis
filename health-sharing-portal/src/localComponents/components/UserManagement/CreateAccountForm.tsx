@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { sendPostRequest } from '../../../sharedCommonComponents/helpers/StoringHelpers';
-import { AccountType, Sex } from '../../types/enums.d';
+import { AccountType, AddressRole, Sex } from '../../types/enums.d';
 import { Models } from '../../types/models';
 import { ViewModels } from '../../types/viewModels';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -10,6 +10,9 @@ import { RegistrationPersonalInformationStep } from './RegistrationPersonalInfor
 import { RegistrationHealthInsuranceStep } from './RegistrationHealthInsuranceStep';
 import { RegistrationAccountTypeStep } from './RegistrationAccountTypeStep';
 import { RegistrationFirstPrivacyWarningStep } from './RegistrationFirstPrivacyWarningStep';
+import { RegistrationSummaryStep } from './RegistrationSummaryStep';
+import { RegistrationContactInformationStep } from './RegistrationContactInformationStep';
+import { RegistrationTermsAndConditionsStep } from './RegistrationTermsAndConditionsStep';
 
 interface CreateAccountFormProps {
     onAccountCreated: () => void;
@@ -20,7 +23,10 @@ enum RegistrationSteps {
     FirstPrivacyWarning,
     MenschId,
     PersonalInformation,
-    HealthInsurance
+    ContactInformation,
+    HealthInsurance,
+    TermsAndConditions,
+    Summary
 }
 
 export const CreateAccountForm = (props: CreateAccountFormProps) => {
@@ -33,15 +39,24 @@ export const CreateAccountForm = (props: CreateAccountFormProps) => {
         personId: '',
         firstName: '',
         lastName: '',
-        birthDate: new Date(),
+        birthDate: '' as any,
         sex: Sex.Other,
-        addresses: []
+        addresses: [
+            {
+                role: AddressRole.Primary,
+                street: '',
+                houseNumber: '',
+                postalCode: '',
+                city: '',
+                country: ''
+            }
+        ]
     });
     const navigate = useNavigate();
 
     useEffect(() => {
         if(accountType) {
-            setStep(RegistrationSteps.MenschId);
+            setStep(RegistrationSteps.FirstPrivacyWarning);
         }
     }, [ accountType ]);
 
@@ -49,15 +64,23 @@ export const CreateAccountForm = (props: CreateAccountFormProps) => {
         if(!accountType) {
             return;
         }
+        const cleanedProfileData: Models.Person = { ...profileData };
+        if(!profileData.addresses[0].street
+            && !profileData.addresses[0].postalCode
+            && !profileData.addresses[0].city 
+            && !profileData.addresses[0].country
+        ) {
+            cleanedProfileData.addresses = [];
+        }
         const accountCreationInfo: ViewModels.AccountCreationInfo = {
             accountType: accountType,
-            person: profileData
+            person: cleanedProfileData
         };
         await sendPostRequest(
             'api/accounts',
             resolveText("Account_CouldNotStore"),
             accountCreationInfo,
-            () => props.onAccountCreated());
+            props.onAccountCreated);
     }
 
     const updateProfileData = (update: Update<Models.Person>) => {
@@ -91,14 +114,36 @@ export const CreateAccountForm = (props: CreateAccountFormProps) => {
                 profileData={profileData} 
                 onChange={updateProfileData}
                 onPrevious={() => setStep(RegistrationSteps.MenschId)}
-                onNext={() => setStep(RegistrationSteps.HealthInsurance)}
+                onNext={() => setStep(RegistrationSteps.ContactInformation)}
             />);
             break;
+        case RegistrationSteps.ContactInformation:
+            stepView = (<RegistrationContactInformationStep 
+                profileData={profileData} 
+                onChange={updateProfileData}
+                onPrevious={() => setStep(RegistrationSteps.PersonalInformation)}
+                onNext={() => setStep(RegistrationSteps.HealthInsurance)}
+            />);
+            break;    
         case RegistrationSteps.HealthInsurance:
             stepView = (<RegistrationHealthInsuranceStep
                 profileData={profileData} 
                 onChange={updateProfileData}
-                onPrevious={() => setStep(RegistrationSteps.PersonalInformation)}
+                onPrevious={() => setStep(RegistrationSteps.ContactInformation)}
+                onNext={() => setStep(RegistrationSteps.TermsAndConditions)}
+            />);
+            break;
+        case RegistrationSteps.TermsAndConditions:
+            stepView = (<RegistrationTermsAndConditionsStep
+                onPrevious={() => setStep(RegistrationSteps.HealthInsurance)}
+                onNext={() => setStep(RegistrationSteps.Summary)}
+            />);
+            break;
+        case RegistrationSteps.Summary:
+            stepView = (<RegistrationSummaryStep
+                accountType={accountType!}
+                profileData={profileData}
+                onPrevious={() => setStep(RegistrationSteps.TermsAndConditions)}
                 onNext={store}
             />);
             break;
