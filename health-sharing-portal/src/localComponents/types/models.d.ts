@@ -134,7 +134,9 @@ export namespace Models {
     }
 
     interface HealthProfessionalAccount extends Models.Account {
-        workAddress: Models.Address;
+        workAddress?: Models.Address;
+        phoneNumber?: string;
+        email?: string;
         canRequestEmergencyAccess: boolean;
     }
 
@@ -144,6 +146,12 @@ export namespace Models {
         authors: Models.ResearchStaff[];
         journal: string;
         publicationDate: Date;
+    }
+
+    interface ResearcherAccount extends Models.Account {
+        workAddress?: Models.Address;
+        phoneNumber?: string;
+        email?: string;
     }
 
     interface ResearchStaff {

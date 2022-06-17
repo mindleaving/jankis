@@ -11,12 +11,11 @@ export const HomePage = (props: HomePageProps) => {
     const navigate = useNavigate();
 
     const onAccountTypeSelected = (accountType: AccountType) => {
-        navigate(`/login/${accountType}`);
+        navigate(`/login/${accountType.toLowerCase()}`);
     }
     return (
         <>
-            <h1>{resolveText("HealthSharingPortal")}</h1>
-            <h3 style={{ marginTop: '100px', marginBottom: '30px' }}>{resolveText("SelectAccountType")}:</h3>
+            <h3 style={{ marginTop: '60px', marginBottom: '30px' }}>{resolveText("SelectAccountType")}:</h3>
             <AccountSelectionButtons
                 onAccountTypeSelected={onAccountTypeSelected}
             />

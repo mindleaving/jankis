@@ -4,6 +4,7 @@ import { AccountType } from '../../types/enums.d';
 import { AccountSelectionButton } from './AccountSelectionButton';
 
 interface AccountSelectionButtonsProps {
+    variant?: string;
     onAccountTypeSelected: (accountType: AccountType) => void;
 }
 
@@ -15,6 +16,7 @@ export const AccountSelectionButtons = (props: AccountSelectionButtonsProps) => 
                 {[ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher ].map(accountType => (
                     <AccountSelectionButton
                         key={accountType}
+                        variant={props.variant}
                         title={resolveText(`AccountType_${accountType}`)}
                         imageUrl={`/${accountType.toLowerCase()}.jpg`}
                         imageAltText={resolveText(`${accountType}_ImageAltText`)}

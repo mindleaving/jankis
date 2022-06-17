@@ -73,7 +73,7 @@ export const SharedAccessTableRow = (props: SharedAccessTableRowProps) => {
                 : <small>{resolveText("Remaining")}: {remainingTimeInMinutes} min.</small>}
             </div>
             : null}
-            {props.access.hasEmergencyToken 
+            {props.access.hasEmergencyToken && !props.access.access.isRevoked && !isExpired
             ? <div>
                 <Button
                     className="py-0"

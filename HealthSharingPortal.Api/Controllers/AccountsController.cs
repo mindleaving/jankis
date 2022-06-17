@@ -7,7 +7,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using HealthModels;
 using HealthModels.AccessControl;
-using HealthModels.Interview;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
@@ -34,6 +33,7 @@ namespace HealthSharingPortal.API.Controllers
     {
         private readonly IAccountStore accountsStore;
         private readonly IPersonStore personsStore;
+        private readonly IAutocompleteCache autocompleteCache;
         private readonly IAuthenticationModule authenticationModule;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IAuthorizationModule authorizationModule;
@@ -47,7 +47,8 @@ namespace HealthSharingPortal.API.Controllers
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,
             ILoginStore loginStore,
-            IMenschIdVerifier menschIdVerifier)
+            IMenschIdVerifier menschIdVerifier,
+            IAutocompleteCache autocompleteCache)
         {
             this.accountsStore = accountsStore;
             this.personsStore = personsStore;
@@ -56,6 +57,7 @@ namespace HealthSharingPortal.API.Controllers
             this.authorizationModule = authorizationModule;
             this.loginStore = loginStore;
             this.menschIdVerifier = menschIdVerifier;
+            this.autocompleteCache = autocompleteCache;
         }
 
         [HttpGet]
@@ -151,12 +153,6 @@ namespace HealthSharingPortal.API.Controllers
                 await menschIdVerifier.TryCompleteChallenge(creationInfo.MenschIdChallengeId, creationInfo.MenschIdChallengeResponse);
             if (!await menschIdVerifier.IsControllingId(personId, currentLogin.Id))
                 return StatusCode((int)HttpStatusCode.Forbidden, $"You haven't proven that you control the person ID '{personId}'.");
-            var readAccessGrant = AccessGrantHelpers.GrantForPersonWithPermission(personId, AccessPermissions.Read);
-            if (!await personsStore.ExistsAsync(personId, readAccessGrant))
-            {
-                var writeGrant = AccessGrantHelpers.GrantForPersonWithPermission(personId, AccessPermissions.Create);
-                await PersonDataControllerHelpers.Store(personsStore, creationInfo.Person, writeGrant, httpContextAccessor);
-            }
 
             var existingAccount = await accountsStore.SearchAsync(x => x.AccountType == creationInfo.AccountType && x.PersonId == personId);
             if (existingAccount.Any())
@@ -164,6 +160,39 @@ namespace HealthSharingPortal.API.Controllers
 
             // Create account
             var account = AccountFactory.Create(creationInfo.AccountType, currentLogin.Id, personId);
+
+            // Create person if not exists
+            var readAccessGrant = AccessGrantHelpers.GrantForPersonWithPermission(personId, AccessPermissions.Read);
+            if (!await personsStore.ExistsAsync(personId, readAccessGrant) 
+                || creationInfo.AccountType == AccountType.Sharer)
+            {
+                creationInfo.Person.Addresses ??= new List<Address>();
+                var writeGrant = AccessGrantHelpers.GrantForPersonWithPermission(personId, AccessPermissions.Create);
+                var metadata = new PersonDataChangeMetadata(account.Id, personId);
+                await personsStore.StoreAsync(creationInfo.Person, writeGrant, metadata);
+            }
+            foreach (var address in creationInfo.Person.Addresses)
+            {
+                await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.Country.ToString(), address.Country));
+            }
+
+            switch (creationInfo.AccountType)
+            {
+                case AccountType.HealthProfessional:
+                    var healthProfessionalAccount = (HealthProfessionalAccount)account;
+                    healthProfessionalAccount.WorkAddress = creationInfo.Person.Addresses?.FirstOrDefault();
+                    healthProfessionalAccount.PhoneNumber = creationInfo.Person.PhoneNumber;
+                    healthProfessionalAccount.Email = creationInfo.Person.Email;
+                    break;
+                case AccountType.Researcher:
+                    var researcherAccount = (ResearcherAccount)account;
+                    researcherAccount.WorkAddress = creationInfo.Person.Addresses?.FirstOrDefault();
+                    researcherAccount.PhoneNumber = creationInfo.Person.PhoneNumber;
+                    researcherAccount.Email = creationInfo.Person.Email;
+                    break;
+            }
+
+            // Store account
             await accountsStore.StoreAsync(account);
 
             return Ok(account);

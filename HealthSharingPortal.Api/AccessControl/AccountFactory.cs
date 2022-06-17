@@ -16,8 +16,8 @@ namespace HealthSharingPortal.API.AccessControl
             var account = accountType switch
             {
                 AccountType.Sharer => new Account(accountId, accountType),
-                AccountType.HealthProfessional => new HealthProfessionalAccount(accountId),
-                AccountType.Researcher => new Account(accountId, accountType),
+                AccountType.HealthProfessional => new HealthProfessionalAccount(accountId, personId),
+                AccountType.Researcher => new ResearcherAccount(accountId, personId),
                 AccountType.EmergencyGuest => throw new InvalidOperationException("Emergency guests don't get accounts"),
                 AccountType.Admin => new Account(accountId, accountType),
                 _ => throw new ArgumentOutOfRangeException(nameof(accountType), accountType, null)

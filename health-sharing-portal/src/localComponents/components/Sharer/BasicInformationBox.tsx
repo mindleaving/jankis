@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import React, { useContext } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
@@ -18,8 +19,10 @@ export const BasicInformationBox = (props: BasicInformationBoxProps) => {
     const menschId = profileData.id;
     const name = `${profileData.firstName} ${profileData.lastName}`;
     const birthday = new Date(profileData.birthDate);
+    const healthInsurance = profileData.healthInsurance;
     const addresses = profileData.addresses;
     const telephone = profileData.phoneNumber;
+    const email = profileData.email;
     const navigate = useNavigate();
     const thisIsMe = user!.profileData.id === profileData.id;
     return (
@@ -41,7 +44,7 @@ export const BasicInformationBox = (props: BasicInformationBoxProps) => {
             <Row>
                 <Col>웃ID</Col>
                 <Col>
-                    {menschId}
+                    <strong>{menschId}</strong>
                     <CopyButton
                         size="sm"
                         className="mx-2 py-1"
@@ -51,19 +54,27 @@ export const BasicInformationBox = (props: BasicInformationBoxProps) => {
             </Row>
             <Row>
                 <Col>{resolveText("Person_BirthDate")}</Col>
-                <Col>{birthday.toISOString().substring(0, 10)}</Col>
+                <Col>{format(birthday, 'yyyy-MM-dd')}</Col>
             </Row>
-            <Row>
+            {healthInsurance ? <Row>
+                <Col>{resolveText("Person_HealthInsurance")}</Col>
+                <Col>{healthInsurance.insuranceNumber} ({healthInsurance.insurerName}, {healthInsurance.insurerNumber})</Col>
+            </Row> : null}
+            {addresses.length > 0
+            ? <Row>
                 <Col>{resolveText("Person_Addresses")}</Col>
                 <Col>
-                    {addresses?.length > 0
-                    ? <Address address={addresses[0]} /> : resolveText("None")}
+                    <Address address={addresses[0]} />
                 </Col>
-            </Row>
-            <Row>
+            </Row> : null}
+            {telephone ? <Row>
                 <Col>{resolveText("Person_PhoneNumber")}</Col>
-                <Col>{telephone ?? resolveText('None')}</Col>
-            </Row>
+                <Col>{telephone}</Col>
+            </Row> : null}
+            {email ? <Row>
+                <Col>{resolveText("Person_Email")}</Col>
+                <Col>{email}</Col>
+            </Row> : null}
         </AccordionCard>
     );
 

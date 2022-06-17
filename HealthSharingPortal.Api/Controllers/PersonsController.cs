@@ -14,16 +14,19 @@ namespace HealthSharingPortal.API.Controllers
 {
     public class PersonsController : PersonDataRestControllerBase<Person>
     {
-        private readonly IPersonStore store;
+        private new readonly IPersonStore store;
+        private readonly IAutocompleteCache autocompleteCache;
 
         public PersonsController(
             IPersonStore store,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationModule authorizationModule,
-            IReadonlyStore<PersonDataChange> changeStore)
+            IReadonlyStore<PersonDataChange> changeStore,
+            IAutocompleteCache autocompleteCache)
             : base(store, httpContextAccessor, authorizationModule, changeStore)
         {
             this.store = store;
+            this.autocompleteCache = autocompleteCache;
         }
 
         [HttpGet]
@@ -86,13 +89,15 @@ namespace HealthSharingPortal.API.Controllers
                 SearchExpressionBuilder.ContainsAny<Person>(x => x.LastName.ToLower(), searchTerms));
         }
 
-        protected override Task PublishChange(
+        protected override async Task PublishChange(
             Person item,
             StorageOperation storageOperation,
             string submitterUsername)
         {
-            // Nothing to do
-            return Task.CompletedTask;
+            foreach (var address in item.Addresses)
+            {
+                await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.Country.ToString(), address.Country));
+            }
         }
     }
 }

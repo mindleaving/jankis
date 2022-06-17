@@ -89,7 +89,7 @@ export const RegistrationMenschIdStep = (props: RegistrationMenschIdStepProps) =
                 </Col>
                 <Col></Col>
                 <Col xs="auto">
-                    <Button onClick={props.onNext} disabled={false && !isVerified}>
+                    <Button onClick={props.onNext} disabled={!isVerified}>
                         {resolveText("Next")}
                     </Button>
                 </Col>
