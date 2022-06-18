@@ -61,6 +61,7 @@ import { AddImmunizationPage } from './sharedHealthComponents/pages/Medication/A
 import { CreateEditDrugPage } from './sharedHealthComponents/pages/Medication/CreateEditDrugPage';
 import { EditTestResultPage } from './sharedHealthComponents/pages/TestResults/EditTestResultPage';
 import { EditObservationPage } from './sharedHealthComponents/pages/Observations/EditObservationPage';
+import { FrequentlyAskedQuestionsPage } from './localComponents/pages/FrequentlyAskedQuestionsPage';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";
@@ -112,10 +113,11 @@ export const App = (props: AppProps) => {
             <NoUserLayout>
                 <Routes>
                     <Route path="/emergency/:emergencyToken" element={<EmergencyPage onNewAccessToken={onNewAccessToken} onGuestLogin={onLoggedIn} />} />
-                    <Route path="/login" element={<HomePage />} />
+                    <Route path="/login" element={<LoginPage onNewAccessToken={onNewAccessToken} onLoggedIn={onLoggedIn} />} />
                     <Route path="/login/:accountType" element={<LoginPage onNewAccessToken={onNewAccessToken} onLoggedIn={onLoggedIn} />} />
                     <Route path="/register" element={<RegisterAccountPage />} />
                     <Route path="/register/:accountType" element={<RegisterAccountPage />} />
+                    <Route path="/faq" element={<FrequentlyAskedQuestionsPage />} />
                     <Route path="/" element={<HomePage />} />
                 </Routes>
             </NoUserLayout>

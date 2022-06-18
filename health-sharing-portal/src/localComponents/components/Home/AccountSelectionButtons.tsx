@@ -18,7 +18,7 @@ export const AccountSelectionButtons = (props: AccountSelectionButtonsProps) => 
                         key={accountType}
                         variant={props.variant}
                         title={resolveText(`AccountType_${accountType}`)}
-                        imageUrl={`/${accountType.toLowerCase()}.jpg`}
+                        imageUrl={`/img/${accountType.toLowerCase()}.jpg`}
                         imageAltText={resolveText(`${accountType}_ImageAltText`)}
                         onClick={() => props.onAccountTypeSelected(accountType)}
                     />

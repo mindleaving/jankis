@@ -196,6 +196,7 @@
   "Exception_NotEnoughPermissions": "You do not have the necessary access rights for that person",
   "Execute": "Execute",
   "Expired": "Expired",
+  "FAQ": "FAQ",
   "Filters": "Filters",
   "FirstName": "First name",
   "GenericTypeCreateEditPage_CoultNotLoadItem": "Could not load item",

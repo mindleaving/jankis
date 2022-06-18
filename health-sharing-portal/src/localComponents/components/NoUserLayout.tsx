@@ -17,6 +17,7 @@ export const NoUserLayout = (props: PropsWithChildren<NoUserLayoutProps>) => {
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav>
                     <Nav.Link onClick={() => navigate("/")}>{resolveText("Home")}</Nav.Link>
+                    <Nav.Link onClick={() => navigate("/faq")}>{resolveText("FAQ")}</Nav.Link>
                 </Nav>
                 <Nav className='ms-auto me-3'>
                     <Button onClick={() => navigate("/login")}>{resolveText("Login")}</Button>

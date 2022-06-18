@@ -8,6 +8,9 @@ import { AsyncButton } from '../../sharedCommonComponents/components/AsyncButton
 import { resolveText } from '../../sharedCommonComponents/helpers/Globalizer';
 import { Models } from '../types/models';
 import { ApiError } from '../../sharedCommonComponents/communication/ApiError';
+import { AccountType } from '../types/enums.d';
+import { parseEnum } from '../../sharedCommonComponents/helpers/StringExtensions';
+import { AccountSelectionButtons } from '../components/Home/AccountSelectionButtons';
 
 interface LoginPageProps {
     onNewAccessToken: (authenticationResult: Models.AuthenticationResult) => void;
@@ -16,12 +19,18 @@ interface LoginPageProps {
 
 export const LoginPage = (props: LoginPageProps) => {
 
-    const { accountType } = useParams();
+    const { accountType: matchedAccountType } = useParams();
     const [ query ] = useSearchParams();
     let redirectUrl = query.get("redirectUrl");
+    const [ accountType, setAccountType ] = useState<AccountType | undefined>(
+        matchedAccountType 
+            ? parseEnum<AccountType>(AccountType, matchedAccountType) 
+            : undefined
+    );
     const [ username, setUsername ] = useState<string>('');
     const [ password, setPassword ] = useState<string>('');
     const [ isLoggingIn, setIsLoggingIn ] = useState<boolean>(false);
+    const navigate = useNavigate();
 
     const localLogin = async (e?: FormEvent) => {
         e?.preventDefault();
@@ -58,7 +67,17 @@ export const LoginPage = (props: LoginPageProps) => {
         }
     }
 
-    const navigate = useNavigate();
+    if(!accountType) {
+        return (
+            <>
+                <h3 style={{ marginTop: '60px', marginBottom: '30px' }}>{resolveText("SelectAccountType")}:</h3>
+                <AccountSelectionButtons
+                    onAccountTypeSelected={setAccountType}
+                />
+            </>
+        )
+    }
+
     return (
         <>
             <Form onSubmit={localLogin}>
