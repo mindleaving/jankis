@@ -54,9 +54,7 @@ namespace JanKIS.API.Setups
             }
             catch (KeyNotFoundException)
             {
-                using var rng = new RNGCryptoServiceProvider();
-                var bytes = new byte[32];
-                rng.GetBytes(bytes);
+                var bytes = RandomNumberGenerator.GetBytes(32);
                 privateKey = new SymmetricSecurityKey(bytes);
                 Console.WriteLine(
                     $"JWT private key candidate: {Convert.ToBase64String(bytes)}. Store this as environment variable '{jwtPrivateKeyEnvironmentVariable}'.");

@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Commons;
+using System.Security.Cryptography;
 
 namespace HealthSharingPortal.API.AccessControl
 {
@@ -15,9 +15,7 @@ namespace HealthSharingPortal.API.AccessControl
 
         private char GetRandomCharacter()
         {
-            // Ideally a crypto-grade random number generate should be used,
-            // but this is a temporary password that is printed on paper anyway
-            return AllowedCharacters[StaticRandom.Rng.Next(AllowedCharacters.Length)];
+            return AllowedCharacters[RandomNumberGenerator.GetInt32(AllowedCharacters.Length)];
         }
     }
 }

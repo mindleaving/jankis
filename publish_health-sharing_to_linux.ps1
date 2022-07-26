@@ -1,6 +1,6 @@
 cd HealthSharingPortal.API
 dotnet publish -c Release
-Compress-Archive -Path bin/Release/net5.0/publish -DestinationPath ../HealthSharingPortal.API.zip -Force
+Compress-Archive -Path bin/Release/net6.0/publish -DestinationPath ../HealthSharingPortal.API.zip -Force
 cd ../health-sharing-portal
 npm run build
 Compress-Archive -Path build -DestinationPath ../HealthSharingPortal.Frontend.zip -Force

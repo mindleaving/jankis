@@ -1,6 +1,6 @@
 cd JanKIS.API
 dotnet publish -c Release
-Compress-Archive -Path bin/Release/net5.0/publish -DestinationPath ../JanKIS.API.zip -Force
+Compress-Archive -Path bin/Release/net6.0/publish -DestinationPath ../JanKIS.API.zip -Force
 cd ../jankis-frontend
 npm run build
 Compress-Archive -Path build -DestinationPath ../JanKIS.Frontend.zip -Force

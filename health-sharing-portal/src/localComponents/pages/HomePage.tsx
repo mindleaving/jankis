@@ -67,7 +67,7 @@ export const HomePage = (props: HomePageProps) => {
                 <Button
                     variant="danger"
                     className="m-3"
-                    onClick={() => navigate("/healthrecord/19891117-XMWT3?token=")}
+                    onClick={() => navigate("/emergency/VCZ93QFRZ45VZKNQJXHPT4JKFQ")}
                 >
                     <h4>Explore demo profile</h4>
                     <img

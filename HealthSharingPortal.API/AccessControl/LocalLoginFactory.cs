@@ -25,9 +25,7 @@ namespace HealthSharingPortal.API.AccessControl
 
         private static byte[] CreateSalt()
         {
-            var salt = new byte[128 / 8];
-            using var rng = new RNGCryptoServiceProvider();
-            rng.GetBytes(salt);
+            var salt = RandomNumberGenerator.GetBytes(128 / 8);
             return salt;
         }
     }
