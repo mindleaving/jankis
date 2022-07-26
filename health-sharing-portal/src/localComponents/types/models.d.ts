@@ -365,6 +365,7 @@ export namespace Models {
             amountUnit: string;
             amountValue: number;
             applicationSite: string;
+            protectsAgainst: string[];
         }
     
         interface Immunization extends Models.Medication.MedicationDispension {

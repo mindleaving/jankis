@@ -30,6 +30,8 @@ export const DrugForm = (props: DrugFormProps) => {
     const [ dispensionForm, setDispensionForm ] = useState<string>('');
     const [ amountValue, setAmountValue ] = useState<number>(0);
     const [ amountUnit, setAmountUnit ] = useState<string>('');
+    const [ newPathogen, setNewPathogen ] = useState<string>('');
+    const [ protectsAgainst, setProtectsAgainst ] = useState<string[]>([]);
     const [ isStoring, setIsStoring ] = useState<boolean>(false);
 
     useEffect(() => {
@@ -51,6 +53,7 @@ export const DrugForm = (props: DrugFormProps) => {
                 setDispensionForm(item.dispensionForm);
                 setAmountValue(item.amountValue);
                 setAmountUnit(item.amountUnit);
+                setProtectsAgainst(item.protectsAgainst);
             },
             () => {},
             () => setIsLoading(false)
@@ -98,8 +101,19 @@ export const DrugForm = (props: DrugFormProps) => {
             applicationSite: applicationSite,
             dispensionForm: dispensionForm,
             amountValue: amountValue,
-            amountUnit: amountUnit
+            amountUnit: amountUnit,
+            protectsAgainst: protectsAgainst
         };
+    }
+
+    const addPathogen = () => {
+        if(protectsAgainst.includes(newPathogen)) {
+            return;
+        }
+        setProtectsAgainst(state => state.concat(newPathogen));
+    }
+    const removePathogen = (pathogen: string) => {
+        setProtectsAgainst(state => state.filter(x => x !== pathogen));
     }
 
     if(isLoading) {
@@ -107,7 +121,7 @@ export const DrugForm = (props: DrugFormProps) => {
     }
     return (
         <Form onSubmit={store}>
-            <FormGroup as={Row}>
+            <FormGroup as={Row} className="my-2">
                 <Col></Col>
                 <Col>
                     <FormCheck
@@ -122,7 +136,7 @@ export const DrugForm = (props: DrugFormProps) => {
                 value={productName}
                 onChange={setProductName}
             />
-            <FormGroup as={Row}>
+            <FormGroup as={Row} className="my-2">
                 <FormLabel column>{resolveText('Drug_Brand')}</FormLabel>
                 <Col>
                     <MemoryFormControl
@@ -132,19 +146,23 @@ export const DrugForm = (props: DrugFormProps) => {
                     />
                 </Col>
             </FormGroup>
-            <FormGroup as={Row}>
+            <FormGroup as={Row} className="my-2">
                 <FormLabel column>{resolveText('Drug_ActiveIngredients')}</FormLabel>
                 <Col>
-                    <InputGroup>
-                        <MemoryFormControl
-                            context={AutoCompleteContext.DrugActiveIngredient}
-                            onChange={setNewActiveIngredient}
-                        />
-                        <Button className="mx-2" onClick={addActiveIngredient}>{resolveText('Add')}</Button>
-                    </InputGroup>
+                    <Row>
+                        <Col>
+                            <MemoryFormControl
+                                context={AutoCompleteContext.DrugActiveIngredient}
+                                onChange={setNewActiveIngredient}
+                            />
+                        </Col>
+                        <Col xs="auto">
+                            <Button className="mx-2" onClick={addActiveIngredient}>{resolveText('Add')}</Button>
+                        </Col>
+                    </Row>
                 </Col>
             </FormGroup>
-            <Row>
+            <Row className="my-2">
                 <Col></Col>
                 <Col>
                     <ListFormControl
@@ -155,7 +173,7 @@ export const DrugForm = (props: DrugFormProps) => {
                     />
                 </Col>
             </Row>
-            <FormGroup as={Row}>
+            <FormGroup as={Row} className="my-2">
                 <FormLabel column>{resolveText('Drug_ApplicationSite')}</FormLabel>
                 <Col>
                     <MemoryFormControl required
@@ -165,7 +183,7 @@ export const DrugForm = (props: DrugFormProps) => {
                     />
                 </Col>
             </FormGroup>
-            <FormGroup as={Row}>
+            <FormGroup as={Row} className="my-2">
                 <FormLabel column>{resolveText('Drug_DispensionForm')}</FormLabel>
                 <Col>
                     <MemoryFormControl required
@@ -175,7 +193,7 @@ export const DrugForm = (props: DrugFormProps) => {
                     />
                 </Col>
             </FormGroup>
-            <FormGroup as={Row}>
+            <FormGroup as={Row} className="my-2">
                 <FormLabel column>{resolveText('Drug_Amount')}</FormLabel>
                 <Col>
                     <InputGroup>
@@ -195,6 +213,42 @@ export const DrugForm = (props: DrugFormProps) => {
                     </InputGroup>
                 </Col>
             </FormGroup>
+            {isImmunization
+            ? <>
+                <FormGroup as={Row} className="my-2">
+                    <FormLabel column>{resolveText("Immunization_ProtectsAgainst")}</FormLabel>
+                    <Col>
+                        <Row>
+                            <Col>
+                                <MemoryFormControl
+                                    context={AutoCompleteContext.ImmunizationPathogen}
+                                    onChange={setNewPathogen}
+                                />
+                            </Col>
+                            <Col xs="auto">
+                                <Button
+                                    className='mx-2'
+                                    onClick={addPathogen}
+                                >
+                                    {resolveText("Add")}
+                                </Button>
+                            </Col>
+                        </Row>
+                    </Col>
+                </FormGroup>
+                <Row>
+                    <Col></Col>
+                    <Col>
+                        <ListFormControl
+                            items={protectsAgainst}
+                            idFunc={x => x}
+                            displayFunc={x => x}
+                            removeItem={removePathogen}
+                        />
+                    </Col>
+                </Row>
+            </>
+            : null}
             <StoreButton
                 type="submit"
                 isStoring={isStoring}

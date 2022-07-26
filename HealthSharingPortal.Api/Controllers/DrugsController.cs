@@ -90,6 +90,10 @@ namespace HealthSharingPortal.API.Controllers
             {
                 await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.DrugActiveIngredient.ToString(), activeIngredient));
             }
+            foreach (var pathogen in item.ProtectsAgainst)
+            {
+                await autocompleteCache.AddIfNotExists(new AutocompleteCacheItem(AutoCompleteContext.ImmunizationPathogen.ToString(), pathogen));
+            }
         }
     }
 }

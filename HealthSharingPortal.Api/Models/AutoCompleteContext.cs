@@ -21,6 +21,7 @@
         DrugDispensionForm,
         ResourceGroup,
         ExternalLocation,
-        Country
+        Country,
+        ImmunizationPathogen
     }
 }

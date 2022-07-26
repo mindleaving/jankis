@@ -18,6 +18,8 @@ namespace HealthModels.Medication
         public double AmountValue { get; set; }
         [OfferAutocomplete(Context = "DrugApplicationSite")]
         public string ApplicationSite { get; set; }
+        [OfferAutocomplete(Context = "ImmunizationPathogen")]
+        public List<string> ProtectsAgainst { get; set; }
     }
 
     public enum DrugType

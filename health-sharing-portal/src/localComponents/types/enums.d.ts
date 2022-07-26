@@ -368,7 +368,8 @@ export enum AutoCompleteContext {
     DrugDispensionForm = "DrugDispensionForm",
     ResourceGroup = "ResourceGroup",
     ExternalLocation = "ExternalLocation",
-    Country = "Country"
+    Country = "Country",
+    ImmunizationPathogen = "ImmunizationPathogen"
 }
 export enum LoginProvider {
     Unknown = "Unknown",
