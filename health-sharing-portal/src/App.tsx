@@ -62,6 +62,7 @@ import { CreateEditDrugPage } from './sharedHealthComponents/pages/Medication/Cr
 import { EditTestResultPage } from './sharedHealthComponents/pages/TestResults/EditTestResultPage';
 import { EditObservationPage } from './sharedHealthComponents/pages/Observations/EditObservationPage';
 import { FrequentlyAskedQuestionsPage } from './localComponents/pages/FrequentlyAskedQuestionsPage';
+import { AccountPage } from './localComponents/pages/UserManagement/AccountPage';
 
 const accessTokenSessionStorageKey = "accessToken";
 const userSessionStorageKey = "loggedInUser";
@@ -168,6 +169,7 @@ export const App = (props: AppProps) => {
         { path: '/create/emergency', element: <CreateEmergencyAccessTokenPage />, audience: [ AccountType.Sharer ]},
         { path: '/show/emergencytoken/:accessId', element: <CreateEmergencyAccessTokenPage />, audience: [ AccountType.Sharer ]},
 
+        { path: '/account', element: <AccountPage onAccountDeleted={onLogOut} />, audience: [ AccountType.Sharer, AccountType.HealthProfessional, AccountType.Researcher, AccountType.Admin ]},
         { path: '/accounts', element: <AccountsPage />, audience: [ AccountType.Admin ]},
         { path: '/edit/person/:personId', element: <EditPersonPage />, audience: [ AccountType.Sharer] },
 

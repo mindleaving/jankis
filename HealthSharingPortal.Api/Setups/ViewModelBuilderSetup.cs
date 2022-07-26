@@ -17,6 +17,7 @@ namespace HealthSharingPortal.API.Setups
             services.AddScoped<IViewModelBuilder<Diagnosis>, DiagnosisViewModelBuilder>();
             services.AddScoped<IViewModelBuilder<QuestionnaireAnswers>, QuestionnaireAnswersViewModelBuilder>();
             services.AddScoped<IViewModelBuilder<ISharedAccess>, AccessViewModelBuilder>();
+            services.AddScoped<PatientOverviewViewModelBuilder>();
         }
     }
 }

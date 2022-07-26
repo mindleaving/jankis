@@ -29,76 +29,43 @@ namespace HealthSharingPortal.API.Controllers
     {
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IPersonStore personStore;
-        private readonly IPersonDataReadonlyStore<Admission> admissionsStore;
-        private readonly IPersonDataReadonlyStore<PatientNote> patientNotesStore;
-        private readonly IPersonDataReadonlyStore<MedicationSchedule> medicationSchedulesStore;
-        private readonly IPersonDataReadonlyStore<MedicationDispension> medicationDispensionsStore;
-        private readonly IPersonDataReadonlyStore<Immunization> immunizationsStore;
         private readonly IPersonDataReadonlyStore<DiagnosticTestResult> testResultsStore;
-        private readonly IPersonDataReadonlyStore<MedicalProcedure> medicalProceduresStore;
-        private readonly IPersonDataReadonlyStore<Observation> observationsStore;
         private readonly IPersonDataReadonlyStore<PatientDocument> documentsStore;
         private readonly IStudyEnrollmentStore studyEnrollmentStore;
         private readonly IReadonlyStore<Study> studyStore;
         private readonly IReadonlyStore<StudyAssociation> studyAssociationStore;
         private readonly IAuthorizationModule authorizationModule;
         private readonly IReadonlyStore<Questionnaire> questionaireStore;
-        private readonly IPersonDataReadonlyStore<Diagnosis> diagnosesStore;
-        private readonly IViewModelBuilder<QuestionnaireAnswers> questionnaireAnswersViewModelBuilder;
-        private readonly IViewModelBuilder<Diagnosis> diagnosisViewModelBuilder;
-        private readonly IPersonDataReadonlyStore<QuestionnaireAnswers> questionnaireAnswersStore;
         private readonly IPersonDataReadonlyStore<GenomeExplorerDeployment> genomeExplorerDeploymentStore;
         private readonly IAccountStore accountStore;
-        private readonly ILoginStore loginStore;
+        private readonly PatientOverviewViewModelBuilder patientOverviewViewModelBuilder;
 
         public ViewModelsController(
             IHttpContextAccessor httpContextAccessor,
             IPersonStore personStore,
-            IPersonDataReadonlyStore<Admission> admissionsStore, 
-            IPersonDataReadonlyStore<PatientNote> patientNotesStore, 
-            IPersonDataReadonlyStore<MedicationSchedule> medicationSchedulesStore,
-            IPersonDataReadonlyStore<MedicationDispension> medicationDispensionsStore, 
-            IPersonDataReadonlyStore<Immunization> immunizationsStore,
             IPersonDataReadonlyStore<DiagnosticTestResult> testResultsStore,
-            IPersonDataReadonlyStore<MedicalProcedure> medicalProceduresStore,
-            IPersonDataReadonlyStore<Observation> observationsStore, 
             IPersonDataReadonlyStore<PatientDocument> documentsStore,
             IStudyEnrollmentStore studyEnrollmentStore,
             IReadonlyStore<Study> studyStore,
             IReadonlyStore<StudyAssociation> studyAssociationStore,
             IAuthorizationModule authorizationModule,
             IReadonlyStore<Questionnaire> questionaireStore,
-            IPersonDataReadonlyStore<Diagnosis> diagnosesStore,
-            IViewModelBuilder<QuestionnaireAnswers> questionnaireAnswersViewModelBuilder,
-            IViewModelBuilder<Diagnosis> diagnosisViewModelBuilder,
-            IPersonDataReadonlyStore<QuestionnaireAnswers> questionnaireAnswersStore,
             IPersonDataReadonlyStore<GenomeExplorerDeployment> genomeExplorerDeploymentStore,
             IAccountStore accountStore,
-            ILoginStore loginStore)
+            PatientOverviewViewModelBuilder patientOverviewViewModelBuilder)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.personStore = personStore;
-            this.admissionsStore = admissionsStore;
-            this.patientNotesStore = patientNotesStore;
-            this.medicationSchedulesStore = medicationSchedulesStore;
-            this.medicationDispensionsStore = medicationDispensionsStore;
             this.testResultsStore = testResultsStore;
-            this.observationsStore = observationsStore;
             this.documentsStore = documentsStore;
             this.studyEnrollmentStore = studyEnrollmentStore;
             this.studyStore = studyStore;
             this.studyAssociationStore = studyAssociationStore;
             this.authorizationModule = authorizationModule;
             this.questionaireStore = questionaireStore;
-            this.diagnosesStore = diagnosesStore;
-            this.questionnaireAnswersViewModelBuilder = questionnaireAnswersViewModelBuilder;
-            this.diagnosisViewModelBuilder = diagnosisViewModelBuilder;
-            this.questionnaireAnswersStore = questionnaireAnswersStore;
             this.genomeExplorerDeploymentStore = genomeExplorerDeploymentStore;
             this.accountStore = accountStore;
-            this.loginStore = loginStore;
-            this.immunizationsStore = immunizationsStore;
-            this.medicalProceduresStore = medicalProceduresStore;
+            this.patientOverviewViewModelBuilder = patientOverviewViewModelBuilder;
         }
 
         [HttpGet("currentuser")]
@@ -132,46 +99,7 @@ namespace HealthSharingPortal.API.Controllers
             var profileData = await personStore.GetByIdAsync(personId, accessGrants);
             if (profileData == null)
                 return NotFound();
-            var admissions = admissionsStore.GetAllAsync(personId, accessGrants);
-            var notes = patientNotesStore.GetAllAsync(personId, accessGrants);
-            var diagnoses = diagnosesStore.GetAllAsync(personId, accessGrants)
-                .ContinueWith(result => diagnosisViewModelBuilder.BatchBuild(result.Result, new DiagnosisViewModelBuilderOptions { Language = language }))
-                .Unwrap();
-            var medicationSchedules = medicationSchedulesStore.GetAllAsync(personId, accessGrants);
-            var medicationDispensions = medicationDispensionsStore.GetAllAsync(personId, accessGrants);
-            var immunizations = immunizationsStore.GetAllAsync(personId, accessGrants);
-            var testResults = testResultsStore.GetAllAsync(personId, accessGrants);
-            var medicalProcedures = medicalProceduresStore.GetAllAsync(personId, accessGrants);
-            var observations = observationsStore.GetAllAsync(personId, accessGrants);
-            var documents = documentsStore.GetAllAsync(personId, accessGrants);
-            var questionnaireAnswers = questionnaireAnswersStore.GetAllAsync(personId, accessGrants)
-                .ContinueWith(result => questionnaireAnswersViewModelBuilder.BatchBuild(result.Result))
-                .Unwrap();
-            await Task.WhenAll(
-                admissions,
-                notes,
-                diagnoses,
-                medicationSchedules,
-                medicationDispensions,
-                testResults,
-                medicalProcedures,
-                observations,
-                documents,
-                questionnaireAnswers);
-
-            var viewModel = new PatientOverviewViewModel(
-                profileData,
-                admissions.Result,
-                notes.Result,
-                diagnoses.Result.Cast<DiagnosisViewModel>().ToList(),
-                medicationSchedules.Result,
-                medicationDispensions.Result,
-                immunizations.Result,
-                testResults.Result,
-                medicalProcedures.Result,
-                observations.Result,
-                documents.Result,
-                questionnaireAnswers.Result.Cast<QuestionnaireAnswersViewModel>().ToList());
+            var viewModel = await patientOverviewViewModelBuilder.Build(personId, accessGrants, language);
             return Ok(viewModel);
         }
 

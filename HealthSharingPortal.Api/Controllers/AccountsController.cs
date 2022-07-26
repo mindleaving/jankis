@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using HealthModels;
 using HealthModels.AccessControl;
+using HealthModels.Interview;
 using HealthSharingPortal.API.AccessControl;
 using HealthSharingPortal.API.Helpers;
 using HealthSharingPortal.API.Models;
 using HealthSharingPortal.API.Storage;
 using HealthSharingPortal.API.ViewModels;
+using HealthSharingPortal.API.Workflow;
 using HealthSharingPortal.API.Workflow.ViewModelBuilders;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -22,6 +26,9 @@ using Microsoft.AspNetCore.Authentication.Twitter;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using IAuthenticationModule = HealthSharingPortal.API.AccessControl.IAuthenticationModule;
 
 namespace HealthSharingPortal.API.Controllers
@@ -39,6 +46,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IAuthorizationModule authorizationModule;
         private readonly ILoginStore loginStore;
         private readonly IMenschIdVerifier menschIdVerifier;
+        private readonly PatientOverviewViewModelBuilder patientOverviewViewModelBuilder;
 
         public AccountsController(
             IAccountStore accountsStore,
@@ -48,7 +56,8 @@ namespace HealthSharingPortal.API.Controllers
             IAuthorizationModule authorizationModule,
             ILoginStore loginStore,
             IMenschIdVerifier menschIdVerifier,
-            IAutocompleteCache autocompleteCache)
+            IAutocompleteCache autocompleteCache,
+            PatientOverviewViewModelBuilder patientOverviewViewModelBuilder)
         {
             this.accountsStore = accountsStore;
             this.personsStore = personsStore;
@@ -58,6 +67,7 @@ namespace HealthSharingPortal.API.Controllers
             this.loginStore = loginStore;
             this.menschIdVerifier = menschIdVerifier;
             this.autocompleteCache = autocompleteCache;
+            this.patientOverviewViewModelBuilder = patientOverviewViewModelBuilder;
         }
 
         [HttpGet]
@@ -318,6 +328,74 @@ namespace HealthSharingPortal.API.Controllers
             return Ok();
         }
 
+        [HttpGet("me/download")]
+        public async Task<IActionResult> DownloadAccount([FromQuery] Language language = Language.en)
+        {
+            var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
+            if (personId == null)
+                return NotFound();
+            var accessGrants = await GetAccessGrants();
+            var viewModel = await patientOverviewViewModelBuilder.Build(personId, accessGrants, language);
+            var jsonSettings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
+            jsonSettings.Converters.Add(new StringEnumConverter());
+            var json = JsonConvert.SerializeObject(viewModel, Formatting.Indented, jsonSettings);
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
+            return File(stream, "application/json", $"health-sharing-portal_account-export_{DateTime.UtcNow:yyyy-MM-dd_hh:mm:ss}.json");
+        }
+
+
+        [Authorize]
+        [HttpDelete("me")]
+        public async Task<IActionResult> DeleteCurrentAccount()
+        {
+            var accountId = ControllerHelpers.GetAccountId(httpContextAccessor);
+            if (accountId == null)
+                return BadRequest("No account found");
+            var account = await accountsStore.GetByIdAsync(accountId);
+            if (account == null)
+                return NotFound();
+            AccountDeleterResult deletionResult;
+            switch (account.AccountType)
+            {
+                case AccountType.Sharer:
+                    {
+                        var accountDeleter = new SharerAccountDeleter();
+                        deletionResult = await accountDeleter.DeleteAsync(accountId);
+                    }
+                    break;
+                case AccountType.HealthProfessional:
+                    {
+                        var accountDeleter = new HealthProfessionalAccountDeleter();
+                        deletionResult = await accountDeleter.DeleteAsync(accountId);
+                    }
+                    break;
+                case AccountType.Researcher:
+                    {
+                        var accountDeleter = new ResearcherAccountDeleter();
+                        deletionResult = await accountDeleter.DeleteAsync(accountId);
+                    }
+                    break;
+                case AccountType.EmergencyGuest:
+                    return Ok();
+                case AccountType.Admin:
+                    {
+                        var accountDeleter = new AdminAccountDeleter();
+                        deletionResult = await accountDeleter.DeleteAsync(accountId);
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            if (!deletionResult.IsSuccess)
+                return BadRequest(deletionResult.ErrorMessage);
+            return Ok();
+        }
+
+
         private async Task<List<IViewModel<Account>>> BuildAccountViewModels(
             List<Account> items,
             List<IPersonDataAccessGrant> accessGrants)
@@ -340,15 +418,6 @@ namespace HealthSharingPortal.API.Controllers
         {
             var claims = ControllerHelpers.GetClaims(httpContextAccessor);
             return await authorizationModule.GetAccessGrants(claims);
-        }
-
-        private IActionResult HandleStorageResult(StorageResult result)
-        {
-            if (result.IsSuccess)
-                return Ok();
-            if (result.ErrorType == StoreErrorType.NoMatch)
-                return NotFound();
-            return StatusCode((int) HttpStatusCode.InternalServerError);
         }
     }
 }
