@@ -332,6 +332,29 @@ namespace HealthSharingPortal.API.Controllers
             return Ok();
         }
 
+        [HttpPost("me/settings/privacy")]
+        public async Task<IActionResult> SetPrivacySettings(
+            [FromBody] SharerPrivacySettings privacySettings)
+        {
+            var accountId = ControllerHelpers.GetAccountId(httpContextAccessor);
+            if (accountId == null)
+                return NotFound();
+            var account = await accountsStore.GetByIdAsync(accountId);
+            if (account == null)
+                return NotFound();
+            if(account.AccountType != AccountType.Sharer)
+                return BadRequest("Privacy settings can only be set for sharer-accounts");
+            var sharerAccount = account as SharerAccount
+                                ?? new SharerAccount(account.Id, account.PersonId, account.PreferedLanguage)
+                                {
+                                    LoginIds = account.LoginIds
+                                };
+            sharerAccount.PrivacySettings = privacySettings;
+            await accountsStore.StoreAsync(sharerAccount);
+            return Ok();
+        }
+
+
         [HttpGet("me/download")]
         public async Task<IActionResult> DownloadAccount([FromQuery] Language language = Language.en)
         {
@@ -347,7 +370,7 @@ namespace HealthSharingPortal.API.Controllers
             jsonSettings.Converters.Add(new StringEnumConverter());
             var json = JsonConvert.SerializeObject(viewModel, Formatting.Indented, jsonSettings);
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
-            return File(stream, "application/json", $"health-sharing-portal_account-export_{DateTime.UtcNow:yyyy-MM-dd_hh:mm:ss}.json");
+            return File(stream, "application/json", $"health-sharing-portal_account-export_{DateTime.UtcNow:yyyy-MM-dd_HH:mm:ss}.json");
         }
 
 

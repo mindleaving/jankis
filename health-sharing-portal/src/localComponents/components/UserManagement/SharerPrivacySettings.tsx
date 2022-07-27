@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { Alert, Card, Col, FormCheck, FormGroup, Row } from 'react-bootstrap';
+import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
+import { StoreButton } from '../../../sharedCommonComponents/components/StoreButton';
+import { showErrorAlert, showSuccessAlert } from '../../../sharedCommonComponents/helpers/AlertHelpers';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
+import { Models } from '../../types/models';
 
 interface SharerPrivacySettingsProps {}
 
@@ -14,6 +18,7 @@ export const SharerPrivacySettings = (props: SharerPrivacySettingsProps) => {
 
     const [ allowOption1, setAllowOption1 ] = useState<boolean>(false);
     const [ allowOption2, setAllowOption2 ] = useState<boolean>(false);
+    const [ isStoring, setIsStoring ] = useState<boolean>(false);
 
     const preset = allowOption1 && allowOption2 ? SharerPrivacyPreset.Public
         : !allowOption1 && allowOption2 ? SharerPrivacyPreset.Lax
@@ -33,6 +38,21 @@ export const SharerPrivacySettings = (props: SharerPrivacySettingsProps) => {
     const setPublicPreset = () => {
         setAllowOption1(true);
         setAllowOption2(true);
+    }
+
+    const store = async () => {
+        try {
+            setIsStoring(true);
+            const settings: Models.SharerPrivacySettings = {
+                /* None yet... */
+            }
+            await apiClient.instance!.post('api/accounts/me/settings/privacy', {}, settings);
+            showSuccessAlert(resolveText("PrivacySettings_SuccessfullyStored"));
+        } catch(error: any) {
+            showErrorAlert(resolveText("PrivacySettings_CouldNotStore"), error.message);
+        } finally {
+            setIsStoring(false);
+        }
     }
 
     return (
@@ -118,6 +138,10 @@ export const SharerPrivacySettings = (props: SharerPrivacySettingsProps) => {
                     onChange={(e:any) => setAllowOption2(e.target.checked)}
                 />
             </FormGroup>
+            <StoreButton
+                isStoring={isStoring}
+                onClick={store}
+            />
         </>
     );
 

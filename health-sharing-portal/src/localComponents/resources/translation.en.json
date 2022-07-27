@@ -698,6 +698,8 @@
   "Previous": "Previous",
   "Privacy_CustomOptions": "Custom privacy options",
   "Privacy_Presets": "Privacy presets",
+  "PrivacySettings_CouldNotStore": "Could not store privacy settings",
+  "PrivacySettings_SuccessfullyStored": "Successfully stored privacy settings",
   "PrivacyStatement": "Privacy Statement",
   "Publication_Abstract": "Abstract",
   "Publication_ConfirmDelete_Message": "Are you sure you want to delete publication '{0}'",
