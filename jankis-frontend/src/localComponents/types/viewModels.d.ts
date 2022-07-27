@@ -67,7 +67,7 @@ export namespace ViewModels {
         observations: Models.Observations.Observation[];
     }
 
-    interface PatientOverviewViewModel extends ViewModels.PatientOverviewViewModel {
+    interface HealthRecordViewModel extends ViewModels.HealthRecordViewModel {
         currentBedOccupancy: Models.BedOccupancy;
         subscription: Models.Subscriptions.PatientSubscription;
     }
@@ -165,7 +165,7 @@ export namespace ViewModels {
         pattern: Models.Medication.MedicationSchedulePattern;
     }
 
-    interface PatientOverviewViewModel {
+    interface HealthRecordViewModel {
         profileData: Models.Person;
         admissions: Models.Admission[];
         notes: Models.PatientNote[];

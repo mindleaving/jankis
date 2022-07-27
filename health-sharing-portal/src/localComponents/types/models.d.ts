@@ -105,6 +105,10 @@ export namespace Models {
         loginIds: string[];
     }
 
+    interface SharerAccount extends Models.Account {
+        privacySettings: Models.SharerPrivacySettings;
+    }
+
     interface AuthenticationResult {
         isAuthenticated: boolean;
         accessToken?: string;
@@ -159,6 +163,10 @@ export namespace Models {
         lastName: string;
         orcId: string;
         organizations: string[];
+    }
+
+    interface SharerPrivacySettings {
+        
     }
 
     interface Study extends Models.IId {

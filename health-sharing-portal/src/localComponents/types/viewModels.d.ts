@@ -52,6 +52,21 @@ export namespace ViewModels {
         authenticationResult: Models.AuthenticationResult;
     }
 
+    interface HealthRecordViewModel {
+        profileData: Models.Person;
+        admissions: Models.Admission[];
+        notes: Models.PatientNote[];
+        diagnoses: ViewModels.DiagnosisViewModel[];
+        medicationSchedules: Models.Medication.MedicationSchedule[];
+        medicationDispensions: Models.Medication.MedicationDispension[];
+        immunizations: Models.Medication.Immunization[];
+        testResults: Models.DiagnosticTestResults.DiagnosticTestResult[];
+        medicalProcedures: Models.Procedures.MedicalProcedure[];
+        observations: Models.Observations.Observation[];
+        documents: Models.PatientDocument[];
+        questionnaires: ViewModels.QuestionnaireAnswersViewModel[];
+    }
+
     interface IUserViewModel {
         profileData: Models.Person;
         accountType: string;
@@ -87,21 +102,6 @@ export namespace ViewModels {
         startTimestamp: Date;
         endTimestamp: Date;
         pattern: Models.Medication.MedicationSchedulePattern;
-    }
-
-    interface PatientOverviewViewModel {
-        profileData: Models.Person;
-        admissions: Models.Admission[];
-        notes: Models.PatientNote[];
-        diagnoses: ViewModels.DiagnosisViewModel[];
-        medicationSchedules: Models.Medication.MedicationSchedule[];
-        medicationDispensions: Models.Medication.MedicationDispension[];
-        immunizations: Models.Medication.Immunization[];
-        testResults: Models.DiagnosticTestResults.DiagnosticTestResult[];
-        medicalProcedures: Models.Procedures.MedicalProcedure[];
-        observations: Models.Observations.Observation[];
-        documents: Models.PatientDocument[];
-        questionnaires: ViewModels.QuestionnaireAnswersViewModel[];
     }
 
     interface PersonGenomeSequencesViewModel {

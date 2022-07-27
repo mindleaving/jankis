@@ -16,14 +16,14 @@ import { testResultsSlice } from "../../../sharedHealthComponents/redux/slices/t
 import { ApiGetPersonDataActionCreator } from "../../../sharedHealthComponents/types/reduxTypes";
 import { ViewModels } from "../../types/viewModels";
 
-export const fetchHealthRecordForPerson: ApiGetPersonDataActionCreator<ViewModels.PatientOverviewViewModel> = (args) => {
+export const fetchHealthRecordForPerson: ApiGetPersonDataActionCreator<ViewModels.HealthRecordViewModel> = (args) => {
     return async (dispatch, getState) => {
         const state = getState();
         if(state.healthRecords.personId === args.personId) {
             return;
         }
         dispatch(healthRecordsSlice.actions.setIsLoading(true));
-        await loadObject<ViewModels.PatientOverviewViewModel>(
+        await loadObject<ViewModels.HealthRecordViewModel>(
             `api/viewmodels/healthdata/${args.personId}`,
             {},
             resolveText('HealthData_CouldNotLoad'),

@@ -38,7 +38,7 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IReadonlyStore<Questionnaire> questionaireStore;
         private readonly IPersonDataReadonlyStore<GenomeExplorerDeployment> genomeExplorerDeploymentStore;
         private readonly IAccountStore accountStore;
-        private readonly PatientOverviewViewModelBuilder patientOverviewViewModelBuilder;
+        private readonly HealthRecordViewModelBuilder healthRecordViewModelBuilder;
 
         public ViewModelsController(
             IHttpContextAccessor httpContextAccessor,
@@ -52,7 +52,7 @@ namespace HealthSharingPortal.API.Controllers
             IReadonlyStore<Questionnaire> questionaireStore,
             IPersonDataReadonlyStore<GenomeExplorerDeployment> genomeExplorerDeploymentStore,
             IAccountStore accountStore,
-            PatientOverviewViewModelBuilder patientOverviewViewModelBuilder)
+            HealthRecordViewModelBuilder healthRecordViewModelBuilder)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.personStore = personStore;
@@ -65,7 +65,7 @@ namespace HealthSharingPortal.API.Controllers
             this.questionaireStore = questionaireStore;
             this.genomeExplorerDeploymentStore = genomeExplorerDeploymentStore;
             this.accountStore = accountStore;
-            this.patientOverviewViewModelBuilder = patientOverviewViewModelBuilder;
+            this.healthRecordViewModelBuilder = healthRecordViewModelBuilder;
         }
 
         [HttpGet("currentuser")]
@@ -99,7 +99,7 @@ namespace HealthSharingPortal.API.Controllers
             var profileData = await personStore.GetByIdAsync(personId, accessGrants);
             if (profileData == null)
                 return NotFound();
-            var viewModel = await patientOverviewViewModelBuilder.Build(personId, accessGrants, language);
+            var viewModel = await healthRecordViewModelBuilder.Build(personId, accessGrants, language);
             return Ok(viewModel);
         }
 

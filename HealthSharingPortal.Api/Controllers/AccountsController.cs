@@ -7,6 +7,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Commons.Extensions;
 using HealthModels;
 using HealthModels.AccessControl;
 using HealthModels.Interview;
@@ -46,7 +47,8 @@ namespace HealthSharingPortal.API.Controllers
         private readonly IAuthorizationModule authorizationModule;
         private readonly ILoginStore loginStore;
         private readonly IMenschIdVerifier menschIdVerifier;
-        private readonly PatientOverviewViewModelBuilder patientOverviewViewModelBuilder;
+        private readonly HealthRecordViewModelBuilder healthRecordViewModelBuilder;
+        private readonly AccountDeleterFactory accountDeleterFactory;
 
         public AccountsController(
             IAccountStore accountsStore,
@@ -57,7 +59,8 @@ namespace HealthSharingPortal.API.Controllers
             ILoginStore loginStore,
             IMenschIdVerifier menschIdVerifier,
             IAutocompleteCache autocompleteCache,
-            PatientOverviewViewModelBuilder patientOverviewViewModelBuilder)
+            HealthRecordViewModelBuilder healthRecordViewModelBuilder,
+            AccountDeleterFactory accountDeleterFactory)
         {
             this.accountsStore = accountsStore;
             this.personsStore = personsStore;
@@ -67,7 +70,8 @@ namespace HealthSharingPortal.API.Controllers
             this.loginStore = loginStore;
             this.menschIdVerifier = menschIdVerifier;
             this.autocompleteCache = autocompleteCache;
-            this.patientOverviewViewModelBuilder = patientOverviewViewModelBuilder;
+            this.healthRecordViewModelBuilder = healthRecordViewModelBuilder;
+            this.accountDeleterFactory = accountDeleterFactory;
         }
 
         [HttpGet]
@@ -335,7 +339,7 @@ namespace HealthSharingPortal.API.Controllers
             if (personId == null)
                 return NotFound();
             var accessGrants = await GetAccessGrants();
-            var viewModel = await patientOverviewViewModelBuilder.Build(personId, accessGrants, language);
+            var viewModel = await healthRecordViewModelBuilder.Build(personId, accessGrants, language);
             var jsonSettings = new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
@@ -357,38 +361,12 @@ namespace HealthSharingPortal.API.Controllers
             var account = await accountsStore.GetByIdAsync(accountId);
             if (account == null)
                 return NotFound();
-            AccountDeleterResult deletionResult;
-            switch (account.AccountType)
-            {
-                case AccountType.Sharer:
-                    {
-                        var accountDeleter = new SharerAccountDeleter();
-                        deletionResult = await accountDeleter.DeleteAsync(accountId);
-                    }
-                    break;
-                case AccountType.HealthProfessional:
-                    {
-                        var accountDeleter = new HealthProfessionalAccountDeleter();
-                        deletionResult = await accountDeleter.DeleteAsync(accountId);
-                    }
-                    break;
-                case AccountType.Researcher:
-                    {
-                        var accountDeleter = new ResearcherAccountDeleter();
-                        deletionResult = await accountDeleter.DeleteAsync(accountId);
-                    }
-                    break;
-                case AccountType.EmergencyGuest:
-                    return Ok();
-                case AccountType.Admin:
-                    {
-                        var accountDeleter = new AdminAccountDeleter();
-                        deletionResult = await accountDeleter.DeleteAsync(accountId);
-                    }
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            if (account.AccountType.InSet(AccountType.EmergencyGuest, AccountType.Undefined))
+                return BadRequest($"Accounts of type '{account.AccountType}' cannot be deleted");
+            var accessGrants = await GetAccessGrants();
+            var changedBy = new PersonDataChangeMetadata(account.Id, account.PersonId);
+            var accountDeleter = accountDeleterFactory.Create(account.AccountType);
+            var deletionResult = await accountDeleter.DeleteAsync(accountId, accessGrants, changedBy);
 
             if (!deletionResult.IsSuccess)
                 return BadRequest(deletionResult.ErrorMessage);

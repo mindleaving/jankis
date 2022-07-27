@@ -7,9 +7,9 @@ using HealthModels.Procedures;
 
 namespace HealthSharingPortal.API.ViewModels
 {
-    public class PatientOverviewViewModel
+    public class HealthRecordViewModel
     {
-        public PatientOverviewViewModel(
+        public HealthRecordViewModel(
             Person profileData,
             List<Admission> admissions,
             List<PatientNote> notes,

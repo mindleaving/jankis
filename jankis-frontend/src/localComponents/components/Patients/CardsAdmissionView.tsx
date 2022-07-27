@@ -5,7 +5,7 @@ import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer'
 import { ViewModels } from '../../types/viewModels';
 
 interface CardsAdmissionViewProps {
-    admission: ViewModels.PatientOverviewViewModel;
+    admission: ViewModels.HealthRecordViewModel;
 }
 
 export const CardsAdmissionView = (props: CardsAdmissionViewProps) => {

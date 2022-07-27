@@ -66,12 +66,14 @@ namespace HealthSharingPortal.API.Setups
             SetupPersonDataStores<DiagnosticTestResult>(services);
             SetupTypeStores<Drug>(services);
             SetupTypeStores<EmergencyAccess>(services);
+            services.AddScoped<ISharedAccessStore<EmergencyAccess>, SharedAccessStore<EmergencyAccess>>();
             SetupTypeStores<EmergencyAccessRequest>(services);
             services.AddScoped<IFilesStore, FilesStore>();
             SetupTypeStores<IcdCategory>(services);
             SetupTypeStores<Institution>(services);
             SetupPersonDataStores<GenomeExplorerDeployment>(services);
             SetupTypeStores<HealthProfessionalAccess>(services);
+            services.AddScoped<ISharedAccessStore<HealthProfessionalAccess>, SharedAccessStore<HealthProfessionalAccess>>();
             services.AddScoped<IHealthProfessionalAccessInviteStore, HealthProfessionalAccessInviteStore>();
             SetupPersonDataStores<Immunization>(services);
             SetupTypeStores<Login>(services);
@@ -98,6 +100,7 @@ namespace HealthSharingPortal.API.Setups
             SetupTypeStores<ServiceRequest>(services);
             SetupTypeStores<Study>(services);
             SetupTypeStores<StudyAssociation>(services);
+            services.AddScoped<IStudyAssociationStore, StudyAssociationStore>();
             SetupPersonDataStores<StudyEnrollment>(services);
             services.AddScoped<IStudyEnrollmentStore, StudyEnrollmentStore>();
             SetupTypeStores<SubscriptionBase>(services);

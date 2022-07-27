@@ -33,6 +33,8 @@ namespace JanKIS.API.Setups
                 .Exclude<HealthSharingPortal.API.Models.Account>()
                 .Exclude<HealthSharingPortal.API.Models.AccountType>()
                 .Exclude<HealthSharingPortal.API.Models.CreateAccessInviteBody>()
+                .Exclude<HealthSharingPortal.API.Models.SharerAccount>()
+                .Exclude<HealthSharingPortal.API.Models.SharerPrivacySettings>()
                 .Exclude<HealthSharingPortal.API.Models.HealthProfessionalAccount>()
                 .Exclude<HealthSharingPortal.API.Models.Publication>()
                 .Exclude<HealthSharingPortal.API.Models.ResearchStaff>()

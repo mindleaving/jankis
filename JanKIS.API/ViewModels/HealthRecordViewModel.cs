@@ -10,9 +10,9 @@ using JanKIS.API.Models;
 
 namespace JanKIS.API.ViewModels
 {
-    public class PatientOverviewViewModel : HealthSharingPortal.API.ViewModels.PatientOverviewViewModel
+    public class HealthRecordViewModel : HealthSharingPortal.API.ViewModels.HealthRecordViewModel
     {
-        public PatientOverviewViewModel(
+        public HealthRecordViewModel(
             Person profileData,
             BedOccupancy currentBedOccupancy,
             List<Admission> admissions,

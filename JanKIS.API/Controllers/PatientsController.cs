@@ -21,8 +21,8 @@ using JanKIS.API.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using HealthRecordViewModel = JanKIS.API.ViewModels.HealthRecordViewModel;
 using ISubscriptionsStore = JanKIS.API.Storage.ISubscriptionsStore;
-using PatientOverviewViewModel = JanKIS.API.ViewModels.PatientOverviewViewModel;
 
 namespace JanKIS.API.Controllers
 {
@@ -137,7 +137,7 @@ namespace JanKIS.API.Controllers
                 questionnaireAnswers,
                 subscription);
 
-            var viewModel = new PatientOverviewViewModel(
+            var viewModel = new HealthRecordViewModel(
                 profileData,
                 currentBedOccupancy.Result,
                 admissions.Result,

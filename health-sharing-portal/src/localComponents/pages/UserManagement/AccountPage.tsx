@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
-import { Button, Col, Row } from 'react-bootstrap';
+import React, { useContext, useState } from 'react';
+import { Accordion, Button } from 'react-bootstrap';
 import { confirmAlert } from 'react-confirm-alert';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { NotificationManager } from 'react-notifications';
 import { apiClient } from '../../../sharedCommonComponents/communication/ApiClient';
 import { downloadFile } from '../../../sharedCommonComponents/communication/FileDownloader';
 import { AsyncButton } from '../../../sharedCommonComponents/components/AsyncButton';
+import UserContext from '../../contexts/UserContext';
+import { AccountType } from '../../types/enums.d';
+import { SharerPrivacySettings } from '../../components/UserManagement/SharerPrivacySettings';
+import { AccordionCard } from '../../../sharedCommonComponents/components/AccordionCard';
 
 interface AccountPageProps {
     onAccountDeleted: () => void;
@@ -13,6 +17,7 @@ interface AccountPageProps {
 
 export const AccountPage = (props: AccountPageProps) => {
 
+    const user = useContext(UserContext);
     const [ isDownloading, setIsDownloading ] = useState<boolean>(false);
     const downloadAccount = async () => {
         try {
@@ -53,8 +58,19 @@ export const AccountPage = (props: AccountPageProps) => {
     return (
         <>
             <h1>{resolveText("Account_ManageAccount")}</h1>
-            <Row>
-                <Col>
+            <Accordion>
+                {user!.accountType === AccountType.Sharer
+                ? <AccordionCard
+                    eventKey='privacy'
+                    title={resolveText("Account_PrivacySettings")}
+                >
+                    <SharerPrivacySettings />
+                </AccordionCard>
+                : null}
+                <AccordionCard
+                    eventKey='download'
+                    title={resolveText("Account_Download")}
+                >
                     <AsyncButton
                         variant='primary'
                         onClick={downloadAccount}
@@ -63,10 +79,11 @@ export const AccountPage = (props: AccountPageProps) => {
                         executingText={resolveText("Account_Download")}
                         isExecuting={isDownloading}
                     />
-                </Col>
-            </Row>
-            <Row>
-                <Col>
+                </AccordionCard>
+                <AccordionCard
+                    eventKey='delete'
+                    title={resolveText("Account_Delete")}
+                >
                     <Button
                         variant='danger'
                         onClick={() => deleteAccount()}
@@ -74,8 +91,8 @@ export const AccountPage = (props: AccountPageProps) => {
                     >
                         {resolveText("Account_Delete")}
                     </Button>
-                </Col>
-            </Row>
+                </AccordionCard>
+            </Accordion>
         </>
     );
 

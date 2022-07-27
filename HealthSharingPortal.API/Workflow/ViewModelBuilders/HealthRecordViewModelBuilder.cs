@@ -14,7 +14,7 @@ using HealthSharingPortal.API.ViewModels;
 
 namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
 {
-    public class PatientOverviewViewModelBuilder
+    public class HealthRecordViewModelBuilder
     {
         private readonly IPersonStore personStore;
         private readonly IPersonDataReadonlyStore<Admission> admissionsStore;
@@ -31,7 +31,7 @@ namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
         private readonly IViewModelBuilder<QuestionnaireAnswers> questionnaireAnswersViewModelBuilder;
         private readonly IViewModelBuilder<Diagnosis> diagnosisViewModelBuilder;
 
-        public PatientOverviewViewModelBuilder(
+        public HealthRecordViewModelBuilder(
             IPersonStore personStore,
             IPersonDataReadonlyStore<Admission> admissionsStore,
             IPersonDataReadonlyStore<PatientNote> patientNotesStore,
@@ -63,7 +63,7 @@ namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
             this.questionnaireAnswersViewModelBuilder = questionnaireAnswersViewModelBuilder;
         }
 
-        public async Task<PatientOverviewViewModel> Build(
+        public async Task<HealthRecordViewModel> Build(
             string personId, 
             List<IPersonDataAccessGrant> accessGrants,
             Language language = Language.en)
@@ -97,7 +97,7 @@ namespace HealthSharingPortal.API.Workflow.ViewModelBuilders
                 documents,
                 questionnaireAnswers);
 
-            return new PatientOverviewViewModel(
+            return new HealthRecordViewModel(
                 profileData.Result,
                 admissions.Result,
                 notes.Result,

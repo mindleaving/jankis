@@ -15,7 +15,7 @@ namespace HealthSharingPortal.API.AccessControl
             var accountId = Guid.NewGuid().ToString();
             var account = accountType switch
             {
-                AccountType.Sharer => new Account(accountId, accountType),
+                AccountType.Sharer => new SharerAccount(accountId, personId),
                 AccountType.HealthProfessional => new HealthProfessionalAccount(accountId, personId),
                 AccountType.Researcher => new ResearcherAccount(accountId, personId),
                 AccountType.EmergencyGuest => throw new InvalidOperationException("Emergency guests don't get accounts"),

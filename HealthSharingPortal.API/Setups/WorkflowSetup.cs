@@ -11,6 +11,7 @@ namespace HealthSharingPortal.API.Setups
             IConfiguration configuration)
         {
             services.AddScoped<MedicationDispensionsBuilder>();
+            services.AddScoped<AccountDeleterFactory>();
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security;
 using System.Threading.Tasks;
 using HealthModels;
@@ -10,7 +9,7 @@ using MongoDB.Driver;
 
 namespace HealthSharingPortal.API.Storage
 {
-    public class GenericPersonDataStore<T> : GenericPersonDataReadonlyStore<T>, IPersonDataStore<T> where T : IPersonData
+    public class GenericPersonDataStore<T> : GenericPersonDataReadonlyStore<T>, IPersonDataStore, IPersonDataStore<T> where T : IPersonData
     {
         protected readonly IMongoCollection<T> collection;
         protected readonly IStore<PersonDataChange> recordChangeStore;
@@ -68,7 +67,23 @@ namespace HealthSharingPortal.API.Storage
             await collection.DeleteOneAsync(x => x.Id == id);
         }
 
-        protected async Task LogRecordChange(
+        public async Task DeleteAllForPerson(
+            string personId,
+            List<IPersonDataAccessGrant> accessGrants,
+            PersonDataChangeMetadata changedBy)
+        {
+            var matchingItemIds = await collection.Find(x => x.PersonId == personId).Project(x => x.Id).ToListAsync();
+            var permissions = GetPermissionsForPerson(personId, accessGrants);
+            if (!permissions.Contains(AccessPermissions.Modify))
+                throw new SecurityException("You do not have the necessary access rights for that person");
+            foreach (var itemId in matchingItemIds)
+            {
+                await LogRecordChange(itemId, changedBy, StorageOperation.Deleted);
+            }
+            await collection.DeleteManyAsync(x => x.PersonId == personId);
+        }
+
+        private async Task LogRecordChange(
             string entryId,
             PersonDataChangeMetadata changedBy,
             StorageOperation operation)

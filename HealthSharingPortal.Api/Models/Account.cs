@@ -6,7 +6,8 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace HealthSharingPortal.API.Models
 {
     [BsonKnownTypes(
-        typeof(HealthProfessionalAccount)
+        typeof(HealthProfessionalAccount),
+        typeof(SharerAccount)
     )]
     public class Account : IId
     {
@@ -29,5 +30,18 @@ namespace HealthSharingPortal.API.Models
         public string PersonId { get; set; }
         public Language PreferedLanguage { get; set; }
         public List<string> LoginIds { get; set; }
+    }
+
+    public class SharerAccount : Account
+    {
+        public SharerAccount() {}
+        public SharerAccount(
+            string id,
+            string personId,
+            Language preferedLanguage = Language.en)
+            : base(id, AccountType.Sharer, personId, preferedLanguage)
+        {}
+
+        public SharerPrivacySettings PrivacySettings { get; set; }
     }
 }

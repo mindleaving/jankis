@@ -27,6 +27,7 @@ namespace HealthSharingPortal.API.Controllers
                 typeof(Publication),
                 typeof(Contact),
                 typeof(Account),
+                typeof(SharerAccount),
                 typeof(HealthProfessionalAccount),
                 typeof(Person),
                 typeof(Questionnaire),
