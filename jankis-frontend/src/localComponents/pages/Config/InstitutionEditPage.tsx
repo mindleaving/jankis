@@ -54,8 +54,9 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
     const addRoom = () => {
         setRooms(rooms.concat({
             id: uuid(),
+            institutionId: id,
             name: '',
-            bedPositions: []
+            bedPositions: [],
         }));
     }
     const addDepartment = () => {
@@ -198,9 +199,7 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
             id: id,
             name: name,
             rooms: rooms,
-            roomIds: rooms.map(x => x.id),
-            departments: departments,
-            departmentIds: departments.map(x => x.id)
+            departments: departments
         };
     }
 
@@ -353,6 +352,7 @@ export const InstitutionEditPage = (props: InstitutionEditPageProps) => {
                 />
             </Form>
             <RoomGeneratorModal
+                institutionId={id}
                 show={showRoomGeneratorModal}
                 onGenerate={generatedRooms => setRooms(rooms.concat(generatedRooms))}
                 onClose={() => setShowRoomGeneratorModal(false)}

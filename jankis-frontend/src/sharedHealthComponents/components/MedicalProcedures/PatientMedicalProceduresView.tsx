@@ -1,5 +1,6 @@
 import { Table } from 'react-bootstrap';
 import { useAppSelector } from '../../../localComponents/redux/store/healthRecordStore';
+import { sortByTimeDescending } from '../../helpers/HealthRecordEntryHelpers';
 import { MedicalProcedureTableRow } from './MedicalProcedureTableRow';
 
 interface PatientMedicalProceduresViewProps {
@@ -9,12 +10,13 @@ interface PatientMedicalProceduresViewProps {
 export const PatientMedicalProceduresView = (props: PatientMedicalProceduresViewProps) => {
 
     const medicalProcedures = useAppSelector(state => state.medicalProcedures.items.filter(x => x.personId === props.personId));
+    const timeSortedMedicalProcedures = sortByTimeDescending(medicalProcedures);
 
     return (
         <>
             <Table hover>
                 <tbody>
-                    {medicalProcedures.map(medicalProcedure => (
+                    {timeSortedMedicalProcedures.map(medicalProcedure => (
                         <MedicalProcedureTableRow
                             key={medicalProcedure.id}
                             medicalProcedure={medicalProcedure}

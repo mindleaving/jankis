@@ -88,10 +88,7 @@ export const PatientPage = (props: PatientPageProps) => {
                 <Col lg={6}>
                     <PatientProfileJumbotron
                         personId={personId}
-                        bedOccupancy={currentBedOccupancy}
                         showSubscription
-                        subscription={subscription}
-                        onSubscriptionChanged={setSubscription}
                     />
                 </Col>
                 <Col lg={6}>

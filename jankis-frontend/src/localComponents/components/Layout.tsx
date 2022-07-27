@@ -45,11 +45,11 @@ export const Layout = (props: LayoutProps) => {
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     {userMenus}
-                    {!user.roles.some(role => role.name === "Patient") ? <DepartmentMenu departments={user.departments} /> : null}
+                    {!user.roles.some(role => role.name === "Patient") ? <DepartmentMenu /> : null}
                     <ConfigMenu />
                     {!user.roles.some(role => role.name === "Patient") ? <QRScannerMenu openQRScannerModal={openQRScannerModal}  /> : null}
                     <CommonMenu />
-                    <LoggedInUser user={user} onLogOut={props.onLogOut} />
+                    <LoggedInUser onLogOut={props.onLogOut} />
                 </Navbar.Collapse>
             </Navbar>
             <Container className="mt-3" style={{ maxWidth: '90%' }}>

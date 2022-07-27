@@ -4,7 +4,7 @@ import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer'
 import { formatAge } from '../../../sharedHealthComponents/helpers/Formatters';
 import { useAppDispatch, useAppSelector } from '../../redux/store/healthRecordStore';
 import { isAfter, isBefore } from 'date-fns';
-import { SubscriptionObjectType } from '../../types/enums';
+import { SubscriptionObjectType } from '../../types/enums.d';
 import { subscribeToPerson, unsubscribeFromPerson } from '../../redux/slices/subscriptionsSlice';
 
 interface PatientProfileJumbotronProps {

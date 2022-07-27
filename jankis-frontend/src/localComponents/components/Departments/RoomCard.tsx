@@ -12,8 +12,6 @@ interface RoomCardProps {
 export const RoomCard = (props: RoomCardProps) => {
 
     const room = props.room;
-    const bedOccupancies = useAppSelector(state => state.bedOccupancies.items.filter(x => x.))
-
     return (
         <Card className="m-2">
             <Card.Header>{resolveText('Room')} {room.name}</Card.Header>

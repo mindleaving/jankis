@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Models } from "../../../localComponents/types/models";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { RemoteState } from "../../types/reduxInterfaces";
-import { deleteActionBuilder, loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
+import { deleteActionBuilder, loadActionBuilder, loadPersonDataActionBuilder, postActionBuilder } from "../helpers/ActionCreatorBuilder";
 
 interface ObservationsState extends RemoteState<Models.Observations.Observation> {
 }
@@ -55,6 +55,12 @@ export const loadObservations = loadPersonDataActionBuilder(
     () => resolveText("Observations_CouldNotLoad"),
     observationsSlice.actions.setIsLoading,
     observationsSlice.actions.setObservations
+);
+export const loadObservation = loadActionBuilder(
+    args => `api/observations/${args}`,
+    () => resolveText("Observation_CouldNotLoad"),
+    observationsSlice.actions.setIsLoading,
+    observationsSlice.actions.addOrUpdateObservation
 );
 export const addObservation = postActionBuilder(
     () => `api/observations`, 

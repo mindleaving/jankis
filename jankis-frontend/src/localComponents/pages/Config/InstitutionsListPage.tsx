@@ -74,8 +74,8 @@ export const InstitutionsListPage = (props: InstitutionsListPageProps) => {
                                     <tr key={institution.id}>
                                         <td><i className="fa fa-trash red clickable" onClick={() => deleteInstitution(institution.id, institution.name)} /></td>
                                         <td>{institution.name}</td>
-                                        <td>{institution.roomIds.length}</td>
-                                        <td>{institution.departmentIds.length}</td>
+                                        <td>{institution.rooms.length}</td>
+                                        <td>{institution.departments.length}</td>
                                         <td><Button variant="link" onClick={() => navigate(`/institutions/${institution.id}/edit`)}>{resolveText('Edit...')}</Button></td>
                                     </tr>
                                 ))

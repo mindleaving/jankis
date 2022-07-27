@@ -1,10 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { resolveText } from "../../../sharedCommonComponents/helpers/Globalizer";
 import { sendPostRequest } from "../../../sharedCommonComponents/helpers/StoringHelpers";
-import { postActionBuilder } from "../../../sharedHealthComponents/redux/helpers/ActionCreatorBuilder";
 import { RemoteState } from "../../../sharedHealthComponents/types/reduxInterfaces";
 import { AsyncActionCreator } from "../../../sharedHealthComponents/types/reduxTypes";
-import { SubscriptionObjectType } from "../../types/enums";
+import { SubscriptionObjectType } from "../../types/enums.d";
 import { Models } from "../../types/models";
 
 export interface SubscriptionsState extends RemoteState<Models.Subscriptions.SubscriptionBase> {

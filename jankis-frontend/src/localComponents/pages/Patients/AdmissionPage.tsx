@@ -3,9 +3,7 @@ import { Button, ButtonGroup, Col, Row } from 'react-bootstrap';
 import { useParams } from 'react-router';
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 import { loadAdmission } from '../../../sharedHealthComponents/redux/slices/admissionsSlice';
-import { CardsAdmissionView } from '../../components/Patients/CardsAdmissionView';
 import { PatientProfileJumbotron } from '../../components/Patients/PatientProfileJumbotron';
-import { TimelineAdmissionView } from '../../components/Patients/TimelineAdmissionView';
 import { useAppDispatch, useAppSelector } from '../../redux/store/healthRecordStore';
 
 interface AdmissionPageProps {}

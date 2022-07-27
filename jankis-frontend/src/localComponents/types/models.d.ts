@@ -85,6 +85,7 @@ export namespace Models {
         sex: Enums.Sex;
         addresses: Models.Address[];
         phoneNumber?: string;
+        email?: string;
         healthInsurance?: Models.HealthInsurance;
     }
 
@@ -267,6 +268,12 @@ export namespace Models {
         environmentUrl?: string;
     }
 
+    interface ResearcherAccount extends Models.Account {
+        workAddress?: Models.Address;
+        phoneNumber?: string;
+        email?: string;
+    }
+
     interface StudyEnrollmentTimestamp {
         timestamp: Date;
         newEnrollmentState: Enums.StudyEnrollementState;
@@ -431,6 +438,7 @@ export namespace Models {
             amountUnit: string;
             amountValue: number;
             applicationSite: string;
+            protectsAgainst: string[];
         }
     
         interface Immunization extends Models.Medication.MedicationDispension {

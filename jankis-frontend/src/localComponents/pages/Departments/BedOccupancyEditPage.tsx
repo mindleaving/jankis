@@ -109,6 +109,7 @@ export const BedOccupancyEditPage = (props: BedOccupancyEditPageProps) => {
     const buildBedOccupancy = (): Models.BedOccupancy => {
         return {
             id: id,
+            institutionId: department!.institutionId,
             department: department!,
             room: room!,
             bedPosition: bedPosition!,

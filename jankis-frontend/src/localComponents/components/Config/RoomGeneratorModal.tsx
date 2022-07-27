@@ -7,6 +7,7 @@ import { RowFormGroup } from '../../../sharedCommonComponents/components/RowForm
 import { resolveText } from '../../../sharedCommonComponents/helpers/Globalizer';
 
 interface RoomGeneratorModalProps {
+    institutionId: string;
     show: boolean;
     onGenerate: (rooms: Models.Room[]) => void;
     onClose: () => void;
@@ -27,7 +28,12 @@ export const RoomGeneratorModal = (props: RoomGeneratorModalProps) => {
         for (let index = from; index <= to; index++) {
             const id = uuid();
             const name = `${prefix}${index}${suffix}`;
-            rooms.push({ id, name, bedPositions: bedPositions });
+            rooms.push({ 
+                id, 
+                name, 
+                institutionId: props.institutionId, 
+                bedPositions: bedPositions 
+            });
         }
         props.onGenerate(rooms);
         //props.onClose();
