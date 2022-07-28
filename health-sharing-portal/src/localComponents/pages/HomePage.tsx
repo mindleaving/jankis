@@ -66,12 +66,12 @@ export const HomePage = (props: HomePageProps) => {
             <div className="text-center">
                 <Button
                     variant="danger"
-                    className="m-3"
+                    className="m-3 px-4"
                     onClick={() => navigate("/emergency/VCZ93QFRZ45VZKNQJXHPT4JKFQ")}
                 >
                     <h4>Explore demo profile</h4>
                     <img
-                        src="/img/demo-emergency-card.png"
+                        src="/img/emergency-card-jane-doe.png"
                         alt="Emergency card for demo profile"
                     />
                 </Button>

@@ -7,6 +7,7 @@ import { formatDate } from '../../../sharedHealthComponents/helpers/Formatters';
 import UserContext from '../../contexts/UserContext';
 import { formatAccessType } from '../../helpers/Formatters';
 import { AccountType, SharedAccessType } from '../../types/enums.d';
+import { Models } from '../../types/models';
 import { ViewModels } from '../../types/viewModels';
 import { RevokeButton } from '../RevokeButton';
 
@@ -62,6 +63,7 @@ export const SharedAccessTableRow = (props: SharedAccessTableRowProps) => {
             {access.type === SharedAccessType.Emergency
             ? <b className='red'>{formattedAccessType}</b>
             : formattedAccessType}
+            <div>{(access as Models.AccessControl.EmergencyAccess)?.name}</div>
         </td>
         <td>{access.accessReceiverAccountId}</td>
         <td>

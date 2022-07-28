@@ -1,16 +1,19 @@
 # Health sharing portal
 
+## Bugs
+DONE - Blank page (uncaught error/null/undefined) when editing drug. Probably because ProtectsAgainst is null.
+
+## Features
 Critical:
-DONE - Check for revoked access for access invites / emergency tokens
-- Edit timestamp of test results (and other health record events)
-DONE - Add medical procedures
-- Add drugs
-- Add historical medications
-  - Show start, end, pattern and dose of medication
-  - Link medication to diagnosis (optional)
-- Add immunizations
-DONE - Only require date for diagnosis
-- 
+- Show start, end, pattern and dose of medication
+- Link medication to diagnosis (optional)
+- Search immunization by "ProtectsAgainst"
+- Suggest ICD11-items for ProtectsAgainst of immunizations
 
 Nice to have:
+DONE - Formating of notes
+DONE - Give name/description/note to access tokens
 - Consent forms
+- Improve error messages when trying to perform actions that the user has no permissions for. Currently throws "Could not store ..."-errors and status 500.
+DONE - Medication/immunizations: Number of doses and add "Last: " in front of date.
+

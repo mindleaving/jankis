@@ -17,6 +17,8 @@ interface PastMedicationTableRowProps {
 export const PastMedicationTableRow = (props: PastMedicationTableRowProps) => {
 
     const lastDispension = props.dispensions[0];
+    const takenDispensions = props.dispensions.filter(x => x.state === MedicationDispensionState.Dispensed);
+    const lastTakenDispension = takenDispensions[0];
     const drugId = lastDispension.drug.id;
     const now = new Date();
     const dispatch = useAppDispatch();
@@ -43,9 +45,13 @@ export const PastMedicationTableRow = (props: PastMedicationTableRowProps) => {
         <tr>
             <td>
                 <strong>{formatDrug(props.dispensions[0].drug)}</strong>
+                {takenDispensions.length > 0 ?
                 <div>
-                    <small>{formatDate(new Date(lastDispension.timestamp))}</small>
+                    <small>
+                        {takenDispensions.length} {resolveText("Medication_Doses")} - {resolveText("Medication_LastDose")}: {formatDate(new Date(lastTakenDispension.timestamp))}
+                    </small>
                 </div>
+                : null}
             </td>
             <td>
                 <AccordionCard standalone

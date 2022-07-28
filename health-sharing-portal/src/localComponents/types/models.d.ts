@@ -753,6 +753,7 @@ export namespace Models {
     
         interface EmergencyAccess extends Models.AccessControl.ISharedAccess {
             token?: string;
+            name?: string;
         }
     
         interface EmergencyAccessRequest extends Models.IId {

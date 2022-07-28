@@ -53,7 +53,9 @@ export const DrugForm = (props: DrugFormProps) => {
                 setDispensionForm(item.dispensionForm);
                 setAmountValue(item.amountValue);
                 setAmountUnit(item.amountUnit);
-                setProtectsAgainst(item.protectsAgainst);
+                if(item.protectsAgainst) {
+                    setProtectsAgainst(item.protectsAgainst);
+                }
             },
             () => {},
             () => setIsLoading(false)

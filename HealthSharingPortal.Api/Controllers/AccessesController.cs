@@ -150,6 +150,24 @@ namespace HealthSharingPortal.API.Controllers
             return Ok(access);
         }
 
+        [HttpPost("emergency/{id}")]
+        public async Task<IActionResult> UpdateName(
+            [FromRoute] string id,
+            [FromBody] EmergencyAccess access)
+        {
+            if (id != access.Id)
+                return BadRequest("ID of route doesn't match body");
+            var existingAccess = await emergencyAccessStore.GetByIdAsync(id);
+            if (existingAccess == null)
+                return NotFound();
+            var personId = ControllerHelpers.GetPersonId(httpContextAccessor);
+            if (!CanModifyAccess(existingAccess, personId))
+                return StatusCode((int)HttpStatusCode.Forbidden, "Not your emergency token");
+            existingAccess.Name = access.Name;
+            await emergencyAccessStore.StoreAsync(existingAccess);
+            return Ok();
+        }
+
 
         [HttpPost("{accessType}/{accessId}/revoke")]
         public async Task<IActionResult> RevokeAccess([FromRoute] SharedAccessType accessType, [FromRoute] string accessId)
@@ -178,7 +196,7 @@ namespace HealthSharingPortal.API.Controllers
             if (matchingItem == null)
                 return NotFound();
             if (!CanModifyAccess(matchingItem, personId))
-                return StatusCode((int)HttpStatusCode.Forbidden, "");
+                return StatusCode((int)HttpStatusCode.Forbidden, "Not your access grant");
             if (matchingItem.IsRevoked)
                 return Ok();
             matchingItem.IsRevoked = true;

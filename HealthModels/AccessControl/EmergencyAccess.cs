@@ -9,6 +9,8 @@ namespace HealthModels.AccessControl
         public string Id { get; set; }
         [TypescriptIsOptional]
         public string Token { get; set; }
+        [TypescriptIsOptional]
+        public string Name { get; set; }
 
         public SharedAccessType Type => SharedAccessType.Emergency;
         public List<AccessPermissions> Permissions { get; set; }

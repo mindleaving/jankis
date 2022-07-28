@@ -30,6 +30,8 @@ export const PatientNoteView = (props: PatientNoteViewProps) => {
         );
     }
 
+    const paragraphs = note.message.split('\n').filter(x => x.length > 0);
+
     return (<Alert variant="primary">
         <Row>
             <Col>
@@ -52,7 +54,11 @@ export const PatientNoteView = (props: PatientNoteViewProps) => {
                     hideValue={needsHiding(note, user!)}
                     onMarkAsSeen={unhide}
                 >
-                    {props.note.message}
+                    {paragraphs.map((paragraph,idx) => (
+                        <p key={idx} className='m-0'>
+                            {paragraph}
+                        </p>
+                    ))}
                 </HidableHealthRecordEntryValue>
             </Col>
         </Row>
