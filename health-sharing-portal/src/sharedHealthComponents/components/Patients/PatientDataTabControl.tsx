@@ -17,7 +17,7 @@ interface PatientDataTabControlProps {
 export const PatientDataTabControl = (props: PatientDataTabControlProps) => {
 
     return (
-        <Tabs defaultActiveKey="overview">
+        <Tabs defaultActiveKey="overview" className='nav-fill'>
             <Tab eventKey="overview" title={resolveText('Overview')}>
                 <HealthRecordOverview
                     personId={props.personId}

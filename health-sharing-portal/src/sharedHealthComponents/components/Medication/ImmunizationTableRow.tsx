@@ -41,6 +41,16 @@ export const ImmunizationTableRow = (props: ImmunizationTableRowProps) => {
                     </small>
                 </div>
                 : null}
+                {lastDispension.drug.protectsAgainst?.length > 0
+                ? <div className='small fw-bold'>
+                    {resolveText("Immunization_ProtectsAgainst")}:
+                    <ul>
+                        {lastDispension.drug.protectsAgainst.map((pathogen,idx) => (
+                            <li key={idx}>{pathogen}</li>
+                        ))}
+                    </ul>
+                </div>
+                : null}
             </td>
             <td>
                 <AccordionCard standalone

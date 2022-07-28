@@ -7,7 +7,7 @@ DONE - Blank page (uncaught error/null/undefined) when editing drug. Probably be
 Critical:
 - Show start, end, pattern and dose of medication
 - Link medication to diagnosis (optional)
-- Search immunization by "ProtectsAgainst"
+DONE - Show "ProtectsAgainst" for immunizations
 - Suggest ICD11-items for ProtectsAgainst of immunizations
 
 Nice to have:

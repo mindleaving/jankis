@@ -1,5 +1,5 @@
 import React, { FormEvent, useContext, useEffect, useState } from 'react';
-import { Button, Form, FormControl, FormGroup, FormLabel, InputGroup } from 'react-bootstrap';
+import { Button, Col, Form, FormControl, FormGroup, FormLabel, InputGroup, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import UserContext from '../../../localComponents/contexts/UserContext';
 import { useAppDispatch } from '../../../localComponents/redux/store/healthRecordStore';
@@ -115,18 +115,22 @@ export const PastMedicationForm = (props: PastMedicationFormProps) => {
             </FormGroup>
             <FormGroup>
                 <FormLabel>{resolveText("Drug")}</FormLabel>
-                <InputGroup>
-                    <DrugAutocomplete required
-                        value={drug} 
-                        onChange={setDrug}
-                    />
-                    <Button
-                        onClick={() => navigate("/create/drug")}
-                        className="mx-2"
-                    >
-                        {resolveText("CreateNew")}
-                    </Button>
-                </InputGroup>
+                <Row>
+                    <Col>
+                        <DrugAutocomplete required
+                            value={drug} 
+                            onChange={setDrug}
+                        />
+                    </Col>
+                    <Col xs="auto">
+                        <Button
+                            onClick={() => navigate("/create/drug")}
+                            className="mx-2"
+                        >
+                            {resolveText("CreateNew")}
+                        </Button>
+                    </Col>
+                </Row>
             </FormGroup>
             <FormGroup>
                 <FormLabel>{resolveText("Medication_Pattern")}</FormLabel>
